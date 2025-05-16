@@ -1,0 +1,23 @@
+# Archivos temporales generados por LaTeX
+*.aux 
+*.bit 
+*.blg 
+*.bbl 
+*.lof 
+*.log 
+*.lot
+*.fdb_latexmk 
+*.fls
+*.glo 
+*.glx 
+*.gxg 
+*.gxs 
+*.idx 
+*.ilg 
+*.ind 
+*.out 
+*.url
+*.synctex.gz 
+*.svn 
+*.toc
+
