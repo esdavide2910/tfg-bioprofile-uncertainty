@@ -1,0 +1,6 @@
+# Los datos y los modelos son pesados (además, algunos datos son confidenciales)
+data/
+models/
+*.pth
+
+
