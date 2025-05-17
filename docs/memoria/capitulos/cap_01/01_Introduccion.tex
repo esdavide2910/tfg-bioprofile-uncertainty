@@ -41,11 +41,8 @@ Tradicionalmente, los antropólogos forenses han tenido cinco principales objeti
 
 Además de estos roles, en la actualidad los antropólogos desempeñan otros trabajos que no están relacionados con el ámbito 
 criminalístico. Entre ellos, uno de sus campos de acción más relevantes es la \textbf{identificación de víctimas en contextos 
-de catástrofes masivas} \cite{deBoer2019, prinz2007}, como accidentes aéreos, ataques terroristas o desastres naturales,
-donde los restos suelen estar mutilados o desfigurados.
-
-% Utilizar la siguiente cita:
-% [Beauthier09] Beauthier JP, De Valck E, Lefevre P, De Winne J (2009). Mass Disaster Victim Identification: The Tsunami Experience. The Open Forensic Sci J 2:54-62.
+de catástrofes masivas} \cite{deBoer2019, prinz2007, beauthier2009}, como accidentes aéreos, ataques terroristas o desastres 
+naturales, donde los restos suelen estar mutilados o desfigurados.
 
 Su labor también es fundamental en la \textbf{recuperación e identificación de violaciones sistemáticas de
 derechos humanos}, como exterminios, persecuciones políticas y represiones dictatoriales \cite{skinner2003}.
@@ -84,10 +81,9 @@ Las huellas dactilares requieren de: tejido blando preservado, lo que es común 
 pero se pierde con la descomposición o la carbonización; y una base de datos que incluya la huella del 
 individuo en vida (registros \textit{ante mortem}).
 
-% Corregir: post morteM
 Por otro lado, en cuanto al análisis genético, este puede verse comprometido por una mala conservación del 
 ADN que puede deberse a su degradación o contaminación. La concentración presente en un cadáver se reduce 
-drásticamente en los primeros 8 meses \textit{post morten} \cite{higgins2015}, y factores como las 
+drásticamente en los primeros 8 meses \textit{post mortem} \cite{higgins2015}, y factores como las 
 altas temperaturas, la exposición a humedad ambiental o la presencia de aguas subterraneas y entornos 
 ricos en oxígeno, que fomentan la presencia microbiana, perjudican la conservación del ADN \cite{latham2018}. 
 Y, aun extraída una secuencia válida de ADN, se necesita de muestras con las que compararla, a ser posible de 
@@ -99,9 +95,9 @@ Por tanto, la AF contribuye al problema de identificación en dos escenarios \ci
 
     \item Cuando los otros métodos no son viables, dado que las pruebas no se puedan recoger o no sean válidas, o 
     no haya registros con los que compararlas.
-% Corregir: puedeN reducir 
+    
     \item Como apoyo a otras técnicas de identificación. Por ejemplo, las técnicas de estimación del perfil 
-    biológico puede reducir el grupo de posibles coincidencias en bases de datos genéticos, facilitando el 
+    biológico pueden reducir el grupo de posibles coincidencias en bases de datos genéticos, facilitando el 
     cotejo de secuencias genéticas y reduciendo el coste del proceso.  
 
 \end{enumerate}
@@ -126,7 +122,7 @@ se determinan características biológicas clave de un individuo \cite{byers2023
 En los problemas de ID, cuando estas características biológicas coinciden con los registros \textit{ante mortem}, 
 se fortalece la hipótesis de identificación; en cambio, si existen una o más discrepancias ---especialmente de 
 alguna característica firme como múltiples epífisis no fusionadas, que no pueden ocurrir en un adulto mayor---, 
-el individuo es excluido como posible coincidencia \cite{byers2023}. %cap18 
+el individuo es excluido como posible coincidencia \cite{byers2023}. 
 
 En la Figura \ref{fig:SFI_pipeline} podemos observar que la estimación del PB es uno de los primeros pasos en 
 el proceso de ID forense. 
@@ -209,21 +205,33 @@ Este enfoque se ha visto potenciado por el auge del Deep Learning, permitiendo a
 que podrían pasar inadvertidos por el ser humano, y mejorando la precisión de las predicciones \cite{stern2019, venema2022}. 
 Sin embargo, aún mejorando la exactitud de las predicciones, los modelos siguen mostrando carencias respecto a la 
 cuantificación de incertidumbre, pues no todas las predicciones tienen el mismo nivel de confianza o fiabilidad.
-Ya en \cite{ferrante2009} se introducía la necesidad de preguntarse, además de por el método apropiado de estimación 
-de edad, por la confiabilidad de este, y de realizar un estudio del error arrojado por las predicciones del método.
-Un ejemplo de este análisis se ilustra en la Figura \ref{fig:prob_dist_AEerror}, donde se examina la distribución 
-probabilística del error en el modelo propuesto en \cite{stepanovsky2024}.
+Ya en \cite{ferrante2009} se introducía no solo la necesidad de identificar el método adecuado para estimar la edad a 
+partir de los elementos disponibles, sino también de evaluar su confiabilidad y realizar un estudio del error arrojado por 
+las predicciones del método. 
+Estos generalmente se han basado en la estadística frecuentista \cite{verma2020, stepanovsky2024, heinrich2024}
+\footnote{La estadística frecuentista es la corriente estadística que desarrolla a partir de los conceptos de probabilidad
+y que se centra en el cálculo de probabilidades y el contraste de hipótesis.}.
+Un ejemplo de este tipo de análisis se ilustra en la Figura \ref{fig:regression_lentibia_stature}, donde se examina la 
+distribución probabilística del error residual arrojado por el modelo de regresión propuesto en \cite{verma2020}.
 
-% COMPLETAR CON OTRO ESTUDIO
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{capitulos/cap_01/imagenes/regression_line_lentibia_stature.png}
+    \caption{Línea de regresión del modelo de regresión propuesto en \cite{verma2020} que predice la estatura
+    a partir de la longitud de la tibia. En rojo, la línea de regresión; en verde, la línea de los intervalos de confianza 
+    del 95\%; y en naranja, la línea de los intervalos de predicción al 95\% de confianza.
+    } 
+    \label{fig:regression_lentibia_stature}
+\end{figure}
 
 Aunque existen métricas para evaluar el error cuando se dispone de \textit{ground truth}, la mayoría de los modelos 
 actuales se limitan a ofrecer predicciones puntuales en regresión \cite{park2024, imaizumi2021, stepanovsky2024} o 
 etiquetas únicas en clasificación \cite{venema2022, park2024}, sin cuantificar la incertidumbre asociada a cada predicción.
 
 Con lo anterior se expone la motivación de la aplicación de ML a la AF, así como de la necesidad de cuantificar la
-incertidumbre en cada predicción, para ofrecer garantías de confiabilidad estadística que aspiren a sustentar la 
-validez legal en contextos judiciales. Respecto a la necesidad de disponer de técnicas de AF confiables, algunos 
-datos que magnifican la necesidad de técnicas de AF confiables actualmente son:
+incertidumbre en las predicciones, para ofrecer garantías de confiabilidad estadística que aspiren a sustentar la 
+validez legal en contextos judiciales. Algunos datos que magnifican la necesidad de técnicas de AF confiables 
+actualmente son:
 
 % 1/3 de los muertos del 11S sin identificar
 
@@ -308,10 +316,8 @@ Por tanto, ponemos desgranar los objetivos en:
     ante datos ambiguos y utilidad forense, contrastándolos con métodos tradicionales (p.ej., intervalos de confianza 
     clásicos).  
 
-    % Prueba de concepto, primer aproximacioón a un marco interpretable ...
-
-    %\item (Demasiado ambicioso tal vez) Desarrollar un marco interpretable para la toma de decisiones en antropología 
-    %forense, donde la incertidumbre cuantificada pueda integrarse en informes periciales bajo estándares jurídicos.  
+    \item Realiza una primera aproximación a un marco interpretable y con garantías estadísticas para la estimación del 
+    perfil biológico, donde la incertidumbre cuantificada pueda integrarse en informes periciales bajo estándares jurídicos.
 
 \end{itemize}
 
