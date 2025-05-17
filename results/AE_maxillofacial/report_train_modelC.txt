@@ -1,0 +1,14 @@
+✅ Datasets de imágenes cargados
+✅ Modelo cargado
+Epoch 1 | Train Loss: 64.96 | Validation Loss: 8.85
+Epoch 2 | Train Loss: 12.14 | Validation Loss: 7.76
+Epoch 3 | Train Loss: 9.91 | Validation Loss: 7.56
+Epoch 4 | Train Loss: 9.58 | Validation Loss: 7.86
+Epoch 5 | Train Loss: 9.35 | Validation Loss: 7.77
+✅ Preentrenamiento de la nueva cabecera realizado
+Epoch 1 | Train Loss: 7.10 | Validation Loss: 4.94
+Epoch 2 | Train Loss: 5.59 | Validation Loss: 4.25
+Epoch 3 | Train Loss: 4.98 | Validation Loss: 3.99
+Epoch 4 | Train Loss: 4.41 | Validation Loss: 3.40
+Epoch 5 | Train Loss: 4.08 | Validation Loss: 3.41
+Epoch 6 | Train Loss: 4.05 | Validation Loss: 3.12

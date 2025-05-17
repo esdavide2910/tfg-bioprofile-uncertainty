@@ -1,9 +1,8 @@
 #!/bin/bash
 
-#SBATCH --job-name train_models
+#SBATCH --job-name prueba_pytorch
 #SBATCH --partition dios
-##SBATCH --nodelist=dionisio
-#SBATCH --mem=20G
+#SBATCH --mem=2G
 #SBATCH --cpus-per-task 1
 #SBATCH --gres=gpu:1
 #SBATCH --output=/dev/null
@@ -19,7 +18,4 @@ eval "$(conda shell.bash hook)"
 conda activate /mnt/homeGPU/dgonzalez/conda_envs/envs/pytorch_env2
 
 # Ejecución del script Python
-python src/modelA.py > results/AE_maxillofacial/report_train_modelA.txt 2>&1
-# python src/modelB.py > results/AE_maxillofacial/report_train_modelB.txt 2>&1
-# python src/modelC.py > results/AE_maxillofacial/report_train_modelC.txt 2>&1
-# python src/modelD.py > results/AE_maxillofacial/report_train_modelD.txt 2>&1
+python src/prueba_pytorch.py > slurm/output_prueba_pytorch.txt 2>&1

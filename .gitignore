@@ -1,7 +1,6 @@
 # Los datos y los modelos son pesados (además, algunos datos son confidenciales)
 data/
 models/
-*.pth
 
-
+#  Las salidas de sbatch son de poco interés
 slurm/*.txt

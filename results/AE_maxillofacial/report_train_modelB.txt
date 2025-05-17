@@ -1,0 +1,44 @@
+✅ Datasets de imágenes cargados
+✅ Modelo cargado
+Epoch 1 | Train Loss: 65.18 | Validation Loss: 8.80
+Epoch 2 | Train Loss: 11.88 | Validation Loss: 7.80
+Epoch 3 | Train Loss: 9.91 | Validation Loss: 7.59
+✅ Preentrenamiento de la nueva cabecera realizado
+Epoch 1 | Train Loss: 7.97 | Validation Loss: 5.19
+Epoch 2 | Train Loss: 6.02 | Validation Loss: 4.06
+Epoch 3 | Train Loss: 5.13 | Validation Loss: 4.21
+Epoch 4 | Train Loss: 5.02 | Validation Loss: 3.70
+Epoch 5 | Train Loss: 4.74 | Validation Loss: 3.47
+Epoch 6 | Train Loss: 4.23 | Validation Loss: 3.03
+Epoch 7 | Train Loss: 4.21 | Validation Loss: 3.59
+Epoch 8 | Train Loss: 3.89 | Validation Loss: 3.12
+Epoch 9 | Train Loss: 3.39 | Validation Loss: 3.41
+Epoch 10 | Train Loss: 3.41 | Validation Loss: 3.27
+Epoch 11 | Train Loss: 3.14 | Validation Loss: 3.18
+Epoch 12 | Train Loss: 3.03 | Validation Loss: 4.45
+Epoch 13 | Train Loss: 2.93 | Validation Loss: 3.58
+Epoch 14 | Train Loss: 2.99 | Validation Loss: 5.57
+Epoch 15 | Train Loss: 2.67 | Validation Loss: 2.81
+Epoch 16 | Train Loss: 2.35 | Validation Loss: 2.69
+Epoch 17 | Train Loss: 2.41 | Validation Loss: 3.22
+Epoch 18 | Train Loss: 2.12 | Validation Loss: 2.57
+Epoch 19 | Train Loss: 1.95 | Validation Loss: 2.54
+Epoch 20 | Train Loss: 1.80 | Validation Loss: 2.82
+Epoch 21 | Train Loss: 1.70 | Validation Loss: 2.61
+Epoch 22 | Train Loss: 1.54 | Validation Loss: 2.52
+Epoch 23 | Train Loss: 1.49 | Validation Loss: 2.42
+Epoch 24 | Train Loss: 1.33 | Validation Loss: 2.45
+Epoch 25 | Train Loss: 1.35 | Validation Loss: 2.37
+Epoch 26 | Train Loss: 1.25 | Validation Loss: 2.33
+Epoch 27 | Train Loss: 1.22 | Validation Loss: 2.38
+Epoch 28 | Train Loss: 1.17 | Validation Loss: 2.37
+Epoch 29 | Train Loss: 1.20 | Validation Loss: 2.35
+Epoch 30 | Train Loss: 1.27 | Validation Loss: 2.31
+
+El entrenamiento y validación ha tardado 2 horas, 7 minutos y 49 segundos.
+✅ Entrenamiento de la red completa realizado
+Train losses:  [7.973732436144793, 6.021804487263715, 5.134195926012816, 5.019687030050489, 4.742143445544773, 4.228718404416685, 4.20679866163819, 3.887156914781641, 3.394750010084223, 3.411694613871751, 3.137556857532925, 3.032946485060233, 2.928879694806205, 2.9919495990982763, 2.6670681094681776, 2.353674061872341, 2.409340696202384, 2.11567661607707, 1.9496466716130574, 1.8037923883508753, 1.703341058006993, 1.5371442072921329, 1.4901271870842687, 1.3296276292315237, 1.348498480739417, 1.254861604836252, 1.219375749429067, 1.167990365514049, 1.1953575517292376, 1.265985404451688]
+Validation losses:  [tensor(5.1878), tensor(4.0632), tensor(4.2129), tensor(3.6989), tensor(3.4664), tensor(3.0279), tensor(3.5943), tensor(3.1163), tensor(3.4145), tensor(3.2663), tensor(3.1821), tensor(4.4547), tensor(3.5760), tensor(5.5674), tensor(2.8059), tensor(2.6904), tensor(3.2177), tensor(2.5653), tensor(2.5448), tensor(2.8209), tensor(2.6124), tensor(2.5176), tensor(2.4166), tensor(2.4535), tensor(2.3672), tensor(2.3334), tensor(2.3823), tensor(2.3701), tensor(2.3480), tensor(2.3128)]
+Error Absoluto Medio (MAE) en test: 1.17
+Error Cuadrático Medio (MSE) en test: 2.37
+R² en test: 0.7477
