@@ -32,7 +32,7 @@ numerosas aplicaciones: de visión por computador, reconocimiento de lenguaje na
 y forense, finanzas o recomendación de contenidos, entre otros. De esta forma, el ML se ha convertido en un 
 campo tan amplio y exitoso que ahora ``eclipsa'' al resto de campos de la IA \cite{domingos2015}.
 
-El ML diferencia tres tipos de aprendizaje en base a tres tipos de retroalimentación \cite{rusell2009}: 
+El ML diferencia tres tipos de aprendizaje en base a tres tipos de retroalimentación \cite{rusell2021}: 
 
 \begin{itemize}
     
@@ -367,16 +367,14 @@ Existen multitud de variante de clasificación, que pueden diferenciarse según 
 
     \item En base a la certeza de la asignación de clases: \textbf{clasificación con etiqueta precisa o difusa}, 
     donde en el primer caso la asignación a una clase es determinista, y en el segundo caso se permite una 
-    pertenencia parcial a varias clases con distintos grados de confianza o probabilidad.
+    pertenencia parcial a varias clases, con distinto grados de afinidad.
     
 \end{itemize}
 
-No obstante, la mayoría de los problemas estudiados en la literatura corresponden a clasificación binaria o 
-multiclase, con etiquetas únicas y asignación precisa \cite{bishop2006}, y son los que analizaremos en este
-trabajo.
-
-Se analizarán más a fondo los dos tipos de clasificación según su cardinalidad de clases, lo que tiene 
-importantes implicaciones tanto en el diseño del modelo como en la evaluación de su desempeño: 
+No obstante, la mayoría de los problemas estudiados en la literatura de ML, y concretamente en antropología forense, corresponden a clasificación binaria o 
+multiclase, con etiquetas únicas y asignación precisa \cite{bishop2006}, que serán el foco de este trabajo. 
+La cardinalidad de las clases tiene implicanciones significativas en el diseño del modelo y la evaluación
+de su desempeño:
 
 \begin{itemize}
 
@@ -394,8 +392,7 @@ importantes implicaciones tanto en el diseño del modelo como en la evaluación 
 
 \end{itemize}
 
-
-% Problemas comunes: clasificación desbalanceada
+En este tipo de problemas, el error ocurre cuando no se acierta al predecir la clase del ejemplo.
 
 % Tanto en clasificación binaria como multiclase, un problema común es el desequilibrio de clases, donde una 
 % clase tiene muchos más ejemplos que otra. Esto afecta el entrenamiento del modelo, ya que puede sesgarse hacia la 
@@ -471,12 +468,15 @@ evaluar y comparar modelos de clasificación:
     \textnormal{Accuracy} = \frac{TP+TN}{TP+TN+FP+FN}
     $$
 
+    Su valor varía entre 0 y 1, donde 0 es el peor desempeño posible (todas las predicciones son incorrectas) y 1 es el 
+    mejor desempeño posible (todas las predicciones son correctas).
+
     Es la medida más intuitiva, si bien carece de utilidad en escenarios con clases desbalanceadas, ya que puede dar una 
     falsa impresión de buen desempeño si la clase mayoritaria domina la métrica. Es por esto que el análisis debe
     complementarse con otras métricas informativas.
 
 
-    \item La \textbf{precisión (precision) y exhaustividad (recall)}
+    \item La \textbf{precisión (precision) y exhaustividad (recall)} 
     
     $$
     \textnormal{Precision} = \frac{TP}{TP+FP}
@@ -528,49 +528,127 @@ aprender representaciones jerárquicas: cada capa extrae características progre
 \cite{lecun2015}, desde líneas en imágenes hasta formas geométricas complejas, objetos completos e incluso 
 escenas compuestas.
 Esta propiedad las hace excepcionalmente versátiles, ya que procesan datos de muy diversa naturaleza ---datos 
-tabulares, imágenes, audio, texto y señales temporales---, dados que ellas mismas aprenden los procesos de 
+tabulares, imágenes, audio, texto o señales temporales---, dados que ellas mismas aprenden los procesos de 
 extracción de características de estos, hasta ahora realizados ``a mano'' (mediante procesos diseñados por la 
-ingeniería de características).
-
-Gracias a ello, las DNNs han alcanzado rendimientos sobresalientes en dominios como visión artifical
-(clasificación de imágenes, detección de objetos, segmentación) y procesamiento de lenguaje natural 
+ingeniería de características) \cite{rusell2021} \footnote{Este enfoque se denomina aprendizaje extremo a
+extremo (\textit{end-to-end learning}), en el cual tanto la extracción de características como la clasificación
+son parte de un modelo integral que se entrena de manera conjunta, optimizando todos los componentes del sistema
+en un mismo proceso \cite{rusell2021}.}. Gracias a ello, las DNNs han alcanzado rendimientos sobresalientes en 
+dominios como visión por computador
+(clasificación de imágenes, detección de objetos, segmentación) o procesamiento de lenguaje natural 
 (traducción, generación de texto) \cite{redhat2024DeepLearningDefinition}.
-
 No obstante, su eficacia depende críticamente de grandes volúmenes de datos y recursos computacionales,
 lo que ha impulsado técnicas como el \textit{transfer learning} y modelos eficientes para democratizar 
-su aplicación.
+su uso.
 
 
 \subsection{El perceptrón multicapa}
 
-El \textbf{perceptrón multicapa (\textit{multilayer perceptron}, MLP)}
+El \textbf{perceptrón multicapa (\textit{multilayer perceptron}, MLP)} forma la base del \textit{deep learning}. 
+Su diseño ---con capas ocultas, funciones de activación no lineales y entrenamiento  mediante 
+\textit{backpropagation}--- sentó las bases conceptuales para modelos más complejos. Aunque arquitecturas 
+modernas (como CNNs, \textit{transformers} o RNNs) han emergido para resolver problemas específicos con 
+mejor desempeño y de manera más eficiente, el MLP sigue siendo un referente teórico y la expresión más 
+simple de cómo el aprendizaje jerárquico puede capturar patrones en los datos. 
+
+Cada nodo en la red es denominado \textbf{unidad o neurona artifical}. Siguiendo el diseño propuesto en 
+\cite{mcculloch1943}, una unidad calcula la suma ponderada ---por los pesos de cada conexión--- de las
+entradas, entonces aplica una función no lineal para producir una salida (véase Figura \ref{fig:neuron_MLP}).
+Matemáticamente, la operación de una neurona se expresa como:
+
+$$
+y = f \left( \sum_{i=1}^n{w_ix_i+b} \right)
+$$
+
+donde
+\begin{itemize}
+    \item $x_i$ son las entradas,
+    \item $w_i$ son los pesos,
+    \item $w_0$ es el sesgo, y
+    \item $f$ es la función de activación.
+\end{itemize}
 
 
 
-\subsection{La red neuronal}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/Neuron_perceptron.png}
+    \caption{Elaboración propia a partir de \cite{domingos2018}.} 
+    \label{fig:neuron_MLP}
+\end{figure}
 
-
-
-...
-
-Así, una red neuronal está compuesta por: 
+Esta arquitectura consta de:
 
 \begin{itemize}
 
-    \item \textbf{una capa de entrada}, que debe coincidir con el formato de entrada de los datos, por ejemplo: el
+    \item \textbf{Capa de entrada}, que debe coincidir con el formato de entrada de los datos, por ejemplo: el
     número de neuronas en la capa de entrada tiene que coincidir con el de características en problemas tabulares.
-    No obstante, como veremos más tarde, en las CNNs no se requiere un tamaño fijo de imagen a la entrada.
     
-    \item \textbf{una serie de capas ocultas}, donde se realizan las transformaciones no lineales de los datos. 
-    Es en estas donde el diseño puede variar en número de neuronas y tipo de capas según la complejidad del 
-    problema; y
+    \item \textbf{Capas ocultas}, donde se realizan las transformaciones no lineales de los datos. Es en estas 
+    donde el diseño puede variar en número de neuronas y tipo de capas según la complejidad del problema y los datos.
     
-    \item \textbf{una capa de salida}, que proporciona el resultado del modelo, su forma depende del problema a 
+    \item \textbf{Capa de salida}, que proporciona el resultado del modelo. Su forma depende del problema a 
     resolver: en problemas de regresión, esta capa tendrá tantas neuronas como variables a predecir; en problemas de 
     clasificación, esta capa tendrá una sola neurona (con activación sigmoide) en clasificación binaria, o múltiples 
     neuronas (con activación \textit{softmax}) en clasificación multiclase.
 
 \end{itemize}
+
+Cada una de estas capas está formada por un conjunto de neuronas o nodos\footnote{Preferimos el término nodo, 
+especialmente para aquellas }, 
+
+
+Cada capa consta de un conjunto de neuronas 
+Cada nodo o neurona constituye la unidad básica del procesamiento 
+
+Cada capa consta de un conjunto de neuronas conectadas con cada una de las neuronas de las capas anterior y posterior 
+ Cada nodo o neurona de la red constituye la unidad básica de procesamiento, donde:
+
+
+
+Cada neurona:
+
+\begin{itemize}
+
+    \item recibe señales de entrada: los datos del problema en la primera capa, o las salidas de las neuronas 
+    de la capa anterior en caso de las capas ocultas;
+
+    \item aplica una transformación que es generalmente una combinación lineal de las entradas ponderadas
+    por los pesos (parámetros entrenables) más un término de sesgo.
+
+    \item evalúa la salida mediante una función de activación
+
+    \item Propaga su salida a las neuronas de la siguiente capa (o entrega el resultado final, si es la capa de 
+    salida).
+
+\end{itemize}
+
+Matemáticamente, 
+
+
+
+\begin{figure}[h]
+    \centering
+
+    \begin{subfigure}[b]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/neural_network_1.png}
+        \caption{Esquema visual simplificado}
+        \label{fig:neural_network_simplified}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.55\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/neural_network_2.png}
+        \caption{Esquema visual expandido}
+        \label{fig:neural_network_expanded}
+    \end{subfigure}
+
+    \caption{Grafo de una red neuronal con dos datos de entrada, una capa oculta de dos unidades, y una unidad de salida \cite{rusell2021}.}
+    \label{fig:neural_network}
+\end{figure}
+
+
 
 
 Pero las redes neuronales modernas no solo están compuestas por neuronas clásicas que ..., sino que también
@@ -582,13 +660,6 @@ empíricamente su utilidad.
 % Hablar de funciones de activación
 
 % Hablar de funciones de pérdida
-
-% --------------------------------------------------------------------------------------------------------------------
-
-\subsection{Redes Neuronales en problemas tabulares}
-
-
-
 
 
 % --------------------------------------------------------------------------------------------------------------------
