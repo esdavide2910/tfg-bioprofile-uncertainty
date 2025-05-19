@@ -24,3 +24,6 @@ INFORMACIÓN A INCLUIR
   Además, penaliza más los errores grandes, lo que acelera los ajustes en etapas iniciales.
 
 - Regresión de cuantiles
+
+- Considero capas más profundas (deep) a aquellas que están más cerca de la salida, y las superficiales (shallow)
+  a aquellas que están más cercanas a la entrada.
