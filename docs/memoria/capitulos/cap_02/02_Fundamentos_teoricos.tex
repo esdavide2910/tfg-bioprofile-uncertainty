@@ -3,60 +3,61 @@
 Este capítulo tiene el propósito de presentar y describir los fundamentos teóricos que sustentan los métodos 
 utilizados en el trabajo, además de justificar su importtancia para abordar los problemas planteados.
 
-% --------------------------------------------------------------------------------------------------------------------
-% MACHINE LEARNING ---------------------------------------------------------------------------------------------------
-% --------------------------------------------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------------------------------------
+% MACHINE LEARNING -------------------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------------------------------------
 
 \section{Machine Learning}
 
-Frente a la idea de intentar crear un programa que simulara directamente el comportamiento inteligente de una ``mente 
-adulta'', Alan Turing ya vaticinó un enfoque alternativo \cite{turing1950}: que las máquinas pudieran aprender como 
-lo hace un niño, mediante un ``proceso educativo'' con el cual se logra alcanzar progresivamente una ``mente adulta'', 
-obteniendo así comportamientos inteligentes complejos.
+Frente a la idea de intentar crear un programa que simulara directamente el comportamiento inteligente de una 
+``mente adulta'', Alan Turing ya vaticinó un enfoque alternativo \cite{turing1950}: que las máquinas pudieran 
+aprender como lo hace un niño, mediante un ``proceso educativo'' con el cual se logra alcanzar progresivamente 
+una ``mente adulta'', obteniendo así comportamientos inteligentes complejos.
 
 % Athur Samuel años 50 surge machine learning
 %He popularized the term "machine learning" in 1959.[4]
 %Samuel, Arthur L. (1959). "Some Studies in Machine Learning Using the Game of Checkers". IBM Journal of Research and Development. 44: 206–226.
 
-En las décadas de 1960, 1970 y 1980, en un contexto marcado por las limitaciones computacionales y el escepticismo 
-académico surgió el \textit{machine learning} (ML) ---o \textit{aprendizaje automático}--- como una rama marginal de 
-la IA, centrada en el desarrollo de modelos y algoritmos que permitiesen a las computadoras imitar la forma en la que 
-los humanos aprenden, realizar tareas autónomas y mejorar su rendimiento a través de la experiencia y exposición a 
-más datos. De esta forma, estos modelos podrían realizar predicciones o tomar decisiones sin ser programadas para 
-cada caso.
+En las décadas de 1960, 1970 y 1980, en un contexto marcado por las limitaciones computacionales y el 
+escepticismo académico surgió el \textit{machine learning} (ML) ---o \textit{aprendizaje automático}--- como 
+una rama marginal de la IA, centrada en el desarrollo de modelos y algoritmos que permitiesen a las 
+computadoras imitar la forma en la que los humanos aprenden, realizar tareas autónomas y mejorar su 
+rendimiento a través de la experiencia y exposición a más datos. De esta forma, estos modelos podrían realizar 
+predicciones o tomar decisiones sin ser programadas para cada caso.
 
 Los años 90 y 2000 marcaron un punto de inflexión para el ML, gracias a los avances teóricos, el mayor poder 
-computacional y la disponibilidad de grandes volúmenes de datos. De 2010 en adelante, la evolución del ML ha sido 
-exponencial, marcada por la consolidación del \textit{deep learning}, la escalabilidad masiva y su integración en 
-numerosas aplicaciones: de visión por computador, reconocimiento de lenguaje natural, robótica, diagnóstico médico 
-y forense, finanzas o recomendación de contenidos, entre otros. De esta forma, el ML se ha convertido en un 
-campo tan amplio y exitoso que ahora ``eclipsa'' al resto de campos de la IA \cite{domingos2015}.
+computacional y la disponibilidad de grandes volúmenes de datos. De 2010 en adelante, la evolución del ML ha 
+sido exponencial, marcada por la consolidación del \textit{deep learning}, la escalabilidad masiva y su 
+integración en numerosas aplicaciones: de visión por computador, reconocimiento de lenguaje natural, robótica, 
+diagnóstico médico y forense, finanzas o recomendación de contenidos, entre otros. De esta forma, el ML se ha 
+convertido en un campo tan amplio y exitoso que ahora ``eclipsa'' al resto de campos de la IA 
+\cite{domingos2015}.
 
 El ML diferencia tres tipos de aprendizaje en base a tres tipos de retroalimentación \cite{rusell2021}: 
 
 \begin{itemize}
     
-    \item \textbf{Aprendizaje supervisado}, en el que el agente (refiriéndose con este al modelo de ML y su algoritmo 
-    de aprendizaje) observa ejemplos de pares entrada-salida y aprende la función que mejor mapea las entradas 
-    (inputs) a las salidas (outputs) correspondientes. El objetivo es generalizar este aprendizaje para hacer 
-    predicciones precisas sobre datos nuevos y no vistos \cite{bishop2006}.
+    \item \textbf{Aprendizaje supervisado}, en el que el agente (refiriéndose con este al modelo de ML y su 
+    algoritmo de aprendizaje) observa ejemplos de pares entrada-salida y aprende la función que mejor mapea 
+    las entradas (inputs) a las salidas (outputs) correspondientes. El objetivo es generalizar este 
+    aprendizaje para hacer predicciones precisas sobre datos nuevos y no vistos \cite{bishop2006}.
 
-    \item \textbf{Aprendizaje por refuerzo}, en el que los datos de entrenamiento no contienen salida objetivo, sino 
-    que contiene posibles resultados junto con medidas de calidad de dicho resultado, es decir, una función de 
-    evaluación del estado. En este tipo de aprendizaje, el agente toma decisiones en un entorno y recibe recompensas 
-    o penalizaciones por las acciones que realiza, ajustando su comportamiento mediante prueba y error, maximizando 
-    la recompensa acumulada en el tiempo \cite{alpaydin2010}.
+    \item \textbf{Aprendizaje por refuerzo}, en el que los datos de entrenamiento no contienen salida 
+    objetivo, sino que contiene posibles resultados junto con medidas de calidad de dicho resultado, es decir, 
+    una función de evaluación del estado. En este tipo de aprendizaje, el agente toma decisiones en un entorno 
+    y recibe recompensas o penalizaciones por las acciones que realiza, ajustando su comportamiento mediante 
+    prueba y error, maximizando la recompensa acumulada en el tiempo \cite{alpaydin2010}.
 
-    \item \textbf{Aprendizaje no supervisado}, en el que el agente tampoco dispone de valores de salida, solo de 
-    entrada \cite{bishop2006}, y los objetivos pueden ser muy variados, centrándose en descubrir patrones, 
-    estructuras o relaciones ocultas en los datos. A diferencia de los otros enfoques, aquí no hay una ``respuesta 
-    correcta'' predefinida, sino que el modelo debe inferir conocimiento directamente desde la distribución de los 
-    datos.
+    \item \textbf{Aprendizaje no supervisado}, en el que el agente tampoco dispone de valores de salida, solo 
+    de entrada \cite{bishop2006}, y los objetivos pueden ser muy variados, centrándose en descubrir patrones, 
+    estructuras o relaciones ocultas en los datos. A diferencia de los otros enfoques, aquí no hay una 
+    ``respuesta correcta'' predefinida, sino que el modelo debe inferir conocimiento directamente desde la 
+    distribución de los datos.
 
 \end{itemize}
 
-Este trabajo se centrará en el aprendizaje supervisado, pues es este tipo de aprendizaje el empleado en los problemas
-de clasificación y regresión que aplicaremos en el ámbito de la antropología forense.
+Este trabajo se centrará en el aprendizaje supervisado, pues es este tipo de aprendizaje el empleado en los 
+problemas de clasificación y regresión que aplicaremos en el ámbito de la antropología forense.
 
 
 % Retos en el aprendizaje supervisado
@@ -66,7 +67,7 @@ de clasificación y regresión que aplicaremos en el ámbito de la antropología
 
 
 
-% --------------------------------------------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------------------------------------
 
 % En el \textbf{aprendizaje supervisado} \cite{bishop2006}, el agente (refiriéndose con este al 
 % modelo de ML y su algoritmo de aprendizaje) observa ejemplos de pares entrada-salida y aprende
@@ -81,7 +82,7 @@ de clasificación y regresión que aplicaremos en el ámbito de la antropología
 %     \item la \textit{regresión} cuando el valor de salida es un valor continuo.
 % \end{itemize}
 
-% % --------------------------------------------------------------------------------------------------------------------
+% % ----------------------------------------------------------------------------------------------------------
 
 % En cambio, en el \textbf{aprendizaje por refuerzo}, los datos de entrenamiento no contienen 
 % salida objetivo, sino que contiene posibles resultados junto con medidas de calidad de dicho 
@@ -98,7 +99,7 @@ de clasificación y regresión que aplicaremos en el ámbito de la antropología
 % sistemas conversacionales (ChatAI), donde las decisiones secuenciales y la interacción 
 % dinámica con el entorno son fundamentales.
 
-% % --------------------------------------------------------------------------------------------------------------------
+% % ----------------------------------------------------------------------------------------------------------
 
 % Y, por último, en el \textbf{aprendizaje no supervisado}, el agente tampoco dispone de valores 
 % de salida, solo de entrada \cite{bishop2006}, y los objetivos pueden ser muy variados, 
@@ -133,18 +134,18 @@ de clasificación y regresión que aplicaremos en el ámbito de la antropología
 
 
 
-% --------------------------------------------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------------------------------------
 
 \subsection{Problemas de regresión}
 
-Como se ha mencionado antes, la regresión es un tipo de problema clásico en el aprendizaje supervisado, y consiste 
-en predecir el valor de una o más \textbf{variables continuas} objetivo a partir de unos datos de entrada 
-\cite{bishop2006}, utilizando un modelo entrenado con ejemplos ya con valores conocidos.
+Como se ha mencionado antes, la regresión es un tipo de problema clásico en el aprendizaje supervisado, y 
+consiste en predecir el valor de una o más \textbf{variables continuas} objetivo a partir de unos datos de 
+entrada \cite{bishop2006}, utilizando un modelo entrenado con ejemplos ya con valores conocidos.
 
 Matemáticamente, este proceso implica modelar la relación entre la variable dependiente $Y$ y las variables
-independientes $X$, de modo que se pueda predecir o explicar el comportamiento de $Y$ en función de los valores 
-de $X$. El modelo aprende una función de predicción $f$ que, dado un nuevo ejemplo $i$ con características $X_i$, 
-genera una estimación $\hat{Y_i}$:
+independientes $X$, de modo que se pueda predecir o explicar el comportamiento de $Y$ en función de los 
+valores de $X$. El modelo aprende una función de predicción $f$ que, dado un nuevo ejemplo $i$ con 
+características $X_i$, genera una estimación $\hat{Y_i}$:
 
 $$
 f(X_i) = f(X_{i0}, X_{i1}, \dots, X_{in}) = \hat{Y_i} = Y_i + \varepsilon_i
@@ -156,18 +157,21 @@ donde
     \item $X_{i0},X_{i1}, \dots, X_{in}$ son las características o atributos del ejemplo $i$,
     \item $Y_i$ es el valor real de la variable objetivo para ese ejemplo,
     \item $\hat{Y_i}$ es la predicción generada por el modelo, y
-    \item $\varepsilon_i$ representa el error o residuo \footnote{... a pesar de que en la literatura estos términos se distinguen, ...}, es decir, la diferencia entre la predicción y el valor real.
-          Este término captura factores aleatorios o imprecisiones que el modelo no logra explicar perfectamente.
+    \item $\varepsilon_i$ representa el error o residuo \footnote{... a pesar de que en la literatura estos 
+    términos se distinguen, ...}, es decir, la diferencia entre la predicción y el valor real.
+    Este término captura factores aleatorios o imprecisiones que el modelo no logra explicar perfectamente.
 \end{itemize}
 
-El análisis y la evaluación estadística del error son fundamentales para valorar la utilidad práctica del modelo y 
-optimizar su capacidad predictiva mediante técnicas de ajuste y validación. Existen numerosas métricas para evaluar 
-el rendimiento en problemas de regresión, pero tres destacan especialmente por ser \textit{model-agnostic}, es decir, 
-aplicables a cualquier modelo de regresión independientemente del algoritmo subyacente. Estas son:
+El análisis y la evaluación estadística del error son fundamentales para valorar la utilidad práctica del 
+modelo y optimizar su capacidad predictiva mediante técnicas de ajuste y validación. Existen numerosas 
+métricas para evaluar el rendimiento en problemas de regresión, pero tres destacan especialmente por ser 
+\textit{model-agnostic}, es decir, aplicables a cualquier modelo de regresión independientemente del algoritmo 
+subyacente. Estas son:
 
 \begin{itemize}
-    \item El \textbf{error absoluto medio (\textit{mean absolute error}, MAE)} mide el promedio de las diferencias 
-    absolutas entre los valores reales ($Y_i$) y los valores predichos ($\hat{Y_i}$) por el modelo.
+    \item El \textbf{error absoluto medio (\textit{mean absolute error}, MAE)} mide el promedio de las 
+    diferencias absolutas entre los valores reales ($Y_i$) y los valores predichos ($\hat{Y_i}$) por el 
+    modelo.
 
     $$
     MAE = \frac{1}{n} \sum_{i=1}^n{|Y_i - \hat{Y_i}|}
@@ -179,12 +183,12 @@ aplicables a cualquier modelo de regresión independientemente del algoritmo sub
     predicción del valor real sin considerar la dirección del error (positivo o negativo) y, por tanto, cuanto 
     más se acerque a cero el valor, mejor es el ajuste del modelo.
 
-    Existe una variante denominada \textbf{error absoluto mediano (\textit{median absolute error}, MedAE)}, que 
-    realiza la mediana de las diferencias absolutas, en vez de la media, aumentando la robustez frente a valores 
-    atípicos con errores extremos.
+    Existe una variante denominada \textbf{error absoluto mediano (\textit{median absolute error}, MedAE)}, 
+    que realiza la mediana de las diferencias absolutas, en vez de la media, aumentando la robustez frente a 
+    valores atípicos con errores extremos.
 
-    \item El \textbf{error cuadrático medio (\textit{mean squared error}, MSE)} mide el promedio de los errores al 
-    cuadrado entre valores reales ($Y_i$) y los valores predichos ($\hat{Y_i}$) por el modelo.
+    \item El \textbf{error cuadrático medio (\textit{mean squared error}, MSE)} mide el promedio de los 
+    errores al cuadrado entre valores reales ($Y_i$) y los valores predichos ($\hat{Y_i}$) por el modelo.
     
     $$
     MSE = \frac{1}{n} \sum_{i=1}^n{(Y_i - \hat{Y_i})^2}
@@ -193,8 +197,8 @@ aplicables a cualquier modelo de regresión independientemente del algoritmo sub
     Al igual que el MAE, cuantifica qué tan cerca están las predicciones de los valores reales, pero penaliza
     más los errores grandes, y es más sensible por tanto a valores atípicos.
 
-    Como veremos más tarde, esta métrica es muy útil en optimización mediante gradiente descendente, usado 
-    a la hora de entrenar modelos de regresión basados en redes neuronales.
+    Como veremos más tarde, esta métrica es muy útil en optimización mediante gradiente descendente, usado a 
+    la hora de entrenar modelos de regresión basados en redes neuronales.
 
     Y también tiene una variante, la \textbf{raíz del error cuadrático medio (\textit{root mean square error}, 
     RMSE)}, que se obtiene extrayendo la raíz cuadrada del MSE:
@@ -206,8 +210,8 @@ aplicables a cualquier modelo de regresión independientemente del algoritmo sub
     Esta métrica conserva las mismas unidades que la variable objetivo, lo que facilita su interpretación 
     práctica. Es comparable con el MAE en cuanto a escala, aunque sigue penalizando más los errores grandes.
 
-    \item El \textbf{coeficiente de determinación}, o más conocido como \textbf{R² o bondad de ajuste}, mide la 
-    proporción de la variabilidad de la variable dependiente ($Y$) que es explicada por el modelo.
+    \item El \textbf{coeficiente de determinación}, o más conocido como \textbf{R² o bondad de ajuste}, mide 
+    la proporción de la variabilidad de la variable dependiente ($Y$) que es explicada por el modelo.
 
     $$
     R^2 = 1 - \frac{\sum_{i=1}^n (Y_i - \hat{Y}_i)^2}{\sum_{i=1}^n (Y_i - \bar{Y})^2}
@@ -231,19 +235,20 @@ aplicables a cualquier modelo de regresión independientemente del algoritmo sub
 
     \begin{itemize}
 
-        \item $R^2 \le 0$ significa que el modelo no explica ninguna variabilidad y que las predicciones del modelo 
-        no son mejores que simplemente predecir la media de los valores reales.
+        \item $R^2 \le 0$ significa que el modelo no explica ninguna variabilidad y que las predicciones del 
+        modelo no son mejores que simplemente predecir la media de los valores reales.
         
-        \item $R^2 \in \left(0,1\right)$ indica que el modelo está explicando una fracción de la variabilidad de los 
-        datos, y cuanto más cercano sea a 1, mejor será el ajuste del modelo.
+        \item $R^2 \in \left(0,1\right)$ indica que el modelo está explicando una fracción de la variabilidad 
+        de los datos, y cuanto más cercano sea a 1, mejor será el ajuste del modelo.
         
-        \item $R^2 = 1$ indica un ajuste perfecto y, por tanto, el modelo explica toda la variabilidad de los datos. 
+        \item $R^2 = 1$ indica un ajuste perfecto y, por tanto, el modelo explica toda la variabilidad de los 
+        datos. 
     
     \end{itemize}
 
-    A diferencia de las anteriores, es una métrica relativa y adimensional, es decir, no depende de las unidades de 
-    la variable objetivo y evalúa qué tan bien se ajusta el modelo en comparación con un modelo base que siempre 
-    predice la media de los valores reales.
+    A diferencia de las anteriores, es una métrica relativa y adimensional, es decir, no depende de las 
+    unidades de la variable objetivo y evalúa qué tan bien se ajusta el modelo en comparación con un modelo 
+    base que siempre predice la media de los valores reales.
     
 \end{itemize}
 
@@ -255,26 +260,30 @@ negativos. Por esta razón, se recomienda completar el análisis con representac
 
 \begin{itemize}
 
-    \item La \textbf{gráfica de puntos de valores reales vs. predichos}, que permite visualizar la relación entre las 
-    predicciones del modelo y los valores reales. Idealmente, los puntos deberían alinearse alrededor de la recta 
-    $Y=\hat{Y}$. Desviaciones sistemáticas indican sesgos o problemas de ajuste. Un ejemplo de esta gráfica lo 
-    encontramos en la Figura \ref{fig:scatter_pred_vs_act_AE}.
+    \item La \textbf{gráfica de puntos de valores reales vs. predichos}, que permite visualizar la relación 
+    entre las predicciones del modelo y los valores reales. Idealmente, los puntos deberían alinearse 
+    alrededor de la recta $Y=\hat{Y}$. Desviaciones sistemáticas indican sesgos o problemas de ajuste. Un 
+    ejemplo de esta gráfica lo encontramos en la Figura \ref{fig:scatter_pred_vs_act_AE}.
 
     \begin{figure}[h]
         \centering
         \includegraphics[width=0.5\textwidth]{capitulos/cap_02/imagenes/scatterplot_pred_vs_act_AE.png}
-        \caption{Gráfica de puntos de valores de edad reales vs. predichos obtenidos por el modelo propuesto en 
-        \cite{heinrich2024}. Se observan valores más dispersos en edades avanzadas.} 
+        \caption{
+            Gráfica de puntos de valores de edad reales vs. predichos obtenidos por el modelo propuesto 
+            en \cite{heinrich2024}. Se observan valores más dispersos en edades avanzadas.
+        } 
         \label{fig:scatter_pred_vs_act_AE}
     \end{figure}
 
-    \item También existe una versión más refinada de presentar esta información, especialmente útil en casos en los que 
-    muchos datos sobrecargan la gráfica, en \textbf{la gráfica de cajas (en inglés \textit{boxplot}) de valores reales vs. 
-    predichos}. Estos proporcionan una visión clara de la distribución de los datos, con mediana, cuartiles y valores 
-    atípicos, ya sea agrupando por valores reales o por valores predichos.
+    \item También existe una versión más refinada de presentar esta información, especialmente útil en casos 
+    en los que muchos datos sobrecargan la gráfica, en \textbf{la gráfica de cajas (en inglés 
+    \textit{boxplot}) de valores reales vs. predichos}. Estos proporcionan una visión clara de la distribución 
+    de los datos, con mediana, cuartiles y valores atípicos, ya sea agrupando por valores reales o por valores 
+    predichos.
 
-    La Figura \ref{fig:boxplot_pred_vs_act_AE} muestra la distribución de las edades predichas en función de distintos 
-    grupos de edad real, y viceversa, lo que facilita la identificación de errores en el desempeño del modelo.
+    La Figura \ref{fig:boxplot_pred_vs_act_AE} muestra la distribución de las edades predichas en función de 
+    distintos grupos de edad real, y viceversa, lo que facilita la identificación de errores en el desempeño 
+    del modelo.
 
     \begin{figure}[h]
         \centering
@@ -293,51 +302,58 @@ negativos. Por esta razón, se recomienda completar el análisis con representac
             \label{fig:boxplot_pred_vs_act_AE_b}
         \end{subfigure}
     
-        \caption{Gráfica de cajas de valores de edad reales vs. predichos obtenidos por el modelo propuesto en \cite{stepanovsky2024}.
-        Se observa en \ref{fig:boxplot_pred_vs_act_AE_a}, 
-        y en \ref{fig:boxplot_pred_vs_act_AE_a} que se sobreestima la edad en personas jóvenes y se subestima en personas de edad avanzada.}
+        \caption{
+            Gráfica de cajas de valores de edad reales vs. predichos obtenidos por el modelo propuesto en 
+            \cite{stepanovsky2024}. Se observa en \ref{fig:boxplot_pred_vs_act_AE_a}, y en 
+            \ref{fig:boxplot_pred_vs_act_AE_a} que se sobreestima la edad en personas jóvenes y se subestima 
+            en personas de edad avanzada.
+        }
         \label{fig:boxplot_pred_vs_act_AE}
     \end{figure}
 
     \item El \textbf{histograma de residuos} muestra la distribución de los errores (\(Y_i - \hat{Y}_i\)) del 
-    modelo. Una distribución simétrica y centrada en cero sugiere un buen ajuste, mientras que una distribución 
-    sesgada o asimétrica podría indicar que el modelo está subajustado o que hay algún patrón no capturado por el 
-    modelo. 
+    modelo. Una distribución simétrica y centrada en cero sugiere un buen ajuste, mientras que una 
+    distribución sesgada o asimétrica podría indicar que el modelo está subajustado o que hay algún patrón no 
+    capturado por el modelo. 
 
-    Un ejemplo de este tipo de gráfica lo encontramos en la Figura \ref{fig:prob_dist_AEerror}, 
-    donde se analizaba el error obtenido con el modelo propuesto en \cite{stepanovsky2024}.
+    Un ejemplo de este tipo de gráfica lo encontramos en la Figura \ref{fig:prob_dist_AEerror}, donde se 
+    analizaba el error obtenido con el modelo propuesto en \cite{stepanovsky2024}.
 
-    Histograma de errores residuales del modelo de regresión propuesto en \cite{verma2020} que predice la estatura 
-    a partir de la longitud de la tibia.
+    Histograma de errores residuales del modelo de regresión propuesto en \cite{verma2020} que predice la 
+    estatura a partir de la longitud de la tibia.
 
     \begin{figure}[h]
         \centering
         \includegraphics[width=0.8\textwidth]{capitulos/cap_02/imagenes/prob_distribution_AEerror.png}
-        \caption{Histograma de errores residuales del modelo de estimación de edad propuesto en 
-        \cite{stepanovsky2024}. Se evidencia una mayor probabilidad de errores negativos (infraestimaciones) 
-        en comparación con los positivos Además, se destaca que el 57\% de las predicciones presentan un 
-        error inferior al $\textnormal{MAE}$, y que el 90\% se encuentra dentro de un margen de error menor a 
-        $2\textnormal{MAE}$.
+        \caption{
+            Histograma de errores residuales del modelo de estimación de edad propuesto en 
+            \cite{stepanovsky2024}. Se evidencia una mayor probabilidad de errores negativos 
+            (infraestimaciones) en comparación con los positivos Además, se destaca que el 57\% de las 
+            predicciones presentan un error inferior al $\textnormal{MAE}$, y que el 90\% se encuentra dentro 
+            de un margen de error menor a $2\textnormal{MAE}$.
         } 
         \label{fig:prob_dist_AEerror}
     \end{figure}
 
 
-    \item Y una versión más completa que este último es la \textbf{gráfica de cajas de la distribución del error 
-    en base a los valores reales o predichos}, que permite analizar cómo varía el error del modelo a lo largo de 
-    diferentes rangos de valores, ya sean reales o predichos. Estas visualizaciones nos permiten detectar 
-    fácilmente las fortalezas y debilidades en las predicciones del modelo, así como diagnosticar sesgo o 
-    insuficiencia de datos en ciertas categorías.
+    \item Y una versión más completa que este último es la \textbf{gráfica de cajas de la distribución del 
+    error en base a los valores reales o predichos}, que permite analizar cómo varía el error del modelo a lo 
+    largo de diferentes rangos de valores, ya sean reales o predichos. Estas visualizaciones nos permiten 
+    detectar fácilmente las fortalezas y debilidades en las predicciones del modelo, así como diagnosticar 
+    sesgo o insuficiencia de datos en ciertas categorías.
     
-    Un ejemplo ilustrativo de esta gráfica se presenta en la Figura \ref{fig:boxplot_error_vs_act_AE}, donde se 
-    observa la variación del error del modelo propuesto en \cite{heinrich2024} a través de distintos rangos de edad real. 
-    En particular, se evidencia una tendencia a cometer errores mayores en los grupos de edad más avanzada.
+    Un ejemplo ilustrativo de esta gráfica se presenta en la Figura \ref{fig:boxplot_error_vs_act_AE}, donde 
+    se observa la variación del error del modelo propuesto en \cite{heinrich2024} a través de distintos rangos 
+    de edad real. En particular, se evidencia una tendencia a cometer errores mayores en los grupos de edad 
+    más avanzada.
 
     \begin{figure}[h]
         \centering
         \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/boxplot_error_vs_act_AE.png}
-        \caption{Gráfica de cajas de la distribución del error de estimación de edad en función de la edad real, 
-        obtenida en el modelo propuesto en \cite{heinrich2024}.} 
+        \caption{
+            Gráfica de cajas de la distribución del error de estimación de edad en función de la edad 
+            real, obtenida en el modelo propuesto en \cite{heinrich2024}.
+        } 
         \label{fig:boxplot_error_vs_act_AE}
     \end{figure}
 
@@ -348,39 +364,40 @@ negativos. Por esta razón, se recomienda completar el análisis con representac
 
 
 
-% --------------------------------------------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------------------------------------
 
 \subsection{Problemas de clasificación}
 
-En cambio, en los problemas de clasificación, los valores de salida son categóricos, denominados más comúnmente como
-\textbf{clases}, y a cada valor individual asignado a una instancia de datos se le conoce como \textbf{etiqueta} 
-(\textit{label} en inglés).
+En cambio, en los problemas de clasificación, los valores de salida son categóricos, denominados más 
+comúnmente como \textbf{clases}, y a cada valor individual asignado a una instancia de datos se le conoce como 
+\textbf{etiqueta} (\textit{label} en inglés).
 
 Existen multitud de variante de clasificación, que pueden diferenciarse según diversos criterios:
 
 \begin{itemize}
-    \item En base a la cardinalidad de las clases de salida: \textbf{clasificación binaria o multiclase}, según 
-    si existen dos clases posibles o más de dos, respectivamente.
+    \item En base a la cardinalidad de las clases de salida: \textbf{clasificación binaria o multiclase}, 
+    según si existen dos clases posibles o más de dos, respectivamente.
 
-    \item En base al número de etiquetas asignadas a cada instancia: \textbf{clasificación con etiqueta única o 
-    multietiqueta}, según si cada instancia pertenece a una sola clase o a varias de forma simultánea.
+    \item En base al número de etiquetas asignadas a cada instancia: \textbf{clasificación con etiqueta única 
+    o multietiqueta}, según si cada instancia pertenece a una sola clase o a varias de forma simultánea.
 
-    \item En base a la certeza de la asignación de clases: \textbf{clasificación con etiqueta precisa o difusa}, 
-    donde en el primer caso la asignación a una clase es determinista, y en el segundo caso se permite una 
-    pertenencia parcial a varias clases, con distinto grados de afinidad.
+    \item En base a la certeza de la asignación de clases: \textbf{clasificación con etiqueta precisa o 
+    difusa}, donde en el primer caso la asignación a una clase es determinista, y en el segundo caso se 
+    permite una pertenencia parcial a varias clases, con distinto grados de afinidad.
     
 \end{itemize}
 
-No obstante, la mayoría de los problemas estudiados en la literatura de ML, y concretamente en antropología forense, corresponden a clasificación binaria o 
-multiclase, con etiquetas únicas y asignación precisa \cite{bishop2006}, que serán el foco de este trabajo. 
-La cardinalidad de las clases tiene implicanciones significativas en el diseño del modelo y la evaluación
-de su desempeño:
+No obstante, la mayoría de los problemas estudiados en la literatura de ML, y concretamente en antropología 
+forense, corresponden a clasificación binaria o multiclase, con etiquetas únicas y asignación precisa 
+\cite{bishop2006}, que serán el foco de este trabajo. La cardinalidad de las clases tiene implicanciones 
+significativas en el diseño del modelo y la evaluación de su desempeño:
 
 \begin{itemize}
 
-    \item \textbf{Clasificación binaria}, que es aquella en la que existen únicamente dos clases posibles para la 
-    variable objetivo, siendo común en problemas donde se desea discriminar entre dos estados mutuamente 
-    excluyentes (p.ej., ``positivo'' vs. ``negativo'', ``spam'' vs. ``no spam'', ``fraude'' vs. ``no fraude'').
+    \item \textbf{Clasificación binaria}, que es aquella en la que existen únicamente dos clases posibles para 
+    la variable objetivo, siendo común en problemas donde se desea discriminar entre dos estados mutuamente 
+    excluyentes (p.ej., ``positivo'' vs. ``negativo'', ``spam'' vs. ``no spam'', ``fraude'' vs. ``no 
+    fraude'').
     
     Se suele denominar a una de las clases como ``positiva'' y a otra como ``negativa'' para facilitar la 
     interpretación de métricas como la precisión, la sensibilidad o la especifidad, si bien no tiene por qué 
@@ -395,22 +412,22 @@ de su desempeño:
 En este tipo de problemas, el error ocurre cuando no se acierta al predecir la clase del ejemplo.
 
 % Tanto en clasificación binaria como multiclase, un problema común es el desequilibrio de clases, donde una 
-% clase tiene muchos más ejemplos que otra. Esto afecta el entrenamiento del modelo, ya que puede sesgarse hacia la 
-% clase mayoritaria, ya que el modelo
+% clase tiene muchos más ejemplos que otra. Esto afecta el entrenamiento del modelo, ya que puede sesgarse 
+% hacia la clase mayoritaria, ya que el modelo
 
 
-Una vez definido los tipo de problemas de clasificación, es fundamental establecer cómo medir la efectividad del 
-modelo predictivo. A continuación, se detallan los principales criterios y elementos gráficos utilizados para 
-evaluar y comparar modelos de clasificación:
+Una vez definido los tipo de problemas de clasificación, es fundamental establecer cómo medir la efectividad 
+del modelo predictivo. A continuación, se detallan los principales criterios y elementos gráficos utilizados 
+para evaluar y comparar modelos de clasificación:
 
 \begin{itemize}
     
-    \item La \textbf{matriz de confusión} es una herramienta fundamental que permite visualizar el rendimiento de 
-    modelos de clasificación, tanto binarios como multiclase.
-    Esta muestra una tabla con tantas columnas y filas como clases haya. En un eje, se representan las 
-    clases reales (etiquetas verdaderas), y en el otro eje, las clases predichas por el modelo.
-    Cada celda de la matriz indica la cantidad de ejemplos que pertenecen a una clase real específica y que han 
-    sido clasificados como una clase predicha específica (véase la Figura \ref{fig:conf_matrix_binary}).
+    \item La \textbf{matriz de confusión} es una herramienta fundamental que permite visualizar el rendimiento 
+    de modelos de clasificación, tanto binarios como multiclase. Esta muestra una tabla con tantas columnas y 
+    filas como clases haya. En un eje, se representan las clases reales (etiquetas verdaderas), y en el otro 
+    eje, las clases predichas por el modelo. Cada celda de la matriz indica la cantidad de ejemplos que 
+    pertenecen a una clase real específica y que han sido clasificados como una clase predicha específica 
+    (véase la Figura \ref{fig:conf_matrix_binary}).
 
     Idealmente, los valores se concentrarían en la diagonal principal, lo que indicaría que las predicciones 
     coinciden con los valores reales.
@@ -418,14 +435,16 @@ evaluar y comparar modelos de clasificación:
     \begin{figure}[h]
         \centering
         \includegraphics[width=0.6\textwidth]{capitulos/cap_02/imagenes/confusion_matrix_binary.png}
-        \caption{Matriz de confusión para la estimación de sexo según el modelo \textit{random forest} propuesto 
-                 en \cite{bidmos2023}.} 
+        \caption{
+            Matriz de confusión para la estimación de sexo según el modelo \textit{random forest} 
+            propuesto en \cite{bidmos2023}.
+        } 
         \label{fig:conf_matrix_binary}
     \end{figure}
 
     Esta visualización admite muchas variantes, por ejemplo en la Figura \ref{fig:conf_matrix_binary_relative}
-    se representan los valores de cada celda en términos porcentuales de los ejemplos reales que hay de cada clase 
-    ($< 18$ y $\ge 18$), lo que permite comparar la matriz de confusión general de todos los ejemplos 
+    se representan los valores de cada celda en términos porcentuales de los ejemplos reales que hay de cada 
+    clase ($< 18$ y $\ge 18$), lo que permite comparar la matriz de confusión general de todos los ejemplos 
     (\ref{fig:conf_matrix_general}) con la de ejemplos se sexo femenino (\ref{fig:conf_matrix_female}) y 
     sexo masculino (\ref{fig:conf_matrix_male}), permitiendo identificar posibles sesgos en el modelo respecto 
     al género, y así realizar una evaluación más precisa del rendimiento del modelo en diferentes subgrupos de
@@ -455,7 +474,10 @@ evaluar y comparar modelos de clasificación:
             \label{fig:conf_matrix_male}
         \end{subfigure}
     
-        \caption{Matrices de confusión para la estimación de mayoría/minoría de edad según el modelo de \cite{porto2020}.}
+        \caption{
+            Matrices de confusión para la estimación de mayoría/minoría de edad según el modelo de 
+            \cite{porto2020}.
+        }
         \label{fig:conf_matrix_binary_relative}
     \end{figure}
 
@@ -468,12 +490,12 @@ evaluar y comparar modelos de clasificación:
     \textnormal{Accuracy} = \frac{TP+TN}{TP+TN+FP+FN}
     $$
 
-    Su valor varía entre 0 y 1, donde 0 es el peor desempeño posible (todas las predicciones son incorrectas) y 1 es el 
-    mejor desempeño posible (todas las predicciones son correctas).
+    Su valor varía entre 0 y 1, donde 0 es el peor desempeño posible (todas las predicciones son incorrectas) 
+    y 1 es el mejor desempeño posible (todas las predicciones son correctas).
 
-    Es la medida más intuitiva, si bien carece de utilidad en escenarios con clases desbalanceadas, ya que puede dar una 
-    falsa impresión de buen desempeño si la clase mayoritaria domina la métrica. Es por esto que el análisis debe
-    complementarse con otras métricas informativas.
+    Es la medida más intuitiva, si bien carece de utilidad en escenarios con clases desbalanceadas, ya que 
+    puede dar una falsa impresión de buen desempeño si la clase mayoritaria domina la métrica. Es por esto que 
+    el análisis debe complementarse con otras métricas informativas.
 
 
     \item La \textbf{precisión (precision) y exhaustividad (recall)} 
@@ -508,9 +530,27 @@ evaluar y comparar modelos de clasificación:
 \end{itemize}
 
 
+% --------------------------------------------------------------------------------------------------------------------
+% ENSEMBLE LEARNING --------------------------------------------------------------------------------------------------
+% --------------------------------------------------------------------------------------------------------------------
+
+\section{Ensemble Learning}
+
+El \textbf{aprendizaje por conjuntos (\textit{ensemble learning})} es una familia de técnicas de ML que combina
+múltiples modelos de aprendizaje automático ---denominados \textbf{modelos base}--- para obtener un modelo final
+con un mejor desempeño que los modelos base por separado.
+
+\subsection{Bagging}
+
+
+\subsection{Boosting}
+
+
+\subsection{Stacking}
+
 
 % --------------------------------------------------------------------------------------------------------------------
-% REDES NEURONALES ---------------------------------------------------------------------------------------------------
+% DEEP LEARNING ------------------------------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------------------------------------------
 
 \section{Deep Learning}
@@ -518,9 +558,10 @@ evaluar y comparar modelos de clasificación:
 El \textbf{aprendizaje profundo (\textit{deep learning}, DL)} es una familia de técnicas de ML que utiliza
 redes neuronales de muchas capas. 
 Las redes neuronales tienen su origen en el intento de modelar las redes de neuronas del cerebro 
-\cite{mcculloch1943}. Se requirió de numerosas contribuciones teóricas ---como el perceptrón \cite{rosenblatt1958} 
-o el algoritmo de \textit{backpropagation} \cite{rumelhart1986,werbos1994}, entre otras---, disponibilidad de datos 
-estandarizados y un gran aumento en la capacidad computacional para poder escalar estar redes y obtener resultados 
+\cite{mcculloch1943}. Se requirió de numerosas contribuciones teóricas ---como el perceptrón 
+\cite{rosenblatt1958} o el algoritmo de \textit{backpropagation} \cite{rumelhart1986,werbos1994}, entre 
+otras---, disponibilidad de datos estandarizados y un gran aumento en la capacidad computacional para poder 
+escalar estar redes y obtener resultados 
 sorprendentes en tareas complejas.
 
 Las \textbf{redes neuronales profundas (\textit{deep neural networks}, DNNs)} destacan por su capacidad para 
@@ -530,166 +571,229 @@ escenas compuestas.
 Esta propiedad las hace excepcionalmente versátiles, ya que procesan datos de muy diversa naturaleza ---datos 
 tabulares, imágenes, audio, texto o señales temporales---, dados que ellas mismas aprenden los procesos de 
 extracción de características de estos, hasta ahora realizados ``a mano'' (mediante procesos diseñados por la 
-ingeniería de características) \cite{rusell2021} \footnote{Este enfoque se denomina aprendizaje extremo a
-extremo (\textit{end-to-end learning}), en el cual tanto la extracción de características como la clasificación
-son parte de un modelo integral que se entrena de manera conjunta, optimizando todos los componentes del sistema
-en un mismo proceso \cite{rusell2021}.}. Gracias a ello, las DNNs han alcanzado rendimientos sobresalientes en 
-dominios como visión por computador
-(clasificación de imágenes, detección de objetos, segmentación) o procesamiento de lenguaje natural 
-(traducción, generación de texto) \cite{redhat2024DeepLearningDefinition}.
-No obstante, su eficacia depende críticamente de grandes volúmenes de datos y recursos computacionales,
-lo que ha impulsado técnicas como el \textit{transfer learning} y modelos eficientes para democratizar 
-su uso.
+ingeniería de características) \cite{rusell2021} \footnote{Este enfoque se denomina aprendizaje extremo a 
+extremo (\textit{end-to-end learning}), en el cual tanto la extracción de características como la 
+clasificación son parte de un modelo integral que se entrena de manera conjunta, optimizando todos los 
+componentes del sistema en un mismo proceso \cite{rusell2021}.}. Gracias a ello, las DNNs han alcanzado 
+rendimientos sobresalientes en dominios como visión por computador (clasificación de imágenes, detección de 
+objetos, segmentación) o procesamiento de lenguaje natural (traducción, generación de texto) 
+\cite{redhat2024DeepLearningDefinition}.
+No obstante, su eficacia depende críticamente de grandes volúmenes de datos y recursos computacionales, lo que 
+ha impulsado técnicas como el \textit{transfer learning} y modelos eficientes para democratizar su uso.
 
 
 \subsection{El perceptrón multicapa}
 
-El \textbf{perceptrón multicapa (\textit{multilayer perceptron}, MLP)} forma la base del \textit{deep learning}. 
-Su diseño ---con capas ocultas, funciones de activación no lineales y entrenamiento  mediante 
-\textit{backpropagation}--- sentó las bases conceptuales para modelos más complejos. Aunque arquitecturas 
-modernas (como CNNs, \textit{transformers} o RNNs) han emergido para resolver problemas específicos con 
-mejor desempeño y de manera más eficiente, el MLP sigue siendo un referente teórico y la expresión más 
-simple de cómo el aprendizaje jerárquico puede capturar patrones en los datos. 
+El \textbf{perceptrón multicapa (\textit{multilayer perceptron}, MLP)} forma la base del \textit{deep 
+learning}. Su diseño ---con capas ocultas, funciones de activación no lineales y entrenamiento  mediante 
+\textit{backpropagation}--- sentó las bases conceptuales para arquitecturas más complejas, como las redes 
+neuronales convolucionales o los \textit{transformers} \cite{murphy2022}. El MLP sigue siendo un referente 
+teórico y la expresión más simple de cómo el aprendizaje jerárquico puede capturar patrones en los datos. 
 
 Cada nodo en la red es denominado \textbf{unidad o neurona artifical}. Siguiendo el diseño propuesto en 
-\cite{mcculloch1943}, una unidad calcula la suma ponderada ---por los pesos de cada conexión--- de las
-entradas, entonces aplica una función no lineal para producir una salida (véase Figura \ref{fig:neuron_MLP}).
-Matemáticamente, la operación de una neurona se expresa como:
+\cite{mcculloch1943,rosenblatt1958}, cada unidad recibe señales de entrada ---que o bien son las 
+características de los datos o bien las salidas de las unidades de la anterior capa---, realiza una suma 
+ponderada de estas con los pesos entrenables de cada conexión ---más un término independiente o sesgo, también 
+entrenable---, aplica una función no lineal sobre esta para producir una salida que propaga a las unidades de 
+la siguiente capa (véase la Figura \ref{fig:neuron_MLP}).
+
+Matemáticamente, la operación de una unidad artifical se expresaría como:
 
 $$
 y = f \left( \sum_{i=1}^n{w_ix_i+b} \right)
 $$
 
-donde
-\begin{itemize}
-    \item $x_i$ son las entradas,
-    \item $w_i$ son los pesos,
-    \item $w_0$ es el sesgo, y
-    \item $f$ es la función de activación.
-\end{itemize}
-
-
+donde $x_i$ son las entradas, $w_i$ son los pesos entrenables ($w_0$ el sesgo), y $f$ es la función de 
+activación.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/Neuron_perceptron.png}
-    \caption{Elaboración propia a partir de \cite{domingos2018}.} 
+    \caption{
+        Esquema visual del funcionamiento de una unidad artificial (imagen modificada a partir de 
+        \cite{codeworld2022understandingMLDL}).
+    } 
     \label{fig:neuron_MLP}
 \end{figure}
 
-Esta arquitectura consta de:
+
+Esta función de activación a la salida de la unidad es un componente esencial que introduce no linealidad 
+en el modelo, permitiendo a la red aprender relaciones complejas en los datos
+\footnote{Sin ella, el MLP se reduciría a una simple combinación lineal de las entradas, incapaz de
+representar jerarquías de características \cite{murphy2022}.}. Existe multitud de funciones de activación, 
+como la sigmoide, la tangente hiperbólica o ReLu ---y sus múltiples variantes---, cada una con sus ventajas 
+y limitaciones
+\footnote{Si bien, actualmente, ReLU y sus variantes (\textit{Leaky} ReLU, \textit{Parametric ReLU} o 
+\textit{Swish}) se ha convertido en el estándar \textit{de facto} para las capas ocultas en DNNs,
+por su eficiencia computacional, y su eficacia empírica \cite{vargas2021}.}.
+
+La arquitectura de un MLP conecta estas unidades formando una red neuronal retroalimentada\footnote{Una red 
+neuronal retroalimentada (\textit{feed-forward neural network}) es aquella en la que las conexiones entre las 
+unidades no forman un ciclo y, por tanto, la información solo se mueve en una dirección: adelante.},
+que consta de tres partes (véase la Figura \ref{fig:neural_network}):
 
 \begin{itemize}
 
-    \item \textbf{Capa de entrada}, que debe coincidir con el formato de entrada de los datos, por ejemplo: el
-    número de neuronas en la capa de entrada tiene que coincidir con el de características en problemas tabulares.
+    \item \textbf{Capa de entrada}, en las que el número de unidades debe coincidir con el formato de entrada 
+    de los datos, por ejemplo: en un problema con datos tabulares, debería haber una unidad por cada 
+    característica.
     
     \item \textbf{Capas ocultas}, donde se realizan las transformaciones no lineales de los datos. Es en estas 
-    donde el diseño puede variar en número de neuronas y tipo de capas según la complejidad del problema y los datos.
+    donde el diseño puede variar en número de unidades y tipo de capas según la complejidad del problema y los 
+    datos.
     
     \item \textbf{Capa de salida}, que proporciona el resultado del modelo. Su forma depende del problema a 
-    resolver: en problemas de regresión, esta capa tendrá tantas neuronas como variables a predecir; en problemas de 
-    clasificación, esta capa tendrá una sola neurona (con activación sigmoide) en clasificación binaria, o múltiples 
-    neuronas (con activación \textit{softmax}) en clasificación multiclase.
+    resolver: en problemas de regresión, esta capa tendrá tantas unidades como variables a predecir ---sin 
+    función de activación, ya que esto limitaría el rango de valores posibles---; en problemas de 
+    clasificación, esta capa tendrá una sola unidad ---generalmente, con activación sigmoide--- en 
+    clasificación binaria, o múltiples unidades ---con activación \textit{softmax}\footnote{La activación 
+    \textit{softmax} no se aplica sobre la salida de una única unidad, sino que se aplica sobre un vector de 
+    salidas de múltiples unidades, transformándolas en una distribución de probabilidad, donde cada valor 
+    representa la probabilidad de pertenecer a una clase distinta y la suma de todas las salidas es igual a 
+    1.}
+    --- en clasificación multiclase.
 
 \end{itemize}
-
-Cada una de estas capas está formada por un conjunto de neuronas o nodos\footnote{Preferimos el término nodo, 
-especialmente para aquellas }, 
-
-
-Cada capa consta de un conjunto de neuronas 
-Cada nodo o neurona constituye la unidad básica del procesamiento 
-
-Cada capa consta de un conjunto de neuronas conectadas con cada una de las neuronas de las capas anterior y posterior 
- Cada nodo o neurona de la red constituye la unidad básica de procesamiento, donde:
-
-
-
-Cada neurona:
-
-\begin{itemize}
-
-    \item recibe señales de entrada: los datos del problema en la primera capa, o las salidas de las neuronas 
-    de la capa anterior en caso de las capas ocultas;
-
-    \item aplica una transformación que es generalmente una combinación lineal de las entradas ponderadas
-    por los pesos (parámetros entrenables) más un término de sesgo.
-
-    \item evalúa la salida mediante una función de activación
-
-    \item Propaga su salida a las neuronas de la siguiente capa (o entrega el resultado final, si es la capa de 
-    salida).
-
-\end{itemize}
-
-Matemáticamente, 
-
-
 
 \begin{figure}[h]
     \centering
-
-    \begin{subfigure}[b]{0.4\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/neural_network_1.png}
-        \caption{Esquema visual simplificado}
-        \label{fig:neural_network_simplified}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.55\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/neural_network_2.png}
-        \caption{Esquema visual expandido}
-        \label{fig:neural_network_expanded}
-    \end{subfigure}
-
-    \caption{Grafo de una red neuronal con dos datos de entrada, una capa oculta de dos unidades, y una unidad de salida \cite{rusell2021}.}
+    \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/neural_network.png}
+    \caption{Arquitectura simplificada de un MLP \cite{bre2017}.} 
     \label{fig:neural_network}
 \end{figure}
 
+% ------------------------------------------------------------------------------------------------------------
 
-
-
-Pero las redes neuronales modernas no solo están compuestas por neuronas clásicas que ..., sino que también
-acumulan numerosas operaciones, a veces con parámetros entrenables ---como los pesos de capas convolucionales---, 
-y otras sin parámetros entrenables (como pooling, normalización, o concatenaciones), que han demostrado 
-empíricamente su utilidad.
-
-
-% Hablar de funciones de activación
+\subsection{Entrenamiento de la red}
 
 % Hablar de funciones de pérdida
+% Hablar de infraajuste, sobreajuste, regularización, ...
 
-
-% --------------------------------------------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------------------------------------
 
 \subsection{Redes Neuronales Convolucionales}
 
-Las \textbf{redes neuronales convolucionales (\textit{Convolutional Neural Network} en inglés, CNN)} son un tipo de
-redes neuronales que, aprovechando las ventajas de las operaciones convolucionales, que explotan los principios de 
-localidad y correlación espacial, procesan imágenes bidimensionales o incluso tridimensionales como datos de entrada
-de manera eficiente y eficaz.
+Como ya se venía anticipando, la arquitectura MLP es especialmente adecuada para trabajar con datos 
+estructurados o tabulares, donde la información se organiza en una matriz en la que cada columna representa 
+una característica concreta (como sexo, altura o peso). 
+Sin embargo, su diseño presenta limitaciones clave: al manejar vectores de entrada de tamaño fijo y carecer 
+de mecanismos para aprovechar relaciones espaciales o secuenciales, no es óptima para datos no estructurados, 
+como imágenes o texto, donde cada elemento individual (un píxel o una palabra) carece de significado por sí 
+mismo \cite{murphy2022}.
 
-% Localidad: los píxeles más cercanos en una imagen están más correlacionados que los distantes, ya que generan formas
-% La mismas características pueden aparecer en distintas posiciones de la imagen (invariante a traslación) (si bien 
-% esto no será así en antropología forense)
+Por ejemplo, los patrones aprendidos en una posición de una imagen podrían no ser reconocidos en otra 
+ubicación, ya que las entradas tienen un recorrido distinto en la red. Por tanto, el modelo carecería de           % DUDA: Esto de que las entradas tienen un recorrido distinto en la red se entiende?
+\textbf{invarianza traslacional}, ya que los pesos no se comparten entre diferentes posiciones 
+\cite{murphy2022}.
+
+Precisamente para estos casos, otras arquitecturas profundas resultan más apropiadas.
+Las \textbf{redes neuronales convolucionales (\textit{Convolutional Neural Network} en inglés, CNNs)} son un 
+tipo de DNN que, aprovechando las ventajas de las operaciones convolucionales, explotan los principios de 
+localidad y correlación espacial. Esto les permite procesar imágenes (en 1D, 2D o 3D) de manera eficiente, 
+interpretando patrones visuales jerárquicos que un MLP no podría capturar.
 
 
 \subsubsection{Capas convolucionales}
 
-Como se ha introducido antes, el operador de \textbf{convolución} es la base de las de las CNN. Este operador 
-matemático ...
+Como se ha introducido antes, el operador de \textbf{convolución} es la base de las CNNs. Este operador 
+matemático aplica un \textbf{filtro} (también denominado \textit{kernel}) a regiones locales de una imagen de 
+entrada, realizando un producto punto\footnote{El producto punto ---o producto escalar--- de dos vectores, se 
+define como la suma de los productos componente a componente. 
+
+$$
+\mathbf{u} \cdot \mathbf{v} = \mathbf{u}_1 \cdot \mathbf{v}_1 + \mathbf{u}_2 \cdot \mathbf{v}_2 + ... + 
+\mathbf{u}_n \cdot \mathbf{v}_n
+$$
+} 
+entre los valores del filtro y los píxeles correspondientes de la imagen, y sustituyendo el valor del pixel 
+central por el resultado del producto (véase la Figura \ref{fig:conv_op}).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/convolution_operation.jpg}
+    \caption{
+        Esquema gráfico de la aplicación de un filtro convolucional sobre una región de una imagen 
+        (imagen modificada a partir de \cite{nvidia2025convolutionoperation}).
+    } 
+    \label{fig:conv_op}
+\end{figure}
+
+Este proceso se repite al desplazar el filtro por toda la imagen, generando un \textbf{mapa de activación},
+que permite destacar líneas, curvas o texturas simples. Este mapa de activación preserva la información de 
+la localización de las características, si bien estas pueden ser detectadas en cualquier parte de la imagen. 
+Esta propiedad se conoce como \textbf{equivarianza}. 
+
+Las CNNs aprovechan la convolución mediante \textbf{capas convolucionales}, compuestas por un conjunto de 
+filtros convolucionales con parámetros entrenables. El número de filtros en cada capa, su tamaño y la región 
+de aplicación\footnote{
+    Definidos mediante los parámetros de \textit{stride} y \textit{padding}, que ...
+} son definidos durante el diseño de la red.
+
+Los filtros de la primera capa convolucional se aplican sobre los canales de la imagen de entrada (1 canal 
+en imágenes en escala de grises, 3 canales en RGB), y los filtros de las siguiente capas se aplican sobre 
+todos los mapas de activación resultantes de la capa anterior, creando una estructura jerárquica donde se 
+detectan patrones cada vez más complejos: las filtros de las primeras capas detectan bordes, cambios de color 
+o texturas básicas; a medida que avanzamos en las capas de la red, las combinaciones de estas características
+simples permite identificar formas más complejas, como objetos e incluso composiciones.
+
+Sin embargo, hemos pasado por alto algo fundamental: ¿cómo reunimos la información de dos regiones distantes 
+de una imagen en un mismo sitio? Una primera aproximación intuitiva nos diría que los filtros convolucionales 
+deben ser progresivamente más grandes, para capturar patrones de mayor tamaño y contexto. No obstante, esto
+incrementaría considerablemente el número de parámetros y, por tanto, aumentaría el coste computacional y 
+habría más riesgo de sobreajustar el modelo (ya que un modelo con más parámetros puede memorizar mejor los
+datos de entrenamiento). Es por esto que, en aquellos problemas en los que no es necesario preservar la 
+información de localización
+de las características\footnote{
+    Problemas como la detección de objetos o la segmentación de imágenes requieren de información espacial,
+    frente a la clasificación o regresión que, por lo general, no requieren de esta.
+} y, por tanto, el modelo sea invariante a la ubicación, se emplean técnicas de submuestreo 
+(\textit{downsampling}) \cite{murphy2022}.
 
 
+
+
+
+% No obstante, 
+% aumentar el tamaño de los filtros presenta desventajas: incrementa considerablemente el número de parámetros 
+% y, por tanto, también aumenta el coste computacional y puede llevar al sobreajuste del modelo, que con más 
+% parámetros puede memorizar mejor los datos de entrenamiento. 
+% En lugar de esto, se recurre a técnicas de submuestreo (\textit{downsampling}), que pemitan resumir la
+% información más relevante (desde el punto de vista de resolución del problema) de la imagen en menos espacio.
 
 
 \subsubsection{Capas de pooling}
 
+Las \textbf{capas de agrupación (\textit{pooling layers})} tienen el objetivo ideal de resumir la información 
+más relevante (desde el punto de vista de resolución del problema) de la imagen en menos espacio, es decir,
+reducir las dimensiones (alto y ancho) de la imagen sin perder información relevante.
+
+% reducen la dimensionalidad de las 
+% imágenes (resumiendo grupos de píxeles en uno solo) sin perder información relevante.
+
+% Al reducirse el tamaño espacial (ancho y alto) de la imagen, disminuye la cantidad de parámetros y cálculos
+% en las capas posteriores, ayudando a controlar el coste computacional y a evitar el sobreajuste.
+
+Hay diversos métodos de \textit{pooling}:
+
+\begin{itemize}
+
+    \item \textbf{MaxPool}:
+
+    \item \textbf{AvgPool}
+
+\end{itemize}
+
+El conjunto de píxeles empleado 
+
+% Hablar del Adaptive Pooling
 
 
 
-\subsubsection{Flatenning}
+\subsubsection{Flatenning y Fully-Connected}
+
+
+
+% Hablar sobre que gracias a esto el modelo tiene invarianza translacional.
 
 
 
@@ -799,22 +903,23 @@ El error es la diferencia entre el valor verdadero ---asumiendo que existe--- y 
 
 
 
-
-\subsection{Calibración de modelos}
-
-
-
-
 \subsection{Intervalos de valores razonables}
 
 
-Los intervalos de confianza son 
 
 \begin{itemize}
     \item Intervalos de confianza:
     \item Intervalos de credibilidad: 
     \item Intervalos de predicción
 \end{itemize}
+
+
+
+
+\subsection{Calibración de modelos}
+
+
+
 
 
 
