@@ -610,8 +610,8 @@ activación.
     \centering
     \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/Neuron_perceptron.png}
     \caption{
-        Esquema visual del funcionamiento de una unidad artificial (imagen modificada a partir de 
-        \cite{codeworld2022understandingMLDL}).
+        Esquema visual del funcionamiento de una unidad artificial. Adaptado de 
+        \cite{codeworld2022understandingMLDL}.
     } 
     \label{fig:neuron_MLP}
 \end{figure}
@@ -658,7 +658,7 @@ que consta de tres partes (véase la Figura \ref{fig:neural_network}):
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/neural_network.png}
-    \caption{Arquitectura simplificada de un MLP \cite{bre2017}.} 
+    \caption{Arquitectura simplificada de un MLP. Recuperado de \cite{bre2017}.} 
     \label{fig:neural_network}
 \end{figure}
 
@@ -696,7 +696,9 @@ interpretando patrones visuales jerárquicos que un MLP no podría capturar.
 \subsubsection{Capas convolucionales}
 
 Como se ha introducido antes, el operador de \textbf{convolución} es la base de las CNNs. Este operador 
-matemático aplica un \textbf{filtro} (también denominado \textit{kernel}) a regiones locales de una imagen de 
+matemático aplica un \textbf{filtro} (también denominado \textit{kernel})\footnote{
+    aunque, como veremos después, a la hora de hablar de CNNs, no son lo mismo.
+} a regiones locales de una imagen de 
 entrada, realizando un producto punto\footnote{El producto punto ---o producto escalar--- de dos vectores, se 
 define como la suma de los productos componente a componente. 
 
@@ -712,84 +714,119 @@ central por el resultado del producto (véase la Figura \ref{fig:conv_op}).
     \centering
     \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/convolution_operation.jpg}
     \caption{
-        Esquema gráfico de la aplicación de un filtro convolucional sobre una región de una imagen 
-        (imagen modificada a partir de \cite{nvidia2025convolutionoperation}).
+        Esquema gráfico de la aplicación de un filtro convolucional sobre una región de una imagen.
+        Adaptado de \cite{nvidia2025convolutionoperation}.
     } 
     \label{fig:conv_op}
 \end{figure}
 
-Este proceso se repite al desplazar el filtro por toda la imagen, generando un \textbf{mapa de activación},
-que permite destacar líneas, curvas o texturas simples. Este mapa de activación preserva la información de 
-la localización de las características, si bien estas pueden ser detectadas en cualquier parte de la imagen. 
-Esta propiedad se conoce como \textbf{equivarianza}. 
+Este proceso se repite al desplazar el filtro por toda la imagen mediante una \textbf{ventana deslizante}, 
+generando un \textbf{mapa de activación}, que permite destacar líneas, curvas o texturas simples. Este mapa de
+activación preserva la información de la localización de las características, si bien estas pueden ser 
+detectadas en cualquier parte de la imagen. Esta propiedad se conoce como \textbf{equivarianza}. 
 
-Las CNNs aprovechan la convolución mediante \textbf{capas convolucionales}, compuestas por un conjunto de 
-filtros convolucionales con parámetros entrenables. El número de filtros en cada capa, su tamaño y la región 
-de aplicación\footnote{
-    Definidos mediante los parámetros de \textit{stride} y \textit{padding}, que ...
-} son definidos durante el diseño de la red.
+Las CNNs aprovechan la convolución mediante \textbf{capas convolucionales}. Cada capa convolucional está
+compuesta por un conjunto de filtros convolucionales, donde cada uno a su vez tiene tantos \textit{kernels} 
+como canales de entrada de la imagen haya en la capa (si es la primera capa convolucional, habrá 1 canal en 
+imágenes de escala de grises, o 3 en imágenes RGB). El número de filtros en cada capa, su tamaño y la forma
+en que se deslizan sobre la entrada\footnote{                                                                      % DUDA: ¿Se entiende aquí a qué se refiere con "forma en la que se 
+    Definidos mediante los parámetros de \textit{stride} y \textit{padding}, que controlan el desplazamiento       % desliza sobre la entrada" (la ventana deslizante)?
+    del filtro y la cantidad de relleno alrededor de la entrada, respectivamente.
+}
+se determinan durante el diseño de la red, mientras que los valores de los \textit{kernels} son parámetros 
+entrenables.
 
-Los filtros de la primera capa convolucional se aplican sobre los canales de la imagen de entrada (1 canal 
-en imágenes en escala de grises, 3 canales en RGB), y los filtros de las siguiente capas se aplican sobre 
-todos los mapas de activación resultantes de la capa anterior, creando una estructura jerárquica donde se 
-detectan patrones cada vez más complejos: las filtros de las primeras capas detectan bordes, cambios de color 
-o texturas básicas; a medida que avanzamos en las capas de la red, las combinaciones de estas características
-simples permite identificar formas más complejas, como objetos e incluso composiciones.
+Cada filtro convolucional realiza la operación convolucional sobre cada canal con el \textit{kernel} que le 
+corresponde. Después, se suman los mapas de activación de cada canal (pixel a pixel) añadiendo un sesgo 
+(un mismo valor a todos los píxeles\footnote{
+    Es por ello que no rompe la propiedad de equivarianza.
+}), 
+generando lo que denominamos como \textbf{mapa de características} (ya que idealmente extrae características 
+relevantes). Los mapas de características generados con cada uno de los filtros son los nuevos canales, que
+conforman la salida de la capa convolucional. Esta salida puede ser posteriormente procesada por otras capas,
+permitiendo a la red aprender representaciones jerárquicas cada vez más abstractas de los datos de entrada:
+las primeras capas convolucionales detectarán bordes, cambios de color o texturas básicas; a medida que 
+avanzamos en las capas de la red, las combinaciones de estas características simples permite identificar 
+formas más complejas, como objetos e incluso composiciones.
 
 Sin embargo, hemos pasado por alto algo fundamental: ¿cómo reunimos la información de dos regiones distantes 
 de una imagen en un mismo sitio? Una primera aproximación intuitiva nos diría que los filtros convolucionales 
 deben ser progresivamente más grandes, para capturar patrones de mayor tamaño y contexto. No obstante, esto
 incrementaría considerablemente el número de parámetros y, por tanto, aumentaría el coste computacional y 
-habría más riesgo de sobreajustar el modelo (ya que un modelo con más parámetros puede memorizar mejor los
+aumentaría el riesgo de sobreajuste del modelo (ya que un modelo con más parámetros puede memorizar mejor los
 datos de entrenamiento). Es por esto que, en aquellos problemas en los que no es necesario preservar la 
 información de localización
-de las características\footnote{
-    Problemas como la detección de objetos o la segmentación de imágenes requieren de información espacial,
-    frente a la clasificación o regresión que, por lo general, no requieren de esta.
-} y, por tanto, el modelo sea invariante a la ubicación, se emplean técnicas de submuestreo 
+de las características, ---como en los que nos enfocamos en este trabajo---, y, por tanto, el modelo 
+sea invariante a la ubicación, se emplean técnicas de submuestreo 
 (\textit{downsampling}) \cite{murphy2022}.
 
 
 
-
-
-% No obstante, 
-% aumentar el tamaño de los filtros presenta desventajas: incrementa considerablemente el número de parámetros 
-% y, por tanto, también aumenta el coste computacional y puede llevar al sobreajuste del modelo, que con más 
-% parámetros puede memorizar mejor los datos de entrenamiento. 
-% En lugar de esto, se recurre a técnicas de submuestreo (\textit{downsampling}), que pemitan resumir la
-% información más relevante (desde el punto de vista de resolución del problema) de la imagen en menos espacio.
-
-
 \subsubsection{Capas de pooling}
 
-Las \textbf{capas de agrupación (\textit{pooling layers})} tienen el objetivo ideal de resumir la información 
-más relevante (desde el punto de vista de resolución del problema) de la imagen en menos espacio, es decir,
-reducir las dimensiones (alto y ancho) de la imagen sin perder información relevante.
+Las \textbf{capas de agrupación (\textit{pooling layers})} tienen como objetivo principal comprimir la 
+información de la imagen, reduciendo sus dimensiones (alto y ancho) mientras se preservan los datos más 
+relevantes para la tarea. Esta reducción del tamaño espacial de los mapas de características disminuye el 
+número de parámetros y operaciones en las fases posteriores, lo que reduce el coste computacional. Además, 
+tiene un beneficio adicional: ayuda a prevenir el sobreajuste, ya que al limitar la cantidad de parámetros, 
+el modelo evita memorizar ruido o detalles irrelevantes de los datos de entrenamiento, favoreciendo así el 
+aprendizaje de patrones generalizables.
 
-% reducen la dimensionalidad de las 
-% imágenes (resumiendo grupos de píxeles en uno solo) sin perder información relevante.
-
-% Al reducirse el tamaño espacial (ancho y alto) de la imagen, disminuye la cantidad de parámetros y cálculos
-% en las capas posteriores, ayudando a controlar el coste computacional y a evitar el sobreajuste.
-
-Hay diversos métodos de \textit{pooling}:
+Hay diversos métodos de \textit{pooling}, entre los que destacan:
 
 \begin{itemize}
 
-    \item \textbf{MaxPool}:
+    \item \textbf{Max pooling}, que calcula el máximo valor de regiones del mapa de características, y lo
+    usa para crear un mapa de características reducido.
 
-    \item \textbf{AvgPool}
+    \item \textbf{Average pooling}, que reemplaza el valor máximo del \textit{max pooling} por el cálculo de
+    la media entre los valores de la región. 
 
 \end{itemize}
 
-El conjunto de píxeles empleado 
+La región de aplicación del \textit{pooling}, al igual que en la convolución, viene determinada por ciertos 
+parámetros, definidos por el diseñador, como el tamaño de filtro (que suele ser de 2x2), el \textit{stride} 
+y el \textit{padding}, si bien también existen variantes  adaptativas (\textit{adaptive}), que ajustan
+automáticamente su cobertura para producir una salida con dimensiones específicas, independientemente del 
+tamaño de la imagen de entrada. Esta funcionalidad es especialmente útil cuando se necesita adaptar los mapas
+de características para conectarlos a una capa \textit{fully-connected}. 
 
-% Hablar del Adaptive Pooling
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{capitulos/cap_02/imagenes/max_pooling.png}
+    \caption{
+        Esquema gráfico de \textit{max pooling} con un filtro 2x2 y \textit{stride} de 1.
+        Recuperado de la Figura 14.12 de \cite{murphy2022}.
+    } 
+    \label{fig:max_pooling}
+\end{figure}
 
 
 
-\subsubsection{Flatenning y Fully-Connected}
+\subsubsection{Capas \textit{Fully-Connected}}
+
+Como hemos visto hasta ahora, en las CNNs, las primeras capas están diseñadas para extraer características
+espaciales a través de filtros convolucionales y de \textit{pooling}. Sin embargo, una vez que se ha reducido 
+la dimensionalidad y se han obtenido representaciones abstractas de alto nivel, es necesario realizar una 
+predicción (en problemas de clasificación y regresión). 
+Aquí es donde las \textbf{capas completamente conectada (o \textit{fully-connected})} juegan un papel crucial.
+Se utilizan en las últimas etapas de la red convolucional para combinar todas las características extraídas y 
+producir una predicción final. Es decir, actúan como el clasificador/regresor\footnote{
+    Si bien, independientemente de la tarea ---regresión o clasificación---, a esta parte de la red se le 
+    denomina clasificador
+} que toma todas las señales 
+procesadas por las capas anteriores y predice la clase a la que pertenece la imagen o el valor objetivo. 
+
+La arquitectura de esta capa sigue la estructura del MLP, con neuronas organizadas en una o más capas densas, 
+donde cada neurona está conectada con todas las salidas de la capa anterior. Para que esto sea posible, 
+primero se aplica una operación de flattening que transforma el mapa de características multidimensional en 
+un vector unidimensional. A partir de ahí, el procesamiento es equivalente al de una red neuronal tradicional: 
+cada neurona calcula una combinación lineal de sus entradas seguida de una función de activación no lineal.
+
+
+
+
+Antes
 
 
 
