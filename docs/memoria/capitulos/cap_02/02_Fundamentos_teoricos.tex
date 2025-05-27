@@ -529,16 +529,68 @@ para evaluar y comparar modelos de clasificación:
 
 \end{itemize}
 
+% ------------------------------------------------------------------------------------------------------------
 
-% --------------------------------------------------------------------------------------------------------------------
-% ENSEMBLE LEARNING --------------------------------------------------------------------------------------------------
-% --------------------------------------------------------------------------------------------------------------------
+\subsection{Selección de modelos y optimización}
+
+El objetivo del ML es establecer una hipótesis que se ajuste de forma óptima a los ejemplos futuros. Para 
+ello, suponemos que los ejemplos futuros mostrarán un comportamiento similar a los pasados. Bajo este 
+supuesto, el ajuste óptimo de un modelo es, por tanto, la hipótesis que minimiza la tasa de error del 
+problema \cite{rusell2021}. 
+
+Pero medir el error del modelo sobre los mismos datos empleados en el entrenamiento suele sesgar el resultado, 
+ya que el modelo puede estar sobreajustado (\textit{overfitting}) a los datos de entrenamiento, capturando no 
+solo el patrón subyacente, sino también el ruido o las peculiaridades específicas de ese conjunto de datos.
+Para evitar esto, es fundamental evaluar el modelo en un conjunto de datos de prueba independiente, que simule 
+cómo se comportaría con ejemplos futuros no vistos durante el entrenamiento. Por este motivo, es común dividir 
+los datos disponibles en dos conjuntos distintos: el \textbf{conjunto de entrenamiento (\textit{training 
+set})} y \textbf{conjunto test (\textit{test set})}.
+
+Aun así, incluso con esta división de conjuntos, puede persistir el riesgo de sobreajuste si se realizan 
+múltiples ajustes y selecciones de hiperparámetros basados en el rendimiento en el conjunto test.
+Esto se debe a que, indirectamente, el modelo podría estar ``aprendiendo'' características específicas del 
+conjunto de prueba, comprometiendo su capacidad de generalización. Para abordar este problema, se introduce 
+un tercer subconjunto: el \textbf{conjunto de validación}. Este conjunto se utiliza para evaluar y ajustar 
+los hiperparámetros del modelo durante el desarrollo, reservando el conjunto test únicamente para la 
+evaluación final.
+
+Además, técnicas como la \textbf{validación cruzada (\textit{cross-validation})} son ampliamente utilizadas 
+para maximizar el uso de los datos disponibles, especialmente en conjuntos pequeños. En lugar de una única 
+división entrenamiento-validación, este método:
+
+\begin{enumerate}
+    \item Divide los datos en $k$ particiones (\textit{folds}) (véase la Figura \ref{fig:CVDiagram}).
+    \item En cada iteración, usa $k-1$ particiones para entrenamiento y la restante para validación, rotando
+    sistemáticamente la partición de validación hasta que cada una de las $k$ particiones haya sido utilizada 
+    exactamente una vez como conjunto de validación. 
+    \item Promedia los resultados de todas las iteraciones para obtener una métrica robusta.
+\end{enumerate}
+
+El modelo final se entrena con todos los datos de entrenamiento (incluyendo los usados en validación durante 
+el ajuste). Si bien esta técnica proporciona estimaciones más confiables, su costo computacional es 
+significativo, ya que requiere entrenar el modelo $k+1$ veces ($k$ iteraciones de validación más el 
+entrenamiento final), lo que puede ser prohibitivo para modelos complejos, como redes neuronales profundas.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/CVDiagram.png}
+    \caption{
+        Diagrama de división del dataset para la validación cruzada. 
+        Recuperado de \cite{lau2023crossvalidation}.
+    } 
+    \label{fig:CVDiagram}
+\end{figure}
+
+
+% ------------------------------------------------------------------------------------------------------------
+% ENSEMBLE LEARNING ------------------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------------------------------------
 
 \section{Ensemble Learning}
 
-El \textbf{aprendizaje por conjuntos (\textit{ensemble learning})} es una familia de técnicas de ML que combina
-múltiples modelos de aprendizaje automático ---denominados \textbf{modelos base}--- para obtener un modelo final
-con un mejor desempeño que los modelos base por separado.
+El \textbf{aprendizaje por conjuntos (\textit{ensemble learning})} es una familia de técnicas de ML que 
+combina múltiples modelos de aprendizaje automático ---denominados \textbf{modelos base}--- para obtener un 
+modelo final con un mejor desempeño que los modelos base por separado.
 
 \subsection{Bagging}
 
@@ -549,9 +601,9 @@ con un mejor desempeño que los modelos base por separado.
 \subsection{Stacking}
 
 
-% --------------------------------------------------------------------------------------------------------------------
-% DEEP LEARNING ------------------------------------------------------------------------------------------------------
-% --------------------------------------------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------------------------------------
+% DEEP LEARNING ----------------------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------------------------------------
 
 \section{Deep Learning}
 
@@ -603,7 +655,10 @@ $$
 y = f \left( \sum_{i=1}^n{w_ix_i+b} \right)
 $$
 
-donde $x_i$ son las entradas, $w_i$ son los pesos entrenables ($w_0$ el sesgo), y $f$ es la función de 
+donde $x_i$ son las entradas, $w_i$ son los pesos entrenables ($w_0$ el sesgo)\footnote{
+    El sesgo se considera un peso, puesto que, en la implementación, son un peso más conectado a una unidad
+    de sesgo con valor constante unitario (1).
+}, y $f$ es la función de 
 activación.
 
 \begin{figure}[h]
@@ -617,15 +672,18 @@ activación.
 \end{figure}
 
 
-Esta función de activación a la salida de la unidad es un componente esencial que introduce no linealidad 
-en el modelo, permitiendo a la red aprender relaciones complejas en los datos
-\footnote{Sin ella, el MLP se reduciría a una simple combinación lineal de las entradas, incapaz de
-representar jerarquías de características \cite{murphy2022}.}. Existe multitud de funciones de activación, 
+Esta \textbf{función de activación} a la salida de la unidad es un componente esencial que introduce no 
+linealidad en el modelo, permitiendo a la red aprender relaciones complejas en los datos\footnote{
+    Sin ella, el MLP se reduciría a una simple combinación lineal de las entradas, incapaz de
+    representar jerarquías de características \cite{murphy2022}.
+}. Existe multitud de funciones de activación, 
 como la sigmoide, la tangente hiperbólica o ReLu ---y sus múltiples variantes---, cada una con sus ventajas 
 y limitaciones
-\footnote{Si bien, actualmente, ReLU y sus variantes (\textit{Leaky} ReLU, \textit{Parametric ReLU} o 
-\textit{Swish}) se ha convertido en el estándar \textit{de facto} para las capas ocultas en DNNs,
-por su eficiencia computacional, y su eficacia empírica \cite{vargas2021}.}.
+\footnote{
+    Si bien, actualmente, ReLU y sus variantes (\textit{Leaky} ReLU, \textit{Parametric ReLU} o 
+    \textit{Swish}) se han convertido en el estándar \textit{de facto} para las capas ocultas en DNNs,
+    por su eficiencia computacional, y su eficacia empírica \cite{vargas2021}.
+}.
 
 La arquitectura de un MLP conecta estas unidades formando una red neuronal retroalimentada\footnote{Una red 
 neuronal retroalimentada (\textit{feed-forward neural network}) es aquella en la que las conexiones entre las 
@@ -643,35 +701,59 @@ que consta de tres partes (véase la Figura \ref{fig:neural_network}):
     datos.
     
     \item \textbf{Capa de salida}, que proporciona el resultado del modelo. Su forma depende del problema a 
-    resolver: en problemas de regresión, esta capa tendrá tantas unidades como variables a predecir ---sin 
-    función de activación, ya que esto limitaría el rango de valores posibles---; en problemas de 
-    clasificación, esta capa tendrá una sola unidad ---generalmente, con activación sigmoide--- en 
-    clasificación binaria, o múltiples unidades ---con activación \textit{softmax}\footnote{La activación 
-    \textit{softmax} no se aplica sobre la salida de una única unidad, sino que se aplica sobre un vector de 
-    salidas de múltiples unidades, transformándolas en una distribución de probabilidad, donde cada valor 
-    representa la probabilidad de pertenecer a una clase distinta y la suma de todas las salidas es igual a 
-    1.}
-    --- en clasificación multiclase.
+    resolver: 
+    
+    \begin{itemize}
+        
+        \item en problemas de regresión, esta capa tendrá tantas unidades como variables a predecir ---sin 
+        función de activación, ya que esto limitaría el rango de valores posibles---;
+        
+        \item en problemas de clasificación, esta capa tendrá una sola unidad ---generalmente, con activación 
+        sigmoide--- en clasificación binaria, o múltiples unidades ---con activación 
+        \textit{softmax}\footnote{
+            La activación \textit{softmax} no se aplica sobre la salida de una única unidad, sino que se 
+            aplica sobre un vector de salidas de múltiples unidades, transformándolas en una distribución de 
+            probabilidad, donde cada valor representa la probabilidad de pertenecer a una clase distinta y la 
+            suma de todas las salidas es igual a 1.
+        }--- en clasificación multiclase (véase la Figura \ref{fig:activation_func_classification}).
+    \end{itemize}
 
 \end{itemize}
 
 \begin{figure}[h]
     \centering
+    \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/ActivationFuncClassification.png}
+    \caption{
+        Diagrama de obtención de probabilidad en problemas de clasificación. 
+        Adaptado de \cite{furnieles2022sigmoidandsoftmax}.
+    } 
+    \label{fig:activation_func_classification}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
     \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/neural_network.png}
-    \caption{Arquitectura simplificada de un MLP. Recuperado de \cite{bre2017}.} 
+    \caption{
+        Arquitectura simplificada de un MLP. 
+        Recuperado de \cite{bre2017}.
+    } 
     \label{fig:neural_network}
 \end{figure}
 
 % ------------------------------------------------------------------------------------------------------------
 
-\subsection{Entrenamiento de la red}
+\subsection{Entrenamiento y validación de la red}
 
-Una vez hemos definido la arquitectura a emplear para resolver un problema, debemos entrenar la red con los 
-datos de ejemplo. Este proceso implica ajustar los parámetros del modelo (los pesos y sesgos) para minimizar
-el error en las predicciones. 
+En el caso de las redes neuronales, el conjunto de datos suele dividirse en tres 
+subconjuntos: entrenamiento, validación y prueba. A diferencia de métodos más tradicionales, no se utiliza 
+validación cruzada, ya que entrenar redes profundas conlleva un elevado coste computacional.
+
+Una vez hemos definido la arquitectura a emplear para resolver un problema, y definido los datos disponibles 
+debemos entrenar la red con los datos de ejemplo. Este proceso implica ajustar los pesos del modelo para 
+minimizar el error en las predicciones. 
 
 El método de entrenamiento estándar en redes neuronales es el \textbf{algoritmo de retropropagación 
-\textit{backpropagation}}, que funciona en dos fases clave:
+(\textit{backpropagation})}, que funciona en dos fases clave \cite{szeliski2010}:
 
 \begin{itemize}
 
@@ -679,8 +761,12 @@ El método de entrenamiento estándar en redes neuronales es el \textbf{algoritm
     través de las capas de la red, generando una predicción. 
 
     \item \textbf{Propagación hacia atrás (\textit{backward pass})}: El error entre la predicción y el valor 
-    real se calcula y se propaga hacia atrás en la red, ajustando los pesos mediante el descenso de gradiente 
-    para reducir el error en futuras iteraciones.
+    real se calcula y se propaga hacia atrás en la red, ajustando los pesos mediante el descenso de gradiente.
+    
+    Sin entrar en demasiado detalle, esto consiste en calcular el gradiente de la función de pérdida con           % Esto de "sin entrar en demasiado detalle" qué tal? 
+    respecto a cada peso de la red, indicando cómo cada parámetro contribuye al error total. 
+    A mayor aporte al error de un peso, más se ajustará ese peso. Así, el algoritmo priorizará modificar 
+    significativamente los parámetros que más afectan al rendimiento de la red.
     
 \end{itemize}
 
@@ -697,16 +783,16 @@ eficacia:
     No se debe confundir con las métrica de evaluación de un modelo: aunque en algunos casos se pueden usar 
     métricas como funciones de pérdida y viceversa, las métricas destacan por ser fáciles de interpretar 
     y suele utilizarse más de una. En cambio, debe existir una únifa función de pérdida durante el 
-    entrenamiento de una red neuronal, que cumple tres requisitos clave:
+    entrenamiento de una red neuronal, que debe cumplir tres requisitos clave:
 
     \begin{enumerate}
 
-        \item Reflejar el objetivo del aprendizaje: Debe capturar adecuadamente qué significa "éxito" para 
+        \item Reflejar el objetivo del aprendizaje: Debe capturar adecuadamente qué significa ``éxito'' para 
         el modelo (p.ej., minimizar el error en regresión o maximizar la probabilidad de clasificación 
         correcta).
 
-        \item Ser diferenciable: Es esencial para aplicar técnicas de descenso por gradiente (como 
-        \textit{backpropagation}), ya que el optimizador necesita calcular derivadas.
+        \item Ser diferenciable: Es esencial para aplicar técnicas de descenso por gradiente, ya que el 
+        optimizador necesita calcular derivadas.
 
         \item Ser eficiente computacionalmente: Dado que se evalúa en cada iteración del entrenamiento, su 
         cálculo debe ser rápido incluso con grandes volúmenes de datos.
@@ -724,95 +810,55 @@ eficacia:
 
     En clasificación, las funciones de pérdida más comunes son la entropía cruzada (\textit{cross-entropy 
     loss}) para problemas de clasificación binaria y multiclase, que penaliza fuertemente las predicciones 
-    incorrectas y ayuda a optimizar probabilidades predichas.
+    incorrectas y ayuda a optimizar las probabilidades predichas para cada clase.
+
+
+    \item Existen multitud de \textbf{algoritmos de optimización de parámetros}, como SGD, Adam o RMSProp. 
+    Estos algoritmos determinan cómo actualizar los pesos del modelo durante el entrenamiento para minimizar 
+    la función de pérdida. 
+    Están basados en el descenso de gradiente, que ajusta los pesos en dirección opuesta al gradiente de 
+    la función de pérdida respecto a los pesos, multiplicado por un factor escalar llamado \textbf{tasa 
+    de aprendizaje (\textit{learning rate})}. Este hiperparámetro controla la magnitud de los pasos de 
+    actualización: un valor demasiado alto puede hacer que el entrenamiento diverja, mientras que uno 
+    demasiado bajo ralentiza la convergencia o estanca el modelo en mínimos locales.
+
+    Existen estrategias avanzadas para ajustar el \textit{learning rate} de manera más eficiente durante el 
+    entrenamiento, como la búsqueda de un \textit{learning rate} de punto de partida 
+
 
     \item Si bien existen métodos de entrenamiento de redes ejemplo a ejemplo ---como el Gradiente Descendente 
-    Estocástico puro, SGD con tamaño de lote 1---, estas se suelen entrenar por lotes (\textit{batches}) 
-    debido a ventajas clave, como el aprovechamiento de la paralelización de operaciones en GPU, la reducción 
-    de la sobrecarga de comunicación entre CPU y GPU, o la evitación de oscilaciones bruscas en las funciones 
-    de pérdidas (al ser el error promediado entre el número de ejemplos por lote). Aún así, establecer un 
-    tamaño de lote óptimo es una tarea no trivial que requiere de encontrar un equilibrio entre generalización 
-    y velocidad: los lotes pequeños introducen ruido que puede ayudar a escapar de mínimos locales; los lotes 
-    grandes aceleran el entrenamiento pero pueden reducir la generalización \cite{keskar2017}.
+    Estocástico (SGD) puro\cite{bottou2010}---, estas se suelen entrenar por lotes (\textit{batches}) debido a     % En muchos sitios se denominan mini-batches a los lotes, pero no entiendo la diferencia con batches
+    ventajas clave, como el aprovechamiento de la paralelización de operaciones en GPU y una mayor estabilidad 
+    en la función de pérdida al promediarse el error entre varios ejemplos. 
+    Aún así, establecer un tamaño de lote óptimo es una tarea no trivial que requiere de encontrar un 
+    equilibrio entre generalización y velocidad: los lotes grandes aceleran el entrenamiento pero pueden 
+    reducir la generalización del modelo, mientras que los lotes pequeños puede presentar una gran varianza 
+    que introduzca ruido en el modelo \cite{keskar2017}, si bien esto puede ayudar a escapar de mínimos 
+    locales, y puede paliarse con un bajo \textit{learning rate} (aunque esto aumentaría todavía más los 
+    tiempos de entrenamiento).
+    
 
+    \item Tras el uso de \textit{batches} en el entrenamiento, surge el concepto de \textbf{época 
+    (\textit{epoch})}, que hace referencia a un ciclo completo de presentación de todos los datos de 
+    entrenamiento a la red neuronal \cite{rusell2021}. Durante una época, los \textit{batches} se procesan 
+    secuencialmente, actualizando los pesos del modelo en cada iteración (o \textit{step}) con el gradiente 
+    calculado sobre un lote. Por ejemplo, si un conjunto de entrenamiento tiene 4096 ejemplos y el tamaño de 
+    lote es 32, una época constará de 128 iteraciones (4096/32).
+
+    El número de épocas es un hiperparámetro crítico: demasiadas pueden llevar a sobreajuste 
+    (\textit{overfitting}), donde el modelo memoriza los datos de entrenamiento pero no generaliza bien; 
+    demasiado pocas pueden resultar en infraajuste (\textit{underfitting}), donde el modelo no captura los 
+    patrones subyacentes. Además, la combinación de tamaño de lote y épocas influye en la dinámica de 
+    optimización, ya que lotes más pequeños requieren más pasos por época, introduciendo más ruido pero 
+    potencialmente mejorando la exploración del espacio de pesos.
+
+    En la práctica, se suele establecer un número muy alto de épocas, y monitorizar el error en un conjunto de
+    validación para determinar cuándo detener el entrenamiento, evitando así el sobreajuste cuando el error de
+    validación comienza a aumentar. A esta técnica se le denomina \textbf{\textit{early stopping}} 
+    \cite{goodfellow2016}.
     
 \end{itemize}
 
-
-: 
-variantes de funciones de pérdida, múltiples algoritmos de de optimización de parámetros, elección de 
-hiperparámetros, técnicas de regularización como early stopping o batch normalization, ...
-
-
-
-
-
-¿Cómo se calcula el error? Mediante una \textbf{función de pérdida (\textit{loss function})}. 
- 
-
-
-
-
-Este proceso se repite durante múltiples \textbf{épocas} (qué es como se denomina a las iteraciones sobre
-el conjunto de datos) hasta que el modelo alcanza un rendimiento satisfactorio o converge.
-
-
-
-
-
-Para ello, son clave los siguientes componentes:
-
-\begin{itemize}
-
-    \item \textbf{Función de pérdida (\textit{loss function})}: 
-    Esta función cuantifica el error del modelo durante el entrenamiento, midiendo la discrepancia entre las 
-    predicciones generadas y los valores o clases reales (\textit{ground truth}).
-    
-    No se debe confundir con las métrica de evaluación de un modelo: aunque en algunos casos se pueden usar 
-    métricas como funciones de pérdida y viceversa, las métricas destacan por ser fáciles de interpretar 
-    y suele utilizarse más de una. En cambio, debe existir una únifa función de pérdida durante el 
-    entrenamiento de una red neuronal, que cumple tres requisitos clave:
-
-    \begin{enumerate}
-
-        \item Reflejar el objetivo del aprendizaje: Debe capturar adecuadamente qué significa "éxito" para 
-        el modelo (p.ej., minimizar el error en regresión o maximizar la probabilidad de clasificación 
-        correcta).
-
-        \item Ser diferenciable: Es esencial para aplicar técnicas de descenso por gradiente (como 
-        \textit{backpropagation}), ya que el optimizador necesita calcular derivadas.
-
-        \item Ser eficiente computacionalmente: Dado que se evalúa en cada iteración del entrenamiento, su 
-        cálculo debe ser rápido incluso con grandes volúmenes de datos.
-
-    \end{enumerate}
-
-    Mientras las métricas ayudan a entender el modelo, la función de pérdida es la que lo entrena.
-
-    En problemas de regresión se emplean funciones de pérdida como el error cuadrático medio (\textit{mean 
-    squared error}, MSE), que mide la diferencia promedio al cuadrado entre las predicciones y los valores 
-    reales, o el error absoluto medio (\textit{mean absolute error}, MAE), que calcula la diferencia promedio 
-    en valor absoluto\footnote{
-        Aunque esta no es derivable en $x=0$, se define la derivada en ese punto como 0.
-    }.
-
-    En clasificación, las funciones de pérdida más comunes son la entropía cruzada (\textit{cross-entropy 
-    loss}) para problemas de clasificación binaria y multiclase, que penaliza fuertemente las predicciones 
-    incorrectas y ayuda a optimizar probabilidades predichas. 
-
-    \item \textbf{Algoritmo de optimización de pesos}: 
-    Estos algoritmos determinan cómo actualizar los parámetros del modelo durante el entrenamiento para 
-    minimizar la función de pérdida. El más utilizado es el \textit{descenso de gradiente} (y sus variantes 
-    como SGD, Adam o RMSprop), que ajusta los pesos en dirección opuesta al gradiente de la función de pérdida 
-    respecto a los parámetros. La elección del optimizador afecta la velocidad de convergencia y la 
-    capacidad de evitar mínimos locales.
-
-\end{itemize}
-
-
-% Backpropagation, batch size
-
-% Hablar de infraajuste, sobreajuste, regularización, ...
 
 % ------------------------------------------------------------------------------------------------------------
 
@@ -985,10 +1031,8 @@ componentes principales:
     \textit{pooling}, cuya función es extraer representaciones jerárquicas y cada vez más abstractas de los 
     datos de entrada; y
 
-    \item el \textit{classifier}\footnote{
-        Se le denomina así aunque resuelva problemas de clasificación o regresión.
-    }, generalmente implementado mediante una o más capas totalmente conectadas, toma estas representaciones 
-    para realizar la tarea específica de salida, ya sea clasificación o regresión.
+    \item el \textit{classifier}, generalmente implementado mediante una o más capas totalmente conectadas, 
+    toma estas representaciones para realizar la tarea específica de salida, ya sea clasificación o regresión.
 
 \end{itemize}
 
@@ -1019,36 +1063,111 @@ el sobreajuste. Veamos algunas de las técnicas empleadas en CNNs:
     dinámicamente ejemplos a partir de los que se tienen originalmente, de forma que se entrene la red con 
     un conjunto de datos más diverso y robusto, evitando el sobreajuste y mejorando la generalización.
     
-    Algunas alteraciones realizadas pueden ser: cambiar el nivel de brillo y contraste, rotar, trasladar, 
-    escalar o voltear las imágenes, añadir ruido
+    Algunas alteraciones realizadas pueden ser cambios en el nivel de brillo y contraste, rotaciones, 
+    traslaciones, escalados o volteos de imágenes, entre otras. No existe configuración óptima, y su 
+    configuración depende mucho del problema y las imágenes disponibles.
 
-    Esto sirve para problemas como la clasificación o regresión, donde las clases o valores predichos no
-    suelen variar bajo pequeñas perturbaciones locales. 
+    Esta técnica sirve especialmente para problemas como clasificación o regresión, donde las clases o valores 
+    predichos no suelen variar bajo pequeñas perturbaciones locales. 
     
     \item \textbf{\textit{Dropout}} \cite{srivastava2014}: Técnica que, durante el entrenamiento, ``apaga'' 
     (pone a cero) aleatoriamente un porcentaje de neuronas en cada iteración, evitando así que la red 
-    dependa demasiado de unidades individuales. En CNNs suele aplicarse a capas fully-connected, aunque 
-    existen variantes como \textit{Spatial Dropout} \cite{tompson2015} que elimina canales completos 
+    dependa demasiado de determinadas unidades individuales (véase la Figura \ref{fig:net_with_dropout}). 
+    En CNNs suele aplicarse a capas \textit{fully-connected}, 
+    aunque existen variantes como \textit{Spatial Dropout} \cite{tompson2015} que elimina canales completos 
     en capas convolucionales, forzando una distribución más robusta de características.
+
+    \begin{figure}[h]
+        \centering
+
+        \begin{subfigure}[b]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/net_without_dropout.png}
+            \caption{Dropout desactivado}
+            \label{fig:net_deactivate_dropout}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/net_with_dropout.png}
+            \caption{Dropout activado ($p=0.5$)}
+            \label{fig:net_activate_dropout}
+        \end{subfigure}
+
+        \caption{
+            Diagrama del funcionamiento de neuronas con \textit{dropout}.
+            Recuperado de la Figura 5.29 de \cite{szeliski2010}.
+            Cuando se evalúa el modelo, todas las unidades funcionan correctamente (\ref{sub@fig:net_deactivate_dropout}). 
+            Durante el entrenamiento, algunas son ``apagadas'' (\ref{sub@fig:net_activate_dropout}). 
+        }
+        \label{fig:net_with_dropout}
+    \end{figure}
     
-    \item \textbf{\textit{Batch normalization}}: Esta se introduce como una capa nueva a añadir en el diseño
-    de las redes, con nuevos parámetros entrenables: \textit{scale} y \textit{shift}. 
+    \item \textbf{\textit{Batch normalization}} \cite{ioffe2015}: Esta se introduce como una capa nueva a 
+    añadir en el diseño de las redes, con nuevos parámetros entrenables: \textit{scale} y \textit{shift}. 
     Normaliza los valores de cada canal (media cero y desviación 1), y los reescala y desplaza en base a los
     valores de \textit{scale} y \textit{shift}. 
-    Esto estabiliza la dinámica del aprendizaje (\textit{internal covariate shift}), actúa como regularizador 
-    suave al añadir ruido a las activaciones, y permite usar tasas de aprendizaje más altas. En CNNs se aplica 
-    típicamente después de las capas convolucionales y antes de la función de activación
+    Esto suaviza significativamente el espacio de valores de optimización \cite{santurkar2019} y reduce la 
+    sensibilidad a la tasa de aprendizaje \cite{arora2018}, permitiendo establecer valores más altos.
+    En CNNs se aplica típicamente después de las capas convolucionales y antes de la función de activación
     
 \end{itemize}
+
+
+\subsubsection{Conexiones residuales}
+
+Uno de los principales problemas que no permite aumentar mucho la profundidasd de las redes convolucionales 
+es el desvanecimiento de gradiente (\textit{vanishing gradient problem}), que consiste en la disminución 
+exponencial de los gradientes durante el proceso de \textit{backpropagation} a medida que se retrocede hacia 
+las capas iniciales de la red. Algunas de las soluciones a este problema han sido: utilizar funciones de 
+activación ReLU, ya que evita gradientes pequeños para valores positivos; inicializar adecuadamente los pesos
+de la red; o \textit{batch normalization}, que estabiliza la distribución de las activaciones. Sin embargo,
+las conexiones residuales han sido la contribución más significativa para resolver este problema.
+
+Las \textbf{redes residuales (\textit{residual nets}, ResNet)} 
+
+%https://www.jeremyjordan.me/nn-learning-rate/
+
 
 
 % ------------------------------------------------------------------------------------------------------------
 
 \subsection{Transfer Learning}
 
+El \textbf{aprendizaje por transferencia (\textit{transfer learning})} es una técnica que consiste en 
+aprovechar el conocimiento aprendido por un modelo entrenado en una tarea como punto de partida para
+mejorar el rendimiento y acelerar el entrenamiento en una nueva tarea relacionada \cite{rusell2021}.
 
+En redes neuronales, el aprendizaje consiste en ajustar pesos, y en el caso del \textit{transfer learning}, 
+estos pesos se inicializan con valores previamente optimizados para una tarea fuente, en lugar de comenzar con 
+valores aleatorios (véase la Figura \ref{fig:fine-tuning}).
 
-% Hablar de fine-tuning
+Se conoce como \textbf{fine-tuning} a la técnica de inicialización de los pesos de aquellas partes del modelo 
+(como capas convolucionales) con los pesos previamente aprendidos, y que continúa el entrenamiento con los 
+datos específicos de la nueva tarea. En este contexto, se denomina \textit{head} a las capas finales del 
+modelo que se sustituyen para adaptarse a la nueva tarea. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/fine-tunning.png}
+    \caption{
+        Diagrama de \textit{fine-tuning} de un modelo en una nueva tarea. 
+        Recuperado de la Figura 19.2 de \cite{murphy2022}.
+        La capa final de salida es entrenada desde cero para la nueva tarea. El resto de capas son 
+        inicializadas con los pesos previos. 
+    } 
+    \label{fig:fine-tuning}
+\end{figure}
+
+Por ejemplo, en \cite{venema2022} se utilizan dos modelos de CNN preentrenados en clasificación con ImageNet 
+(que contiene imágenes de 1000 clases): VGG16 y ResNet50. Estos modelos se ajustan (\textit{fine-tuning}) 
+para estimar el sexo de una persona a partir de radiografías de húmero. Aunque ambas tareas parecen muy 
+diferentes, las primeras capas de la red, especializadas en detectar características generales como bordes y 
+texturas, pueden ser útiles en los dos casos, lo que permite una transferencia efectiva del conocimiento.
+
+El \textit{fine-tuning} puede aplicarse de forma gradual: primero se entrena solo el \textit{head} 
+(manteniendo el resto del modelo congelado) y luego, si es necesario, se afinan también algunas capas 
+preentrenadas para mejorar el rendimiento en la tarea específica.
 
 
 % ------------------------------------------------------------------------------------------------------------
