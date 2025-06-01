@@ -1,29 +1,28 @@
 
-- Si he obtenido alguna información de una transparencia de clase, ¿cómo lo cito?
-  Si es de Pablo, no hace falta. Otro caso, siempre originales.
+- ¿En el estado del arte debo buscar sobre estimación de edad o concretamente sobre aquellas imágenes médicas
+  que yo vaya a emplear en los experimentos?
 
-- En Capítulo 2, expreso las métricas en términos matemáticos ¿hasta qué punto tengo que explicar de nuevo 
-  términos de expresiones matemáticas que ya han aparecido anteriormente? 
+- En el estado del arte, debo diferenciar estimación de edad en general de la estimación de edad en IA,
+  ¿por qué? ¿Los métodos "manuales" siguen a la vanguardia?
 
-- En el Capítulo 2, en elementos visuales de la regresión, introduzco una referencia a una imagen del capítulo 1.
-  Yo creo que lo mejor es volver a poner la imagen en el capítulo 2 para comodidad del lector, pero no sé si 
-  es formalmente incorrecto que haya dos figuras en el índice de figuras que realmente son la misma.
 
-  Eliminar una de las dos, donde sea menos necesario.
-
-- ¿La diferencia entre intervalos de confianza e intervalos de predicción, en qué apartado la introduciría?
+En general, que sea más breve, porque no es punto central del trabajo.
 
 
 
 
-INFORMACIÓN A INCLUIR 
+INFORMACIÓN A INCLUIR MÁS TARDE
 
 - El MSE es ideal para la optimización con gradiente descendiente debido a dos propiedades matemáticas: 
    - diferenciabilidad, lo que permite calcular la derivada incluso cuando el error es 0;
    - convexidad, asegurando que el gradiente descendente no se queda atrapado en mínimos locales.
   Además, penaliza más los errores grandes, lo que acelera los ajustes en etapas iniciales.
 
+- Interpretaciones de las figuras
+
 - Regresión de cuantiles
 
-- Considero capas más profundas (deep) a aquellas que están más cerca de la salida, y las superficiales (shallow)
-  a aquellas que están más cercanas a la entrada.
+- Incluir apartado donde se clarifique que denomino capas más profundas (deep) a aquellas que están más cerca 
+  de la salida, y las superficiales (shallow) a aquellas que están más cercanas a la entrada.
+
+- Incluir apartado de planificación económica en la Introducción

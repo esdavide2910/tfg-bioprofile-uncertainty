@@ -20,4 +20,5 @@
 *.synctex.gz 
 *.svn 
 *.toc
-
+*.xml
+*.bcf

@@ -19,7 +19,7 @@ una ``mente adulta'', obteniendo así comportamientos inteligentes complejos.
 %Samuel, Arthur L. (1959). "Some Studies in Machine Learning Using the Game of Checkers". IBM Journal of Research and Development. 44: 206–226.
 
 En las décadas de 1960, 1970 y 1980, en un contexto marcado por las limitaciones computacionales y el 
-escepticismo académico surgió el \textit{machine learning} (ML) ---o \textit{aprendizaje automático}--- como 
+escepticismo académico surgió el aprendizaje automático (\textit{machine learning}, (ML)) como 
 una rama marginal de la IA, centrada en el desarrollo de modelos y algoritmos que permitiesen a las 
 computadoras imitar la forma en la que los humanos aprenden, realizar tareas autónomas y mejorar su 
 rendimiento a través de la experiencia y exposición a más datos. De esta forma, estos modelos podrían realizar 
@@ -268,7 +268,10 @@ negativos. Por esta razón, se recomienda completar el análisis con representac
     \begin{figure}[h]
         \centering
         \includegraphics[width=0.5\textwidth]{capitulos/cap_02/imagenes/scatterplot_pred_vs_act_AE.png}
-        \caption{
+        \caption[
+            Gráfica de puntos de valores de edad reales vs. predichos obtenidos por el modelo propuesto 
+            en \cite{heinrich2024}.
+        ]{
             Gráfica de puntos de valores de edad reales vs. predichos obtenidos por el modelo propuesto 
             en \cite{heinrich2024}. Se observan valores más dispersos en edades avanzadas.
         } 
@@ -302,10 +305,13 @@ negativos. Por esta razón, se recomienda completar el análisis con representac
             \label{fig:boxplot_pred_vs_act_AE_b}
         \end{subfigure}
     
-        \caption{
+        \caption[
             Gráfica de cajas de valores de edad reales vs. predichos obtenidos por el modelo propuesto en 
-            \cite{stepanovsky2024}. Se observa en \ref{fig:boxplot_pred_vs_act_AE_a}, y en 
-            \ref{fig:boxplot_pred_vs_act_AE_a} que se sobreestima la edad en personas jóvenes y se subestima 
+            \cite{stepanovsky2024}.
+        ]{
+            Gráfica de cajas de valores de edad reales vs. predichos obtenidos por el modelo propuesto en 
+            \cite{stepanovsky2024}. Se observa en \ref{sub@fig:boxplot_pred_vs_act_AE_b} que se sobreestima 
+            la edad en personas jóvenes y se subestima 
             en personas de edad avanzada.
         }
         \label{fig:boxplot_pred_vs_act_AE}
@@ -325,7 +331,10 @@ negativos. Por esta razón, se recomienda completar el análisis con representac
     \begin{figure}[h]
         \centering
         \includegraphics[width=0.8\textwidth]{capitulos/cap_02/imagenes/prob_distribution_AEerror.png}
-        \caption{
+        \caption[
+            Histograma de errores residuales del modelo de estimación de edad propuesto en 
+            \cite{stepanovsky2024}.
+        ]{
             Histograma de errores residuales del modelo de estimación de edad propuesto en 
             \cite{stepanovsky2024}. Se evidencia una mayor probabilidad de errores negativos 
             (infraestimaciones) en comparación con los positivos Además, se destaca que el 57\% de las 
@@ -730,6 +739,8 @@ que consta de tres partes (véase la Figura \ref{fig:neural_network}):
     \label{fig:activation_func_classification}
 \end{figure}
 
+%Quitar X y Out, y subir lo de abajo
+
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/neural_network.png}
@@ -760,8 +771,9 @@ El método de entrenamiento estándar en redes neuronales es el \textbf{algoritm
     \item \textbf{Propagación hacia adelante (\textit{forward pass})}: Los datos de entrada se procesan a 
     través de las capas de la red, generando una predicción. 
 
-    \item \textbf{Propagación hacia atrás (\textit{backward pass})}: El error entre la predicción y el valor 
-    real se calcula y se propaga hacia atrás en la red, ajustando los pesos mediante el descenso de gradiente.
+    \item \textbf{Propagación del error hacia atrás (\textit{backward pass})}: El error entre la 
+    predicción y el valor real se calcula y se propaga hacia atrás en la red, ajustando los pesos mediante el 
+    descenso de gradiente.
     
     Sin entrar en demasiado detalle, esto consiste en calcular el gradiente de la función de pérdida con           % Esto de "sin entrar en demasiado detalle" qué tal? 
     respecto a cada peso de la red, indicando cómo cada parámetro contribuye al error total. 
@@ -827,10 +839,13 @@ eficacia:
 
 
     \item Si bien existen métodos de entrenamiento de redes ejemplo a ejemplo ---como el Gradiente Descendente 
-    Estocástico (SGD) puro\cite{bottou2010}---, estas se suelen entrenar por lotes (\textit{batches}) debido a     % En muchos sitios se denominan mini-batches a los lotes, pero no entiendo la diferencia con batches
-    ventajas clave, como el aprovechamiento de la paralelización de operaciones en GPU y una mayor estabilidad 
-    en la función de pérdida al promediarse el error entre varios ejemplos. 
-    Aún así, establecer un tamaño de lote óptimo es una tarea no trivial que requiere de encontrar un 
+    Estocástico (SGD) puro\cite{bottou2010}---, estas se suelen entrenar por lotes 
+    (\textit{minibatches})\footnote{
+        Se denomina \textit{batch} al \textit{dataset} completo, y \textit{minibatch} a los subconjuntos de
+        este cuyo tamaño está determinado por el hiperparámetro \textit{batch size}.
+    } debido a ventajas clave, como el aprovechamiento de la paralelización de operaciones en GPU y una mayor 
+    estabilidad en la función de pérdida al promediarse el error entre varios ejemplos. 
+    Aún así, establecer un tamaño de lote óptimo no es una tarea trivial que requiere de encontrar un 
     equilibrio entre generalización y velocidad: los lotes grandes aceleran el entrenamiento pero pueden 
     reducir la generalización del modelo, mientras que los lotes pequeños puede presentar una gran varianza 
     que introduzca ruido en el modelo \cite{keskar2017}, si bien esto puede ayudar a escapar de mínimos 
@@ -838,9 +853,9 @@ eficacia:
     tiempos de entrenamiento).
     
 
-    \item Tras el uso de \textit{batches} en el entrenamiento, surge el concepto de \textbf{época 
+    \item Tras el uso de \textit{minibatches} en el entrenamiento, surge el concepto de \textbf{época 
     (\textit{epoch})}, que hace referencia a un ciclo completo de presentación de todos los datos de 
-    entrenamiento a la red neuronal \cite{rusell2021}. Durante una época, los \textit{batches} se procesan 
+    entrenamiento a la red neuronal \cite{rusell2021}. Durante una época, los \textit{minibatches} se procesan 
     secuencialmente, actualizando los pesos del modelo en cada iteración (o \textit{step}) con el gradiente 
     calculado sobre un lote. Por ejemplo, si un conjunto de entrenamiento tiene 4096 ejemplos y el tamaño de 
     lote es 32, una época constará de 128 iteraciones (4096/32).
@@ -905,7 +920,7 @@ central por el resultado del producto (véase la Figura \ref{fig:conv_op}).
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/convolution_operation.jpg}
-    \caption{
+    \caption[Esquema gráfico de la aplicación de un filtro convolucional sobre una región de una imagen.]{
         Esquema gráfico de la aplicación de un filtro convolucional sobre una región de una imagen.
         Adaptado de \cite{nvidia2025convolutionoperation}.
     } 
@@ -921,9 +936,17 @@ Las CNNs aprovechan la convolución mediante \textbf{capas convolucionales}. Cad
 compuesta por un conjunto de filtros convolucionales, donde cada uno a su vez tiene tantos \textit{kernels} 
 como canales de entrada de la imagen haya en la capa (si es la primera capa convolucional, habrá 1 canal en 
 imágenes de escala de grises, o 3 en imágenes RGB). El número de filtros en cada capa, su tamaño y la forma
-en que se deslizan sobre la entrada\footnote{                                                                      % DUDA: ¿Se entiende aquí a qué se refiere con "forma en la que se 
-    Definidos mediante los parámetros de \textit{stride} y \textit{padding}, que controlan el desplazamiento       % desliza sobre la entrada" (la ventana deslizante)?
+en que se deslizan sobre la entrada\footnote{                                                                      
+    Definidos mediante los parámetros de \textit{stride} y \textit{padding}, que controlan el desplazamiento       
     del filtro y la cantidad de relleno alrededor de la entrada, respectivamente.
+}
+\todo{
+    ¿Se entiende aquí a qué se refiere con ``forma en la que se desliza sobre la entrada'' (la ventana 
+    deslizante)?
+}
+\todo{
+    ¿Explico más en profundidad los parámetros de stride y padding, o añado una imagen que deje clara la
+    intuición detrás?
 }
 se determinan durante el diseño de la red, mientras que los valores de los \textit{kernels} son parámetros 
 entrenables.
@@ -1040,7 +1063,11 @@ componentes principales:
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/CNN_complete.png}
-    \caption{
+    \caption[
+        Esquema gráfico de la arquitectura conocida como ``AlexNet'', diseñada para resolver un problema
+        de clasificación con 1000 clases.
+        Recuperado de la Figura 5.39 de \cite{szeliski2010}.
+    ]{
         Esquema gráfico de la arquitectura conocida como ``AlexNet'', diseñada para resolver un problema
         de clasificación con 1000 clases.
         Recuperado de la Figura 5.39 de \cite{szeliski2010}.
@@ -1094,7 +1121,10 @@ el sobreajuste. Veamos algunas de las técnicas empleadas en CNNs:
             \label{fig:net_activate_dropout}
         \end{subfigure}
 
-        \caption{
+        \caption[
+            Diagrama del funcionamiento de neuronas con \textit{dropout}.
+            Recuperado de la Figura 5.29 de \cite{szeliski2010}.
+        ]{
             Diagrama del funcionamiento de neuronas con \textit{dropout}.
             Recuperado de la Figura 5.29 de \cite{szeliski2010}.
             Cuando se evalúa el modelo, todas las unidades funcionan correctamente (\ref{sub@fig:net_deactivate_dropout}). 
@@ -1150,7 +1180,10 @@ modelo que se sustituyen para adaptarse a la nueva tarea.
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/fine-tunning.png}
-    \caption{
+    \caption[
+        Diagrama de \textit{fine-tuning} de un modelo en una nueva tarea. 
+        Recuperado de la Figura 19.2 de \cite{murphy2022}.
+    ]{
         Diagrama de \textit{fine-tuning} de un modelo en una nueva tarea. 
         Recuperado de la Figura 19.2 de \cite{murphy2022}.
         La capa final de salida es entrenada desde cero para la nueva tarea. El resto de capas son 
@@ -1171,10 +1204,93 @@ preentrenadas para mejorar el rendimiento en la tarea específica.
 
 
 % ------------------------------------------------------------------------------------------------------------
-% INCERTIDUMBRE ----------------------------------------------------------------------------------------------
+% ERROR E INCERTIDUMBRE --------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
 
-\section{Incertidumbre}
+\section{Error e incertidumbre}
+
+La metrología\footnote{
+    Ciencia de las mediciones y sus aplicaciones \cite{jcgm200:2012es}.
+}, y la estadística comparten un papel fundamental en el análisis del 
+error y la incertidumbre en campos como el ML. La metrología proporciona el marco para entender y cuantificar 
+con precisión las mediciones, mientras que la estadística permite modelar, analizar y gestionar la 
+variabilidad inherente a los datos.
+
+El Comité Conjunto de Guías en Metrología (\textit{Joint Committe for Guides in Metrology}, JCGM)\footnote{
+    Este Comité está formado por numerosas organizaciones internacionales de metrología y normalización: 
+    BIPM, IEC, IFCC, ISO, IUPAC, IUPAP, OIML e ILAC. Su objetivo principal es mantener y promover las 
+    guías internacionales clave en metrología, como la Guía para la Expresión de la Incertidumbre en la 
+    Medición (\textit{Guide to the Expression of Uncertainty in Measurement}, GUM) \cite{jcgm100:2008} y el 
+    Vocabulario Internacional de Metrología (\textit{Vocabulaire international de métrologie}, VIM) 
+    \cite{jcgm200:2012}.
+}
+\todo{
+    ¿Sobra la concreción de las siglas (principalmente en francés)? Es que en el resto del documento siempre 
+    he introducido los términos de los que procedía unas siglas. 
+}
+define el \textbf{error} como una ``medición imperfecta'' de la magnitud observada, que puede estar causada
+por efectos aleatorios (componente aleatoria del error) y por efectos sistemáticos (componente sistemática del 
+error, más conocida como \textbf{sesgo}).
+Por otro lado, define a la \textbf{incertidumbre} como ``parámetro, asociado con el resultado de una medición, 
+que caracteriza la dispersión de los valores que podrían atribuirse razonablemente al mesurando\footnote{
+    El mesurando es la magnitud a ser medida. 
+}. [...] El parámetro puede ser, por ejemplo, una desviación estándar, o la anchura de un intervalo con un 
+nivel de confianza establecido'' \cite{jcgm100:2008}.
+
+Partiendo de estas definiciones generales, veamos ...
+
+%-------------------------------------------------------------------------------------------------------------
+
+El enfoque basado en el error parte del supuesto de que existe un valor verdadero. En consecuencia, el 
+propósito de la medición es aproximarse lo más posible a dicho valor, minimizando las distintas componentes 
+del error \cite{jcgm100:2008}:
+
+\begin{itemize}
+    \item Para el error aleatorio, esto se logra aumentando el número de observaciones, ya que su distribución 
+    tiene una media igual a cero; y
+
+    \item para el error sistemático, es necesario identificarlo y cuantificar su magnitud, lo que permite 
+    aplicar factores de corrección que compensen su efecto.
+
+\end{itemize}
+
+Se asume que el resultado de la medición ha sido corregido por todos los efectos sistemáticos identificados
+como significativos, de modeo que la esperanza matemática del error sistemático sea igual a cero.
+
+Es en esta asunción donde reside su mayor debilidad, pues aquellos efectos sistemáticos no identificados o
+cuantificables dificultan su diferenciación de los efectos aleatorios. 
+
+%-------------------------------------------------------------------------------------------------------------
+
+Frente a este enfoque, se presenta el \textbf{enfoque en la incertidumbre}
+
+
+, que asume la imposibilidad de 
+conocer exactamente el valor verdadero del mensurado
+
+
+
+asignar un intervalo de valores razonables al mensurado
+
+información adicional puede reducir el rango de valores del intervalo
+
+
+
+la medición puede entenderse como una forma de determinar el error del instrumento
+en ensayo
+
+%----------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+Se diferencian dos enfoques estadísticos: estadística frecuentista y estadística bayesiana.
+
+La \textbf{estadística frecuentista} 
+
+La estadística bayesiana
 
 
 
@@ -1207,9 +1323,9 @@ El error es la diferencia entre el valor verdadero ---asumiendo que existe--- y 
 
 
 
-% --------------------------------------------------------------------------------------------------------------------
-% CONFORMAL PREDICTION -----------------------------------------------------------------------------------------------
-% --------------------------------------------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------------------------------------
+% CONFORMAL PREDICTION ---------------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------------------------------------
 
 \section{Conformal Prediction}
 

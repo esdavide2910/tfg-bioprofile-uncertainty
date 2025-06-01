@@ -24,22 +24,46 @@
 \usepackage{fancyhdr}
 \usepackage{graphicx}
 \usepackage{afterpage}
-
 \usepackage{longtable}
-% Añadido por mí:
-\usepackage{cite}
 
-\usepackage{xcolor} % Para definir colores
-% \usepackage[colorlinks=true,linkcolor=blue]{hyperref} % Hipervínculos en color azul
+
+
+% 
+\usepackage[style=ieee, citestyle=numeric-comp, backend=biber, backref=true, maxnames=99]{biblatex}
+\DefineBibliographyStrings{spanish}{
+   backrefpage = {Citado en pág.},
+   backrefpages = {Citado en págs.},
+   url = {URL},
+}
+
+%
+\usepackage{xpatch}
+\DeclareFieldFormat{backrefparens}{\addperiod\hspace*{1pt} [#1]}
+\xpatchbibmacro{pageref}{parens}{backrefparens}{}{}
+
+%
+\addbibresource{bibliografia.bib}
+
+% Para definir colores
+\usepackage{xcolor} 
+
+%
 \usepackage[colorlinks=true, linkcolor=blue, citecolor=blue, pdfborder={0 0 0}]{hyperref}
-% \usepackage[pdfborder={0 0 0}]{hyperref} %referencia
 
+% Para permitir romper URLs largas
+\usepackage{xurl}
 
-
-% PAQUETES INTRODUCIDOS POR MI
+% Para 
 \usepackage{tikz}
+
+% Para incluir fuentes tipográficas para ecuaciones
 \usepackage{amsfonts}
+
+% Para permitir introducir subfiguras dentro de figura
 \usepackage{subcaption}
+
+%
+\usepackage[colorinlistoftodos]{todonotes}
 
 
 % ********************************************************************
@@ -186,15 +210,19 @@
 \usepackage{pdfpages}
 \begin{document}
    %
-   \input{portada/portada}
-   %
    \pagenumbering{roman}
+   %
+   \input{portada/portada}
    %
    \input{prefacios/prefacio}
    %\frontmatter
    \tableofcontents
    \listoffigures
    %\listoftables
+
+
+   \clearpage
+   \input{prefacios/convenciones.tex}
    %
    %\mainmatter
    %\setlength{\parskip}{5pt}
@@ -202,11 +230,11 @@
    \clearpage
    \pagenumbering{arabic}
    \setcounter{page}{1}
-   \input{capitulos/cap_01/01_Introduccion}
+   % \input{capitulos/cap_01/01_Introduccion}
    %
    \input{capitulos/cap_02/02_Fundamentos_teoricos}
    %
-   \input{capitulos/cap_03/03_Estado_del_arte}
+   % \input{capitulos/cap_03/03_Estado_del_arte}
    %
    %\input{capitulos/04_Implementacion}
    %
@@ -215,9 +243,7 @@
    %\input{capitulos/06_Conclusiones}
    %
    \nocite{*}
-   \bibliography{bibliografia}\addcontentsline{toc}{chapter}{Bibliografía}
-   %\bibliographystyle{miunsrturl}
-   \bibliographystyle{unsrturl}
+   \printbibliography
    %
    \appendix
 
