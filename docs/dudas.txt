@@ -1,12 +1,8 @@
 
-- ¿En el estado del arte debo buscar sobre estimación de edad o concretamente sobre aquellas imágenes médicas
-  que yo vaya a emplear en los experimentos?
+- En la introducción del apartado "Incertidumbre" empleo mucha información de la misma fuente, ¿cito 
+continuamente o qué hago?
 
-- En el estado del arte, debo diferenciar estimación de edad en general de la estimación de edad en IA,
-  ¿por qué? ¿Los métodos "manuales" siguen a la vanguardia?
-
-
-En general, que sea más breve, porque no es punto central del trabajo.
+- Tras desarrollar una intuición de los conceptos, 
 
 
 
@@ -26,3 +22,5 @@ INFORMACIÓN A INCLUIR MÁS TARDE
   de la salida, y las superficiales (shallow) a aquellas que están más cercanas a la entrada.
 
 - Incluir apartado de planificación económica en la Introducción
+
+- Anexo sobre estadísticas frecuentista y bayesiana

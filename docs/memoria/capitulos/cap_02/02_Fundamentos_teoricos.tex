@@ -451,13 +451,8 @@ para evaluar y comparar modelos de clasificación:
         \label{fig:conf_matrix_binary}
     \end{figure}
 
-    Esta visualización admite muchas variantes, por ejemplo en la Figura \ref{fig:conf_matrix_binary_relative}
-    se representan los valores de cada celda en términos porcentuales de los ejemplos reales que hay de cada 
-    clase ($< 18$ y $\ge 18$), lo que permite comparar la matriz de confusión general de todos los ejemplos 
-    (\ref{fig:conf_matrix_general}) con la de ejemplos se sexo femenino (\ref{fig:conf_matrix_female}) y 
-    sexo masculino (\ref{fig:conf_matrix_male}), permitiendo identificar posibles sesgos en el modelo respecto 
-    al género, y así realizar una evaluación más precisa del rendimiento del modelo en diferentes subgrupos de
-    la población.
+    Esta visualización admite muchas variantes, por ejemplo, como la vista en la Figura 
+    \ref{fig:conf_matrix_binary_relative}.
     
     \begin{figure}[h]
         \centering
@@ -483,9 +478,18 @@ para evaluar y comparar modelos de clasificación:
             \label{fig:conf_matrix_male}
         \end{subfigure}
     
-        \caption{
+        \caption[
             Matrices de confusión para la estimación de mayoría/minoría de edad según el modelo de 
             \cite{porto2020}.
+        ]{
+            Matrices de confusión para la estimación de mayoría/minoría de edad según el modelo de 
+            \cite{porto2020}.
+            Se representan los valores de cada celda en términos porcentuales de los ejemplos reales que hay 
+            de cada clase ($< 18$ y $\ge 18$), lo que permite comparar la matriz de confusión general de todos 
+            los ejemplos (\ref{sub@fig:conf_matrix_general}) con la de ejemplos se sexo femenino 
+            (\ref{sub@fig:conf_matrix_female}) y sexo masculino (\ref{sub@fig:conf_matrix_male}), permitiendo 
+            identificar posibles sesgos en el modelo respecto al género, y así realizar una evaluación más 
+            precisa del rendimiento del modelo en diferentes subgrupos de la población.
         }
         \label{fig:conf_matrix_binary_relative}
     \end{figure}
@@ -493,47 +497,71 @@ para evaluar y comparar modelos de clasificación:
     Prácticamente todas las métricas y visualizaciones parten de la información ofrecida en esta matriz. 
     
 
-    \item La \textbf{exactitud (accuracy)} es la proporción de predicciones correctas sobre el total.
+    \item La \textbf{exactitud (\textit{accuracy})} es la proporción de predicciones correctas sobre el total.
+    En clasificación binaria esto sería:
     
     $$
     \textnormal{Accuracy} = \frac{TP+TN}{TP+TN+FP+FN}
     $$
 
-    Su valor varía entre 0 y 1, donde 0 es el peor desempeño posible (todas las predicciones son incorrectas) 
-    y 1 es el mejor desempeño posible (todas las predicciones son correctas).
+    En el caso de clasificación multiclase, esta se generaliza como:
 
-    Es la medida más intuitiva, si bien carece de utilidad en escenarios con clases desbalanceadas, ya que 
-    puede dar una falsa impresión de buen desempeño si la clase mayoritaria domina la métrica. Es por esto que 
-    el análisis debe complementarse con otras métricas informativas.
+    $$
+    \textnormal{Accuracy} = 
+        \frac{\textnormal{Numero de predicciones correctas}}{\textnormal{Número total de ejemplos}} =
+        \frac{1}{N} \sum_{i=1}^N1(\hat{y_i}=y_i)
+    $$
+
+    donde $\hat{y_i}$ es la etiqueta predicha, $y_i$ la etiqueta verdadera para el ejemplo $i$, $N$ es el 
+    número de ejemplos, y 1 es la función indicadora, que vale 1 si la predicción es correcta y 0 si no 
+    lo es. 
+
+    Los valores de esta métrica varían entre 0 y 1, donde 0 es el peor desempeño posible (todas las 
+    predicciones son incorrectas) y 1 es el mejor desempeño posible (todas las predicciones son correctas).
+
+    Es la medida más intuitiva, si bien puede dar una falsa impresión de buen desempeño si las clases 
+    mayoritarias dominan la métrica. Es por esto que el análisis debe completarse con otras métricas 
+    informativas. 
 
 
-    \item La \textbf{precisión (precision) y exhaustividad (recall)} 
-    
+    \item La \textbf{precisión (\textit{precision})} indica qué proporción de las predicciones positivas 
+    corresponde a casos realmente positivos. En clasificación multiclase, se interpreta como la proporción de 
+    ejemplos correctamente clasificados entre todos los que fueron asignados a una clase determinada. 
+
     $$
     \textnormal{Precision} = \frac{TP}{TP+FP}
     $$
 
+    Una alta precisión significa pocos falsos positivos. Esto puede interesar por ejemplo
+
+    La \textbf{exhaustividad (\textit{recall})} indica qué proporción de los casos positivos fueron 
+    correctamente detectados.
+
     $$
-    \textnormal{Recall} = \frac{TP}{TP+FN} = \textnormal{Sensitivity}
+    \textnormal{Recall} = \frac{TP}{TP+FN} 
     $$
+
+    Un alto \textit{recall} significa pocos falsos negativos. 
+
+    
+    Estas dos métricas complementarias se pueden calcular por cada clase, y hay varias formas de combinar sus
+    valores:
+
+    \begin{itemize}
+        \item Macro:
+        \item Micro:
+        \item Weighted: 
+    \end{itemize}
     
 
     \item El \textbf{F1-Score} 
+    \todo{Por completar}
 
     $$
     \textnormal{F1-Score} = 2 \cdot \frac{\textnormal{Precision} \cdot \textnormal{Recall}}{\textnormal{Precision} + \textnormal{Recall}}
     $$
 
-
-    \item La \textbf{sensibilidad (sensitivity) y especifidad (specifity)}
-
-    $$
-    \textnormal{Sensitivity} = \frac{TP}{TP+FP}
-    $$
-
-    $$
-    \textnormal{Specifity} = \frac{TN}{TN+FP}
-    $$
+    Al igual que con \textit{precision} y \textit{recall}, también se puede calcular por cada clase. 
 
 
 \end{itemize}
@@ -595,19 +623,19 @@ entrenamiento final), lo que puede ser prohibitivo para modelos complejos, como 
 % ENSEMBLE LEARNING ------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
 
-\section{Ensemble Learning}
+% \section{Ensemble Learning}
 
-El \textbf{aprendizaje por conjuntos (\textit{ensemble learning})} es una familia de técnicas de ML que 
-combina múltiples modelos de aprendizaje automático ---denominados \textbf{modelos base}--- para obtener un 
-modelo final con un mejor desempeño que los modelos base por separado.
+% El \textbf{aprendizaje por conjuntos (\textit{ensemble learning})} es una familia de técnicas de ML que 
+% combina múltiples modelos de aprendizaje automático ---denominados \textbf{modelos base}--- para obtener un 
+% modelo final con un mejor desempeño que los modelos base por separado.
 
-\subsection{Bagging}
-
-
-\subsection{Boosting}
+% \subsection{Bagging}
 
 
-\subsection{Stacking}
+% \subsection{Boosting}
+
+
+% \subsection{Stacking}
 
 
 % ------------------------------------------------------------------------------------------------------------
@@ -906,7 +934,7 @@ Como se ha introducido antes, el operador de \textbf{convolución} es la base de
 matemático aplica un \textbf{filtro} (también denominado \textit{kernel})\footnote{
     Aunque, como veremos después, a la hora de hablar de capas convolucionales, no son lo mismo.
 } a regiones locales de una imagen de 
-entrada, realizando un producto punto\footnote{El producto punto ---o producto escalar--- de dos vectores, se 
+entrada, realizando un producto punto\footnote{El producto punto o producto escalar de dos vectores, se 
 define como la suma de los productos componente a componente. 
 
 $$
@@ -1127,8 +1155,9 @@ el sobreajuste. Veamos algunas de las técnicas empleadas en CNNs:
         ]{
             Diagrama del funcionamiento de neuronas con \textit{dropout}.
             Recuperado de la Figura 5.29 de \cite{szeliski2010}.
-            Cuando se evalúa el modelo, todas las unidades funcionan correctamente (\ref{sub@fig:net_deactivate_dropout}). 
-            Durante el entrenamiento, algunas son ``apagadas'' (\ref{sub@fig:net_activate_dropout}). 
+            Cuando se evalúa el modelo, todas las unidades funcionan correctamente 
+            (\ref{sub@fig:net_deactivate_dropout}). Durante el entrenamiento, algunas son ``apagadas'' 
+            (\ref{sub@fig:net_activate_dropout}). 
         }
         \label{fig:net_with_dropout}
     \end{figure}
@@ -1204,17 +1233,17 @@ preentrenadas para mejorar el rendimiento en la tarea específica.
 
 
 % ------------------------------------------------------------------------------------------------------------
-% ERROR E INCERTIDUMBRE --------------------------------------------------------------------------------------
+% INCERTIDUMBRE ----------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
 
-\section{Error e incertidumbre}
+\section{Incertidumbre}
 
 La metrología\footnote{
-    Ciencia de las mediciones y sus aplicaciones \cite{jcgm200:2012es}.
-}, y la estadística comparten un papel fundamental en el análisis del 
-error y la incertidumbre en campos como el ML. La metrología proporciona el marco para entender y cuantificar 
-con precisión las mediciones, mientras que la estadística permite modelar, analizar y gestionar la 
-variabilidad inherente a los datos.
+    Ciencia de las mediciones y sus aplicaciones \cite{jcgm200:2012}.
+}, y la estadística comparten un papel fundamental en el análisis del error y la incertidumbre en campos como 
+el ML. Mientras la metrología establece los fundamentos conceptuales de error e incertidumbre, la estadística 
+proporciona métodos para cuantificar, modelar y reducir estos factores durante el desarrollo y validación de 
+modelos.
 
 El Comité Conjunto de Guías en Metrología (\textit{Joint Committe for Guides in Metrology}, JCGM)\footnote{
     Este Comité está formado por numerosas organizaciones internacionales de metrología y normalización: 
@@ -1232,21 +1261,19 @@ define el \textbf{error} como una ``medición imperfecta'' de la magnitud observ
 por efectos aleatorios (componente aleatoria del error) y por efectos sistemáticos (componente sistemática del 
 error, más conocida como \textbf{sesgo}).
 Por otro lado, define a la \textbf{incertidumbre} como ``parámetro, asociado con el resultado de una medición, 
-que caracteriza la dispersión de los valores que podrían atribuirse razonablemente al mesurando\footnote{
-    El mesurando es la magnitud a ser medida. 
-}. [...] El parámetro puede ser, por ejemplo, una desviación estándar, o la anchura de un intervalo con un 
-nivel de confianza establecido'' \cite{jcgm100:2008}.
+que caracteriza la dispersión de los valores que podrían atribuirse razonablemente al \textbf{mensurado}, que
+es como se denomina a la magnitud a ser medida. [...] El parámetro puede ser, por ejemplo, una desviación 
+estándar, o la anchura de un intervalo con un nivel de confianza establecido'' \cite{jcgm100:2008}.
 
-Partiendo de estas definiciones generales, veamos ...
+Partiendo de estas definiciones generales, veamos las diferencias entre los dos enfoques principales en la 
+evaluación de mediciones: el enfoque basado en el error y el enfoque basado en la incertidumbre.
 
-%-------------------------------------------------------------------------------------------------------------
-
-El enfoque basado en el error parte del supuesto de que existe un valor verdadero. En consecuencia, el 
-propósito de la medición es aproximarse lo más posible a dicho valor, minimizando las distintas componentes 
-del error \cite{jcgm100:2008}:
+El \textbf{enfoque basado en el error} o enfoque tradicional parte de la premisa de que existe un valor 
+verdadero. En consecuencia, el propósito de la medición es aproximarse lo más posible a dicho valor, 
+minimizando las distintas componentes del error \cite{jcgm100:2008}:
 
 \begin{itemize}
-    \item Para el error aleatorio, esto se logra aumentando el número de observaciones, ya que su distribución 
+    \item para el error aleatorio, esto se logra aumentando el número de observaciones, ya que su distribución 
     tiene una media igual a cero; y
 
     \item para el error sistemático, es necesario identificarlo y cuantificar su magnitud, lo que permite 
@@ -1255,69 +1282,151 @@ del error \cite{jcgm100:2008}:
 \end{itemize}
 
 Se asume que el resultado de la medición ha sido corregido por todos los efectos sistemáticos identificados
-como significativos, de modeo que la esperanza matemática del error sistemático sea igual a cero.
+como significativos, de modelo que la esperanza matemática de esta componente sea igual a cero.
 
-Es en esta asunción donde reside su mayor debilidad, pues aquellos efectos sistemáticos no identificados o
-cuantificables dificultan su diferenciación de los efectos aleatorios. 
+Sin embargo, en la práctica no existen reglas claras para distinguir las componentes del error ni cómo estas 
+se combinan en el error total
+ que permitan diferenciar claramente las componentes del error ni
+cómo estas se combinan en el error total. En general, solo es posible estimar un límite superior del valor 
+absoluto del error total estimado, al que se denomina de forma inapropiada ``incertidumbre''. 
 
-%-------------------------------------------------------------------------------------------------------------
+Frente a enfoque anterior, se presenta el \textbf{enfoque basado en la incertidumbre} \cite{jcgm100:2008}, 
+cuyo propósito no es hallar el mejor valor posible, sino establecer un intervalo de valores razonables para el 
+mensurando, el cual puede refinarse con información adicional. Así, la medición misma se convierte en una 
+herramienta para determinar el error del instrumento. 
 
-Frente a este enfoque, se presenta el \textbf{enfoque en la incertidumbre}
-
-
-, que asume la imposibilidad de 
-conocer exactamente el valor verdadero del mensurado
-
-
-
-asignar un intervalo de valores razonables al mensurado
-
-información adicional puede reducir el rango de valores del intervalo
-
-
-
-la medición puede entenderse como una forma de determinar el error del instrumento
-en ensayo
-
-%----------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-Se diferencian dos enfoques estadísticos: estadística frecuentista y estadística bayesiana.
-
-La \textbf{estadística frecuentista} 
-
-La estadística bayesiana
-
-
-
-
-
-Vamos a redefinir una serie de conceptos para ...: incertidumbre, error, residuo, sesgo.
-
-El error es la diferencia entre el valor verdadero ---asumiendo que existe--- y el valor medido.
-
-
-
+% ------------------------------------------------------------------------------------------------------------
 
 \subsection{Intervalos de valores razonables}
 
-
+Veamos qué tipos de intervalos de valores nos permiten cuantificar la variabilidad de los resultados y, por 
+tanto, la incertidumbre de la medición realizada. 
 
 \begin{itemize}
-    \item Intervalos de confianza:
-    \item Intervalos de credibilidad: 
-    \item Intervalos de predicción
+
+    \item El \textbf{intervalo de confianza (IC)} es una herramienta común de la estadística 
+    frecuentista\footnote{
+        La estadística frecuentista ... ¿Anexo explicando las diferencias entre frecuentista y bayesiana?
+        (para agosto)
+    },
+    que permite estimar un rango de valores tal que podamos confiar en que contiene al valor verdadero de 
+    un parámetro poblacional desconocido $\theta$ (p.ej., la media) \cite{berrendero2025}.
+
+    Los métodos del cálculo del IC dependen de la distribución del estimador (p.ej., la distribución de la
+    media muestral) y los parámetros conocidos. 
+
+    Es importante aclarar un malentendido común: un intervalo de confianza con nivel 95\% para un parámetro 
+    $\theta$ no significa que exista un 95\% de probabilidad de que $\theta$ esté dentro del intervalo 
+    calculado a partir de una muestra específica. En realidad, el 95\% se refiere a la frecuencia con la que 
+    , si muestreásemos muchas veces los datos, los intervalos construidos a partir de esas muestras incluirían 
+    al valor verdadero de $\theta$ en aproximadamente el 95\% \cite{murphy2022}.
+
+
+    \item El \textbf{intervalo de credibilidad o región creíble (RC)} es, de hecho, la que determina que el 
+    parámetro $\theta$ está contenido en el rango de sus valores con una probabilidad determinada por la 
+    confianza. Este intervalo es la aproximación bayesiana equivalente al intervalo de confianza, y, como 
+    este, requiere conocer la distribución a priori de los datos.
+
+    La diferencia radica en que, a diferencia del intervalo de confianza, que parte de que $\theta$ es un 
+    parámetro fijo desconocido y los datos son tratados como aleatorios, el enfoque bayesiano fija los datos
+    (ya que son conocidos) y el parámetro $\theta$ lo trata como aleatorio (ya que es desconocido) 
+    \cite{murphy2022}.
+
+    Esta interpretación resulta más intuitiva y directa en comparación con la interpretación frecuentista del 
+    intervalo de confianza. En particular, una región creíble del 95\% sí puede interpretarse como que hay un
+    95\% de probabilidad de que el parámetro $\theta$ se encuentre dentro de ese intervalo, dado el conjunto
+    de datos observado y la distribución a priori asumida.
+
+
+    \item El \textbf{intervalo de predicción (\textit{prediction interval})} es radicalmente diferente a los 
+    intervalos previos, pues trata de predecir un valor futuro de una observación, no determinar un parámetro 
+    poblacional. Existen numerosos métodos, con mayores y menores garantías estadísticas, con y sin 
+    necesidad de conocer la distribución de los datos. El enfoque más prometedor es la predicción conformal, 
+    que han demostrado ser eficaz en contextos donde los supuestos clásicos (normalidad, homocedasticidad) no 
+    se cumplen \cite{romano2019}, y es actualmente el enfoque más robusto para la construcción de intervalos 
+    de predicción en aplicaciones modernas de ML 
+    \cite{romano2019, luo2025, sadinle2019, romano2020, angelopoulos2020}.
+
 \end{itemize}
 
+Como podemos esperar, a más estrecho sea el intervalo que manejemos, más se puede confiar en las predicciones,
+pero no todos los tipos de intervalos revelan la misma información sobre incertidumbre. 
+
+% ------------------------------------------------------------------------------------------------------------
+
+\subsection{Cuantificación de la incertidumbre en \textit{machine learning}}
+
+El enfoque basado en incertidumbre se puede extrapolar a modelos de ML. En problemas de regresión, la analogía
+es directa: es deseable que los modelos no solo proporcionen una predicción puntual, sino también un intervalo 
+que indique el grado de incertidumbre asociado a cada predicción, conocido como \textbf{intervalo de 
+predicción (\textit{prediction interval})}. En caso de los problemas de clasificación, el concepto equivalente 
+al de intervalo de predicción se denomina \textbf{conjunto de predicción (\textit{prediction set})}.
+
+\todo{¿Cómo conecto estos dos párrafos?}
+
+Podríamos incluso desglosar los tipos de incertidumbre según su origen, pero esto requeriría de conocimiento
+específico de cada problema para el que se aplique. Sí está más aceptada la clasificación de incertidumbre en
+aleatoria y epistémica \cite{hullermeier2021}:
+
+\begin{itemize}
+    
+    \item La incertidumbre aleatoria es la relativa al dato individual. 
+    Esta incertidumbre se debe a la variabilidad inherente del fenómeno observado y no puede reducirse, aunque 
+    se disponga de más datos. Por ejemplo, en un entorno médico, puede reflejar la variabilidad entre 
+    pacientes con condiciones similares.
+
+    \item La incertidumbre epistémica es la causada por falta de conocimiento o precisión del modelo.
+    Se relaciona con aspectos como la escasez de datos, la calidad de la información disponible o la capacidad 
+    limitada del modelo para generalizar. A diferencia de la incertidumbre aleatoria, la epistémica es 
+    reducible: puede disminuirse con más datos, mejores modelos o mayor comprensión del problema.
+    
+\end{itemize}
+
+A estos, se le puede añadir un tercero: el \textit{drift}, que procede de cambios en la distribución de los 
+datos a lo largo del tiempo, ya sea en la distribución de las variables de entrada, en la distribución de las
+variables de salida, o en la relación entre las dos previas. Por ejemplo: una imagen de entrada a un modelo de
+clasificación que no corresponde a ninguna clase con la que se haya entrenado anteriormente, o  
 
 
+% Relacionándolo con el apartado anterior, los intervalos de confianza solo informan de la incertidumbre 
+% aleatoria, puesto que asumen que el modelo está bien especificado y que el error residual es la única fuente 
+% de variabilidad. 
+
+% Los intervalos de credibilidad sí integran la incertidumbre en los parámetros del modelo y en la estructura 
+% del modelo mismo, capturando así tanto la incertidumbre aleatoria como la incertidumbre epistémica.
+
+% Frente a estos, los intervalos de predicción obtenidos mediante predicción conformal sí presentan información
+% de los tres componentes de incertidumbre. 
+
+
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/adversarial_example.png}
+    \caption[
+        Ejemplo adverario mal clasificado por un modelo ML entrenado con datos textuales.
+        Adaptado de la Figura 2 de \cite{hullermeier2021}, original de \cite{sato2018}.
+    ]{
+        Ejemplo adverario mal clasificado por un modelo ML entrenado con datos textuales.
+        Adaptado de la Figura 2 de \cite{hullermeier2021}, original de \cite{sato2018}.
+        Se observa que el cambio de una sola palabra ---y aparentemente sin mucha relevancia--- (destacada en 
+        negrita) basta para cambiar la predicción de ``sentimiento negativo'' a ``sentimiento positivo''.
+    } 
+    \label{fig:adversarial_example}
+\end{figure}
+
+% ------------------------------------------------------------------------------------------------------------
 
 \subsection{Calibración de modelos}
 
+% Qué es la calibración de modelos
+
+% Modelos de clasificación: Platt Scaling y Temperature Scaling
+
+% Modelos de regresión: Quantile Regression
+
+% Preludio de la Conformal Prediction
 
 
 
@@ -1330,13 +1439,13 @@ El error es la diferencia entre el valor verdadero ---asumiendo que existe--- y 
 \section{Conformal Prediction}
 
 
-\subsection{Diferencia entre intervalo de confianza e intervalo de predicción}
+% ------------------------------------------------------------------------------------------------------------
 
-La predicción conformal es un método que convierte predicciones puntuales en intervalos (regresión) o conjuntos 
-(clasificación) de predicción. Estos intervalos de predicción son similares a los intervalos de confianza porque 
-vienen con una garantía de probabilidad de cubrir el resultado verdadero. Sin embargo, la predicción conformal
-no requiere asumir ninguna distribución y funciona con cualquier modelo.
+\subsection{Conformal Prediction en problemas de regresión}
 
+
+
+% ------------------------------------------------------------------------------------------------------------
 
 \subsection{Conformal Prediction en problemas de clasificación}
 
@@ -1359,9 +1468,5 @@ añade una penalización a conjuntos de predicción demasiado grandes, realizand
 de la suma de un componente 
 
 
-% --------------------------------------------------------------------------------------------------------------------
-
-
-\subsection{Conformal Prediction en problemas de regresión}
 
 
