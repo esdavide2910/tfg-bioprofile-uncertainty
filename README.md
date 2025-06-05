@@ -5,11 +5,13 @@ Repositorio del Trabajo de Fin de Grado (TFG) centrado en la cuantificación de 
 ## 📌 Estructura del proyecto
 ```
 tfg_bioprofile_uncertainty/
-├── data/                   # Datos (crudos, procesados y resultados)
+├── data/                   # Datos crudos y procesados (no disponibles por confidencialidad)
+├── results/                # Resultados 
 ├── notebooks/              # Jupyter Notebooks para análisis y experimentos
-├── src/                    # Código fuente (modelos, utilidades, scripts)
+├── src/                    # Código fuente (modelos y utilidades)
+├── models/                 # Modelos entrenados guardados  
 ├── envs/                   # Configuraciones de entornos Conda
 ├── slurm/                  # Scripts y logs para ejecución en SLURM
-├── docs/                   # Documentación complementaria
+├── docs/                   # Documentación complementaria (memoria)
 └── README.md               # Este archivo
 ```
