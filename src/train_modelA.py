@@ -59,7 +59,7 @@ from sklearn.metrics import r2_score
 import time
 
 #
-from models import ResNeXtRegressor
+from custom_models import ResNeXtRegressor
 
 #-------------------------------------------------------------------------------------------------------------
 
@@ -206,13 +206,13 @@ intAges[intAges==26]=25
 # - Calibración (15% de las instancias)
 train_indices, aux_indices =  train_test_split(
     range(len(trainset)),
-    train_size=0.70,
+    train_size=0.65,
     shuffle=True,
     stratify=intAges
 )
 valid_indices, calib_indices = train_test_split(
     aux_indices,
-    train_size=0.5,
+    train_size=0.45,
     stratify=[intAges[i] for i in aux_indices],
 )
 
@@ -370,9 +370,6 @@ optimizer = torch.optim.AdamW(model.classifier.parameters(), lr=base_lr, weight_
 for param in model.feature_extractor.parameters():
     param.requires_grad = False
 
-# Establece el número de épocas a entrenar en el entrenamiento
-EPOCHS_PRETRAIN = 3
-    
 # Entrena el modelo con el conjunto de entrenamiento
 head_train_loss = train(model, train_loader, criterion, optimizer, device=device)
 
@@ -381,7 +378,7 @@ head_valid_loss = evaluate(model, valid_loader, criterion, device=device)
 
 # Imprime los valores de pérdida obtenidos en entrenamiento y validación 
 print(f'Epoch 0 | Train Loss: {head_train_loss:.2f} | Validation Loss: {head_valid_loss:.2f}')
-    
+
 # Guarda los pesos del modelo actual como los mejores hasta ahora
 torch.save(model.state_dict(), best_model_path)
 

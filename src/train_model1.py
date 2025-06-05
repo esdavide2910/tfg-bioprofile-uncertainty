@@ -335,26 +335,31 @@ best_model_path = models_dir + "model1.pth"
 criterion = nn.MSELoss()
 
 # Establece el learning rate base y weight decay 
-base_lr = 3e-2
+base_lr = 2.5e-2
 wd = 2e-4
 
 #-------------------------------------------------------------------------------------------------------------
-
-# Configura el optimizador para el entrenamiento de la nueva cabecera (el módulo classifier)
-optimizer = torch.optim.AdamW(model.classifier.parameters(), lr=base_lr, weight_decay=wd)
 
 # Congela los parámetros del extractor de características
 for param in model.feature_extractor.parameters():
     param.requires_grad = False
 
-# Entrena el modelo con el conjunto de entrenamiento
-head_train_loss = train(model, train_loader, criterion, optimizer, device=device)
+# Configura el optimizador para el entrenamiento de la nueva cabecera (el módulo classifier)
+optimizer = torch.optim.AdamW(model.classifier.parameters(), lr=base_lr, weight_decay=wd)
 
-# Evalua el modelo con el conjunto de validación
-head_valid_loss = evaluate(model, valid_loader, criterion, device=device)
+#
+NUM_EPOCHS_HEAD = 2
 
-# Imprime los valores de pérdida obtenidos en entrenamiento y validación 
-print(f'Epoch 0 | Train Loss: {head_train_loss:.2f} | Validation Loss: {head_valid_loss:.2f}')
+for epoch in range(NUM_EPOCHS_HEAD):
+
+    # Entrena el modelo con el conjunto de entrenamiento
+    head_train_loss = train(model, train_loader, criterion, optimizer, device=device)
+
+    # Evalua el modelo con el conjunto de validación
+    head_valid_loss = evaluate(model, valid_loader, criterion, device=device)
+
+    # Imprime los valores de pérdida obtenidos en entrenamiento y validación 
+    print(f'Epoch {epoch+1} | Train Loss: {head_train_loss:.2f} | Validation Loss: {head_valid_loss:.2f}')
 
 # Guarda los pesos del modelo actual como los mejores hasta ahora
 torch.save(model.state_dict(), best_model_path)
@@ -369,6 +374,9 @@ for param in model.parameters():
 
 # Número máximo de épocas a entrenar (si no se activa el early stopping)
 MAX_EPOCHS = 100
+
+# Número mínimo de épocas a entrenar
+MIN_EPOCHS = 30
 
 # Número de épocas sin mejora antes de detener el entrenamiento
 PATIENCE = 10
@@ -421,7 +429,8 @@ scheduler = torch.optim.lr_scheduler.OneCycleLR(
     optimizer, 
     max_lr=lrs, 
     steps_per_epoch=len(train_loader),
-    epochs=MAX_EPOCHS
+    epochs=MAX_EPOCHS,
+    pct_start=MIN_EPOCHS/MAX_EPOCHS*0.8
 )
 
 # Listas para almacenar las pérdidas de entrenamiento y validación
@@ -462,7 +471,7 @@ for epoch in range(MAX_EPOCHS):
         epochs_no_improve += 1
 
     # Si no hay mejora durante un número determinado de épocas (patience), detiene el entrenamiento
-    if epochs_no_improve >= PATIENCE:
+    if epochs_no_improve >= PATIENCE and (epoch+1) > MIN_EPOCHS: 
         print(f'Early stopping at epoch {epoch+1}')
         break
     

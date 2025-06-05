@@ -202,13 +202,13 @@ intAges[intAges==26]=25
 # - Calibración (15% de las instancias)
 train_indices, aux_indices =  train_test_split(
     range(len(trainset)),
-    train_size=0.70,
+    train_size=0.65,
     shuffle=True,
     stratify=intAges
 )
 valid_indices, calib_indices = train_test_split(
     aux_indices,
-    train_size=0.5,
+    train_size=0.45,
     stratify=[intAges[i] for i in aux_indices],
 )
 
