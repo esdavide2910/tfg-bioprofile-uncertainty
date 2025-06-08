@@ -1,0 +1,45 @@
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch 1 | Train Loss: 34.052 | Validation Loss: 12.549
+Epoch 2 | Train Loss: 11.397 | Validation Loss: 10.367
+✅ Entrenamiento de la nueva cabecera completado
+
+Epoch 1 | Train Loss: 8.577 | Validation Loss: 5.318
+Epoch 2 | Train Loss: 6.640 | Validation Loss: 4.520
+Epoch 3 | Train Loss: 5.877 | Validation Loss: 4.019
+Epoch 4 | Train Loss: 5.019 | Validation Loss: 4.042
+Epoch 5 | Train Loss: 4.718 | Validation Loss: 3.752
+Epoch 6 | Train Loss: 4.182 | Validation Loss: 3.505
+Epoch 7 | Train Loss: 4.077 | Validation Loss: 3.311
+Epoch 8 | Train Loss: 3.883 | Validation Loss: 3.300
+Epoch 9 | Train Loss: 3.610 | Validation Loss: 3.488
+Epoch 10 | Train Loss: 3.492 | Validation Loss: 3.531
+Epoch 11 | Train Loss: 3.364 | Validation Loss: 3.325
+Epoch 12 | Train Loss: 3.096 | Validation Loss: 3.578
+Epoch 13 | Train Loss: 3.291 | Validation Loss: 3.187
+Epoch 14 | Train Loss: 3.451 | Validation Loss: 3.565
+Epoch 15 | Train Loss: 3.297 | Validation Loss: 3.664
+Epoch 16 | Train Loss: 3.211 | Validation Loss: 3.170
+Epoch 17 | Train Loss: 3.371 | Validation Loss: 3.043
+Epoch 18 | Train Loss: 3.432 | Validation Loss: 3.911
+Epoch 19 | Train Loss: 3.315 | Validation Loss: 3.266
+Epoch 20 | Train Loss: 3.461 | Validation Loss: 3.685
+Epoch 21 | Train Loss: 3.173 | Validation Loss: 2.887
+Epoch 22 | Train Loss: 3.220 | Validation Loss: 4.460
+Epoch 23 | Train Loss: 3.492 | Validation Loss: 3.148
+Epoch 24 | Train Loss: 3.405 | Validation Loss: 3.306
+Epoch 25 | Train Loss: 3.466 | Validation Loss: 3.858
+Epoch 26 | Train Loss: 3.175 | Validation Loss: 2.922
+Epoch 27 | Train Loss: 3.474 | Validation Loss: 2.830
+Epoch 28 | Train Loss: 3.093 | Validation Loss: 3.189
+Epoch 29 | Train Loss: 3.041 | Validation Loss: 2.805
+Epoch 30 | Train Loss: 3.070 | Validation Loss: 4.653
+Epoch 31 | Train Loss: 3.102 | Validation Loss: 10.061
+Epoch 32 | Train Loss: 3.026 | Validation Loss: 2.961
+Epoch 33 | Train Loss: 3.053 | Validation Loss: 2.892
+Epoch 34 | Train Loss: 3.262 | Validation Loss: 3.278
+Epoch 35 | Train Loss: 3.334 | Validation Loss: 2.600
+Epoch 36 | Train Loss: 2.914 | Validation Loss: 2.476
+Epoch 37 | Train Loss: 2.654 | Validation Loss: 3.749

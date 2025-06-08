@@ -1,0 +1,76 @@
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch 1 | Train Loss: 4.36 | Validation Loss: 2.01
+Epoch 2 | Train Loss: 2.21 | Validation Loss: 1.92
+✅ Entrenamiento de la nueva cabecera completado
+
+Epoch 1 | Train Loss: 1.96 | Validation Loss: 1.60
+Epoch 2 | Train Loss: 1.80 | Validation Loss: 1.49
+Epoch 3 | Train Loss: 1.72 | Validation Loss: 1.40
+Epoch 4 | Train Loss: 1.59 | Validation Loss: 1.40
+Epoch 5 | Train Loss: 1.52 | Validation Loss: 1.28
+Epoch 6 | Train Loss: 1.45 | Validation Loss: 1.28
+Epoch 7 | Train Loss: 1.39 | Validation Loss: 1.21
+Epoch 8 | Train Loss: 1.34 | Validation Loss: 1.25
+Epoch 9 | Train Loss: 1.31 | Validation Loss: 1.18
+Epoch 10 | Train Loss: 1.27 | Validation Loss: 1.18
+Epoch 11 | Train Loss: 1.24 | Validation Loss: 1.26
+Epoch 12 | Train Loss: 1.19 | Validation Loss: 1.18
+Epoch 13 | Train Loss: 1.20 | Validation Loss: 1.17
+Epoch 14 | Train Loss: 1.18 | Validation Loss: 1.14
+Epoch 15 | Train Loss: 1.21 | Validation Loss: 1.13
+Epoch 16 | Train Loss: 1.16 | Validation Loss: 1.13
+Epoch 17 | Train Loss: 1.17 | Validation Loss: 1.18
+Epoch 18 | Train Loss: 1.17 | Validation Loss: 1.08
+Epoch 19 | Train Loss: 1.14 | Validation Loss: 1.08
+Epoch 20 | Train Loss: 1.12 | Validation Loss: 1.10
+Epoch 21 | Train Loss: 1.10 | Validation Loss: 1.07
+Epoch 22 | Train Loss: 1.13 | Validation Loss: 1.12
+Epoch 23 | Train Loss: 1.11 | Validation Loss: 1.13
+Epoch 24 | Train Loss: 1.12 | Validation Loss: 1.19
+Epoch 25 | Train Loss: 1.10 | Validation Loss: 1.16
+Epoch 26 | Train Loss: 1.12 | Validation Loss: 1.99
+Epoch 27 | Train Loss: 1.13 | Validation Loss: 1.08
+Epoch 28 | Train Loss: 1.11 | Validation Loss: 1.09
+Epoch 29 | Train Loss: 1.08 | Validation Loss: 1.13
+Epoch 30 | Train Loss: 1.12 | Validation Loss: 1.05
+Epoch 31 | Train Loss: 1.13 | Validation Loss: 1.04
+Epoch 32 | Train Loss: 1.08 | Validation Loss: 1.16
+Epoch 33 | Train Loss: 1.08 | Validation Loss: 1.17
+Epoch 34 | Train Loss: 1.08 | Validation Loss: 1.09
+Epoch 35 | Train Loss: 1.04 | Validation Loss: 1.01
+Epoch 36 | Train Loss: 1.05 | Validation Loss: 1.04
+Epoch 37 | Train Loss: 1.00 | Validation Loss: 1.19
+Epoch 38 | Train Loss: 1.00 | Validation Loss: 1.01
+Epoch 39 | Train Loss: 1.05 | Validation Loss: 1.01
+Epoch 40 | Train Loss: 1.00 | Validation Loss: 1.08
+Epoch 41 | Train Loss: 0.99 | Validation Loss: 1.00
+Epoch 42 | Train Loss: 1.00 | Validation Loss: 1.02
+Epoch 43 | Train Loss: 0.99 | Validation Loss: 1.12
+Epoch 44 | Train Loss: 0.97 | Validation Loss: 1.04
+Epoch 45 | Train Loss: 0.95 | Validation Loss: 0.97
+Epoch 46 | Train Loss: 0.93 | Validation Loss: 1.04
+Epoch 47 | Train Loss: 0.94 | Validation Loss: 1.05
+Epoch 48 | Train Loss: 0.97 | Validation Loss: 1.13
+Epoch 49 | Train Loss: 0.91 | Validation Loss: 1.06
+Epoch 50 | Train Loss: 0.91 | Validation Loss: 1.05
+Epoch 51 | Train Loss: 0.92 | Validation Loss: 1.17
+Epoch 52 | Train Loss: 0.91 | Validation Loss: 1.19
+Epoch 53 | Train Loss: 0.90 | Validation Loss: 0.98
+Epoch 54 | Train Loss: 0.87 | Validation Loss: 0.99
+Epoch 55 | Train Loss: 0.86 | Validation Loss: 0.99
+Early stopping at epoch 55
+
+El entrenamiento y validación ha tardado 3 horas, 19 minutos y 8 segundos.
+✅ Entrenamiento de la red completa completado
+
+/mnt/homeGPU/dgonzalez/tfg-bioprofile-uncertainty/src/train_model3.py:569: DeprecationWarning: __array_wrap__ must accept context and return_scalar arguments (positionally) in the future. (Deprecated NumPy 2.0)
+  calib_scores = np.maximum(calib_true_values - calib_pred_upper_bound,
+✅ Calibración completada
+
+Porcentaje de valores verdaderos dentro del intervalor predicho (esperando 50.0%): 49.81%
+Tamaño medio del intervalo: 2.00
+✅ Testeo de la red completado
+

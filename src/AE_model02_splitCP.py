@@ -193,7 +193,7 @@ BATCH_SIZE = 32
 intAges = np.floor(trainset.metadata['Age'].astype(float).to_numpy()).astype(int)
 # Como se ha visto antes, hay una única instancia con edad 26, que el algoritmo de separación de entrenamiento 
 # y validación será incapaz de dividir de forma estratificada. Para evitar el error, reasigna esa instancia a 
-# la edad inmediatamente inferior.
+# la edad inmediatamente inferior
 intAges[intAges==26]=25
 
 # Divide el conjunto de datos completo de entrenamiento en dos subconjuntos de forma estratificada:
@@ -202,13 +202,13 @@ intAges[intAges==26]=25
 # - Calibración (15% de las instancias)
 train_indices, aux_indices =  train_test_split(
     range(len(trainset)),
-    train_size=0.65,
+    train_size=0.7,
     shuffle=True,
     stratify=intAges
 )
 valid_indices, calib_indices = train_test_split(
     aux_indices,
-    train_size=0.45,
+    train_size=0.5,
     stratify=[intAges[i] for i in aux_indices],
 )
 
@@ -260,57 +260,13 @@ print("✅ Datasets de imágenes cargados\n")
 
 #-------------------------------------------------------------------------------------------------------------
 
-#
-pretrained_model = ResNeXtRegressor()
-pretrained_model.load_state_dict(torch.load(models_dir + "modelA.pth"))
-
 # 
-alpha = 0.1  
-quantiles = [.05, .95]
+alpha = 0.2             # Nivel de confianza es 1-alpha
 
 #
-model = ResNeXtRegressor(len(quantiles))
-
-# Copiamos los pesos del extractos de características (backbone) del modelo 1
-model.feature_extractor.load_state_dict(pretrained_model.feature_extractor.state_dict(), strict=True)
-
-# Cargamos el modelo en GPU
-model = model.to(device)
+model = ResNeXtRegressor().to(device)
 
 print("✅ Modelo cargado\n")
-
-#-------------------------------------------------------------------------------------------------------------
-
-# Define la clase de pérdida para la regresión por cuantil
-# Esta pérdida mide cuán bien predice un modelo los cuantiles de una distribución
-class QuantileLoss(nn.Module):
-    
-    def __init__(self, quantiles):
-        
-        super().__init__()
-        self.quantiles = quantiles
-        
-        
-    def forward(self, preds, targets):
-        # Asegura que los targets no estén marcados para el cálculo de gradientes (esto es importante porque 
-        # solo las predicciones deben participar en el backpropagation, no las etiquetas reales)
-        assert not targets.requires_grad
-        # Asegura que el batch size de las predicciones y los targets coincide
-        assert preds.size(0) == targets.size(0)
-        # Asegura que el número de columnas en preds coincida con el número de cuantiles que se quieren 
-        # predecir
-        assert preds.size(1) == len(self.quantiles)
-        
-        losses = []
-        for i, q in enumerate(self.quantiles):
-            errors = targets - preds[:,i]
-            losses.append(torch.max((q-1)*errors, q*errors).unsqueeze(1))
-            
-        #
-        all_losses = torch.cat(losses, dim=1)
-        loss = torch.mean(torch.sum(all_losses, dim=1))
-        return loss
-    
 
 #-------------------------------------------------------------------------------------------------------------
 
@@ -356,7 +312,7 @@ def train(model, dataloader, loss_fn, optimizer, scheduler=None, device="cuda"):
 
 #-------------------------------------------------------------------------------------------------------------
 
-def evaluate(model, dataloader, metric_fn=None, device="cuda"):
+def inference(model, dataloader, metric_fn=None, device="cuda"):
     
     # Pone la red en modo evaluación (esto desactiva el dropout)
     model.eval()  
@@ -391,36 +347,41 @@ def evaluate(model, dataloader, metric_fn=None, device="cuda"):
     # Aplica la función de métrica y la devuelve
     metric_value = metric_fn(all_predicted, all_targets)
     return metric_value
-    
+
 #-------------------------------------------------------------------------------------------------------------
 
 # Ruta donde se guardará el modelo con mejor desempeño
-best_model_path = models_dir + "model3.pth" 
+best_model_path = models_dir + "AE_model02_splitCP.pth" 
 
 # Define la función de pérdida a usar
-criterion = QuantileLoss(quantiles).to(device)
+criterion = nn.MSELoss().to(device)
 
 # Establece el learning rate base y weight decay 
-base_lr = 1.5e-2
+base_lr = 3e-2
 wd = 2e-4
 
 #-------------------------------------------------------------------------------------------------------------
-
-# Configura el optimizador para el entrenamiento de la nueva cabecera (el módulo classifier)
-optimizer = torch.optim.AdamW(model.classifier.parameters(), lr=base_lr, weight_decay=wd)
 
 # Congela los parámetros del extractor de características
 for param in model.feature_extractor.parameters():
     param.requires_grad = False
 
-# Entrena el modelo con el conjunto de entrenamiento
-head_train_loss = train(model, train_loader, criterion, optimizer, device=device)
+# Configura el optimizador para el entrenamiento de la nueva cabecera (el módulo classifier)
+optimizer = torch.optim.AdamW(model.classifier.parameters(), lr=base_lr, weight_decay=wd)
 
-# Evalua el modelo con el conjunto de validación
-head_valid_loss = evaluate(model, valid_loader, criterion, device=device)
+# Numero de épocas que se entrena la nueva cabecera
+NUM_EPOCHS_HEAD = 2
 
-# Imprime los valores de pérdida obtenidos en entrenamiento y validación 
-print(f'Epoch 0 | Train Loss: {head_train_loss:.2f} | Validation Loss: {head_valid_loss:.2f}')
+for epoch in range(NUM_EPOCHS_HEAD):
+
+    # Entrena el modelo con el conjunto de entrenamiento
+    head_train_loss = train(model, train_loader, criterion, optimizer, device=device)
+
+    # Evalua el modelo con el conjunto de validación
+    head_valid_loss = inference(model, valid_loader, criterion, device=device)
+
+    # Imprime los valores de pérdida obtenidos en entrenamiento y validación 
+    print(f'Epoch {epoch+1} | Train Loss: {head_train_loss:.3f} | Validation Loss: {head_valid_loss:.3f}')
     
 # Guarda los pesos del modelo actual como los mejores hasta ahora
 torch.save(model.state_dict(), best_model_path)
@@ -435,6 +396,9 @@ for param in model.parameters():
 
 # Número máximo de épocas a entrenar (si no se activa el early stopping)
 MAX_EPOCHS = 100
+
+# Número mínimo de épocas a entrenar
+MIN_EPOCHS = 30
 
 # Número de épocas sin mejora antes de detener el entrenamiento
 PATIENCE = 10
@@ -455,8 +419,9 @@ lr_div = 100            # Factor de reducción entre el learning rate más alto 
 max_lr = base_lr/2      # Learning rate más alto (capa más superficial)
 min_lr = max_lr/lr_div  # Learning rate más bajo (capa más profunda) 
  
-# Obtiene el número total de capas del modelo
-n_layers = len(layer_names)
+# Obtenemos los grupos de capas del modelo (de más superficiales a más profundas)
+layer_groups = model.get_layer_groups()
+n_layers = len(layer_groups)
 
 # Genera una lista de tasas de aprendizaje para cada capa, aumentando de forma exponencial desde min_lr hasta 
 # max_lr
@@ -465,19 +430,12 @@ lrs = [
     for i in range(n_layers)
 ]
 
-# Lista en la que se almacenarán los parámetros 
+# Lista en la que se almacenarán los parámetros por grupo y sus lr
 param_groups = []
-
-# Crea un diccionario de parámetros por nombre
-named_params = dict(model.named_parameters())
-
-# Crea el param_groups
-for name, lr in zip(layer_names, lrs):
-    param = named_params[name]
-    param_groups.append({
-        "params": [param],  
-        "lr": lr
-    })
+for layer_group, lr in zip(layer_groups, lrs):
+    param_groups.append(
+        {"params": layer_group, "lr": lr}
+    )
 
 # Configura el optimizador con los hiperparámetros escogidos
 optimizer = torch.optim.AdamW(param_groups, lr=base_lr, weight_decay=wd)
@@ -505,11 +463,11 @@ for epoch in range(MAX_EPOCHS):
     train_losses.append(train_loss)
     
     # Evalua el modelo con el conjunto de validación
-    valid_loss = evaluate(model, valid_loader, criterion, device)
+    valid_loss = inference(model, valid_loader, criterion, device)
     valid_losses.append(valid_loss)
     
     # Imprime los valores de pérdida obtenidos en entrenamiento y validación  
-    print(f'Epoch {epoch+1} | Train Loss: {train_loss:.2f} | Validation Loss: {valid_loss:.2f}')
+    print(f'Epoch {epoch+1} | Train Loss: {train_loss:.3f} | Validation Loss: {valid_loss:.3f}')
     
     # Comprueba si la pérdida en validación ha mejorado
     if valid_loss < best_valid_loss:
@@ -527,8 +485,9 @@ for epoch in range(MAX_EPOCHS):
         # Incrementa el contador si no hay mejora en la pérdida de validación
         epochs_no_improve += 1
 
-    # Si no hay mejora durante un número determinado de épocas (patience), detiene el entrenamiento
-    if epochs_no_improve >= PATIENCE:
+    # Si no hay mejora durante un número determinado de épocas (patience) y ya ha pasado el número mínimo de 
+    # épocas, detiene el entrenamiento
+    if epochs_no_improve >= PATIENCE and (epoch+1) > MIN_EPOCHS: 
         print(f'Early stopping at epoch {epoch+1}')
         break
     
@@ -559,49 +518,50 @@ plt.legend()
 plt.grid(True)
 
 # Guarda la imagen
-plt.savefig(results_dir + 'learning_curve_model3.png', dpi=300, bbox_inches='tight')  
+plt.savefig(results_dir + 'learning_curve_AE_model02_splitCP.png', dpi=300, bbox_inches='tight')  
 
 print("✅ Entrenamiento de la red completa completado\n")
 
 #-------------------------------------------------------------------------------------------------------------
 
 #
-calib_pred_values, calib_true_values = evaluate(model, calib_loader)
+calib_pred_values, calib_true_values = inference(model, calib_loader)
 
 #
-calib_pred_lower_bound = calib_pred_values[:, 0]
-calib_pred_upper_bound = calib_pred_values[:,-1]
+calib_scores = np.abs(calib_true_values-calib_pred_values)
 
-#
-calib_scores = np.maximum(calib_true_values - calib_pred_upper_bound, 
-                          calib_pred_lower_bound - calib_true_values)
+# Calcula el nivel de cuantificación ajustado
+n = len(calib_scores)
+q_level = np.ceil((1-alpha) * (n + 1)) / n
 
-#
-q_hat = np.quantile(calib_scores, 1-alpha)
+# Calcula el cuantil qhat
+q_hat = np.quantile(calib_scores, q_level, method="higher")
 
 print("✅ Calibración completada\n")
 
 #-------------------------------------------------------------------------------------------------------------
 
 # Obtiene los valores predichos y los verdaderos 
-test_pred_values, test_true_values = evaluate(model, test_loader)
+test_pred_values, test_true_values = inference(model, test_loader)
 
 # Extraemos los percentiles inferior y superior, que son los que conforman el mínimo y máximo del intervalo de 
 # predicción, respectivamente
-test_pred_lower_bound = test_pred_values[:, 0] - q_hat
-test_pred_upper_bound = test_pred_values[:,-1] + q_hat
+test_pred_lower_bound = test_pred_values - q_hat
+test_pred_upper_bound = test_pred_values + q_hat
 
-# Comprobamos si cada valor verdadero está entre esos límites
+# Calcula la cobertura empírica (porcentaje de valores reales dentro del intervalo de predicción) y lo imprime
 inside_interval = (test_true_values >= test_pred_lower_bound) & (test_true_values <= test_pred_upper_bound)
-
-# Calcula el porcentaje de valores dentro del intervalo de predicción y lo imprime
-percentage_inside = inside_interval.float().mean().item() * 100
-print(f"Porcentaje de valores verdaderos dentro del intervalor predicho " +
-      f"(esperando {(1-alpha)*100}%): {percentage_inside:.2f}%")
+empirical_coverage = inside_interval.float().mean().item() * 100
+print(f"Cobertura empírica (para {(1-alpha)*100}% de confianza): {empirical_coverage:>6.3f}")
 
 # Calcula el tamaño medio del intervalo de predicción y lo imprime
 mean_interval_size = torch.mean(test_pred_upper_bound - test_pred_lower_bound).item()
-print(f"Tamaño medio del intervalo: {mean_interval_size:.2f}")
+print(f"Tamaño medio del intervalo: {mean_interval_size:>6.3f}")
+
+# Calcula el tamaño medio de aquellos intervalos de predicciónq que cubren el valor real
+covered_intervals = (test_pred_upper_bound - test_pred_lower_bound)[inside_interval]
+mean_covered_interval_size = covered_intervals.mean().item()
+print(f"Tamaño medio de los intervalos que cubren el valor real: {mean_covered_interval_size:>6.3f}")
 
 print("✅ Testeo de la red completado\n")
 

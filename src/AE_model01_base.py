@@ -193,7 +193,7 @@ BATCH_SIZE = 32
 intAges = np.floor(trainset.metadata['Age'].astype(float).to_numpy()).astype(int)
 # Como se ha visto antes, hay una única instancia con edad 26, que el algoritmo de separación de entrenamiento 
 # y validación será incapaz de dividir de forma estratificada. Para evitar el error, reasigna esa instancia a 
-# la edad inmediatamente inferior.
+# la edad inmediatamente inferior
 intAges[intAges==26]=25
 
 # Divide el conjunto de datos completo de entrenamiento en dos subconjuntos de forma estratificada:
@@ -277,7 +277,7 @@ def train(model, dataloader, loss_fn, optimizer, scheduler=None, device="cuda"):
         # Actualiza los parámetros del modelo
         optimizer.step()            
         
-        #
+        # Actualiza el scheduler de la tasa de aprendizaje (si se proporciona)
         if scheduler is not None:
             scheduler.step()   
  
@@ -290,7 +290,7 @@ def train(model, dataloader, loss_fn, optimizer, scheduler=None, device="cuda"):
 
 #-------------------------------------------------------------------------------------------------------------
 
-def evaluate(model, dataloader, metric_fn=None, device="cuda"):
+def inference(model, dataloader, metric_fn=None, device="cuda"):
     
     # Pone la red en modo evaluación (esto desactiva el dropout)
     model.eval()  
@@ -329,13 +329,13 @@ def evaluate(model, dataloader, metric_fn=None, device="cuda"):
 #-------------------------------------------------------------------------------------------------------------
 
 # Ruta donde se guardará el modelo con mejor desempeño
-best_model_path = models_dir + "model1.pth" 
+best_model_path = models_dir + "AE_model01_base.pth" 
 
 # Define la función de pérdida a usar
-criterion = nn.MSELoss()
+criterion = nn.MSELoss().to(device)
 
 # Establece el learning rate base y weight decay 
-base_lr = 2.5e-2
+base_lr = 3e-2
 wd = 2e-4
 
 #-------------------------------------------------------------------------------------------------------------
@@ -347,19 +347,19 @@ for param in model.feature_extractor.parameters():
 # Configura el optimizador para el entrenamiento de la nueva cabecera (el módulo classifier)
 optimizer = torch.optim.AdamW(model.classifier.parameters(), lr=base_lr, weight_decay=wd)
 
-#
+# Numero de épocas que se entrena la nueva cabecera
 NUM_EPOCHS_HEAD = 2
 
-for epoch in range(NUM_EPOCHS_HEAD):
+for epoch in range(NUM_EPOCHS_HEAD):    
 
     # Entrena el modelo con el conjunto de entrenamiento
     head_train_loss = train(model, train_loader, criterion, optimizer, device=device)
 
     # Evalua el modelo con el conjunto de validación
-    head_valid_loss = evaluate(model, valid_loader, criterion, device=device)
+    head_valid_loss = inference(model, valid_loader, criterion, device=device)
 
     # Imprime los valores de pérdida obtenidos en entrenamiento y validación 
-    print(f'Epoch {epoch+1} | Train Loss: {head_train_loss:.2f} | Validation Loss: {head_valid_loss:.2f}')
+    print(f'Epoch {epoch+1} | Train Loss: {head_train_loss:.3f} | Validation Loss: {head_valid_loss:.3f}')
 
 # Guarda los pesos del modelo actual como los mejores hasta ahora
 torch.save(model.state_dict(), best_model_path)
@@ -396,30 +396,24 @@ for (name, param) in model.named_parameters():
 lr_div = 100            # Factor de reducción entre el learning rate más alto y el más pequeño
 max_lr = base_lr/2      # Learning rate más alto (capa más superficial)
 min_lr = max_lr/lr_div  # Learning rate más bajo (capa más profunda) 
- 
-# Obtiene el número total de capas del modelo
-n_layers = len(layer_names)
 
-# Genera una lista de tasas de aprendizaje para cada capa, aumentando de forma exponencial desde min_lr hasta 
-# max_lr
+# Obtenemos los grupos de capas del modelo (de más superficiales a más profundas)
+layer_groups = model.get_layer_groups()
+n_layers = len(layer_groups)
+
+# Calcula un learning rate distinto para cada grupo de capas, interpolando exponencialmente entre min_lr 
+# (capas profundas) y max_lr (capas superficiales)
 lrs = [
-    min_lr * (max_lr / min_lr) ** (i / (n_layers - 1)) 
+    min_lr * (max_lr / min_lr) ** (i / (n_layers - 1))
     for i in range(n_layers)
 ]
 
-# Lista en la que se almacenarán los parámetros 
+# Lista en la que se almacenarán los parámetros por grupo y sus lr
 param_groups = []
-
-# Crea un diccionario de parámetros por nombre
-named_params = dict(model.named_parameters())
-
-# Crea el param_groups
-for name, lr in zip(layer_names, lrs):
-    param = named_params[name]
-    param_groups.append({
-        "params": [param],  
-        "lr": lr
-    })
+for layer_group, lr in zip(layer_groups, lrs):
+    param_groups.append(
+        {"params": layer_group, "lr": lr}
+    )
 
 # Configura el optimizador con los hiperparámetros escogidos
 optimizer = torch.optim.AdamW(param_groups, lr=base_lr, weight_decay=wd)
@@ -448,11 +442,11 @@ for epoch in range(MAX_EPOCHS):
     train_losses.append(train_loss)
     
     # Evalua el modelo con el conjunto de validación
-    valid_loss = evaluate(model, valid_loader, criterion, device)
+    valid_loss = inference(model, valid_loader, criterion, device)
     valid_losses.append(valid_loss)
     
     # Imprime los valores de pérdida obtenidos en entrenamiento y validación  
-    print(f'Epoch {epoch+1} | Train Loss: {train_loss:.2f} | Validation Loss: {valid_loss:.2f}')
+    print(f'Epoch {epoch+1} | Train Loss: {train_loss:.3f} | Validation Loss: {valid_loss:.3f}')
     
     # Comprueba si la pérdida en validación ha mejorado
     if valid_loss < best_valid_loss:
@@ -470,7 +464,8 @@ for epoch in range(MAX_EPOCHS):
         # Incrementa el contador si no hay mejora en la pérdida de validación
         epochs_no_improve += 1
 
-    # Si no hay mejora durante un número determinado de épocas (patience), detiene el entrenamiento
+    # Si no hay mejora durante un número determinado de épocas (patience) y ya ha pasado el número mínimo de 
+    # épocas, detiene el entrenamiento
     if epochs_no_improve >= PATIENCE and (epoch+1) > MIN_EPOCHS: 
         print(f'Early stopping at epoch {epoch+1}')
         break
@@ -502,22 +497,22 @@ plt.legend()
 plt.grid(True)
 
 # Guarda la imagen
-plt.savefig(results_dir + 'learning_curve_model1.png', dpi=300, bbox_inches='tight')  
+plt.savefig(results_dir + 'learning_curve_AE_model01_base.png', dpi=300, bbox_inches='tight')  
 
 print("✅ Entrenamiento de la red completa completado\n")
 
 #-------------------------------------------------------------------------------------------------------------
 
 # Obtiene los valores predichos y los verdaderos 
-test_pred_values, test_true_values = evaluate(model, test_loader)
+test_pred_values, test_true_values = inference(model, test_loader)
 
 # Calcula el MAE 
 test_mae = torch.mean(torch.abs(test_true_values - test_pred_values))
-print(f'Error Absoluto Medio (MAE) en test: {test_mae:.2f}')
+print(f'Error Absoluto Medio (MAE) en test: {test_mae:>.3f}')
 
 # Calcula e imprime el MSE
 test_mse = torch.mean((test_true_values - test_pred_values) ** 2)
-print(f'Error Cuadrático Medio (MSE) en test: {test_mse:.2f}')
+print(f'Error Cuadrático Medio (MSE) en test: {test_mse:>.3f}')
 
 # Calcula e imprime el R²
 r2 = r2_score(test_true_values, test_pred_values)

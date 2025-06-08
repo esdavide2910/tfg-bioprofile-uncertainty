@@ -93,3 +93,16 @@ class ResNeXtRegressor(nn.Module):
         return x
     
 
+    def get_layer_groups(self):
+        layer_groups = []
+        layer_groups.append(list(self.feature_extractor.conv1.parameters()))
+        layer_groups.append(list(self.feature_extractor.conv2.parameters()))
+        layer_groups.append(list(self.feature_extractor.conv3.parameters()))
+        layer_groups.append(list(self.feature_extractor.conv4.parameters()))
+        layer_groups.append(list(self.feature_extractor.conv5.parameters()))
+        layer_groups.append(list(self.classifier.fc1.parameters()))
+        layer_groups.append(list(self.classifier.fc2.parameters()))
+
+        return layer_groups
+
+
