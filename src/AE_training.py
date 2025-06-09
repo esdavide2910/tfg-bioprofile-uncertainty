@@ -1,7 +1,5 @@
 # ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 # //// PROBLEMA DE ESTIMACIÓN DE EDAD CON RADIOGRAFÍA MAXILOFACIAL
-# //// REGRESIÓN CONFORMAL "SPLIT" 
-# //// DIVISIÓN DE LOS DATOS EN TRAIN, VALID, CALIB Y TEST
 # ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 # # Biblioteca para aprendizaje profundo
@@ -56,7 +54,10 @@ from sklearn.metrics import r2_score
 import time
 
 #
-from custom_models import ResNeXtRegressor
+from custom_models import ResNeXtRegressor, QuantileLoss
+
+#
+import argparse
 
 #-------------------------------------------------------------------------------------------------------------
 
@@ -96,6 +97,52 @@ g.manual_seed(SEED)
 
 #-------------------------------------------------------------------------------------------------------------
 
+# Crear el parser
+parser = argparse.ArgumentParser(description="Procesa algunos argumentos.")
+
+# Definir los argumentos
+valid_models = ['base', 'splitCP', 'QR', 'CQR']
+parser.add_argument('-m', '--model_name', type=str, required=True,
+                    choices=valid_models,  
+                    help='Nombre o tipo del modelo a utilizar'
+)
+
+parser.add_argument('-s', '--save_path', type=str, required=True, 
+                    help='Ruta donde se guardará el modelo entrenado (por ejemplo: ./modelos/modelo_final.pt)'
+)
+
+def confidence_type(x):
+    x = float(x)
+    if not 0.0 <= x <= 1.0:
+        raise argparse.ArgumentTypeError(f"El valor debe estar entre 0 y 1, no {x}")
+    return x
+
+parser.add_argument('-c', '--confidence', type=confidence_type, default=None,
+                    help='Nivel de confianza para los intervalos entre 0 y 1. ' \
+                         'Solo aplicable a modelos de predicción interválica.'
+)
+
+parser.add_argument('-l', '--pretrained_path', type=str, default=None,
+                    help='Ruta al modelo preentrenado'
+)
+
+parser.add_argument('-r', '--report_path', type=str, default=None, 
+                    help='Ruta donde guardar la salida del script'
+)
+
+# Parsear los argumentos
+args = parser.parse_args()
+
+#-------------------------------------------------------------------------------------------------------------
+# COMPROBACIONES DE LOS ARGUMENTOS
+
+if not os.path.isfile(args.report_path):
+    raise FileNotFoundError(f"No se encontró el archivo: {args.repoort_path}")
+
+if not os.path.isfile(args.pretrained_path):
+    raise FileNotFoundError(f"No se encontró el archivo: {args.pretrained_path}")
+
+#-------------------------------------------------------------------------------------------------------------
 
 # Define las transformaciones aplicadas a las imágenes durante el entrenamiento en cada época.
 # Estas transformaciones son aleatorias dentro de los rangos especificados, por lo que varían en cada época.
@@ -161,7 +208,7 @@ class MaxillofacialXRayDataset(Dataset):
         
         return image, target
     
-# --------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 # Crea el Dataset de entrenamiento con augmentations
 trainset = MaxillofacialXRayDataset(
@@ -184,91 +231,99 @@ testset  =  MaxillofacialXRayDataset(
     transform = test_transform
 ) 
 
-# --------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 # Establece un batch size de 32 
 BATCH_SIZE = 32
 
 # Obtiene las edades enteras del trainset
 intAges = np.floor(trainset.metadata['Age'].astype(float).to_numpy()).astype(int)
-# Como se ha visto antes, hay una única instancia con edad 26, que el algoritmo de separación de entrenamiento 
-# y validación será incapaz de dividir de forma estratificada. Para evitar el error, reasigna esa instancia a 
-# la edad inmediatamente inferior
+# Hay una única instancia con edad 26, que el algoritmo de separación de entrenamiento y validación será 
+# incapaz de dividir de forma estratificada. Para evitar el error, reasigna esa instancia a la edad 
+# inmediatamente inferior
 intAges[intAges==26]=25
 
-# Divide el conjunto de datos completo de entrenamiento en dos subconjuntos de forma estratificada:
-# - Entrenamiento (70% de las instancias)
-# - Validación (15% de las instancias)
-# - Calibración (15% de las instancias)
-train_indices, aux_indices =  train_test_split(
-    range(len(trainset)),
-    train_size=0.7,
-    shuffle=True,
-    stratify=intAges
-)
-valid_indices, calib_indices = train_test_split(
-    aux_indices,
-    train_size=0.5,
-    stratify=[intAges[i] for i in aux_indices],
-)
+# Función auxiliar para crear un DataLoader a partir de un subconjunto del dataset
+def create_loader(dataset, indices):
+    subset = Subset(dataset, indices)
+    return DataLoader(subset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2, 
+                      pin_memory=True, worker_init_fn=seed_worker, generator=g)
+ 
+# División para los modelos 'base' y 'QR'
+if args.model_name in ['base','QR']:
 
-train_subset = Subset(trainset, train_indices)
-valid_subset = Subset(validset, valid_indices)
-calib_subset = Subset(validset, calib_indices)
+    # Divide el conjunto de datos completo de entrenamiento en dos subconjuntos de forma estratificada:
+    # - Entrenamiento (80% de las instancias)
+    # - Validación (20% de las instancias)
 
-# Crea DataLoader de entrenamiento
-train_loader =  DataLoader(
-    train_subset, 
-    batch_size=BATCH_SIZE, 
-    shuffle=True, 
-    num_workers=2, 
-    pin_memory=True, 
-    worker_init_fn=seed_worker,
-    generator=g,
-)
+    train_idx, valid_idx =  train_test_split(
+        range(len(trainset)), train_size=0.80, shuffle=True, stratify=intAges
+    )
 
-# Crea DataLoader de validación
-valid_loader =  DataLoader(
-    valid_subset, 
-    batch_size=BATCH_SIZE, 
-    shuffle=True, 
-    num_workers=2, 
-    pin_memory=True,
-    worker_init_fn=seed_worker,
-    generator=g,
-)
+    train_loader = create_loader(trainset, train_idx)
+    valid_loader = create_loader(validset, valid_idx)
 
-# Crea DataLoader de calibración
-calib_loader = DataLoader(
-    calib_subset, 
-    batch_size=BATCH_SIZE, 
-    shuffle=True, 
-    num_workers=2, 
-    pin_memory=True,
-    worker_init_fn=seed_worker,
-    generator=g,
-)
+# División para los modelos 'SplitCP' y 'CQR'
+else: 
+
+    # Divide el conjunto de datos completo de entrenamiento en dos subconjuntos de forma estratificada:
+    # - Entrenamiento (70% de las instancias)
+    # - Validación (15% de las instancias)
+    # - Calibración (15% de las instancias)
+
+    train_idx, aux_idx = train_test_split(
+        range(len(trainset)), train_size=0.7, shuffle=True, stratify=intAges
+    )
+
+    stratify_aux = [intAges[i] for i in aux_idx]
+    valid_idx, calib_idx = train_test_split(
+        aux_idx, train_size=0.5, shuffle=True, stratify=stratify_aux
+    )
+
+    train_loader = create_loader(trainset, train_idx)
+    valid_loader = create_loader(validset, valid_idx)
+    calib_loader = create_loader(validset, calib_idx)
+
 
 # Crea DataLoader de test
-test_loader = DataLoader(
-    testset, 
-    batch_size=BATCH_SIZE, 
-    shuffle=False
-)
+test_loader = DataLoader(testset, batch_size=BATCH_SIZE, shuffle=False)
 
 print("✅ Datasets de imágenes cargados\n")
 
 #-------------------------------------------------------------------------------------------------------------
+# CARGA DE MODELO Y DEFINICIÓN DE FUNCIÓN DE PÉRDIDA
+
+# Si el modelo tiene un intervalo de salida (mide de alguna forma la incertidumbre), calcula alpha a partir
+# del nivel de confianza
+if args.model_name in ['splitCP','QR','CQR']:
+    alpha = (1-args.confidence)
 
 # 
-alpha = 0.2             # Nivel de confianza es 1-alpha
+if args.model_name in ['base','splitCP']:
 
-#
-model = ResNeXtRegressor().to(device)
+    # Inicializa el modelo de regresión estándar con una sola salida
+    model = ResNeXtRegressor().to(device)
+
+    # Define la función de pérdida a usar
+    criterion = nn.MSELoss().to(device)
+
+# ... para 'QR' y 'CQR'
+else:
+    
+    # Define los cuantiles que el modelo debe predecir (p.ej., 0.05 y 0.95 para 90% de confianza)
+    quantiles = [alpha/2, 1-alpha/2]
+
+    # Inicializa el modelo con múltiples salidas, una por cada cuantil
+    model = ResNeXtRegressor(len(quantiles)).to(device)
+
+    # Define la función de pérdida a usar
+    criterion = QuantileLoss(quantiles).to(device)
+
 
 print("✅ Modelo cargado\n")
 
 #-------------------------------------------------------------------------------------------------------------
+# FUNCIONES DE ENTRENAMIENTO (DE UNA ÉPOCA) E INFERENCIA 
 
 def train(model, dataloader, loss_fn, optimizer, scheduler=None, device="cuda"):
     
@@ -299,7 +354,7 @@ def train(model, dataloader, loss_fn, optimizer, scheduler=None, device="cuda"):
         # Actualiza los parámetros del modelo
         optimizer.step()            
         
-        #
+        # Actualiza el scheduler de la tasa de aprendizaje (si se proporciona)
         if scheduler is not None:
             scheduler.step()   
  
@@ -310,7 +365,6 @@ def train(model, dataloader, loss_fn, optimizer, scheduler=None, device="cuda"):
     avg_loss = epoch_loss / len(dataloader)
     return avg_loss
 
-#-------------------------------------------------------------------------------------------------------------
 
 def inference(model, dataloader, metric_fn=None, device="cuda"):
     
@@ -337,30 +391,25 @@ def inference(model, dataloader, metric_fn=None, device="cuda"):
             all_predicted.append(outputs.cpu())
             all_targets.append(targets.cpu())
 
-    # Concatena todas las predicciones y targets
+    # Concatena todas las predicciones y targets, y los devuelve
     all_predicted = torch.cat(all_predicted)
     all_targets = torch.cat(all_targets)
 
-    if metric_fn is None:
-        return all_predicted, all_targets
-
-    # Aplica la función de métrica y la devuelve
-    metric_value = metric_fn(all_predicted, all_targets)
-    return metric_value
-
+    return all_predicted, all_targets
+    
+    
 #-------------------------------------------------------------------------------------------------------------
+#
 
 # Ruta donde se guardará el modelo con mejor desempeño
-best_model_path = models_dir + "AE_model02_splitCP.pth" 
-
-# Define la función de pérdida a usar
-criterion = nn.MSELoss().to(device)
+best_model_path = args.save_path
 
 # Establece el learning rate base y weight decay 
 base_lr = 3e-2
 wd = 2e-4
 
 #-------------------------------------------------------------------------------------------------------------
+# CONGELA EL EXTRACTOR DE CARACTERÍSTICAS PARA ENTRENAR SOLO LA NUEVA CABECERA (FINE-TUNING)
 
 # Congela los parámetros del extractor de características
 for param in model.feature_extractor.parameters():
@@ -388,26 +437,12 @@ torch.save(model.state_dict(), best_model_path)
 
 print("✅ Entrenamiento de la nueva cabecera completado\n")
 
-# #-----------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------
+# DESCONGELA PARÁMETROS DEL MODELO Y ASIGNA LEARNING RATE DISCRIMINATIVO
 
 # Descongela todos los parámetros del modelo
 for param in model.parameters():
     param.requires_grad = True
-
-# Número máximo de épocas a entrenar (si no se activa el early stopping)
-MAX_EPOCHS = 100
-
-# Número mínimo de épocas a entrenar
-MIN_EPOCHS = 30
-
-# Número de épocas sin mejora antes de detener el entrenamiento
-PATIENCE = 10
-
-# Inicializa la mejor pérdida de validación como la obtenida en el entrenamiento de la cabecera
-best_valid_loss = head_valid_loss   
-
-# Contador de épocas sin mejora
-epochs_no_improve = 0 
 
 # Crea una lista para almacenar los nombres de las capas del modelo
 layer_names = []
@@ -437,6 +472,27 @@ for layer_group, lr in zip(layer_groups, lrs):
         {"params": layer_group, "lr": lr}
     )
 
+#-------------------------------------------------------------------------------------------------------------
+# INICIALIZA LOS PARÁMETROS PARA EL EARLY STOPPING
+
+# Número máximo de épocas a entrenar (si no se activa el early stopping)
+MAX_EPOCHS = 100
+
+# Número mínimo de épocas a entrenar
+MIN_EPOCHS = 30
+
+# Número de épocas sin mejora antes de detener el entrenamiento
+PATIENCE = 10
+
+# Inicializa la mejor pérdida de validación como la obtenida en el entrenamiento de la cabecera
+best_valid_loss = head_valid_loss   
+
+# Contador de épocas sin mejora
+epochs_no_improve = 0 
+
+#-------------------------------------------------------------------------------------------------------------
+# 
+
 # Configura el optimizador con los hiperparámetros escogidos
 optimizer = torch.optim.AdamW(param_groups, lr=base_lr, weight_decay=wd)
 
@@ -447,6 +503,9 @@ scheduler = torch.optim.lr_scheduler.OneCycleLR(
     steps_per_epoch=len(train_loader),
     epochs=MAX_EPOCHS
 )
+
+#-------------------------------------------------------------------------------------------------------------
+# 
 
 # Listas para almacenar las pérdidas de entrenamiento y validación
 train_losses = []
@@ -499,6 +558,9 @@ model.load_state_dict(torch.load(best_model_path))
 end_time = time.time()
 elapsed_time = end_time - start_time
 
+#-------------------------------------------------------------------------------------------------------------
+# ESTADÍSTICAS DE TIEMPO
+
 # Convierte el tiempo en horas, minutos y segundos
 hours = int(elapsed_time // 3600)
 minutes = int((elapsed_time % 3600) // 60)
@@ -507,61 +569,118 @@ seconds = int(elapsed_time % 60)
 # Imprime el tiempo de ejecución en formato horas:minutos:segundos
 print(f"\nEl entrenamiento y validación ha tardado {hours} horas, {minutes} minutos y {seconds} segundos.")
 
-# Grafica las curvas de aprendizaje
-plt.figure(figsize=(8, 6))
-plt.plot(train_losses, label='Train Loss')
-plt.plot(valid_losses, label='Validation Loss')
-plt.xlabel('Epoch')
-plt.ylabel('Loss')
-plt.title('Loss Curve')
-plt.legend()
-plt.grid(True)
+# Calcula el número total de épocas 
+num_epochs = len(train_losses) + len(valid_losses)
 
-# Guarda la imagen
-plt.savefig(results_dir + 'learning_curve_AE_model02_splitCP.png', dpi=300, bbox_inches='tight')  
+# Calcula el tiempo promedio por época
+avg_elapsed_time_per_epoch = elapsed_time / num_epochs
 
-print("✅ Entrenamiento de la red completa completado\n")
+# Convierte el tiempo promedio por época en minutos y segundos
+minutes = int((avg_elapsed_time_per_epoch % 3600) // 60)
+seconds = int(avg_elapsed_time_per_epoch % 60)
 
-#-------------------------------------------------------------------------------------------------------------
-
-#
-calib_pred_values, calib_true_values = inference(model, calib_loader)
-
-#
-calib_scores = np.abs(calib_true_values-calib_pred_values)
-
-# Calcula el nivel de cuantificación ajustado
-n = len(calib_scores)
-q_level = np.ceil((1-alpha) * (n + 1)) / n
-
-# Calcula el cuantil qhat
-q_hat = np.quantile(calib_scores, q_level, method="higher")
-
-print("✅ Calibración completada\n")
+# Imprime el tiempo de ejecución medio de una época en formato minutos:segundos
+print(f"\nEn promedio, cada época del entrenamiento y la validación ha tardado \
+      {minutes} minutos y {seconds} segundos.")
 
 #-------------------------------------------------------------------------------------------------------------
+
+# # Grafica las curvas de aprendizaje
+# plt.figure(figsize=(8, 6))
+# plt.plot(train_losses, label='Train Loss')
+# plt.plot(valid_losses, label='Validation Loss')
+# plt.xlabel('Epoch')
+# plt.ylabel('Loss')
+# plt.title('Loss Curve')
+# plt.legend()
+# plt.grid(True)
+
+# # Guarda la imagen
+# plt.savefig(results_dir + 'learning_curve_AE_model05_CQR.png', dpi=300, bbox_inches='tight')  
+
+# print("✅ Entrenamiento de la red completa completado\n")
+
+#-------------------------------------------------------------------------------------------------------------
+# CALIBRACIÓN
+
+# Solo aplicamos calibración para modelos específicos (splitCP y CQR)
+if args.mode_name in ['splitCP', 'CQR']:
+    
+    # Obtener predicciones y valores verdaderos del conjunto de calibración
+    calib_pred_values, calib_true_values = inference(model, calib_loader)
+
+    # Para splitCP, calculamos las puntuaciones de calibración como la MAE
+    if args.mode_name in ['splitCP']:
+        calib_scores = np.abs(calib_true_values-calib_pred_values)
+
+    # Para CQR, calculamos las puntuaciones usando los límites inferior y superior de los intervalos predichos
+    elif args.model_name in ['CQR']:
+        calib_pred_lower_bound = calib_pred_values[:, 0]
+        calib_pred_upper_bound = calib_pred_values[:,-1]
+
+        calib_scores = np.maximum(calib_true_values - calib_pred_upper_bound, 
+                                  calib_pred_lower_bound - calib_true_values)
+
+
+    # Calcula el nivel de cuantificación ajustado basado en el tamaño del conjunto de calibración y alpha
+    n = len(calib_scores)
+    q_level = np.ceil((1-alpha) * (n + 1)) / n
+
+    # Calcula el cuantil qhat usado para ajustar el intervalo predictivo
+    q_hat = np.quantile(calib_scores, q_level, method="higher")
+
+    print("✅ Calibración completada\n")
+
+#-------------------------------------------------------------------------------------------------------------
+# TEST
 
 # Obtiene los valores predichos y los verdaderos 
 test_pred_values, test_true_values = inference(model, test_loader)
 
-# Extraemos los percentiles inferior y superior, que son los que conforman el mínimo y máximo del intervalo de 
-# predicción, respectivamente
-test_pred_lower_bound = test_pred_values - q_hat
-test_pred_upper_bound = test_pred_values + q_hat
+if args.model_name in ['splitCP', 'QR', 'CQR']:
 
-# Calcula la cobertura empírica (porcentaje de valores reales dentro del intervalo de predicción) y lo imprime
-inside_interval = (test_true_values >= test_pred_lower_bound) & (test_true_values <= test_pred_upper_bound)
-empirical_coverage = inside_interval.float().mean().item() * 100
-print(f"Cobertura empírica (para {(1-alpha)*100}% de confianza): {empirical_coverage:>6.3f}")
+    if args.model_name=='splitCP':
 
-# Calcula el tamaño medio del intervalo de predicción y lo imprime
-mean_interval_size = torch.mean(test_pred_upper_bound - test_pred_lower_bound).item()
-print(f"Tamaño medio del intervalo: {mean_interval_size:>6.3f}")
+        test_pred_lower_bound = test_pred_values - q_hat
+        test_pred_upper_bound = test_pred_values + q_hat
 
-# Calcula el tamaño medio de aquellos intervalos de predicciónq que cubren el valor real
-covered_intervals = (test_pred_upper_bound - test_pred_lower_bound)[inside_interval]
-mean_covered_interval_size = covered_intervals.mean().item()
-print(f"Tamaño medio de los intervalos que cubren el valor real: {mean_covered_interval_size:>6.3f}")
+    elif args.model_name=='QR':
+
+        test_pred_lower_bound = test_pred_values[:, 0]
+        test_pred_upper_bound = test_pred_values[:,-1]
+
+    elif args.model_name=='CQR':
+
+        test_pred_lower_bound = test_pred_values[:, 0] - q_hat
+        test_pred_upper_bound = test_pred_values[:,-1] + q_hat
+
+    # Calcula la cobertura empírica (porcentaje de valores reales dentro del intervalo de predicción) y lo imprime
+    inside_interval = (test_true_values >= test_pred_lower_bound) & (test_true_values <= test_pred_upper_bound)
+    empirical_coverage = inside_interval.float().mean().item() * 100
+    print(f"Cobertura empírica (para {(1-alpha)*100}% de confianza): {empirical_coverage:>6.3f}")
+
+    # Calcula el tamaño medio del intervalo de predicción y lo imprime
+    mean_interval_size = torch.mean(test_pred_upper_bound - test_pred_lower_bound).item()
+    print(f"Tamaño medio del intervalo: {mean_interval_size:>6.3f}")
+
+    # Calcula el tamaño medio de aquellos intervalos de predicciónq que cubren el valor real y lo imprime
+    covered_intervals = (test_pred_upper_bound - test_pred_lower_bound)[inside_interval]
+    mean_covered_interval_size = covered_intervals.mean().item()
+    print(f"Tamaño medio de los intervalos que cubren el valor real: {mean_covered_interval_size:>6.3f}")
+
+else:
+
+    # Calcula el MAE 
+    test_mae = torch.mean(torch.abs(test_true_values - test_pred_values))
+    print(f'Error Absoluto Medio (MAE) en test: {test_mae:>6.3f}')
+
+    # Calcula e imprime el MSE
+    test_mse = torch.mean((test_true_values - test_pred_values) ** 2)
+    print(f'Error Cuadrático Medio (MSE) en test: {test_mse:>6.3f}')
+
+    # Calcula e imprime el R²
+    r2 = r2_score(test_true_values, test_pred_values)
+    print(f"R² en test: {r2:.4f}")
 
 print("✅ Testeo de la red completado\n")
 

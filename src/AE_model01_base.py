@@ -178,7 +178,7 @@ validset = MaxillofacialXRayDataset(
 )
 
 # Crea el Dataset de test con solo resize y normalización
-testset  =  MaxillofacialXRayDataset(
+testset =  MaxillofacialXRayDataset(
     metadata_file = data_dir + 'metadata_test.csv',
     images_dir = data_dir + 'test/',
     transform = test_transform
@@ -508,11 +508,11 @@ test_pred_values, test_true_values = inference(model, test_loader)
 
 # Calcula el MAE 
 test_mae = torch.mean(torch.abs(test_true_values - test_pred_values))
-print(f'Error Absoluto Medio (MAE) en test: {test_mae:>.3f}')
+print(f'Error Absoluto Medio (MAE) en test: {test_mae:>6.3f}')
 
 # Calcula e imprime el MSE
 test_mse = torch.mean((test_true_values - test_pred_values) ** 2)
-print(f'Error Cuadrático Medio (MSE) en test: {test_mse:>.3f}')
+print(f'Error Cuadrático Medio (MSE) en test: {test_mse:>6.3f}')
 
 # Calcula e imprime el R²
 r2 = r2_score(test_true_values, test_pred_values)

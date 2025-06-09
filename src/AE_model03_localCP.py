@@ -1,6 +1,6 @@
 # ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 # //// PROBLEMA DE ESTIMACIÓN DE EDAD CON RADIOGRAFÍA MAXILOFACIAL
-# //// REGRESIÓN CONFORMAL "SPLIT" 
+# //// REGRESIÓN CONFORMAL "LOCALLY ADAPTIVE" 
 # //// DIVISIÓN DE LOS DATOS EN TRAIN, VALID, CALIB Y TEST
 # ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -350,6 +350,36 @@ def inference(model, dataloader, metric_fn=None, device="cuda"):
 
 #-------------------------------------------------------------------------------------------------------------
 
+def extract_features(model, dataloader, device="cuda"):
+    
+    # Pone la red en modo evaluación (esto desactiva el dropout)
+    model.eval()  
+    
+    # Inicializa listas para almacenar las características extraídas
+    all_features = []
+    
+    # No calcula los gradientes 
+    with torch.no_grad():
+        
+        # Itera sobre el conjunto a evaluar
+        for inputs,_ in dataloader:
+            
+            # Obtiene las imágenes a evaluar
+            inputs = inputs.to(device)
+            
+            # Extrae las características con el modelo
+            outputs = model(inputs, return_features=True)
+            
+            # Almacena las características extraídas
+            all_features.append(outputs.cpu())
+
+    # Concatena todas las características
+    all_features = torch.cat(all_features)
+
+    return all_features
+
+#-------------------------------------------------------------------------------------------------------------
+
 # Ruta donde se guardará el modelo con mejor desempeño
 best_model_path = models_dir + "AE_model02_splitCP.pth" 
 
@@ -521,6 +551,12 @@ plt.grid(True)
 plt.savefig(results_dir + 'learning_curve_AE_model02_splitCP.png', dpi=300, bbox_inches='tight')  
 
 print("✅ Entrenamiento de la red completa completado\n")
+
+#-------------------------------------------------------------------------------------------------------------
+
+model.feature_extractor
+
+
 
 #-------------------------------------------------------------------------------------------------------------
 

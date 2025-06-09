@@ -83,12 +83,16 @@ class ResNeXtRegressor(nn.Module):
         self.classifier = ClassifierResNeXt(num_targets)
 
 
-    def forward(self, x):
+    def forward(self, x, return_features=False):
         x = self.feature_extractor(x)
         avg = self.pool_avg(x)
         max = self.pool_max(x)
         x = torch.cat([avg, max], dim=1) 
         x = self.flatten(x)
+
+        if return_features:
+            return x
+        
         x = self.classifier(x)
         return x
     
@@ -104,5 +108,34 @@ class ResNeXtRegressor(nn.Module):
         layer_groups.append(list(self.classifier.fc2.parameters()))
 
         return layer_groups
+    
 
-
+# Clase de pérdida para la regresión cuantílica
+# Esta pérdida mide cuán bien predice un modelo los cuantiles de una distribución
+class QuantileLoss(nn.Module):
+    
+    def __init__(self, quantiles):
+        
+        super().__init__()
+        self.quantiles = quantiles
+        
+        
+    def forward(self, preds, targets):
+        # Asegura que los targets no estén marcados para el cálculo de gradientes (esto es importante porque 
+        # solo las predicciones deben participar en el backpropagation, no las etiquetas reales)
+        assert not targets.requires_grad
+        # Asegura que el batch size de las predicciones y los targets coincide
+        assert preds.size(0) == targets.size(0)
+        # Asegura que el número de columnas en preds coincida con el número de cuantiles que se quieren 
+        # predecir
+        assert preds.size(1) == len(self.quantiles)
+        
+        losses = []
+        for i, q in enumerate(self.quantiles):
+            errors = targets - preds[:,i]
+            losses.append(torch.max((q-1)*errors, q*errors).unsqueeze(1))
+            
+        #
+        all_losses = torch.cat(losses, dim=1)
+        loss = torch.mean(torch.sum(all_losses, dim=1))
+        return loss
