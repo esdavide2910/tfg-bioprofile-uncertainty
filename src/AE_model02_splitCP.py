@@ -1,4 +1,10 @@
-# Biblioteca para aprendizaje profundo
+# ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+# //// PROBLEMA DE ESTIMACIÓN DE EDAD CON RADIOGRAFÍA MAXILOFACIAL
+# //// REGRESIÓN CONFORMAL "SPLIT" 
+# //// DIVISIÓN DE LOS DATOS EN TRAIN, VALID, CALIB Y TEST
+# ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+# # Biblioteca para aprendizaje profundo
 import torch
 import torchvision
 
@@ -14,7 +20,7 @@ if not torch.cuda.is_available():
     )
 device = "cuda"
 
-#-------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------
 
 import os
 working_dir = os.getcwd()
@@ -22,7 +28,7 @@ data_dir = working_dir + "/data/AE_maxillofacial/preprocessed/"
 results_dir = working_dir + "/results/AE_maxillofacial/"
 models_dir = working_dir + "/models/AE_maxillofacial/"
 
-#-------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------
 
 # Manipulación de datos
 import numpy as np
@@ -30,9 +36,6 @@ import pandas as pd
 
 # Manejo y edición de imágenes
 from PIL import Image
-
-# Resumen de modelos en PyTorch
-from torchsummary import summary
 
 # Visualización de datos
 import matplotlib.pyplot as plt
@@ -52,7 +55,10 @@ from sklearn.metrics import r2_score
 #
 import time
 
-#-------------------------------------------------------------------------------------------------------------------------
+#
+from custom_models import ResNeXtRegressor
+
+#-------------------------------------------------------------------------------------------------------------
 
 # Creamos una semilla de aleatoriedad 
 SEED = 23
@@ -88,20 +94,22 @@ def seed_worker(worker_id):
 g = torch.Generator()
 g.manual_seed(SEED)
 
-#-------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------
 
 
 # Define las transformaciones aplicadas a las imágenes durante el entrenamiento en cada época.
 # Estas transformaciones son aleatorias dentro de los rangos especificados, por lo que varían en cada época.
-# - Redimensiona las imágenes a 448x224. Se ha escogido este tamaño dado que las imágenes son panorámicas y bastante 
-#   maś anchas que altas.
+# - Redimensiona las imágenes a 448x224. Se ha escogido este tamaño dado que las imágenes son panorámicas y 
+#   bastante maś anchas que altas.
 # - (Regularización) Realiza un volteo horizontal a la mitad de las imágenes.
 # - (Regularización) Aplica una rotación aleatoria de hasta +/-3 grados.
-# - (Regularización) Aplica una transformación afín aleatoria con ligeras traslaciones (2%) y escalado (entre 95% y 105%).
-# - (Regularización) Modifica aleatoriamente el brillo y contraste para simular condiciones de iluminación variables.
+# - (Regularización) Aplica una transformación afín aleatoria con ligeras traslaciones (2%) y escalado (entre 
+#   95% y 105%).
+# - (Regularización) Modifica aleatoriamente el brillo y contraste para simular condiciones de iluminación 
+#   variables.
 # - Convierte la imagen a tensor, para que pueda ser manipulada por PyTorch.
-# - Normaliza para ajustar la media y desviación típica de los canales RGB a los valores usados durante el entrenamiento 
-#   en ImageNet.
+# - Normaliza para ajustar la media y desviación típica de los canales RGB a los valores usados durante el 
+#   entrenamiento en ImageNet.
 train_transform = transforms.Compose(
     [transforms.Resize((448, 224)),
      transforms.RandomHorizontalFlip(p=0.5),
@@ -112,17 +120,18 @@ train_transform = transforms.Compose(
      transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))]
 )
 
-# Define las transformaciones para las imágenes de validación y test, que son iguales que para entrenamiento pero sin
-# regularización
-val_transform = test_transform = transforms.Compose(
+# Define las transformaciones para las imágenes de validación y test, que son iguales que para entrenamiento 
+# pero sin regularización
+valid_transform = test_transform = transforms.Compose(
     [transforms.Resize((448, 224)),
      transforms.ToTensor(),
      transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))]
 ) 
 
 
-# Define la clase MaxillofacialXRayDataset, que se utiliza para cargar imágenes de rayos X maxilofaciales junto con su edad correspondiente
-# desde un archivo de metadatos. Permite aplicar transformaciones a las imágenes si se especifican.
+# Define la clase MaxillofacialXRayDataset, que se utiliza para cargar imágenes de rayos X maxilofaciales 
+# junto con su edad correspondiente desde un archivo de metadatos. Permite aplicar transformaciones a las 
+# imágenes si se especifican.
 class MaxillofacialXRayDataset(Dataset):
     
     def __init__(self, metadata_file, images_dir, transform=None):
@@ -141,7 +150,7 @@ class MaxillofacialXRayDataset(Dataset):
     def __getitem__(self, idx):
         # Obteniene el nombre de la imagen y su valor desde los metadatos
         img_name = os.path.join(self.images_dir, self.metadata.iloc[idx]['ID'])  # Ajusta según la estructura
-        target = float(self.metadata.iloc[idx]['Age'])  # Ajusta según el formato de tus metadatos
+        target = self.metadata.iloc[idx]['Age'].astype(np.float32)  # Ajusta según el formato de tus metadatos
         
         # Abre la imagen
         image = Image.open(img_name)
@@ -165,7 +174,7 @@ trainset = MaxillofacialXRayDataset(
 validset = MaxillofacialXRayDataset(
     metadata_file=data_dir + 'metadata_train.csv',  
     images_dir=data_dir + 'train/',               
-    transform=val_transform                       
+    transform=valid_transform                       
 )
 
 # Crea el Dataset de test con solo resize y normalización
@@ -184,20 +193,28 @@ BATCH_SIZE = 32
 intAges = np.floor(trainset.metadata['Age'].astype(float).to_numpy()).astype(int)
 # Como se ha visto antes, hay una única instancia con edad 26, que el algoritmo de separación de entrenamiento 
 # y validación será incapaz de dividir de forma estratificada. Para evitar el error, reasigna esa instancia a 
-# la edad inmediatamente inferior.
+# la edad inmediatamente inferior
 intAges[intAges==26]=25
 
 # Divide el conjunto de datos completo de entrenamiento en dos subconjuntos de forma estratificada:
-# - Entrenamiento (80% de las instancias)
-# - Validación (20% de las instancias)
-train_indices, valid_indices =  train_test_split(
+# - Entrenamiento (70% de las instancias)
+# - Validación (15% de las instancias)
+# - Calibración (15% de las instancias)
+train_indices, aux_indices =  train_test_split(
     range(len(trainset)),
-    train_size=0.80,
+    train_size=0.7,
     shuffle=True,
     stratify=intAges
 )
+valid_indices, calib_indices = train_test_split(
+    aux_indices,
+    train_size=0.5,
+    stratify=[intAges[i] for i in aux_indices],
+)
+
 train_subset = Subset(trainset, train_indices)
 valid_subset = Subset(validset, valid_indices)
+calib_subset = Subset(validset, calib_indices)
 
 # Crea DataLoader de entrenamiento
 train_loader =  DataLoader(
@@ -221,6 +238,17 @@ valid_loader =  DataLoader(
     generator=g,
 )
 
+# Crea DataLoader de calibración
+calib_loader = DataLoader(
+    calib_subset, 
+    batch_size=BATCH_SIZE, 
+    shuffle=True, 
+    num_workers=2, 
+    pin_memory=True,
+    worker_init_fn=seed_worker,
+    generator=g,
+)
+
 # Crea DataLoader de test
 test_loader = DataLoader(
     testset, 
@@ -230,100 +258,17 @@ test_loader = DataLoader(
 
 print("✅ Datasets de imágenes cargados\n")
 
-#-------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------
 
-class FeatureExtractorResNeXt(nn.Module):
-    
-    def __init__(self):
-        
-        super(FeatureExtractorResNeXt, self).__init__()
-        
-        resnext = torchvision.models.resnext50_32x4d(weights='DEFAULT')
-        
-        self.conv1 = nn.Sequential(
-            resnext.conv1,
-            resnext.bn1,
-            resnext.relu,
-            resnext.maxpool,
-        )
-        self.conv2 = resnext.layer1
-        self.conv3 = resnext.layer2
-        self.conv4 = resnext.layer3
-        self.conv5 = resnext.layer4
-        
-        
-    def forward(self, x):
-        
-        x = self.conv1(x)
-        x = self.conv2(x)
-        x = self.conv3(x)
-        x = self.conv4(x)
-        x = self.conv5(x)
-        
-        return x
-        
-
-class ClassifierResNeXt(nn.Module):
-    
-    def __init__(self):
-
-        super(ClassifierResNeXt, self).__init__()  
-
-        self.fc1 = nn.Sequential(
-            nn.BatchNorm1d(4096),  # 2048 (avg) + 2048 (max)
-            nn.Dropout(p = 0.5),
-            nn.Linear(4096, 512),
-            nn.ReLU(inplace=True)
-        )
-
-        self.fc2 = nn.Sequential(
-            nn.BatchNorm1d(512),
-            nn.Dropout(p = 0.5),
-            nn.Linear(512, 1) 
-        )
-        
-        
-    def forward(self, x):
-        
-        x = self.fc1(x)
-        x = self.fc2(x)
-        
-        return x
-        
-
-#
-class ResNeXtRegressor(nn.Module):
-    
-    def __init__(self):
-        
-        super(ResNeXtRegressor, self).__init__()
-        
-        self.feature_extractor = FeatureExtractorResNeXt()
-        
-        # Nueva head
-        self.pool_avg = nn.AdaptiveAvgPool2d((1,1))
-        self.pool_max = nn.AdaptiveMaxPool2d((1, 1))
-        self.flatten = nn.Flatten()
-
-        self.classifier = ClassifierResNeXt()
-
-
-    def forward(self, x):
-        x = self.feature_extractor(x)
-        avg = self.pool_avg(x)
-        max = self.pool_max(x)
-        x = torch.cat([avg, max], dim=1) 
-        x = self.flatten(x)
-        x = self.classifier(x)
-        return x
-
+# 
+alpha = 0.2             # Nivel de confianza es 1-alpha
 
 #
 model = ResNeXtRegressor().to(device)
 
 print("✅ Modelo cargado\n")
 
-#-------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------
 
 def train(model, dataloader, loss_fn, optimizer, scheduler=None, device="cuda"):
     
@@ -337,7 +282,7 @@ def train(model, dataloader, loss_fn, optimizer, scheduler=None, device="cuda"):
     for inputs, targets in dataloader:
         
         # Obtiene las imágenes de entrenamiento y sus valores objetivo
-        inputs, targets = inputs.to(device), targets.to(device).float().unsqueeze(1)
+        inputs, targets = inputs.to(device), targets.to(device)
 
         # Limpia los gradientes de la iteración anterior
         optimizer.zero_grad()           
@@ -365,9 +310,9 @@ def train(model, dataloader, loss_fn, optimizer, scheduler=None, device="cuda"):
     avg_loss = epoch_loss / len(dataloader)
     return avg_loss
 
-#-------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------
 
-def evaluate(model, dataloader, metric_fn=None, device="cuda"):
+def inference(model, dataloader, metric_fn=None, device="cuda"):
     
     # Pone la red en modo evaluación (esto desactiva el dropout)
     model.eval()  
@@ -383,7 +328,7 @@ def evaluate(model, dataloader, metric_fn=None, device="cuda"):
         for inputs, targets in dataloader:
             
              # Obtiene las imágenes de validación y sus valores objetivo
-            inputs, targets = inputs.to(device), targets.to(device).float().unsqueeze(1)
+            inputs, targets = inputs.to(device), targets.to(device)
             
             # Realiza una predicción con el modelo
             outputs = model(inputs)
@@ -402,60 +347,64 @@ def evaluate(model, dataloader, metric_fn=None, device="cuda"):
     # Aplica la función de métrica y la devuelve
     metric_value = metric_fn(all_predicted, all_targets)
     return metric_value
-    
-#-------------------------------------------------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------------------------------------
 
 # Ruta donde se guardará el modelo con mejor desempeño
-best_model_path = models_dir + "model1.pth" 
+best_model_path = models_dir + "AE_model02_splitCP.pth" 
 
 # Define la función de pérdida a usar
-criterion = nn.MSELoss()
+criterion = nn.MSELoss().to(device)
 
 # Establece el learning rate base y weight decay 
-base_lr = 2e-2
+base_lr = 3e-2
 wd = 2e-4
 
-#-------------------------------------------------------------------------------------------------------------------------
-
-# Configura el optimizador para el entrenamiento de la nueva cabecera (el módulo classifier)
-optimizer = torch.optim.AdamW(model.classifier.parameters(), lr=base_lr, weight_decay=wd)
+#-------------------------------------------------------------------------------------------------------------
 
 # Congela los parámetros del extractor de características
 for param in model.feature_extractor.parameters():
     param.requires_grad = False
 
-# Establece el número de épocas a entrenar en el entrenamiento
-EPOCHS_PRETRAIN = 3
+# Configura el optimizador para el entrenamiento de la nueva cabecera (el módulo classifier)
+optimizer = torch.optim.AdamW(model.classifier.parameters(), lr=base_lr, weight_decay=wd)
 
-# Bucle de entrenamiento por épocas
-for epoch in range(EPOCHS_PRETRAIN):
-    
+# Numero de épocas que se entrena la nueva cabecera
+NUM_EPOCHS_HEAD = 2
+
+for epoch in range(NUM_EPOCHS_HEAD):
+
     # Entrena el modelo con el conjunto de entrenamiento
-    train_loss = train(model, train_loader, criterion, optimizer, device=device)
-    
+    head_train_loss = train(model, train_loader, criterion, optimizer, device=device)
+
     # Evalua el modelo con el conjunto de validación
-    valid_loss = evaluate(model, valid_loader, criterion, device=device)
-    
+    head_valid_loss = inference(model, valid_loader, criterion, device=device)
+
     # Imprime los valores de pérdida obtenidos en entrenamiento y validación 
-    print(f'Epoch {epoch+1} | Train Loss: {train_loss:.2f} | Validation Loss: {valid_loss:.2f}')
+    print(f'Epoch {epoch+1} | Train Loss: {head_train_loss:.3f} | Validation Loss: {head_valid_loss:.3f}')
     
+# Guarda los pesos del modelo actual como los mejores hasta ahora
+torch.save(model.state_dict(), best_model_path)
 
-print("✅ Preentrenamiento de la nueva cabecera completado\n")
+print("✅ Entrenamiento de la nueva cabecera completado\n")
 
-#-------------------------------------------------------------------------------------------------------------------------
+# #-----------------------------------------------------------------------------------------------------------
 
 # Descongela todos los parámetros del modelo
 for param in model.parameters():
     param.requires_grad = True
 
 # Número máximo de épocas a entrenar (si no se activa el early stopping)
-MAX_EPOCHS = 50
+MAX_EPOCHS = 100
+
+# Número mínimo de épocas a entrenar
+MIN_EPOCHS = 30
 
 # Número de épocas sin mejora antes de detener el entrenamiento
 PATIENCE = 10
 
-# Inicializa la mejor pérdida de validación como infinito (para encontrar el mínimo)
-best_valid_loss = float('inf')   
+# Inicializa la mejor pérdida de validación como la obtenida en el entrenamiento de la cabecera
+best_valid_loss = head_valid_loss   
 
 # Contador de épocas sin mejora
 epochs_no_improve = 0 
@@ -470,29 +419,23 @@ lr_div = 100            # Factor de reducción entre el learning rate más alto 
 max_lr = base_lr/2      # Learning rate más alto (capa más superficial)
 min_lr = max_lr/lr_div  # Learning rate más bajo (capa más profunda) 
  
-# Obtiene el número total de capas del modelo
-n_layers = len(layer_names)
+# Obtenemos los grupos de capas del modelo (de más superficiales a más profundas)
+layer_groups = model.get_layer_groups()
+n_layers = len(layer_groups)
 
-# Genera una lista de tasas de aprendizaje para cada capa, aumentando de forma exponencial desde min_lr hasta max_lr
+# Genera una lista de tasas de aprendizaje para cada capa, aumentando de forma exponencial desde min_lr hasta 
+# max_lr
 lrs = [
     min_lr * (max_lr / min_lr) ** (i / (n_layers - 1)) 
     for i in range(n_layers)
 ]
 
-# Lista en la que se almacenarán los parámetros 
+# Lista en la que se almacenarán los parámetros por grupo y sus lr
 param_groups = []
-
-# Crea un diccionario de parámetros por nombre
-named_params = dict(model.named_parameters())
-
-# Crea el param_groups
-for name, lr in zip(layer_names, lrs):
-    param = named_params[name]
-    param_groups.append({
-        "params": [param],  
-        "lr": lr
-    })
-
+for layer_group, lr in zip(layer_groups, lrs):
+    param_groups.append(
+        {"params": layer_group, "lr": lr}
+    )
 
 # Configura el optimizador con los hiperparámetros escogidos
 optimizer = torch.optim.AdamW(param_groups, lr=base_lr, weight_decay=wd)
@@ -520,11 +463,11 @@ for epoch in range(MAX_EPOCHS):
     train_losses.append(train_loss)
     
     # Evalua el modelo con el conjunto de validación
-    valid_loss = evaluate(model, valid_loader, criterion, device)
+    valid_loss = inference(model, valid_loader, criterion, device)
     valid_losses.append(valid_loss)
     
     # Imprime los valores de pérdida obtenidos en entrenamiento y validación  
-    print(f'Epoch {epoch+1} | Train Loss: {train_loss:.2f} | Validation Loss: {valid_loss:.2f}')
+    print(f'Epoch {epoch+1} | Train Loss: {train_loss:.3f} | Validation Loss: {valid_loss:.3f}')
     
     # Comprueba si la pérdida en validación ha mejorado
     if valid_loss < best_valid_loss:
@@ -542,13 +485,14 @@ for epoch in range(MAX_EPOCHS):
         # Incrementa el contador si no hay mejora en la pérdida de validación
         epochs_no_improve += 1
 
-    # Si no hay mejora durante un número determinado de épocas (patience), detiene el entrenamiento
-    if epochs_no_improve >= PATIENCE:
+    # Si no hay mejora durante un número determinado de épocas (patience) y ya ha pasado el número mínimo de 
+    # épocas, detiene el entrenamiento
+    if epochs_no_improve >= PATIENCE and (epoch+1) > MIN_EPOCHS: 
         print(f'Early stopping at epoch {epoch+1}')
         break
     
     
-#Carga los pesos del modelo que obtuvo la mejor validación
+# Carga los pesos del modelo que obtuvo la mejor validación
 model.load_state_dict(torch.load(best_model_path))
 
 # Cálculo de tiempo total de entrenamiento 
@@ -563,10 +507,6 @@ seconds = int(elapsed_time % 60)
 # Imprime el tiempo de ejecución en formato horas:minutos:segundos
 print(f"\nEl entrenamiento y validación ha tardado {hours} horas, {minutes} minutos y {seconds} segundos.")
 
-print("✅ Entrenamiento de la red completa completado\n")
-
-#-------------------------------------------------------------------------------------------------------------------------
-
 # Grafica las curvas de aprendizaje
 plt.figure(figsize=(8, 6))
 plt.plot(train_losses, label='Train Loss')
@@ -578,24 +518,50 @@ plt.legend()
 plt.grid(True)
 
 # Guarda la imagen
-plt.savefig(results_dir + 'learning_curve_model1.png', dpi=300, bbox_inches='tight')  
+plt.savefig(results_dir + 'learning_curve_AE_model02_splitCP.png', dpi=300, bbox_inches='tight')  
 
-#-------------------------------------------------------------------------------------------------------------------------
+print("✅ Entrenamiento de la red completa completado\n")
+
+#-------------------------------------------------------------------------------------------------------------
+
+#
+calib_pred_values, calib_true_values = inference(model, calib_loader)
+
+#
+calib_scores = np.abs(calib_true_values-calib_pred_values)
+
+# Calcula el nivel de cuantificación ajustado
+n = len(calib_scores)
+q_level = np.ceil((1-alpha) * (n + 1)) / n
+
+# Calcula el cuantil qhat
+q_hat = np.quantile(calib_scores, q_level, method="higher")
+
+print("✅ Calibración completada\n")
+
+#-------------------------------------------------------------------------------------------------------------
 
 # Obtiene los valores predichos y los verdaderos 
-test_pred_values, test_true_values = evaluate(model, test_loader)
+test_pred_values, test_true_values = inference(model, test_loader)
 
-# Calcula el MAE 
-test_mae = torch.mean(torch.abs(test_true_values - test_pred_values))
-print(f'Error Absoluto Medio (MAE) en test: {test_mae:.2f}')
+# Extraemos los percentiles inferior y superior, que son los que conforman el mínimo y máximo del intervalo de 
+# predicción, respectivamente
+test_pred_lower_bound = test_pred_values - q_hat
+test_pred_upper_bound = test_pred_values + q_hat
 
-# Calcula e imprime el MSE
-test_mse = torch.mean((test_true_values - test_pred_values) ** 2)
-print(f'Error Cuadrático Medio (MSE) en test: {test_mse:.2f}')
+# Calcula la cobertura empírica (porcentaje de valores reales dentro del intervalo de predicción) y lo imprime
+inside_interval = (test_true_values >= test_pred_lower_bound) & (test_true_values <= test_pred_upper_bound)
+empirical_coverage = inside_interval.float().mean().item() * 100
+print(f"Cobertura empírica (para {(1-alpha)*100}% de confianza): {empirical_coverage:>6.3f}")
 
-# Calcula e imprime el R²
-r2 = r2_score(test_true_values, test_pred_values)
-print(f"R² en test: {r2:.4f}")
+# Calcula el tamaño medio del intervalo de predicción y lo imprime
+mean_interval_size = torch.mean(test_pred_upper_bound - test_pred_lower_bound).item()
+print(f"Tamaño medio del intervalo: {mean_interval_size:>6.3f}")
+
+# Calcula el tamaño medio de aquellos intervalos de predicciónq que cubren el valor real
+covered_intervals = (test_pred_upper_bound - test_pred_lower_bound)[inside_interval]
+mean_covered_interval_size = covered_intervals.mean().item()
+print(f"Tamaño medio de los intervalos que cubren el valor real: {mean_covered_interval_size:>6.3f}")
 
 print("✅ Testeo de la red completado\n")
 

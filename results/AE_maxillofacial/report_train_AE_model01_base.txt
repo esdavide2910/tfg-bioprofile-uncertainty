@@ -1,0 +1,69 @@
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch 1 | Train Loss: 31.11 | Validation Loss: 8.15
+✅ Entrenamiento de la nueva cabecera completado
+
+Epoch 1 | Train Loss: 9.14 | Validation Loss: 5.63
+Epoch 2 | Train Loss: 7.19 | Validation Loss: 4.86
+Epoch 3 | Train Loss: 6.15 | Validation Loss: 3.99
+Epoch 4 | Train Loss: 5.34 | Validation Loss: 3.97
+Epoch 5 | Train Loss: 4.94 | Validation Loss: 3.48
+Epoch 6 | Train Loss: 4.59 | Validation Loss: 3.27
+Epoch 7 | Train Loss: 4.26 | Validation Loss: 3.49
+Epoch 8 | Train Loss: 3.94 | Validation Loss: 3.11
+Epoch 9 | Train Loss: 3.93 | Validation Loss: 3.32
+Epoch 10 | Train Loss: 3.56 | Validation Loss: 3.92
+Epoch 11 | Train Loss: 3.57 | Validation Loss: 3.02
+Epoch 12 | Train Loss: 3.64 | Validation Loss: 4.55
+Epoch 13 | Train Loss: 3.53 | Validation Loss: 3.84
+Epoch 14 | Train Loss: 3.69 | Validation Loss: 3.00
+Epoch 15 | Train Loss: 3.50 | Validation Loss: 2.80
+Epoch 16 | Train Loss: 3.37 | Validation Loss: 3.94
+Epoch 17 | Train Loss: 3.45 | Validation Loss: 3.05
+Epoch 18 | Train Loss: 3.66 | Validation Loss: 3.09
+Epoch 19 | Train Loss: 3.38 | Validation Loss: 3.71
+Epoch 20 | Train Loss: 3.65 | Validation Loss: 5.90
+Epoch 21 | Train Loss: 3.60 | Validation Loss: 3.08
+Epoch 22 | Train Loss: 3.38 | Validation Loss: 4.87
+Epoch 23 | Train Loss: 3.38 | Validation Loss: 2.99
+Epoch 24 | Train Loss: 3.25 | Validation Loss: 4.08
+Epoch 25 | Train Loss: 3.36 | Validation Loss: 3.28
+Epoch 26 | Train Loss: 3.34 | Validation Loss: 2.74
+Epoch 27 | Train Loss: 3.33 | Validation Loss: 3.26
+Epoch 28 | Train Loss: 3.09 | Validation Loss: 3.80
+Epoch 29 | Train Loss: 3.03 | Validation Loss: 3.30
+Epoch 30 | Train Loss: 2.87 | Validation Loss: 6.27
+Epoch 31 | Train Loss: 3.19 | Validation Loss: 3.40
+Epoch 32 | Train Loss: 3.52 | Validation Loss: 6.69
+Epoch 33 | Train Loss: 3.51 | Validation Loss: 3.42
+Epoch 34 | Train Loss: 3.23 | Validation Loss: 2.93
+Epoch 35 | Train Loss: 2.75 | Validation Loss: 3.94
+Epoch 36 | Train Loss: 2.64 | Validation Loss: 2.70
+Epoch 37 | Train Loss: 2.86 | Validation Loss: 2.68
+Epoch 38 | Train Loss: 2.85 | Validation Loss: 2.77
+Epoch 39 | Train Loss: 2.34 | Validation Loss: 2.73
+Epoch 40 | Train Loss: 2.51 | Validation Loss: 2.70
+Epoch 41 | Train Loss: 2.53 | Validation Loss: 2.48
+Epoch 42 | Train Loss: 2.29 | Validation Loss: 2.44
+Epoch 43 | Train Loss: 2.14 | Validation Loss: 3.56
+Epoch 44 | Train Loss: 2.07 | Validation Loss: 2.68
+Epoch 45 | Train Loss: 2.20 | Validation Loss: 2.75
+Epoch 46 | Train Loss: 2.16 | Validation Loss: 2.74
+Epoch 47 | Train Loss: 2.10 | Validation Loss: 2.72
+Epoch 48 | Train Loss: 1.96 | Validation Loss: 2.60
+Epoch 49 | Train Loss: 2.03 | Validation Loss: 5.36
+Epoch 50 | Train Loss: 2.15 | Validation Loss: 2.68
+Epoch 51 | Train Loss: 1.75 | Validation Loss: 2.62
+Epoch 52 | Train Loss: 1.72 | Validation Loss: 2.56
+Early stopping at epoch 52
+
+El entrenamiento y validación ha tardado 4 horas, 9 minutos y 5 segundos.
+✅ Entrenamiento de la red completa completado
+
+Error Absoluto Medio (MAE) en test: 1.19
+Error Cuadrático Medio (MSE) en test: 2.43
+R² en test: 0.7411
+✅ Testeo de la red completado
+
