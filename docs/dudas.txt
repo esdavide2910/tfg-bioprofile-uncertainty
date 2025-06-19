@@ -24,3 +24,10 @@ INFORMACIÓN A INCLUIR MÁS TARDE
 - Incluir apartado de planificación económica en la Introducción
 
 - Anexo sobre estadísticas frecuentista y bayesiana
+
+
+
+
+
+AGOSTO:
+- Incluir método ACP-GN (paper )
