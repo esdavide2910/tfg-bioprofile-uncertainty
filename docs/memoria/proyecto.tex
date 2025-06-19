@@ -65,6 +65,16 @@
 %
 \usepackage[colorinlistoftodos]{todonotes}
 
+%
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage[normalem]{ulem}
+\useunder{\uline}{\ul}{}
+\addto\captionsspanish{
+  \renewcommand{\tablename}{Tabla}
+  \renewcommand{\listtablename}{Índice de tablas}
+}
+
 
 % ********************************************************************
 % Re-usable information
@@ -218,7 +228,7 @@
    %\frontmatter
    \tableofcontents
    \listoffigures
-   %\listoftables
+   \listoftables
 
 
    \clearpage
@@ -230,15 +240,15 @@
    \clearpage
    \pagenumbering{arabic}
    \setcounter{page}{1}
-   % \input{capitulos/cap_01/01_Introduccion}
+   \input{capitulos/cap_01/01_Introduccion}
    %
    \input{capitulos/cap_02/02_Fundamentos_teoricos}
    %
-   % \input{capitulos/cap_03/03_Estado_del_arte}
+   \input{capitulos/cap_03/03_Estado_del_arte}
    %
-   %\input{capitulos/04_Implementacion}
+   \input{capitulos/cap_04/04_Materiales_y_métodos}
    %
-   %\input{capitulos/05_Experimentacion}
+   \input{capitulos/cap_05/05_Experimentación}
    %
    %\input{capitulos/06_Conclusiones}
    %

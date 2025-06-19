@@ -2,9 +2,33 @@
 - En la introducción del apartado "Incertidumbre" empleo mucha información de la misma fuente, ¿cito 
 continuamente o qué hago?
 
-- Tras desarrollar una intuición de los conceptos, 
+- ¿Cómo se pueden comparar directamente el desempeños de dos modelos con métodos distintos, si el 
+  entrenamiento claramente es diferente?
+
+- ¿Qué es lo que pretendemos implementado incrementalmente para alcanzar la conformal prediction?
 
 
+CORRECCIONES DE TUTORES
+
+- Mover Fig. de Procedimiento secuencial para el método propuesto en ... a Estado del Arte.
+
+- Cambiar la introducción:
+    1) Descripción del problema: 
+    - qué es la AF
+    - qué es la estimación del BP. Añadimos figura 1.1
+    - problemas de los métodos actuales: manuales, subjetivos, time-consuming, no acotan el error adecuadamente
+    - nuestra propuesta: introducir la conformal prediction para cuantificar la incertidumbre en la estimación del BP. Añadimos figura. 
+
+    2) Motivación: 
+    - interés y necesidad política, legal, etc. de identificar más rápido, de forma objetiva y robusta
+    - citar casos numéricos que muestren la importancia e impacto de casos de identificación humana forense (poner cifras para que se vea la necesidad de la dimensión). 
+    - se menciona el standard de daubert y de qué modo la conformal prediction ayuda en esto. 
+
+    3) Objetivos
+    - objetivo principal (solo uno)
+    - objetivos parciales
+
+- 
 
 
 INFORMACIÓN A INCLUIR MÁS TARDE
@@ -16,14 +40,14 @@ INFORMACIÓN A INCLUIR MÁS TARDE
 
 - Interpretaciones de las figuras
 
-- Regresión de cuantiles
+- Regresión cuantílica
 
 - Incluir apartado donde se clarifique que denomino capas más profundas (deep) a aquellas que están más cerca 
   de la salida, y las superficiales (shallow) a aquellas que están más cercanas a la entrada.
 
 - Incluir apartado de planificación económica en la Introducción
 
-- Anexo sobre estadísticas frecuentista y bayesiana
+- Desarrollar las variantes en Materias y métodos
 
 
 

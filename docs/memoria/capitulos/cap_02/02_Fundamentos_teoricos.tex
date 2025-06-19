@@ -14,16 +14,17 @@ Frente a la idea de intentar crear un programa que simulara directamente el comp
 aprender como lo hace un niño, mediante un ``proceso educativo'' con el cual se logra alcanzar progresivamente 
 una ``mente adulta'', obteniendo así comportamientos inteligentes complejos.
 
-% Athur Samuel años 50 surge machine learning
-%He popularized the term "machine learning" in 1959.[4]
-%Samuel, Arthur L. (1959). "Some Studies in Machine Learning Using the Game of Checkers". IBM Journal of Research and Development. 44: 206–226.
-
-En las décadas de 1960, 1970 y 1980, en un contexto marcado por las limitaciones computacionales y el 
-escepticismo académico surgió el aprendizaje automático (\textit{machine learning}, (ML)) como 
-una rama marginal de la IA, centrada en el desarrollo de modelos y algoritmos que permitiesen a las 
+En los años 50, surgió el concepto de \textit{machine learning} (ML) ---o aprendizaje automático en
+español---, popularizado por Arthur L. Samuel \cite{samuel1959}, para designar una rama marginal de la IA, 
+centrada en el desarrollo de modelos y algoritmos que permitiesen a las 
 computadoras imitar la forma en la que los humanos aprenden, realizar tareas autónomas y mejorar su 
 rendimiento a través de la experiencia y exposición a más datos. De esta forma, estos modelos podrían realizar 
-predicciones o tomar decisiones sin ser programadas para cada caso.
+predicciones o tomar decisiones sin ser programados para cada caso.
+
+En las décadas de 1960, 1970 y 1980, surgieron algoritmos fundamentales como el perceptrón 
+\cite{mcculloch1943,rosenblatt1958} o los árboles de decisión \cite{quinlan1986}, 
+que sentaron los cimientos teóricos para el desarrollo posterior de técnicas más complejas.  
+Sin embargo, el progreso fue lento debido a las limitaciones computacionales y el gran escepticismo académico. 
 
 Los años 90 y 2000 marcaron un punto de inflexión para el ML, gracias a los avances teóricos, el mayor poder 
 computacional y la disponibilidad de grandes volúmenes de datos. De 2010 en adelante, la evolución del ML ha 
@@ -157,8 +158,11 @@ donde
     \item $X_{i0},X_{i1}, \dots, X_{in}$ son las características o atributos del ejemplo $i$,
     \item $Y_i$ es el valor real de la variable objetivo para ese ejemplo,
     \item $\hat{Y_i}$ es la predicción generada por el modelo, y
-    \item $\varepsilon_i$ representa el error o residuo \footnote{... a pesar de que en la literatura estos 
-    términos se distinguen, ...}, es decir, la diferencia entre la predicción y el valor real.
+    \item $\varepsilon_i$ representa el error o residuo 
+    \footnote{
+        ... a pesar de que en la literatura estos términos se distinguen, ...
+    }, 
+    es decir, la diferencia entre la predicción y el valor real.
     Este término captura factores aleatorios o imprecisiones que el modelo no logra explicar perfectamente.
 \end{itemize}
 
@@ -644,8 +648,12 @@ entrenamiento final), lo que puede ser prohibitivo para modelos complejos, como 
 
 \section{Deep Learning}
 
-El \textbf{aprendizaje profundo (\textit{deep learning}, DL)} es una familia de técnicas de ML que utiliza
-redes neuronales de muchas capas. 
+El \textbf{aprendizaje profundo (\textit{deep learning}, DL)} es una familia de técnicas de ML que utilizan 
+múltiples capas de procesamiento para aprender representaciones de datos con varios niveles de abstracción
+\cite{lecun2015}. Las redes neuronales han demostrado ser especialmente eficaces para este propósito, al 
+permitir la composición jerárquica de características que capturan patrones cada vez más complejos en los 
+datos.
+
 Las redes neuronales tienen su origen en el intento de modelar las redes de neuronas del cerebro humano 
 \cite{mcculloch1943}. Se requirió de numerosas contribuciones teóricas ---como el perceptrón 
 \cite{rosenblatt1958} o el algoritmo de \textit{backpropagation} \cite{rumelhart1986,werbos1994}, entre 
@@ -660,13 +668,15 @@ escenas compuestas.
 Esta propiedad las hace excepcionalmente versátiles, ya que procesan datos de muy diversa naturaleza ---datos 
 tabulares, imágenes, audio, texto o señales temporales---, dados que ellas mismas aprenden los procesos de 
 extracción de características de estos, hasta ahora realizados ``a mano'' (mediante procesos diseñados por la 
-ingeniería de características) \cite{rusell2021} \footnote{Este enfoque se denomina aprendizaje extremo a 
-extremo (\textit{end-to-end learning}), en el cual tanto la extracción de características como la 
-clasificación son parte de un modelo integral que se entrena de manera conjunta, optimizando todos los 
-componentes del sistema en un mismo proceso \cite{rusell2021}.}. Gracias a ello, las DNNs han alcanzado 
-rendimientos sobresalientes en dominios como visión por computador (clasificación de imágenes, detección de 
-objetos, segmentación) o procesamiento de lenguaje natural (traducción, generación de texto) 
-\cite{redhat2024DeepLearningDefinition}.
+ingeniería de características) \cite{rusell2021} 
+\footnote{
+    Este enfoque se denomina aprendizaje extremo a extremo (\textit{end-to-end learning}), en el cual tanto la 
+    extracción de características como la clasificación son parte de un modelo integral que se entrena de 
+    manera conjunta, optimizando todos los componentes del sistema en un mismo proceso \cite{rusell2021}.
+}. 
+Gracias a ello, las DNNs han alcanzado rendimientos sobresalientes en dominios como visión por computador 
+(clasificación de imágenes, detección de objetos, segmentación) o procesamiento de lenguaje natural 
+(traducción, generación de texto) \cite{redhat2024DeepLearningDefinition}.
 No obstante, su eficacia depende críticamente de grandes volúmenes de datos y recursos computacionales, lo que 
 ha impulsado técnicas como el \textit{transfer learning} y modelos eficientes para democratizar su uso.
 
@@ -692,11 +702,12 @@ $$
 y = f \left( \sum_{i=1}^n{w_ix_i+b} \right)
 $$
 
-donde $x_i$ son las entradas, $w_i$ son los pesos entrenables ($w_0$ el sesgo)\footnote{
+donde $x_i$ son las entradas, $w_i$ son los pesos entrenables ($w_0$ el sesgo)
+\footnote{
     El sesgo se considera un peso, puesto que, en la implementación, son un peso más conectado a una unidad
     de sesgo con valor constante unitario (1).
-}, y $f$ es la función de 
-activación.
+}
+, y $f$ es la función de activación.
 
 \begin{figure}[h]
     \centering
@@ -710,21 +721,25 @@ activación.
 
 
 Esta \textbf{función de activación} a la salida de la unidad es un componente esencial que introduce no 
-linealidad en el modelo, permitiendo a la red aprender relaciones complejas en los datos\footnote{
+linealidad en el modelo, permitiendo a la red aprender relaciones complejas en los datos
+\footnote{
     Sin ella, el MLP se reduciría a una simple combinación lineal de las entradas, incapaz de
     representar jerarquías de características \cite{murphy2022}.
-}. Existe multitud de funciones de activación, 
-como la sigmoide, la tangente hiperbólica o ReLu ---y sus múltiples variantes---, cada una con sus ventajas 
-y limitaciones
+}.
+Existe multitud de funciones de activación, como la sigmoide, la tangente hiperbólica o ReLu ---y sus 
+múltiples variantes---, cada una con sus ventajas y limitaciones
 \footnote{
     Si bien, actualmente, ReLU y sus variantes (\textit{Leaky} ReLU, \textit{Parametric ReLU} o 
     \textit{Swish}) se han convertido en el estándar \textit{de facto} para las capas ocultas en DNNs,
     por su eficiencia computacional, y su eficacia empírica \cite{vargas2021}.
 }.
 
-La arquitectura de un MLP conecta estas unidades formando una red neuronal retroalimentada\footnote{Una red 
-neuronal retroalimentada (\textit{feed-forward neural network}) es aquella en la que las conexiones entre las 
-unidades no forman un ciclo y, por tanto, la información solo se mueve en una dirección: adelante.},
+La arquitectura de un MLP conecta estas unidades formando una red neuronal retroalimentada
+\footnote{
+    Una red neuronal retroalimentada (\textit{feed-forward neural network}) es aquella en la que las 
+    conexiones entre las unidades no forman un ciclo y, por tanto, la información solo se mueve en una 
+    dirección: adelante.
+},
 que consta de tres partes (véase la Figura \ref{fig:neural_network}):
 
 \begin{itemize}
@@ -747,12 +762,14 @@ que consta de tres partes (véase la Figura \ref{fig:neural_network}):
         
         \item en problemas de clasificación, esta capa tendrá una sola unidad ---generalmente, con activación 
         sigmoide--- en clasificación binaria, o múltiples unidades ---con activación 
-        \textit{softmax}\footnote{
+        \textit{softmax}
+        \footnote{
             La activación \textit{softmax} no se aplica sobre la salida de una única unidad, sino que se 
             aplica sobre un vector de salidas de múltiples unidades, transformándolas en una distribución de 
             probabilidad, donde cada valor representa la probabilidad de pertenecer a una clase distinta y la 
             suma de todas las salidas es igual a 1.
-        }--- en clasificación multiclase (véase la Figura \ref{fig:activation_func_classification}).
+        }
+        --- en clasificación multiclase (véase la Figura \ref{fig:activation_func_classification}).
     \end{itemize}
 
 \end{itemize}
@@ -844,7 +861,8 @@ eficacia:
     En problemas de regresión se emplean funciones de pérdida como el error cuadrático medio (\textit{mean 
     squared error}, MSE), que mide la diferencia promedio al cuadrado entre las predicciones y los valores 
     reales, o el error absoluto medio (\textit{mean absolute error}, MAE), que calcula la diferencia promedio 
-    en valor absoluto\footnote{
+    en valor absoluto
+    \footnote{
         Aunque esta no es derivable en $x=0$, se define la derivada en ese punto como 0.
     }.
 
@@ -868,10 +886,12 @@ eficacia:
 
     \item Si bien existen métodos de entrenamiento de redes ejemplo a ejemplo ---como el Gradiente Descendente 
     Estocástico (SGD) puro\cite{bottou2010}---, estas se suelen entrenar por lotes 
-    (\textit{minibatches})\footnote{
+    (\textit{minibatches})
+    \footnote{
         Se denomina \textit{batch} al \textit{dataset} completo, y \textit{minibatch} a los subconjuntos de
         este cuyo tamaño está determinado por el hiperparámetro \textit{batch size}.
-    } debido a ventajas clave, como el aprovechamiento de la paralelización de operaciones en GPU y una mayor 
+    } 
+    debido a ventajas clave, como el aprovechamiento de la paralelización de operaciones en GPU y una mayor 
     estabilidad en la función de pérdida al promediarse el error entre varios ejemplos. 
     Aún así, establecer un tamaño de lote óptimo no es una tarea trivial que requiere de encontrar un 
     equilibrio entre generalización y velocidad: los lotes grandes aceleran el entrenamiento pero pueden 
@@ -931,16 +951,18 @@ parámetros.
 \subsubsection{Capas convolucionales}
 
 Como se ha introducido antes, el operador de \textbf{convolución} es la base de las CNNs. Este operador 
-matemático aplica un \textbf{filtro} (también denominado \textit{kernel})\footnote{
+matemático aplica un \textbf{filtro} (también denominado \textit{kernel})
+\footnote{
     Aunque, como veremos después, a la hora de hablar de capas convolucionales, no son lo mismo.
-} a regiones locales de una imagen de 
-entrada, realizando un producto punto\footnote{El producto punto o producto escalar de dos vectores, se 
-define como la suma de los productos componente a componente. 
-
-$$
-\mathbf{u} \cdot \mathbf{v} = \mathbf{u}_1 \cdot \mathbf{v}_1 + \mathbf{u}_2 \cdot \mathbf{v}_2 + ... + 
-\mathbf{u}_n \cdot \mathbf{v}_n
-$$
+} 
+a regiones locales de una imagen de entrada, realizando un producto punto
+\footnote{
+    El producto punto o producto escalar de dos vectores, se define como la suma de los productos componente a 
+    componente. 
+    $$
+    \mathbf{u} \cdot \mathbf{v} = \mathbf{u}_1 \cdot \mathbf{v}_1 + \mathbf{u}_2 \cdot \mathbf{v}_2 + ... + 
+    \mathbf{u}_n \cdot \mathbf{v}_n
+    $$
 } 
 entre los valores del filtro y los píxeles correspondientes de la imagen, y sustituyendo el valor del pixel 
 central por el resultado del producto (véase la Figura \ref{fig:conv_op}).
@@ -964,33 +986,30 @@ Las CNNs aprovechan la convolución mediante \textbf{capas convolucionales}. Cad
 compuesta por un conjunto de filtros convolucionales, donde cada uno a su vez tiene tantos \textit{kernels} 
 como canales de entrada de la imagen haya en la capa (si es la primera capa convolucional, habrá 1 canal en 
 imágenes de escala de grises, o 3 en imágenes RGB). El número de filtros en cada capa, su tamaño y la forma
-en que se deslizan sobre la entrada\footnote{                                                                      
+en que se deslizan sobre la entrada
+\footnote{                                                                      
     Definidos mediante los parámetros de \textit{stride} y \textit{padding}, que controlan el desplazamiento       
     del filtro y la cantidad de relleno alrededor de la entrada, respectivamente.
 }
 \todo{
-    ¿Se entiende aquí a qué se refiere con ``forma en la que se desliza sobre la entrada'' (la ventana 
-    deslizante)?
-}
-\todo{
-    ¿Explico más en profundidad los parámetros de stride y padding, o añado una imagen que deje clara la
-    intuición detrás?
+    Añadir una imagen explicando stride y padding 
 }
 se determinan durante el diseño de la red, mientras que los valores de los \textit{kernels} son parámetros 
 entrenables.
 
 Cada filtro convolucional realiza la operación convolucional sobre cada canal con el \textit{kernel} que le 
 corresponde. Después, se suman los mapas de activación de cada canal (pixel a pixel) añadiendo un sesgo 
-(un mismo valor a todos los píxeles\footnote{
+(un mismo valor a todos los píxeles
+\footnote{
     Es por ello que no rompe la propiedad de equivarianza.
-}), 
-generando lo que denominamos como \textbf{mapa de características} (ya que idealmente extrae características 
-relevantes). Los mapas de características generados con cada uno de los filtros son los nuevos canales, que
-conforman la salida de la capa convolucional. Esta salida puede ser posteriormente procesada por otras capas,
-permitiendo a la red aprender representaciones jerárquicas cada vez más abstractas de los datos de entrada:
-las primeras capas convolucionales detectarán bordes, cambios de color o texturas básicas; a medida que 
-avanzamos en las capas de la red, las combinaciones de estas características simples permite identificar 
-formas más complejas, como objetos e incluso composiciones.
+}),
+generando lo que denominamos como \textbf{mapa de características} (ya que idealmente extrae 
+características relevantes). Los mapas de características generados con cada uno de los filtros son los nuevos 
+canales, que conforman la salida de la capa convolucional. Esta salida puede ser posteriormente procesada por 
+otras capas, permitiendo a la red aprender representaciones jerárquicas cada vez más abstractas de los datos 
+de entrada: las primeras capas convolucionales detectarán bordes, cambios de color o texturas básicas; a 
+medida que avanzamos en las capas de la red, las combinaciones de estas características simples permite 
+identificar formas más complejas, como objetos e incluso composiciones.
 
 Sin embargo, hemos pasado por alto algo fundamental: ¿cómo reunimos la información de dos regiones distantes 
 de una imagen en un mismo sitio? Una primera aproximación intuitiva nos diría que los filtros convolucionales 
@@ -1001,7 +1020,8 @@ datos de entrenamiento). Es por esto que, en aquellos problemas en los que no es
 información de localización de las características, ---como en los que nos enfocamos en este trabajo: 
 clasificación y regresión---, y, por tanto, el modelo sea invariante a la ubicación, se emplean técnicas de 
 submuestreo (\textit{downsampling}) \cite{murphy2022}, como usar \textit{stride} mayor de 1 en los filtros
-de las capas convolucionales o realizar \textit{pooling}\footnote{
+de las capas convolucionales o realizar \textit{pooling}
+\footnote{
     Nos centraremos en el último dado su amplio uso y fácil comprensión, además de su demostrada efectividad 
     empírica.
 }.
@@ -1057,11 +1077,13 @@ la dimensionalidad y se han obtenido representaciones abstractas de alto nivel, 
 predicción (en problemas de clasificación y regresión). 
 Aquí es donde las \textbf{capas completamente conectadas (\textit{fully-connected}, FC)} juegan un papel 
 crucial. Se utilizan en las últimas etapas de la red convolucional para combinar todas las características 
-extraídas y producir una predicción final. Es decir, actúan como el clasificador/regresor\footnote{
+extraídas y producir una predicción final. Es decir, actúan como el clasificador/regresor
+\footnote{
     Si bien, independientemente de la tarea ---regresión o clasificación---, a esta parte de la red se le 
     denomina clasificador
-} que toma todas las señales 
-procesadas por las capas anteriores y predice la clase a la que pertenece la imagen o el valor objetivo. 
+} 
+que toma todas las señales procesadas por las capas anteriores y predice la clase a la que pertenece la imagen 
+o el valor objetivo. 
 
 La arquitectura de esta capa sigue la estructura del MLP, con neuronas organizadas en una o más capas densas, 
 donde cada neurona está conectada con todas las salidas de la capa anterior. Para que esto sea posible, 
@@ -1238,24 +1260,23 @@ preentrenadas para mejorar el rendimiento en la tarea específica.
 
 \section{Incertidumbre}
 
-La metrología\footnote{
+La metrología
+\footnote{
     Ciencia de las mediciones y sus aplicaciones \cite{jcgm200:2012}.
-}, y la estadística comparten un papel fundamental en el análisis del error y la incertidumbre en campos como 
+},
+y la estadística comparten un papel fundamental en el análisis del error y la incertidumbre en campos como 
 el ML. Mientras la metrología establece los fundamentos conceptuales de error e incertidumbre, la estadística 
 proporciona métodos para cuantificar, modelar y reducir estos factores durante el desarrollo y validación de 
 modelos.
 
-El Comité Conjunto de Guías en Metrología (\textit{Joint Committe for Guides in Metrology}, JCGM)\footnote{
+El Comité Conjunto de Guías en Metrología (\textit{Joint Committe for Guides in Metrology})
+\footnote{
     Este Comité está formado por numerosas organizaciones internacionales de metrología y normalización: 
     BIPM, IEC, IFCC, ISO, IUPAC, IUPAP, OIML e ILAC. Su objetivo principal es mantener y promover las 
     guías internacionales clave en metrología, como la Guía para la Expresión de la Incertidumbre en la 
     Medición (\textit{Guide to the Expression of Uncertainty in Measurement}, GUM) \cite{jcgm100:2008} y el 
     Vocabulario Internacional de Metrología (\textit{Vocabulaire international de métrologie}, VIM) 
     \cite{jcgm200:2012}.
-}
-\todo{
-    ¿Sobra la concreción de las siglas (principalmente en francés)? Es que en el resto del documento siempre 
-    he introducido los términos de los que procedía unas siglas. 
 }
 define el \textbf{error} como una ``medición imperfecta'' de la magnitud observada, que puede estar causada
 por efectos aleatorios (componente aleatoria del error) y por efectos sistemáticos (componente sistemática del 
@@ -1299,13 +1320,17 @@ herramienta para determinar el error del instrumento.
 
 \subsection{Intervalos de valores razonables}
 
+\todo{Creo que es mejor eliminar este apartado e incluirlo en el anexo pero lo dejo por ahora para 
+que vea la diferencia entre el intervalo de confianza, el de credibilidad y el de predicción}
+
 Veamos qué tipos de intervalos de valores nos permiten cuantificar la variabilidad de los resultados y, por 
 tanto, la incertidumbre de la medición realizada. 
 
 \begin{itemize}
 
     \item El \textbf{intervalo de confianza (IC)} es una herramienta común de la estadística 
-    frecuentista\footnote{
+    frecuentista
+    \footnote{
         La estadística frecuentista ... ¿Anexo explicando las diferencias entre frecuentista y bayesiana?
         (para agosto)
     },
@@ -1337,6 +1362,8 @@ tanto, la incertidumbre de la medición realizada.
     95\% de probabilidad de que el parámetro $\theta$ se encuentre dentro de ese intervalo, dado el conjunto
     de datos observado y la distribución a priori asumida.
 
+    \todo{Incluir imagen comparando intervalo de confianza y credibilidad}
+
 
     \item El \textbf{intervalo de predicción (\textit{prediction interval})} es radicalmente diferente a los 
     intervalos previos, pues trata de predecir un valor futuro de una observación, no determinar un parámetro 
@@ -1349,45 +1376,6 @@ tanto, la incertidumbre de la medición realizada.
 
 \end{itemize}
 
-Como podemos esperar, a más estrecho sea el intervalo que manejemos, más se puede confiar en las predicciones,
-pero no todos los tipos de intervalos revelan la misma información sobre incertidumbre. 
-
-% ------------------------------------------------------------------------------------------------------------
-
-\subsection{Cuantificación de la incertidumbre en \textit{machine learning}}
-
-El enfoque basado en incertidumbre se puede extrapolar a modelos de ML. En problemas de regresión, la analogía
-es directa: es deseable que los modelos no solo proporcionen una predicción puntual, sino también un intervalo 
-que indique el grado de incertidumbre asociado a cada predicción, conocido como \textbf{intervalo de 
-predicción (\textit{prediction interval})}. En caso de los problemas de clasificación, el concepto equivalente 
-al de intervalo de predicción se denomina \textbf{conjunto de predicción (\textit{prediction set})}.
-
-\todo{¿Cómo conecto estos dos párrafos?}
-
-Podríamos incluso desglosar los tipos de incertidumbre según su origen, pero esto requeriría de conocimiento
-específico de cada problema para el que se aplique. Sí está más aceptada la clasificación de incertidumbre en
-aleatoria y epistémica \cite{hullermeier2021}:
-
-\begin{itemize}
-    
-    \item La incertidumbre aleatoria es la relativa al dato individual. 
-    Esta incertidumbre se debe a la variabilidad inherente del fenómeno observado y no puede reducirse, aunque 
-    se disponga de más datos. Por ejemplo, en un entorno médico, puede reflejar la variabilidad entre 
-    pacientes con condiciones similares.
-
-    \item La incertidumbre epistémica es la causada por falta de conocimiento o precisión del modelo.
-    Se relaciona con aspectos como la escasez de datos, la calidad de la información disponible o la capacidad 
-    limitada del modelo para generalizar. A diferencia de la incertidumbre aleatoria, la epistémica es 
-    reducible: puede disminuirse con más datos, mejores modelos o mayor comprensión del problema.
-    
-\end{itemize}
-
-A estos, se le puede añadir un tercero: el \textit{drift}, que procede de cambios en la distribución de los 
-datos a lo largo del tiempo, ya sea en la distribución de las variables de entrada, en la distribución de las
-variables de salida, o en la relación entre las dos previas. Por ejemplo: una imagen de entrada a un modelo de
-clasificación que no corresponde a ninguna clase con la que se haya entrenado anteriormente, o  
-
-
 % Relacionándolo con el apartado anterior, los intervalos de confianza solo informan de la incertidumbre 
 % aleatoria, puesto que asumen que el modelo está bien especificado y que el error residual es la única fuente 
 % de variabilidad. 
@@ -1398,8 +1386,186 @@ clasificación que no corresponde a ninguna clase con la que se haya entrenado a
 % Frente a estos, los intervalos de predicción obtenidos mediante predicción conformal sí presentan información
 % de los tres componentes de incertidumbre. 
 
+Como podemos esperar, a más estrecho sea el intervalo que manejemos, más se puede confiar en las predicciones,
+pero no todos los tipos de intervalos revelan la misma información sobre incertidumbre. 
+
+% ------------------------------------------------------------------------------------------------------------
+
+\subsection{Incertidumbre en \textit{machine learning}}
+
+El enfoque basado en incertidumbre se puede extrapolar a modelos de ML, incorporando técnicas de 
+\textbf{cuantificación de la incertidumbre (\textit{Uncertainty Quantification}, UQ)} para evaluar y comunicar 
+la confianza del modelo en sus predicciones. 
+En problemas de regresión, la analogía es directa: es deseable que los modelos no solo proporcionen una 
+predicción puntual, sino también un intervalo que indique el grado de incertidumbre asociado a cada 
+predicción, conocido como \textbf{intervalo de predicción (\textit{prediction interval})},
+el cual puede derivarse de métodos de UQ como \textit{bootstrapping} o predicción conformal
+En caso de los problemas de clasificación, el concepto equivalente
+al de intervalo de predicción se denomina \textbf{conjunto de predicción (\textit{prediction set})}, 
+que puede construirse mediante técnicas como estimaciones de probabilidad calibrada o predicción conformal.  
+
+Las fuentes de incertidumbre pueden ser muy variadas, y su identificación requiere en muchos casos de 
+conocimiento específico en el problema. Si bien se suelen considerar dos tipos de incertidumbre en las 
+predicciones realizadas en ML \cite{hullermeier2021}:
+
+\begin{itemize}
+    
+    \item La \textbf{incertidumbre aleatoria} es la relativa al dato individual. 
+    Esta incertidumbre se debe a la variabilidad inherente del fenómeno observado y no puede reducirse, aunque 
+    se disponga de más datos. Por ejemplo, en un entorno médico, puede reflejar la variabilidad entre 
+    pacientes con condiciones similares.
+
+    \item La \textbf{incertidumbre epistémica} es la causada por falta de conocimiento o precisión del modelo.
+    Se relaciona con aspectos como la escasez de datos, la calidad de la información disponible o la capacidad 
+    limitada del modelo para generalizar. A diferencia de la incertidumbre aleatoria, la epistémica es 
+    reducible: puede disminuirse con más datos, mejores modelos o mayor comprensión del problema.
+    
+\end{itemize}
+
+A estos, se le puede añadir un tercero: el \textbf{\textit{drift}} \cite{gama2012}, que procede de cambios en 
+la distribución de los datos a lo largo del tiempo, ya sea en la distribución de las variables de entrada, en 
+la distribución de las variables de salida, o en la relación entre las dos previas. Por ejemplo: una imagen 
+de entrada a un modelo de clasificación que no corresponde a ninguna clase con la que se haya entrenado 
+anteriormente, un cambio en la población objetivo de una aplicación médica ---p.ej., debido a un cambio 
+demográfico o a la aparición de una nueva enfermedad---, entre otros. 
+
+% ------------------------------------------------------------------------------------------------------------
+
+\subsection{Cuantificación de la incertidumbre en \textit{machine learning}}
+
+La cuantificación de la incertidumbre puede abordarse desde dos perspectivas: 
+
+\begin{itemize}
+    
+    \item sobre nuevos datos (no vistos), donde el objetivo es estimar la confianza del modelo en situaciones 
+    reales de predicción, donde no se conoce el valor verdadero; o
+
+    \item sobre datos ya observados, como los del conjunto de entrenamiento o validación. En este caso el 
+    propósito es evaluar si el modelo representa adecuadamente la variabilidad de los datos, detectar 
+    sobreajuste o validar la calibración de las predicciones.
+
+\end{itemize}
+
+Nos centraremos en el estudio de la cuantificación de la incertidumbre sobre datos nuevos, pues es en este 
+contexto donde resulta más relevante para aplicaciones prácticas, como las de estimación del PB. 
+Esta provee información clave para la toma de decisiones tanto del valor predicho como de la certeza asociada
+a la predicción. 
+\todo{
+    ¿Es posible hablar de métodos de cuantificación de incertidumbre sobre datos nuevos sin mencionar los
+    métodos sobre datos previos? En clasificación, la calibración del modelo es importante para la 
+    cuantificación de incertidumbre. De hecho, es recomendable realizarla previamente a la aplicación de 
+    conformal prediction.
+}
+
+Además, nos centraremos en aquellos métodos que no requieran asumir distribuciones específicas en los datos
+ni dependan fuertemente de supuestos paramétricos, ya que en muchos problemas reales (como la 
+estimación del perfil biológico) los datos pueden presentar heterocedasticidad, asimetría o 
+comportamientos complejos que dificultan su modelización con enfoques clásicos.
 
 
+\subsubsection{Cuantificación de la incertidumbre en problemas de regresión}
+
+Existe multitud de maneras de cuantificar la incertidumbre en problemas de regresión, más y menos rigurosas.
+
+Una primera aproximación es la \textbf{regresión cuantílica (\textit{quantile regression})}, que añade dos 
+nuevas salidas en el modelo de regresión, que serán los límites inferior y superior de un intervalo de 
+predicción, correspondientes a cuantiles específicos (por ejemplo, los percentiles 10 y 90)
+\footnote{
+    El entrenamiento del modelo para estas dos salidas se realiza con la función de pérdida \textit{pinball},
+    \cite{steinwart2011} que combina los errores de predicción para múltiples cuantiles, penalizando
+    asimétricamente las desviaciones según el cuantil objetivo.
+}. 
+Esto permite estimar no solo la tendencia central (como en la regresión tradicional), sino también la 
+incertidumbre de las predicciones (véase la Figura \ref{fig:quantile_regression}).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{capitulos/cap_02/imagenes/quantile_regression.png}
+    \caption[
+        Gráfico que ilustra las 3 predicciones que arroja un modelo de regresión cuantílica. Recuperado de 
+        \cite{vermorel2012}.
+    ]{
+        Gráfico que ilustra las 3 predicciones que arroja un modelo de regresión cuantílica. Recuperado de 
+        \cite{vermorel2012}. Se observa los límites superior e inferior los percentiles 75 y 25, 
+        respectivamente. 
+    }
+    \label{fig:quantile_regression}
+\end{figure}
+
+Sin embargo, este método presenta varios problemas:
+
+\begin{itemize}
+
+    \item Sensibilidad a datos escasos o ruidosos: La estimación puede ser muy sensible a 
+    \textit{outliers}
+    \footnote{
+        Los valores atípicos o \textit{outliers} son instancias que se desvían significativamente del resto
+        de instancias del conjunto de datos. Un \textit{outlier} podría indicar un comportamiento anormal
+        del sistema (variabilidad natural del fenómeno observado, eventos excepcionales que refleja 
+        comportamientos reales pero poco frecuentes, ...) o un error de recolección y registro de los datos 
+        \cite{alpaydin2010}.   
+    } 
+    y a regiones con pocas observaciones, llevando a intervalos poco fiables. De hecho, se puede dar el 
+    fenómeno indeseable de que cuantiles mayores tengan valores predichos más bajos que cuantiles menores 
+    ---conocido como cruzamiento de cuantiles \cite{koenker2005}---.
+    
+    \item Falta de cobertura probabilística garantizada: No existe ningún tipo de garantía estadística que 
+    asegure que el cuantil estimado cubra la proporción deseada de observaciones en muestras futuras. 
+    
+    \item No captura la incertidumbre epistémica: Solo captura la incertidumbre aleatoria \cite{abdar2021},
+    dado que modela cómo los valores de salida varían dado un conjunto de entradas. No captura automáticamente 
+    incertidumbre epistémica, a menos que se combine con otros enfoques, como métodos bayesianos 
+    \cite{tokdar2012}.
+
+    \item Muestran gran incertidumbre en cuantiles extremos (cerca de cero o uno) \cite{feldman2023} y, por 
+    tanto, los intervalos de predicción obtenidos son extremedamente grandes, lo que logra una gran cobertura
+    pero poca utilidad práctica. 
+    
+\end{itemize}
+
+
+Otra técnica que no ...
+
+
+\todo{Introducir la predicción conformal}
+
+
+
+\subsubsection{Cuantificación de la incertidumbre en problemas de clasificación}
+
+
+
+\todo{¿Introducir la calibración de modelos y centrarse en el Platt Scaling y Temperature Scaling?}
+
+
+\todo{Introducir la predicción conformal}
+
+
+
+% ------------------------------------------------------------------------------------------------------------
+% CONFORMAL PREDICTION ---------------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------------------------------------
+
+\section{Conformal Prediction}
+
+La \textbf{predicción conformal (\textit{conformal predition}, CP)} 
+
+% ------------------------------------------------------------------------------------------------------------
+
+\subsection{Conformal Prediction en problemas de regresión}
+
+\subsubsection{Conformalized Quantile Regression (CQR)}
+
+
+\subsubsection{}
+
+
+
+% ------------------------------------------------------------------------------------------------------------
+
+\subsection{Conformal Prediction en problemas de clasificación}
+
+...
 
 \begin{figure}[h]
     \centering
@@ -1415,41 +1581,6 @@ clasificación que no corresponde a ninguna clase con la que se haya entrenado a
     } 
     \label{fig:adversarial_example}
 \end{figure}
-
-% ------------------------------------------------------------------------------------------------------------
-
-\subsection{Calibración de modelos}
-
-% Qué es la calibración de modelos
-
-% Modelos de clasificación: Platt Scaling y Temperature Scaling
-
-% Modelos de regresión: Quantile Regression
-
-% Preludio de la Conformal Prediction
-
-
-
-
-
-% ------------------------------------------------------------------------------------------------------------
-% CONFORMAL PREDICTION ---------------------------------------------------------------------------------------
-% ------------------------------------------------------------------------------------------------------------
-
-\section{Conformal Prediction}
-
-
-% ------------------------------------------------------------------------------------------------------------
-
-\subsection{Conformal Prediction en problemas de regresión}
-
-
-
-% ------------------------------------------------------------------------------------------------------------
-
-\subsection{Conformal Prediction en problemas de clasificación}
-
-...
 
 \subsubsection{Least-Ambiguous Set-Valued Classifiers}
 
