@@ -125,7 +125,7 @@ def output_stream_type(filename):
 
 
 # Argumento 1: Tipo de modelo predictivo
-pred_model_types = ['base', 'QR', 'ICP', 'CRF', 'CQR']
+pred_model_types = ['CQR-d']
 parser.add_argument(
     '-t', '--pred_model_type',
     type=str,
@@ -324,7 +324,7 @@ if args.pred_model_type in ['base','QR']:
     train_loader = create_loader(trainset, train_idx)
     valid_loader = create_loader(validset, valid_idx)
 
-# División para los modelos 'ICP' y 'CQR'
+# División para los modelos 'SplitCP' y 'CQR'
 else: 
     
     # Divide el conjunto de datos completo de entrenamiento en tres subconjuntos de forma estratificada:
@@ -354,11 +354,11 @@ print("✅ Datasets de imágenes cargados\n")
 
 # Si el modelo tiene un intervalo de salida (mide de alguna forma la incertidumbre), calcula alpha a partir
 # del nivel de confianza
-if args.pred_model_type in ['QR', 'ICP', 'CRF', 'CQR']:
+if args.pred_model_type in ['QR', 'splitCP', 'CQR']:
     alpha = (1-args.confidence)
 
 # 
-if args.pred_model_type in ['base', 'ICP', 'CRF']:
+if args.pred_model_type in ['base','splitCP']:
 
     # Inicializa el modelo de regresión estándar con una sola salida
     model = ResNeXtRegressor().to(device)
@@ -425,41 +425,62 @@ def train(model, dataloader, loss_fn, optimizer, scheduler=None, device='cuda'):
     return avg_loss
 
 
-def inference(model, dataloader, device='cuda'):
-    
-    # Pone la red en modo evaluación
-    model.eval()  
-    
-    # Inicializa listas para almacenar los valores objetivo y las predicciones
-    all_targets = []
-    all_outputs = []
-    
-    # No calcula los gradientes durante la validación para ahorrar memoria y tiempo
-    with torch.no_grad():
-        
-        # Itera sobre el conjunto a evaluar
-        for inputs, targets in dataloader:
-            
-            # Obtiene las imágenes y sus valores objetivo
-            inputs, targets = inputs.to(device), targets.to(device)
-            all_targets.append(targets.cpu())
-            
-            # Realiza predicciones con el modelo y las almacena
-            outputs = model(inputs)
-                
-            all_outputs.append(outputs.cpu())
 
-    # Concatena todas las predicciones y targets, y los devuelve
-    all_targets = torch.cat(all_targets)
-    all_outputs = torch.cat(all_outputs)
+def inference(
+    model, dataloader, device='cuda', 
+    return_targets=False, return_outputs=True, return_features=False
+):
+    # Pone la red en modo evaluación 
+    model.eval()
     
-    return all_targets, all_outputs
+    # Inicializa listas si son requeridas
+    all_targets = [] if return_targets else None
+    all_outputs = [] if return_outputs else None
+    all_features = [] if return_features else None
+
+    with torch.no_grad():
+        for batch in dataloader:
+            # Soporta tanto (inputs, targets) como solo inputs
+            if isinstance(batch, (list, tuple)) and len(batch) == 2:
+                inputs, targets = batch
+                inputs = inputs.to(device)
+                if return_targets:
+                    all_targets.append(targets.cpu())
+            else:
+                inputs = batch
+                inputs = inputs.to(device)
+
+            # Modelado según los flags
+            if return_features and return_outputs:
+                features, outputs = model(inputs, mode='both')
+                all_features.append(features.cpu())
+                all_outputs.append(outputs.cpu())
+            elif return_features:
+                features = model(inputs, mode='features')
+                all_features.append(features.cpu())
+            elif return_outputs:
+                outputs = model(inputs)
+                all_outputs.append(outputs.cpu())
+
+    # Concatena según sea necesario
+    result = []
+    if return_targets:
+        result.append(torch.cat(all_targets))
+    if return_features:
+        result.append(torch.cat(all_features))
+    if return_outputs:
+        result.append(torch.cat(all_outputs))
+
+    # Si solo hay un resultado, lo devuelve directamente
+    return result[0] if len(result) == 1 else tuple(result)
+
+
 
 
 def evaluate(model, dataloader, metric_fn=None, device='cuda', **kwargs):
     
     #
-    all_targets, all_predicted = inference(model, dataloader, device)
+    all_predicted, all_targets = inference(model, dataloader, device)
     
     #
     metric_value = metric_fn(all_predicted, all_targets, **kwargs)
@@ -543,7 +564,7 @@ for layer_group, lr in zip(layer_groups, lrs):
 # INICIALIZA LOS PARÁMETROS PARA EL EARLY STOPPING
 
 # Número máximo de épocas a entrenar (si no se activa el early stopping)
-MAX_EPOCHS = 30  
+MAX_EPOCHS = 1 
 
 # Número mínimo de épocas a entrenar
 MIN_EPOCHS = 30
@@ -654,68 +675,89 @@ print(f"En promedio, cada época del entrenamiento y la validación ha tardado {
       f"{seconds} segundos.\n")
 
 #-------------------------------------------------------------------------------------------------------------
-# DIBUJADO Y GUARDADO DE CURVAS DE APRENDIZAJE
 
-if hasattr(args, 'training_plot') and args.training_plot:
+def compute_combined_quantile(model, calib_loader, new_loader, k, lamda=1.0): 
     
-    # Grafica las curvas de aprendizaje
-    plt.figure(figsize=(8, 6))
-    plt.plot(train_losses, label='Train Loss')
-    plt.plot(valid_losses, label='Validation Loss')
+    # Obtiene valores verdaderos, características extraídas y valores predichos del conjunto de calibración 
+    calib_true_values, calib_features, calib_pred_values = \
+        inference(model, calib_loader, return_targets=True, return_features=True)
     
-    # Calcular límites automáticos ignorando outliers
-    upper_limit = train_losses[0]
-    lower_limit = min(min(train_losses), min(valid_losses))
-    plt.ylim(lower_limit * 0.95, upper_limit * 1.05) 
+    # Obtener características extraídas y valores predichos de las nuevas instancias
+    new_features, new_pred_values = \
+        inference(model, new_loader, return_features=True)
     
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.title('Loss Curve')
-    plt.legend()
-    plt.grid(True)
+    # --------------------------------------------------
+    
+    # Calcula el nivel de cuantificación ajustado basado en el tamaño del conjunto de calibración y alpha
+    n = len(calib_true_values)
+    q_level = np.ceil((1-alpha/2) * (n + 1)) / n
 
-    # Guarda la imagen
-    plt.savefig(args.training_plot, dpi=200, bbox_inches='tight')  
+    # Calcula las conformity scores para los límites inferior y superior 
+    global_calib_scores_lower = calib_pred_values[:, 0] - calib_true_values # diferencia entre predicción inferior y valor real
+    global_calib_scores_upper = calib_true_values - calib_pred_values[:,-1] # diferencia entre valor real y predicción superior
+
+    # Calcula los cuantiles para ambos límites del intervalo predictivo
+    global_quantile_lower = np.quantile(global_calib_scores_lower, q_level, method='higher')
+    global_quantile_upper = np.quantile(global_calib_scores_upper, q_level, method='higher')
+    
+    # --------------------------------------------------
+    
+    # Calcula las distancias entre las features de las nuevas instancias y las de calibración [N,M]
+    dists = torch.cdist(new_features, calib_features, p=2)
+    
+    # Obtiene los k vecinos en calibración más cercanos a cada instancia nueva [N,k]
+    topk_dists, topk_idxs = torch.topk(dists, k=k, largest=False)
+    
+    # Calcula la densidad local como el inverso de la distancia media a los k vecinos más cercanos [N]
+    local_density = 1.0 / topk_dists.mean(dim=1) # La densidad es mayor cuanto más cerca están los vecinos (0, +inf)
+    
+    # Calcula el peso local a partir de la densidad, mapeado entre 0 y 1 [N]
+    local_weight = 1.0 - 1.0 / (1.0 + local_density) # El peso se acerca más a 0 cuanto más distintes están los vecinos, y más a 1 cuanto más cerca están
+    
+    # Calcula el peso global [N]
+    global_weight = 1.0 - local_weight
+    
+    # --------------------------------------------------
+    
+    # Calcula el nivel de cuantificación ajustado basado en el tamaño del conjunto de vecinos y alpha
+    local_q_level = np.ceil( (1.0 - alpha/2) * (k + 1) ) / k
+    
+    # Calcula las conformity scores para los límites inferior y superior en cada vecindario
+    local_calib_scores_lower = calib_pred_values[topk_idxs, 0] - calib_true_values[topk_idxs]
+    local_calib_scores_upper = calib_true_values[topk_idxs] - calib_pred_values[topk_idxs,-1]
+    
+    # Calcula los cuantiles qhat para ambos límites del intervalo predictivo
+    local_quantile_lower = np.quantile(local_calib_scores_lower, local_q_level, method='higher')
+    local_quantile_upper = np.quantile(local_calib_scores_upper, local_q_level, method='higher')
+    
+    # --------------------------------------------------
+    
+    # Calcula los cuantiles combinados
+    comb_quantile_lower = (local_weight * local_quantile_lower + global_weight * global_quantile_lower) * lamda
+    comb_quantile_upper = (local_weight * local_quantile_upper + global_weight * global_quantile_upper) * lamda
+    
+    return comb_quantile_lower, comb_quantile_upper
 
 #-------------------------------------------------------------------------------------------------------------
 # CALIBRACIÓN CONFORMAL
 
-# Solo aplicamos calibración para modelos específicos (ICP y CQR)
-if args.pred_model_type in ['ICP','CQR']:
+# Obtener predicciones y valores verdaderos del conjunto de calibración
+calib_pred_values, calib_true_values = inference(model, calib_loader)
+    
+# Calcula el nivel de cuantificación ajustado basado en el tamaño del conjunto de calibración y alpha
+n = len(calib_true_values)
+q_level = np.ceil((1-alpha/2) * (n + 1)) / n
 
-    # Obtener predicciones y valores verdaderos del conjunto de calibración
-    calib_true_values, calib_pred_values = inference(model, calib_loader)
+# Calcula las puntuaciones para el límite inferior (diferencia entre predicción inferior y valor real)
+# y para el límite superior (diferencia entre valor real y predicción superior)
+global_calib_scores_lower_bound = calib_pred_values[:, 0] - calib_true_values
+global_calib_scores_upper_bound = calib_true_values - calib_pred_values[:,-1]
 
-    # Para ICP, calculamos las puntuaciones de calibración como la MAE
-    if args.pred_model_type == 'ICP':
-        
-        # Calcula el nivel de cuantificación ajustado basado en el tamaño del conjunto de calibración y alpha
-        n = len(calib_true_values)
-        q_level = np.ceil((1-alpha) * (n + 1)) / n
-        
-        # Calcula las puntuaciones de calibración como valores absolutos de los errores
-        calib_scores = np.abs(calib_true_values-calib_pred_values)
-        
-        # Calcula el cuantil qhat usado para ajustar el intervalo predictivo
-        q_hat = np.quantile(calib_scores, q_level, method='higher')
+# Calcula los cuantiles qhat para ambos límites del intervalo predictivo
+global_quantile_lower = np.quantile(global_calib_scores_lower_bound, q_level, method='higher')
+global_quantile_upper = np.quantile(global_calib_scores_upper_bound, q_level, method='higher')
 
-    # Para CQR, calculamos las puntuaciones usando los límites inferior y superior de los intervalos predichos 
-    elif args.pred_model_type == 'CQR':
-        
-        # Calcula el nivel de cuantificación ajustado basado en el tamaño del conjunto de calibración y alpha
-        n = len(calib_true_values)
-        q_level = np.ceil((1-alpha/2) * (n + 1)) / n
-
-        # Calcula las puntuaciones para el límite inferior (diferencia entre predicción inferior y valor real)
-        # y para el límite superior (diferencia entre valor real y predicción superior)
-        calib_scores_lower_bound = calib_pred_values[:, 0] - calib_true_values
-        calib_scores_upper_bound = calib_true_values - calib_pred_values[:,-1]
-        
-        # Calcula los cuantiles qhat para ambos límites del intervalo predictivo
-        q_hat_lower = np.quantile(calib_scores_lower_bound, q_level, method='higher')
-        q_hat_upper = np.quantile(calib_scores_upper_bound, q_level, method='higher')
-
-    print("✅ Calibración completada\n")
+print("✅ Calibración completada\n")
     
 #-------------------------------------------------------------------------------------------------------------
 # GUARDADO DE MODELO ENTRENADO 
@@ -725,10 +767,10 @@ checkpoint = {
     'model_state_dict': model.state_dict()
 }
 
-if args.pred_model_type in ('QR', 'ICP', 'CQR'):
+if args.pred_model_type in ('QR', 'splitCP', 'CQR'):
     checkpoint['alpha'] = alpha
 
-if args.pred_model_type == 'ICP':
+if args.pred_model_type == 'splitCP':
     checkpoint['q_hat'] = q_hat
 
 elif args.pred_model_type == 'CQR':
@@ -745,7 +787,7 @@ torch.save(checkpoint, args.model_path)
 test_true_values, test_pred_values = inference(model, test_loader)
 
 # Determina las predicciones puntuales
-if args.pred_model_type in ['base', 'ICP']:
+if args.pred_model_type in ['base','splitCP']:
     test_point_pred_values = test_pred_values
 else:
     num_outputs = test_pred_values.shape[1]
@@ -763,9 +805,9 @@ test_mse = torch.mean((test_true_values - test_point_pred_values) ** 2)
 print(f"- Error Cuadrático Medio (MSE) en test: {test_mse:.3f}")
 
 # Si es un modelo con intervalos, calcula límites, cobertura y tamaño del intervalo
-if args.pred_model_type in ['ICP', 'QR', 'CQR']:
+if args.pred_model_type in ['splitCP', 'QR', 'CQR']:
 
-    if args.pred_model_type == 'ICP':
+    if args.pred_model_type == 'splitCP':
         test_pred_lower_bound = test_point_pred_values - q_hat
         test_pred_upper_bound = test_point_pred_values + q_hat
 

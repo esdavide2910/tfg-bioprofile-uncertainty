@@ -425,35 +425,83 @@ def train(model, dataloader, loss_fn, optimizer, scheduler=None, device='cuda'):
     return avg_loss
 
 
-def inference(model, dataloader, device='cuda'):
+# def inference(model, dataloader, device='cuda'):
     
-    # Pone la red en modo evaluación
-    model.eval()  
+#     # Pone la red en modo evaluación
+#     model.eval()  
     
-    # Inicializa listas para almacenar los valores objetivo y las predicciones
-    all_targets = []
-    all_outputs = []
+#     # Inicializa listas para almacenar los valores objetivo y las predicciones
+#     all_targets = []
+#     all_outputs = []
     
-    # No calcula los gradientes durante la validación para ahorrar memoria y tiempo
-    with torch.no_grad():
+#     # No calcula los gradientes durante la validación para ahorrar memoria y tiempo
+#     with torch.no_grad():
         
-        # Itera sobre el conjunto a evaluar
-        for inputs, targets in dataloader:
+#         # Itera sobre el conjunto a evaluar
+#         for inputs, targets in dataloader:
             
-            # Obtiene las imágenes y sus valores objetivo
-            inputs, targets = inputs.to(device), targets.to(device)
-            all_targets.append(targets.cpu())
+#             # Obtiene las imágenes y sus valores objetivo
+#             inputs, targets = inputs.to(device), targets.to(device)
+#             all_targets.append(targets.cpu())
             
-            # Realiza predicciones con el modelo y las almacena
-            outputs = model(inputs)
+#             # Realiza predicciones con el modelo y las almacena
+#             outputs = model(inputs)
                 
-            all_outputs.append(outputs.cpu())
+#             all_outputs.append(outputs.cpu())
 
-    # Concatena todas las predicciones y targets, y los devuelve
-    all_targets = torch.cat(all_targets)
-    all_outputs = torch.cat(all_outputs)
+#     # Concatena todas las predicciones y targets, y los devuelve
+#     all_targets = torch.cat(all_targets)
+#     all_outputs = torch.cat(all_outputs)
     
-    return all_targets, all_outputs
+#     return all_targets, all_outputs
+
+def inference(
+    model, dataloader, device='cuda', 
+    return_targets=False, return_outputs=True, return_features=False
+):
+    # Pone la red en modo evaluación 
+    model.eval()
+    
+    # Inicializa listas si son requeridas
+    all_targets = [] if return_targets else None
+    all_outputs = [] if return_outputs else None
+    all_features = [] if return_features else None
+
+    with torch.no_grad():
+        for batch in dataloader:
+            # Soporta tanto (inputs, targets) como solo inputs
+            if isinstance(batch, (list, tuple)) and len(batch) == 2:
+                inputs, targets = batch
+                inputs = inputs.to(device)
+                if return_targets:
+                    all_targets.append(targets.cpu())
+            else:
+                inputs = batch
+                inputs = inputs.to(device)
+
+            # Modelado según los flags
+            if return_features and return_outputs:
+                features, outputs = model(inputs, mode='both')
+                all_features.append(features.cpu())
+                all_outputs.append(outputs.cpu())
+            elif return_features:
+                features = model(inputs, mode='features')
+                all_features.append(features.cpu())
+            elif return_outputs:
+                outputs = model(inputs)
+                all_outputs.append(outputs.cpu())
+
+    # Concatena según sea necesario
+    result = []
+    if return_targets:
+        result.append(torch.cat(all_targets))
+    if return_features:
+        result.append(torch.cat(all_features))
+    if return_outputs:
+        result.append(torch.cat(all_outputs))
+
+    # Si solo hay un resultado, lo devuelve directamente
+    return result[0] if len(result) == 1 else tuple(result)
 
 
 def evaluate(model, dataloader, metric_fn=None, device='cuda', **kwargs):
@@ -678,13 +726,33 @@ if hasattr(args, 'training_plot') and args.training_plot:
     plt.savefig(args.training_plot, dpi=200, bbox_inches='tight')  
 
 #-------------------------------------------------------------------------------------------------------------
+
+if  args.pred_model_type=='CRF':
+    
+    # Obtiene valores verdaderos, características extraídas y valores predichos del conjunto de validación
+    valid_true_values, valid_features, valid_pred_values = \
+        inference(model, valid_loader, return_targets=True, return_features=True)
+    
+    valid_errors = torch.abs(valid_true_values - valid_pred_values)
+    
+    
+    X = valid_features.numpy()
+    y = valid_errors.numpy()
+    
+    # Dividir para entrenamiento y prueba del modelo auxiliar
+    X_train_aux, X_test_aux, y_train_aux, y_test_aux = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    error_model = RandomForestRegressor(n_estimators=100, random_state=42)
+    error_model.fit(X_train_aux, y_train_aux)
+
+#-------------------------------------------------------------------------------------------------------------
 # CALIBRACIÓN CONFORMAL
 
 # Solo aplicamos calibración para modelos específicos (ICP y CQR)
 if args.pred_model_type in ['ICP','CQR']:
 
     # Obtener predicciones y valores verdaderos del conjunto de calibración
-    calib_true_values, calib_pred_values = inference(model, calib_loader)
+    calib_pred_values, calib_true_values = inference(model, calib_loader)
 
     # Para ICP, calculamos las puntuaciones de calibración como la MAE
     if args.pred_model_type == 'ICP':
