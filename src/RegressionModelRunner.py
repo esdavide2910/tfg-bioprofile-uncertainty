@@ -3,7 +3,7 @@ import torch
 import numpy as np
 
 
-class AE_ModelRunner:
+class RegressionModelRunner:
     
     PRED_MODEL_TYPE = 'base'
     
@@ -56,7 +56,7 @@ class AE_ModelRunner:
             raise RuntimeError(f"Error al cargar el modelo desde {model_path}: {e}") from e
 
     
-    def train_epoch(self, dataloader, loss_fn, optimizer):
+    def train_epoch(self, dataloader, loss_fn, optimizer, scheduler):
         
         # Pone la red en modo entrenamiento (esto habilita el dropout)
         self.model.train()  
@@ -87,7 +87,7 @@ class AE_ModelRunner:
             
             # Actualiza el scheduler de la tasa de aprendizaje (si se proporciona)
             if self.scheduler is not None:
-                self.scheduler.step()   
+                scheduler.step()   
     
             # Acumula la pérdida de este batch
             epoch_loss += loss.item()        
@@ -159,138 +159,138 @@ class AE_ModelRunner:
         return metric_value
     
     
-    def train_head(self, train_loader, valid_loader, loss_fn, optimizer, num_epochs=1):
+    # def train_head(self, train_loader, valid_loader, loss_fn, optimizer, num_epochs=1, base_lr=1e-2):
         
-        # Congela los parámetros del extractor de características
-        for param in self.model.head_parameters():
-            param.requires_grad = False
+    #     # Congela los parámetros del extractor de características
+    #     for param in self.model.head_parameters():
+    #         param.requires_grad = False
             
-        # Configura el optimizador para el entrenamiento de la nueva cabecera (el módulo classifier)
-        optimizer = torch.optim.AdamW(self.model.get_head_parameters(), lr=base_lr, weight_decay=wd)
+    #     # Configura el optimizador para el entrenamiento de la nueva cabecera (el módulo classifier)
+    #     optimizer = torch.optim.AdamW(self.model.get_head_parameters(), lr=base_lr, weight_decay=wd)
         
-        for epoch in range(num_epochs):
+    #     for epoch in range(num_epochs):
 
-            # Entrena el modelo con el conjunto de entrenamiento
-            head_train_loss = self.train_epoch(train_loader, loss_fn, optimizer)
+    #         # Entrena el modelo con el conjunto de entrenamiento
+    #         head_train_loss = self.train_epoch(train_loader, loss_fn, optimizer)
 
-            # Evalua el modelo con el conjunto de validación
-            head_valid_loss = self.evaluate(valid_loader, loss_fn)
+    #         # Evalua el modelo con el conjunto de validación
+    #         head_valid_loss = self.evaluate(valid_loader, loss_fn)
 
-            # Imprime los valores de pérdida obtenidos en entrenamiento y validación 
-            print(f"Epoch {epoch+1:>2} | " +
-                  f"Train Loss: {head_train_loss:>7.3f} | " + 
-                  f"Validation Loss: {head_valid_loss:>7.3f}")
+    #         # Imprime los valores de pérdida obtenidos en entrenamiento y validación 
+    #         print(f"Epoch {epoch+1:>2} | " +
+    #               f"Train Loss: {head_train_loss:>7.3f} | " + 
+    #               f"Validation Loss: {head_valid_loss:>7.3f}")
 
     
-    def train_net(self, train_loader, valid_loader, loss_fn, optimizer, scheduler):
+    # def train_net(self, train_loader, valid_loader, loss_fn, optimizer, scheduler):
         
-        #-----------------------------------------------------------------------------------------------------
-        # DESCONGELA PARÁMETROS DEL MODELO 
+    #     #-----------------------------------------------------------------------------------------------------
+    #     # DESCONGELA PARÁMETROS DEL MODELO 
         
-        # Descongela todos los parámetros del modelo
-        for param in self.model.parameters():
-            param.requires_grad = True
+    #     # Descongela todos los parámetros del modelo
+    #     for param in self.model.parameters():
+    #         param.requires_grad = True
         
-        #-----------------------------------------------------------------------------------------------------
-        # ASIGNA LEARNING RATE DISCRIMINATIVO
+    #     #-----------------------------------------------------------------------------------------------------
+    #     # ASIGNA LEARNING RATE DISCRIMINATIVO
         
-        # Crea una lista para almacenar los nombres de las capas del modelo
-        layer_names = []
-        for (name, param) in self.model.named_parameters():
-            layer_names.append(name)
+    #     # Crea una lista para almacenar los nombres de las capas del modelo
+    #     layer_names = []
+    #     for (name, param) in self.model.named_parameters():
+    #         layer_names.append(name)
 
-        # Establece las reglas para el learning rate discriminativo   
-        lr_div = 100            # Factor de reducción entre el learning rate más alto y el más pequeño
-        max_lr = base_lr/2      # Learning rate más alto (capa más superficial)
-        min_lr = max_lr/lr_div  # Learning rate más bajo (capa más profunda) 
+    #     # Establece las reglas para el learning rate discriminativo   
+    #     lr_div = 100            # Factor de reducción entre el learning rate más alto y el más pequeño
+    #     max_lr = base_lr/2      # Learning rate más alto (capa más superficial)
+    #     min_lr = max_lr/lr_div  # Learning rate más bajo (capa más profunda) 
         
-        # Obtenemos los grupos de capas del modelo (de más superficiales a más profundas)
-        layer_groups = self.model.get_layer_groups()
-        n_layers = len(layer_groups)
+    #     # Obtenemos los grupos de capas del modelo (de más superficiales a más profundas)
+    #     layer_groups = self.model.get_layer_groups()
+    #     n_layers = len(layer_groups)
 
-        # Genera una lista de tasas de aprendizaje para cada capa, aumentando de forma exponencial desde 
-        # min_lr hasta max_lr
-        lrs = [
-            min_lr * (max_lr / min_lr) ** (i / (n_layers - 1)) 
-            for i in range(n_layers)
-        ]
+    #     # Genera una lista de tasas de aprendizaje para cada capa, aumentando de forma exponencial desde 
+    #     # min_lr hasta max_lr
+    #     lrs = [
+    #         min_lr * (max_lr / min_lr) ** (i / (n_layers - 1)) 
+    #         for i in range(n_layers)
+    #     ]
 
-        # Lista en la que se almacenarán los parámetros por grupo y sus lr
-        param_groups = []
-        for layer_group, lr in zip(layer_groups, lrs):
-            param_groups.append(
-                {'params': layer_group, 'lr': lr}
-            )
+    #     # Lista en la que se almacenarán los parámetros por grupo y sus lr
+    #     param_groups = []
+    #     for layer_group, lr in zip(layer_groups, lrs):
+    #         param_groups.append(
+    #             {'params': layer_group, 'lr': lr}
+    #         )
             
-        #-----------------------------------------------------------------------------------------------------
-        # INICIALIZA LOS PARÁMETROS PARA EL EARLY STOPPING
+    #     #-----------------------------------------------------------------------------------------------------
+    #     # INICIALIZA LOS PARÁMETROS PARA EL EARLY STOPPING
         
-        # Número máximo de épocas a entrenar (si no se activa el early stopping)
-        MAX_EPOCHS = 30  
+    #     # Número máximo de épocas a entrenar (si no se activa el early stopping)
+    #     MAX_EPOCHS = 30  
 
-        # Número mínimo de épocas a entrenar
-        MIN_EPOCHS = 30
+    #     # Número mínimo de épocas a entrenar
+    #     MIN_EPOCHS = 30
 
-        # Número de épocas sin mejora antes de detener el entrenamiento
-        PATIENCE = 10
+    #     # Número de épocas sin mejora antes de detener el entrenamiento
+    #     PATIENCE = 10
 
-        # Inicializa la mejor pérdida de validación como la obtenida en el entrenamiento de la cabecera
-        best_valid_loss = float('inf') 
+    #     # Inicializa la mejor pérdida de validación como la obtenida en el entrenamiento de la cabecera
+    #     best_valid_loss = float('inf') 
 
-        # Contador de épocas sin mejora
-        epochs_no_improve = 0 
+    #     # Contador de épocas sin mejora
+    #     epochs_no_improve = 0 
             
-        #-----------------------------------------------------------------------------------------------------
-        # ENTRENAMIENTO DE LA RED COMPLETA
+    #     #-----------------------------------------------------------------------------------------------------
+    #     # ENTRENAMIENTO DE LA RED COMPLETA
         
-        # Listas para almacenar las pérdidas de entrenamiento y validación
-        train_losses = []
-        valid_losses = []
+    #     # Listas para almacenar las pérdidas de entrenamiento y validación
+    #     train_losses = []
+    #     valid_losses = []
 
-        # Bucle de entrenamiento por épocas
-        for epoch in range(MAX_EPOCHS):
+    #     # Bucle de entrenamiento por épocas
+    #     for epoch in range(MAX_EPOCHS):
             
-            # Entrena el modelo con el conjunto de entrenamiento
-            train_loss = self.train_epoch(train_loader, loss_fn, optimizer, scheduler)
-            train_losses.append(train_loss)
+    #         # Entrena el modelo con el conjunto de entrenamiento
+    #         train_loss = self.train_epoch(train_loader, loss_fn, optimizer, scheduler)
+    #         train_losses.append(train_loss)
             
-            # Evalua el modelo con el conjunto de validación
-            valid_loss = self.evaluate(valid_loader, loss_fn)
-            valid_losses.append(valid_loss)
+    #         # Evalua el modelo con el conjunto de validación
+    #         valid_loss = self.evaluate(valid_loader, loss_fn)
+    #         valid_losses.append(valid_loss)
             
-            # Imprime los valores de pérdida obtenidos en entrenamiento y validación  
-            print(f"Epoch {epoch+1:>2} | " +
-                  f"Train Loss: {train_loss:>7.3f} | " +
-                  f"Validation Loss: {valid_loss:>7.3f}")
+    #         # Imprime los valores de pérdida obtenidos en entrenamiento y validación  
+    #         print(f"Epoch {epoch+1:>2} | " +
+    #               f"Train Loss: {train_loss:>7.3f} | " +
+    #               f"Validation Loss: {valid_loss:>7.3f}")
             
-            # Comprueba si la pérdida en validación ha mejorado
-            if valid_loss < best_valid_loss:
+    #         # Comprueba si la pérdida en validación ha mejorado
+    #         if valid_loss < best_valid_loss:
                 
-                # Actualiza la mejor pérdida en validación obtenida hasta ahora
-                best_valid_loss = valid_loss
+    #             # Actualiza la mejor pérdida en validación obtenida hasta ahora
+    #             best_valid_loss = valid_loss
                 
-                # Reinicia el contador de épocas sin mejora si la pérdida ha mejorado
-                epochs_no_improve = 0
+    #             # Reinicia el contador de épocas sin mejora si la pérdida ha mejorado
+    #             epochs_no_improve = 0
                 
-                # 
-                self.save_model(self.default_model_path)
+    #             # 
+    #             self.save_model(self.default_model_path)
                 
-            else:
-                # Incrementa el contador si no hay mejora en la pérdida de validación
-                epochs_no_improve += 1
+    #         else:
+    #             # Incrementa el contador si no hay mejora en la pérdida de validación
+    #             epochs_no_improve += 1
 
-            # Si no hay mejora durante un número determinado de épocas (patience) y ya ha pasado el número mínimo de 
-            # épocas, detiene el entrenamiento
-            if epochs_no_improve >= PATIENCE and (epoch+1) > MIN_EPOCHS: 
-                print(f"Early stopping at epoch {epoch+1}")
-                break
+    #         # Si no hay mejora durante un número determinado de épocas (patience) y ya ha pasado el número mínimo de 
+    #         # épocas, detiene el entrenamiento
+    #         if epochs_no_improve >= PATIENCE and (epoch+1) > MIN_EPOCHS: 
+    #             print(f"Early stopping at epoch {epoch+1}")
+    #             break
             
-        # Carga los pesos del modelo que obtuvo la mejor validación
-        self.load_model(self.default_model_path)
+    #     # Carga los pesos del modelo que obtuvo la mejor validación
+    #     self.load_model(self.default_model_path)
 
 
 
-class AE_ModelRunner_QR(AE_ModelRunner):
+class RegressionModelRunner_QR(RegressionModelRunner):
 
     PRED_MODEL_TYPE = 'QR'
 
@@ -329,10 +329,21 @@ class AE_ModelRunner_QR(AE_ModelRunner):
 
         except Exception as e:
             raise RuntimeError(f"Error al cargar el modelo QR desde {model_path}: {e}") from e
+        
+    
+    def inference(self, dataloader):
+        
+        true_values, pred_values = super(self, dataloader)
+        
+        point_pred_values = pred_values[:,0]
+        lower_bound_pred_values = pred_values[:,1]
+        upper_bound_pred_values = pred_values[:,2]
+        
+        return true_values, point_pred_values, lower_bound_pred_values, upper_bound_pred_values
 
 
 
-class AE_ModelRunner_ICP(AE_ModelRunner):
+class RegressionModelRunner_ICP(RegressionModelRunner):
 
     PRED_MODEL_TYPE = 'ICP'
 
@@ -394,10 +405,23 @@ class AE_ModelRunner_ICP(AE_ModelRunner):
         
         # Calcula el cuantil q_hat usado para ajustar el intervalo predictivo
         self.q_hat = np.quantile(calib_scores, q_level, method='higher')
+        
+    
+    def inference(self, dataloader):
+        
+        true_values, pred_values = super(self, dataloader)
+        
+        point_pred_values = pred_values[:, 0]
+        lower_bound_pred_values = point_pred_values - self.q_hat
+        upper_bound_pred_values = point_pred_values + self.q_hat
+        
+        return true_values, point_pred_values, lower_bound_pred_values, upper_bound_pred_values
+        
+        
 
 
 
-class AE_ModelRunner_CQR(AE_ModelRunner):
+class RegressionModelRunner_CQR(RegressionModelRunner):
 
     PRED_MODEL_TYPE = 'CQR'
 
@@ -462,12 +486,23 @@ class AE_ModelRunner_CQR(AE_ModelRunner):
         calib_scores_upper_bound = calib_true_values - calib_pred_values[:,2]
         
         # Calcula los cuantiles qhat para ambos límites del intervalo predictivo
-        q_hat_lower = np.quantile(calib_scores_lower_bound, q_level, method='higher')
-        q_hat_upper = np.quantile(calib_scores_upper_bound, q_level, method='higher')
+        self.q_hat_lower = np.quantile(calib_scores_lower_bound, q_level, method='higher')
+        self.q_hat_upper = np.quantile(calib_scores_upper_bound, q_level, method='higher')
+        
+    
+    def inference(self, dataloader):
+        
+        true_values, pred_values = super(self, dataloader)
+        
+        point_pred_values = pred_values[:,0]
+        lower_bound_pred_values = pred_values[:,1] - self.q_hat_lower
+        upper_bound_pred_values = pred_values[:,2] + self.q_hat_upper
+        
+        return true_values, point_pred_values, lower_bound_pred_values, upper_bound_pred_values
 
 
 
-class AE_ModelRunner_CRF(AE_ModelRunner):
+class RegressionModelRunner_CRF(RegressionModelRunner):
 
     PRED_MODEL_TYPE = 'CRF'
 

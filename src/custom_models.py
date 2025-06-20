@@ -70,7 +70,7 @@ class ClassifierResNeXt(nn.Module):
 
 class ResNeXtRegressor(nn.Module):
     
-    def __init__(self, num_targets=1):
+    def __init__(self, num_targets=1, self_supervised_module=False):
         
         super(ResNeXtRegressor, self).__init__()
         
