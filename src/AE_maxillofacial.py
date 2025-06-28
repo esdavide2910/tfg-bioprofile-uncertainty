@@ -56,7 +56,7 @@ from sklearn.model_selection import train_test_split
 
 # Modelos y funciones de pérdida personalizados 
 from custom_models import *
-from coverage_metrics import empirical_coverage, mean_interval_size
+from coverage_metrics import *
 
 #-------------------------------------------------------------------------------------------------------------
 # CONFIGURACIÓN DE ARGUMENTOS PARA ENTRENAMIENTO Y EVALUACIÓN DE LOS MODELOS 
@@ -389,7 +389,7 @@ MODEL_CLASSES = {
 if args.load_model_path:
     
     #
-    checkpoint = torch.load(args.load_model_path)
+    checkpoint = torch.load(args.load_model_path, weights_only=False)
     pred_model_type = checkpoint['pred_model_type']
     
     #
@@ -647,12 +647,20 @@ if args.test:
     print("Métricas de las predicciones interválicas:")
 
     # Calcula la cobertura empírica y lo imprime
-    empirical_coverage = empirical_coverage(test_pred_lower_bound, test_pred_upper_bound, test_true_values)
-    print(f"- Cobertura empírica: {empirical_coverage*100:>6.3f} %")
+    EC = empirical_coverage(test_pred_lower_bound, test_pred_upper_bound, test_true_values)
+    print(f"- Cobertura empírica: {EC*100:>6.3f} %")
 
     # Calcula el tamaño medio del intervalo de predicción y lo imprime
-    mean_interval_size = mean_interval_size(test_pred_lower_bound, test_pred_upper_bound)
-    print(f"- Tamaño medio del intervalo: {mean_interval_size:>5.3f}")
+    MPIW = mean_interval_size(test_pred_lower_bound, test_pred_upper_bound)
+    print(f"- Tamaño medio del intervalo: {MPIW:>5.3f}")
+    
+    # Calcula el tamaño mínimo del intervalo de predicción y lo imprime
+    min_interval_size = quantile_interval_size(test_pred_lower_bound, test_pred_upper_bound, 0.0)
+    print(f"- Tamaño mínimo de los intervalos: {min_interval_size:>5.3f}")
+    
+    # Calcula el tamaño máximo del intervalo de predicción y lo imprime
+    max_interval_size = quantile_interval_size(test_pred_lower_bound, test_pred_upper_bound, 1.0)
+    print(f"- Tamaño máximo de los intervalos: {max_interval_size:>5.3f}")
 
     print("✅ Testeo de la red completado\n")
     
