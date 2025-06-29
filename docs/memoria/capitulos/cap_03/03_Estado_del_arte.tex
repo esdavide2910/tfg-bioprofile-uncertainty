@@ -1,23 +1,104 @@
 \chapter{Estado del arte}
 
+Analicemos
+
+% ------------------------------------------------------------------------------------------------------------
 
 \section{Estimación de la edad en antropología forense}
 
+En ausencia de documentación escrita confiable, los métodos más precisos para estimar la edad se basan en el 
+análisis del estado de los huesos del cuerpo humano. Los huesos experimentan cambios continuos a lo largo de 
+la vida, y estas transformaciones progresivas permiten determinar la \textit{edad fisiológica} o biológica de 
+un individuo. Esta edad refleja la etapa de desarrollo en la que se encuentra el esqueleto dentro del proceso 
+de cambios que ocurren desde el nacimiento hasta la vejez \cite{byers2023}.
+
+Cabe destacar que la edad biológica no siempre coincide con la edad cronológica ---el tiempo transcurrido 
+desde el nacimiento---, pero ambas guardan una correlación significativa, lo que permite aproximaciones 
+razonables en contextos forenses, antropológicos o médicos.
+
+Las técnicas de estimación de edad presentan diferencias significativas en individuos maduros e inmaduros
+\cite{ubelaker2019}. La diferencia radica en el grado de desarrollo esquelético y dental: en inmaduros, el 
+esqueleto y la dentición no están completamente formados, por lo que los métodos se basan en patrones de 
+crecimiento y osificación; en contraste, en maduros (con desarrollo completo), las técnicas se enfocan en 
+cambios degenerativos, como el deterioro articular o la pérdida ósea.
+% Además, las técnicas también dependen de si hay accesibilidad directa a los huesos del individuo, o si, por
+% defecto, se deben recurrir a técnicas no invasivas como imágenes médicas (radiografías, resonancias magnéticas
+% o tomografías computerizadas). 
+
+% ------------------------------------------------------------------------------------------------------------
+
+La estimación en cuerpos subadultos se basan en: el desarrollo y erupción dental
+\footnote{
+    La erupción dental es el proceso natural mediante el cual los dientes se desplazan desde el interior del 
+    hueso maxilar o mandibular hasta alcanzar su posición definitiva en la boca, atravesando las encías.
+}, 
+los tiempo de aparición y cambios en la morfología de centros de osificación
+\footnote{
+    La osificación es el proceso natural mediante el cual el cartílago o tejido conectivo se convierte en 
+    hueso. Los centros de osificación son regiones específicas del esqueleto donde comienza el proceso de 
+    formación ósea durante el desarrollo embrionario, fetal, infantil y adolescente.
+},
+y los tiempos de fusión de los centros primarios (también denominados diáfisis) y secundarios (epífisis) 
+\cite{scheuer2000, adserias2019}. 
+Los métodos de mayor precisión se basan en el desarrollo dental, dado que estos, para una determinada
+edad cronológica, muestran menor variabilidad que el esqueleto \cite{bowman1992}. En ausencia de estos, 
+se recurre a epífisis, cuya formación y fusión son clave para la estimación de la edad esquelética 
+\cite{adserias2019}.
+
+La valoración en adultos es más compleja, dado que el desarrollo de la dentadura se ha completado, 
+así como el crecimiento del esqueleto ha cesado \cite{byers2023}, por lo que los indicadores 
+se basan más en características del deterioro óseo; pero la variabilidad de estas aumenta con la 
+edad debido al efecto acumulativo de las influencias ambientales \cite{ubelaker2018, scheuer2004} 
+\footnote{
+    Por ejemplo, artículos como \cite{merritt2015,wescott2015} indican que la obesidad puede causar que se 
+    sobreestime la edad del cuerpo, mientras que personas con una complexión más ligera o bajo peso corporal 
+    tienden a presentar una infraestimación de la edad.
+}. 
+Actualmente, se analiza el proceso degenerativo de sínfisis púbica combinado con el análisis de transparencia 
+de raíces caninas (de acuerdo a ), siguiendo el proceso de dos pasos propuesto en ...
+
+Sin embargo, cuando la estimación de edad se realiza a una personas vivas, no se tiene acceso a sus 
+huesos de forma directa. En estos casos, que en su mayoría van dirigidos a determinar la mayoría o menoría de 
+edad de una persona, el análisis se realiza sobre imágenes médicas, como radiografías de manos, radiografías 
+panorámicas de los maxilares o tomografías computerizadas de cortes finos de la epífisis mediales de las 
+clavículas \cite{schmeling2016}. Se suelen combinar múltiples métodos para una mayor exactitud en la 
+predicción. Dependiendo de los asuntos legales, se requerirá la estimación de la edad mínima del individuo o 
+su edad más probable.
 
 
 
 
-\section{Estimación de la edad en antropología forense usando Machine Learning}
+La Unión Europea (UE) recomienda, en caso de individuos vivos, realizar una entrevista previa que pueda 
+esclarecer futuras hipótesis
 
 
+% ------------------------------------------------------------------------------------------------------------
+
+\section{Estimación de la edad en antropología forense usando \textit{machine learning}}
+
+Los métodos manuales de estimación del perfil biológico se basan en la evaluación visual y en el análisis 
+morfométrico de rasgos esqueléticos. Sin embargo, su aplicación demanda conocimiento especializado, pueden 
+presentar ambigüedades en su formulación que den lugar a interpretaciones variables \cite{berst2001}, y están 
+sujetos a posibles errores de medición \cite{langley2018}, sesgando el proceso y reduciendo su fiabilidad.
+
+Estas restricciones impulsaron el desarrollo de métodos automatizados, como BoneXpert  
+\cite{thodberg2008} que, empleando técnicas de ML tradicionales, mostraba un buen desempeño en individuos de 
+distintos grupos geográficos y con distintas configuraciones clínicas para la toma de imágenes
+\cite{van2009, martin2010, thodberg2010}.
+
+Sin embargo, el paradigma del aprendizaje extremo a extremo (\textit{end-to-end learning}), impulsado por el
+auge del \textit{deep learning}, ha permitido a los modelos aprender automáticamente tanto la extracción de 
+características como la regresión de la edad a partir de los datos en bruto (\textit{raw data}). Este avance 
+no solo facilita mayores niveles de abstracción, sino también predicciones más precisas en la estimación 
+de edad \cite{kim2017, larson2018, lee2017}. 
 
 
+% ------------------------------------------------------------------------------------------------------------
 
-\section{Cuantificación de incertidumbre en antropología forense}
+\section{Cuantificación de incertidumbre en estimación del perfil biológico}
 
-
-
-
-
+Las técnicas de ML son más adecuadas para evaluar métodos, ya que, a diferencia de los manuales, su 
+variabilidad puede controlarse mejor cuando se garantizan condiciones estandarizadas y un proceso riguroso 
+en la captación de datos e imágenes.
 
 

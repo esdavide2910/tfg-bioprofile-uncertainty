@@ -60,6 +60,11 @@ El ML diferencia tres tipos de aprendizaje en base a tres tipos de retroalimenta
 Este trabajo se centrará en el aprendizaje supervisado, pues es este tipo de aprendizaje el empleado en los 
 problemas de clasificación y regresión que aplicaremos en el ámbito de la antropología forense.
 
+El objetivo en el aprendizaje supervisado es establecer una hipótesis que se ajuste de forma óptima a los
+ejemplos futuros. Para ello, se presupone que los ejemplos futuros mostrarán un comportamiento similar a los
+pasados. Bajo este supuesto, el ajuste óptimo de un modelo es, por tanto, la hipótesis que minimiza la tasa
+de error del problema \cite{rusell2021}.
+
 
 % Retos en el aprendizaje supervisado
 
@@ -160,222 +165,15 @@ donde
     \item $\hat{Y_i}$ es la predicción generada por el modelo, y
     \item $\varepsilon_i$ representa el error o residuo 
     \footnote{
-        ... a pesar de que en la literatura estos términos se distinguen, ...
+        A pesar de que en la literatura más especializada ---que veremos a continuación---, los términos 
+        ``error'' y ``residuo'' se distinguen. 
     }, 
     es decir, la diferencia entre la predicción y el valor real.
     Este término captura factores aleatorios o imprecisiones que el modelo no logra explicar perfectamente.
 \end{itemize}
 
 El análisis y la evaluación estadística del error son fundamentales para valorar la utilidad práctica del 
-modelo y optimizar su capacidad predictiva mediante técnicas de ajuste y validación. Existen numerosas 
-métricas para evaluar el rendimiento en problemas de regresión, pero tres destacan especialmente por ser 
-\textit{model-agnostic}, es decir, aplicables a cualquier modelo de regresión independientemente del algoritmo 
-subyacente. Estas son:
-
-\begin{itemize}
-    \item El \textbf{error absoluto medio (\textit{mean absolute error}, MAE)} mide el promedio de las 
-    diferencias absolutas entre los valores reales ($Y_i$) y los valores predichos ($\hat{Y_i}$) por el 
-    modelo.
-
-    $$
-    MAE = \frac{1}{n} \sum_{i=1}^n{|Y_i - \hat{Y_i}|}
-    $$
-
-    donde $n$ es el número de ejemplos/instancias con las que se cuenta en los datos a evaluar.
-
-    La interpretación más inmediata de esta métrica es que representa cuánto se desvía en promedio la 
-    predicción del valor real sin considerar la dirección del error (positivo o negativo) y, por tanto, cuanto 
-    más se acerque a cero el valor, mejor es el ajuste del modelo.
-
-    Existe una variante denominada \textbf{error absoluto mediano (\textit{median absolute error}, MedAE)}, 
-    que realiza la mediana de las diferencias absolutas, en vez de la media, aumentando la robustez frente a 
-    valores atípicos con errores extremos.
-
-    \item El \textbf{error cuadrático medio (\textit{mean squared error}, MSE)} mide el promedio de los 
-    errores al cuadrado entre valores reales ($Y_i$) y los valores predichos ($\hat{Y_i}$) por el modelo.
-    
-    $$
-    MSE = \frac{1}{n} \sum_{i=1}^n{(Y_i - \hat{Y_i})^2}
-    $$
-
-    Al igual que el MAE, cuantifica qué tan cerca están las predicciones de los valores reales, pero penaliza
-    más los errores grandes, y es más sensible por tanto a valores atípicos.
-
-    Como veremos más tarde, esta métrica es muy útil en optimización mediante gradiente descendente, usado a 
-    la hora de entrenar modelos de regresión basados en redes neuronales.
-
-    Y también tiene una variante, la \textbf{raíz del error cuadrático medio (\textit{root mean square error}, 
-    RMSE)}, que se obtiene extrayendo la raíz cuadrada del MSE:
-
-    $$
-    RMSE = \sqrt{\frac{1}{n} \sum_{i=1}^{n}{(Y_i-\hat{Y_i})^2} }
-    $$
-
-    Esta métrica conserva las mismas unidades que la variable objetivo, lo que facilita su interpretación 
-    práctica. Es comparable con el MAE en cuanto a escala, aunque sigue penalizando más los errores grandes.
-
-    \item El \textbf{coeficiente de determinación}, o más conocido como \textbf{R² o bondad de ajuste}, mide 
-    la proporción de la variabilidad de la variable dependiente ($Y$) que es explicada por el modelo.
-
-    $$
-    R^2 = 1 - \frac{\sum_{i=1}^n (Y_i - \hat{Y}_i)^2}{\sum_{i=1}^n (Y_i - \bar{Y})^2}
-    $$
-
-    donde 
-
-    \begin{itemize}
-
-        \item $Y_i$ es el valor real de la variable dependiente para la instancia $i$,
-        
-        \item $\hat{Y_i}$ es la predicción generada por el modelo, y
-        
-        \item $\bar{Y}$ es el promedio de los valores reales de la variable dependiente a lo largo de todas 
-        las instancias del conjunto de datos.
-    
-    \end{itemize}
-    
-
-    El valor de esta métrica varía entre $-\infty$ y 1, y su interpretación es la siguiente:
-
-    \begin{itemize}
-
-        \item $R^2 \le 0$ significa que el modelo no explica ninguna variabilidad y que las predicciones del 
-        modelo no son mejores que simplemente predecir la media de los valores reales.
-        
-        \item $R^2 \in \left(0,1\right)$ indica que el modelo está explicando una fracción de la variabilidad 
-        de los datos, y cuanto más cercano sea a 1, mejor será el ajuste del modelo.
-        
-        \item $R^2 = 1$ indica un ajuste perfecto y, por tanto, el modelo explica toda la variabilidad de los 
-        datos. 
-    
-    \end{itemize}
-
-    A diferencia de las anteriores, es una métrica relativa y adimensional, es decir, no depende de las 
-    unidades de la variable objetivo y evalúa qué tan bien se ajusta el modelo en comparación con un modelo 
-    base que siempre predice la media de los valores reales.
-    
-\end{itemize}
-
-% Elementos visuales
-
-No obstante, el uso exclusivo de métricas numéricas resulta en un análisis pobre, ya que estas no permiten 
-identificar patrones ocultos, detectar relaciones no lineales ni distinguir entre errores positivos o 
-negativos. Por esta razón, se recomienda completar el análisis con representaciones gráficas, tales como:
-
-\begin{itemize}
-
-    \item La \textbf{gráfica de puntos de valores reales vs. predichos}, que permite visualizar la relación 
-    entre las predicciones del modelo y los valores reales. Idealmente, los puntos deberían alinearse 
-    alrededor de la recta $Y=\hat{Y}$. Desviaciones sistemáticas indican sesgos o problemas de ajuste. Un 
-    ejemplo de esta gráfica lo encontramos en la Figura \ref{fig:scatter_pred_vs_act_AE}.
-
-    \begin{figure}[h]
-        \centering
-        \includegraphics[width=0.5\textwidth]{capitulos/cap_02/imagenes/scatterplot_pred_vs_act_AE.png}
-        \caption[
-            Gráfica de puntos de valores de edad reales vs. predichos obtenidos por el modelo propuesto 
-            en \cite{heinrich2024}.
-        ]{
-            Gráfica de puntos de valores de edad reales vs. predichos obtenidos por el modelo propuesto 
-            en \cite{heinrich2024}. Se observan valores más dispersos en edades avanzadas.
-        } 
-        \label{fig:scatter_pred_vs_act_AE}
-    \end{figure}
-
-    \item También existe una versión más refinada de presentar esta información, especialmente útil en casos 
-    en los que muchos datos sobrecargan la gráfica, en \textbf{la gráfica de cajas (en inglés 
-    \textit{boxplot}) de valores reales vs. predichos}. Estos proporcionan una visión clara de la distribución 
-    de los datos, con mediana, cuartiles y valores atípicos, ya sea agrupando por valores reales o por valores 
-    predichos.
-
-    La Figura \ref{fig:boxplot_pred_vs_act_AE} muestra la distribución de las edades predichas en función de 
-    distintos grupos de edad real, y viceversa, lo que facilita la identificación de errores en el desempeño 
-    del modelo.
-
-    \begin{figure}[h]
-        \centering
-    
-        \begin{subfigure}[b]{0.45\textwidth}
-            \centering
-            \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/boxplot_pred_vs_act_AE_1.png}
-            \caption{Gráfica de cajas de edades reales en función de la estimada}
-            \label{fig:boxplot_pred_vs_act_AE_a}
-        \end{subfigure}
-        \hfill
-        \begin{subfigure}[b]{0.45\textwidth}
-            \centering
-            \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/boxplot_pred_vs_act_AE_2.png}
-            \caption{Gráfica de cajas de edades estimadas en función de la real}
-            \label{fig:boxplot_pred_vs_act_AE_b}
-        \end{subfigure}
-    
-        \caption[
-            Gráfica de cajas de valores de edad reales vs. predichos obtenidos por el modelo propuesto en 
-            \cite{stepanovsky2024}.
-        ]{
-            Gráfica de cajas de valores de edad reales vs. predichos obtenidos por el modelo propuesto en 
-            \cite{stepanovsky2024}. Se observa en \ref{sub@fig:boxplot_pred_vs_act_AE_b} que se sobreestima 
-            la edad en personas jóvenes y se subestima 
-            en personas de edad avanzada.
-        }
-        \label{fig:boxplot_pred_vs_act_AE}
-    \end{figure}
-
-    \item El \textbf{histograma de residuos} muestra la distribución de los errores (\(Y_i - \hat{Y}_i\)) del 
-    modelo. Una distribución simétrica y centrada en cero sugiere un buen ajuste, mientras que una 
-    distribución sesgada o asimétrica podría indicar que el modelo está subajustado o que hay algún patrón no 
-    capturado por el modelo. 
-
-    Un ejemplo de este tipo de gráfica lo encontramos en la Figura \ref{fig:prob_dist_AEerror}, donde se 
-    analizaba el error obtenido con el modelo propuesto en \cite{stepanovsky2024}.
-
-    Histograma de errores residuales del modelo de regresión propuesto en \cite{verma2020} que predice la 
-    estatura a partir de la longitud de la tibia.
-
-    \begin{figure}[h]
-        \centering
-        \includegraphics[width=0.8\textwidth]{capitulos/cap_02/imagenes/prob_distribution_AEerror.png}
-        \caption[
-            Histograma de errores residuales del modelo de estimación de edad propuesto en 
-            \cite{stepanovsky2024}.
-        ]{
-            Histograma de errores residuales del modelo de estimación de edad propuesto en 
-            \cite{stepanovsky2024}. Se evidencia una mayor probabilidad de errores negativos 
-            (infraestimaciones) en comparación con los positivos Además, se destaca que el 57\% de las 
-            predicciones presentan un error inferior al $\textnormal{MAE}$, y que el 90\% se encuentra dentro 
-            de un margen de error menor a $2\textnormal{MAE}$.
-        } 
-        \label{fig:prob_dist_AEerror}
-    \end{figure}
-
-
-    \item Y una versión más completa que este último es la \textbf{gráfica de cajas de la distribución del 
-    error en base a los valores reales o predichos}, que permite analizar cómo varía el error del modelo a lo 
-    largo de diferentes rangos de valores, ya sean reales o predichos. Estas visualizaciones nos permiten 
-    detectar fácilmente las fortalezas y debilidades en las predicciones del modelo, así como diagnosticar 
-    sesgo o insuficiencia de datos en ciertas categorías.
-    
-    Un ejemplo ilustrativo de esta gráfica se presenta en la Figura \ref{fig:boxplot_error_vs_act_AE}, donde 
-    se observa la variación del error del modelo propuesto en \cite{heinrich2024} a través de distintos rangos 
-    de edad real. En particular, se evidencia una tendencia a cometer errores mayores en los grupos de edad 
-    más avanzada.
-
-    \begin{figure}[h]
-        \centering
-        \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/boxplot_error_vs_act_AE.png}
-        \caption{
-            Gráfica de cajas de la distribución del error de estimación de edad en función de la edad 
-            real, obtenida en el modelo propuesto en \cite{heinrich2024}.
-        } 
-        \label{fig:boxplot_error_vs_act_AE}
-    \end{figure}
-
-\end{itemize}
-
-
-
-
-
+modelo y optimizar su capacidad predictiva mediante técnicas de ajuste y validación.
 
 % ------------------------------------------------------------------------------------------------------------
 
@@ -429,198 +227,7 @@ En este tipo de problemas, el error ocurre cuando no se acierta al predecir la c
 % hacia la clase mayoritaria, ya que el modelo
 
 
-Una vez definido los tipo de problemas de clasificación, es fundamental establecer cómo medir la efectividad 
-del modelo predictivo. A continuación, se detallan los principales criterios y elementos gráficos utilizados 
-para evaluar y comparar modelos de clasificación:
 
-\begin{itemize}
-    
-    \item La \textbf{matriz de confusión} es una herramienta fundamental que permite visualizar el rendimiento 
-    de modelos de clasificación, tanto binarios como multiclase. Esta muestra una tabla con tantas columnas y 
-    filas como clases haya. En un eje, se representan las clases reales (etiquetas verdaderas), y en el otro 
-    eje, las clases predichas por el modelo. Cada celda de la matriz indica la cantidad de ejemplos que 
-    pertenecen a una clase real específica y que han sido clasificados como una clase predicha específica 
-    (véase la Figura \ref{fig:conf_matrix_binary}).
-
-    Idealmente, los valores se concentrarían en la diagonal principal, lo que indicaría que las predicciones 
-    coinciden con los valores reales.
-
-    \begin{figure}[h]
-        \centering
-        \includegraphics[width=0.6\textwidth]{capitulos/cap_02/imagenes/confusion_matrix_binary.png}
-        \caption{
-            Matriz de confusión para la estimación de sexo según el modelo \textit{random forest} 
-            propuesto en \cite{bidmos2023}.
-        } 
-        \label{fig:conf_matrix_binary}
-    \end{figure}
-
-    Esta visualización admite muchas variantes, por ejemplo, como la vista en la Figura 
-    \ref{fig:conf_matrix_binary_relative}.
-    
-    \begin{figure}[h]
-        \centering
-    
-        \begin{subfigure}[b]{0.3\textwidth}
-            \centering
-            \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/confusion_matrix_binary_1.png}
-            \caption{Sin información de sexo}
-            \label{fig:conf_matrix_general}
-        \end{subfigure}
-        \hfill
-        \begin{subfigure}[b]{0.3\textwidth}
-            \centering
-            \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/confusion_matrix_binary_2.png}
-            \caption{Sexo femenino}
-            \label{fig:conf_matrix_female}
-        \end{subfigure}
-        \hfill
-        \begin{subfigure}[b]{0.3\textwidth}
-            \centering
-            \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/confusion_matrix_binary_3.png}
-            \caption{Sexo masculino}
-            \label{fig:conf_matrix_male}
-        \end{subfigure}
-    
-        \caption[
-            Matrices de confusión para la estimación de mayoría/minoría de edad según el modelo de 
-            \cite{porto2020}.
-        ]{
-            Matrices de confusión para la estimación de mayoría/minoría de edad según el modelo de 
-            \cite{porto2020}.
-            Se representan los valores de cada celda en términos porcentuales de los ejemplos reales que hay 
-            de cada clase ($< 18$ y $\ge 18$), lo que permite comparar la matriz de confusión general de todos 
-            los ejemplos (\ref{sub@fig:conf_matrix_general}) con la de ejemplos se sexo femenino 
-            (\ref{sub@fig:conf_matrix_female}) y sexo masculino (\ref{sub@fig:conf_matrix_male}), permitiendo 
-            identificar posibles sesgos en el modelo respecto al género, y así realizar una evaluación más 
-            precisa del rendimiento del modelo en diferentes subgrupos de la población.
-        }
-        \label{fig:conf_matrix_binary_relative}
-    \end{figure}
-
-    Prácticamente todas las métricas y visualizaciones parten de la información ofrecida en esta matriz. 
-    
-
-    \item La \textbf{exactitud (\textit{accuracy})} es la proporción de predicciones correctas sobre el total.
-    En clasificación binaria esto sería:
-    
-    $$
-    \textnormal{Accuracy} = \frac{TP+TN}{TP+TN+FP+FN}
-    $$
-
-    En el caso de clasificación multiclase, esta se generaliza como:
-
-    $$
-    \textnormal{Accuracy} = 
-        \frac{\textnormal{Numero de predicciones correctas}}{\textnormal{Número total de ejemplos}} =
-        \frac{1}{N} \sum_{i=1}^N1(\hat{y_i}=y_i)
-    $$
-
-    donde $\hat{y_i}$ es la etiqueta predicha, $y_i$ la etiqueta verdadera para el ejemplo $i$, $N$ es el 
-    número de ejemplos, y 1 es la función indicadora, que vale 1 si la predicción es correcta y 0 si no 
-    lo es. 
-
-    Los valores de esta métrica varían entre 0 y 1, donde 0 es el peor desempeño posible (todas las 
-    predicciones son incorrectas) y 1 es el mejor desempeño posible (todas las predicciones son correctas).
-
-    Es la medida más intuitiva, si bien puede dar una falsa impresión de buen desempeño si las clases 
-    mayoritarias dominan la métrica. Es por esto que el análisis debe completarse con otras métricas 
-    informativas. 
-
-
-    \item La \textbf{precisión (\textit{precision})} indica qué proporción de las predicciones positivas 
-    corresponde a casos realmente positivos. En clasificación multiclase, se interpreta como la proporción de 
-    ejemplos correctamente clasificados entre todos los que fueron asignados a una clase determinada. 
-
-    $$
-    \textnormal{Precision} = \frac{TP}{TP+FP}
-    $$
-
-    Una alta precisión significa pocos falsos positivos. Esto puede interesar por ejemplo
-
-    La \textbf{exhaustividad (\textit{recall})} indica qué proporción de los casos positivos fueron 
-    correctamente detectados.
-
-    $$
-    \textnormal{Recall} = \frac{TP}{TP+FN} 
-    $$
-
-    Un alto \textit{recall} significa pocos falsos negativos. 
-
-    
-    Estas dos métricas complementarias se pueden calcular por cada clase, y hay varias formas de combinar sus
-    valores:
-
-    \begin{itemize}
-        \item Macro:
-        \item Micro:
-        \item Weighted: 
-    \end{itemize}
-    
-
-    \item El \textbf{F1-Score} 
-    \todo{Por completar}
-
-    $$
-    \textnormal{F1-Score} = 2 \cdot \frac{\textnormal{Precision} \cdot \textnormal{Recall}}{\textnormal{Precision} + \textnormal{Recall}}
-    $$
-
-    Al igual que con \textit{precision} y \textit{recall}, también se puede calcular por cada clase. 
-
-
-\end{itemize}
-
-% ------------------------------------------------------------------------------------------------------------
-
-\subsection{Selección de modelos y optimización}
-
-El objetivo del ML es establecer una hipótesis que se ajuste de forma óptima a los ejemplos futuros. Para 
-ello, suponemos que los ejemplos futuros mostrarán un comportamiento similar a los pasados. Bajo este 
-supuesto, el ajuste óptimo de un modelo es, por tanto, la hipótesis que minimiza la tasa de error del 
-problema \cite{rusell2021}. 
-
-Pero medir el error del modelo sobre los mismos datos empleados en el entrenamiento suele sesgar el resultado, 
-ya que el modelo puede estar sobreajustado (\textit{overfitting}) a los datos de entrenamiento, capturando no 
-solo el patrón subyacente, sino también el ruido o las peculiaridades específicas de ese conjunto de datos.
-Para evitar esto, es fundamental evaluar el modelo en un conjunto de datos de prueba independiente, que simule 
-cómo se comportaría con ejemplos futuros no vistos durante el entrenamiento. Por este motivo, es común dividir 
-los datos disponibles en dos conjuntos distintos: el \textbf{conjunto de entrenamiento (\textit{training 
-set})} y \textbf{conjunto test (\textit{test set})}.
-
-Aun así, incluso con esta división de conjuntos, puede persistir el riesgo de sobreajuste si se realizan 
-múltiples ajustes y selecciones de hiperparámetros basados en el rendimiento en el conjunto test.
-Esto se debe a que, indirectamente, el modelo podría estar ``aprendiendo'' características específicas del 
-conjunto de prueba, comprometiendo su capacidad de generalización. Para abordar este problema, se introduce 
-un tercer subconjunto: el \textbf{conjunto de validación}. Este conjunto se utiliza para evaluar y ajustar 
-los hiperparámetros del modelo durante el desarrollo, reservando el conjunto test únicamente para la 
-evaluación final.
-
-Además, técnicas como la \textbf{validación cruzada (\textit{cross-validation})} son ampliamente utilizadas 
-para maximizar el uso de los datos disponibles, especialmente en conjuntos pequeños. En lugar de una única 
-división entrenamiento-validación, este método:
-
-\begin{enumerate}
-    \item Divide los datos en $k$ particiones (\textit{folds}) (véase la Figura \ref{fig:CVDiagram}).
-    \item En cada iteración, usa $k-1$ particiones para entrenamiento y la restante para validación, rotando
-    sistemáticamente la partición de validación hasta que cada una de las $k$ particiones haya sido utilizada 
-    exactamente una vez como conjunto de validación. 
-    \item Promedia los resultados de todas las iteraciones para obtener una métrica robusta.
-\end{enumerate}
-
-El modelo final se entrena con todos los datos de entrenamiento (incluyendo los usados en validación durante 
-el ajuste). Si bien esta técnica proporciona estimaciones más confiables, su costo computacional es 
-significativo, ya que requiere entrenar el modelo $k+1$ veces ($k$ iteraciones de validación más el 
-entrenamiento final), lo que puede ser prohibitivo para modelos complejos, como redes neuronales profundas.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/CVDiagram.png}
-    \caption{
-        Diagrama de división del dataset para la validación cruzada. 
-        Recuperado de \cite{lau2023crossvalidation}.
-    } 
-    \label{fig:CVDiagram}
-\end{figure}
 
 
 % ------------------------------------------------------------------------------------------------------------
@@ -953,7 +560,8 @@ parámetros.
 Como se ha introducido antes, el operador de \textbf{convolución} es la base de las CNNs. Este operador 
 matemático aplica un \textbf{filtro} (también denominado \textit{kernel})
 \footnote{
-    Aunque, como veremos después, a la hora de hablar de capas convolucionales, no son lo mismo.
+    Aunque, como veremos a continuación, filtro y \textit{kernel} a la hora de hablar de capas 
+    convolucionales, no son técnicamente lo mismo.
 } 
 a regiones locales de una imagen de entrada, realizando un producto punto
 \footnote{
@@ -991,9 +599,6 @@ en que se deslizan sobre la entrada
     Definidos mediante los parámetros de \textit{stride} y \textit{padding}, que controlan el desplazamiento       
     del filtro y la cantidad de relleno alrededor de la entrada, respectivamente.
 }
-\todo{
-    Añadir una imagen explicando stride y padding 
-}
 se determinan durante el diseño de la red, mientras que los valores de los \textit{kernels} son parámetros 
 entrenables.
 
@@ -1015,7 +620,7 @@ Sin embargo, hemos pasado por alto algo fundamental: ¿cómo reunimos la informa
 de una imagen en un mismo sitio? Una primera aproximación intuitiva nos diría que los filtros convolucionales 
 deben ser progresivamente más grandes, para capturar patrones de mayor tamaño y contexto. No obstante, esto
 incrementaría considerablemente el número de parámetros y, por tanto, aumentaría el coste computacional y 
-aumentaría el riesgo de sobreajuste del modelo (ya que un modelo con más parámetros puede memorizar mejor los
+el riesgo de sobreajuste del modelo (ya que un modelo con más parámetros puede memorizar mejor los
 datos de entrenamiento). Es por esto que, en aquellos problemas en los que no es necesario preservar la 
 información de localización de las características, ---como en los que nos enfocamos en este trabajo: 
 clasificación y regresión---, y, por tanto, el modelo sea invariante a la ubicación, se emplean técnicas de 
@@ -1104,10 +709,12 @@ componentes principales:
     \textit{pooling}, cuya función es extraer representaciones jerárquicas y cada vez más abstractas de los 
     datos de entrada; y
 
-    \item el \textit{classifier}, generalmente implementado mediante una o más capas totalmente conectadas, 
+    \item el \textit{classifier}, generalmente implementado mediante una o más capas FC, 
     toma estas representaciones para realizar la tarea específica de salida, ya sea clasificación o regresión.
 
 \end{itemize}
+
+En la Figura \ref{fig:CNN_complete} se puede observar un ejemplo de arquitectura CNN completa. 
 
 
 \begin{figure}[h]
@@ -1122,8 +729,8 @@ componentes principales:
         de clasificación con 1000 clases.
         Recuperado de la Figura 5.39 de \cite{szeliski2010}.
         Esta arquitectura presenta una serie de capas convolucionales con funciones de activación no lineales 
-        ReLU, max pooling, algunas capas totalmente conectadas y una capa final \textit{softmax}, la cual se 
-        alimenta a una función de pérdida de entropía cruzada multiclase.
+        ReLU y max pooling, que formarían el \textit{backbone} y una serie de capas FC (\textit{classifier}), 
+        con una capa final softmax, que aplimentad una función de pérdida de entropía cruzada multiclase.
     } 
     \label{fig:CNN_complete}
 \end{figure}
@@ -1207,6 +814,8 @@ las conexiones residuales han sido la contribución más significativa para reso
 
 Las \textbf{redes residuales (\textit{residual nets}, ResNet)} 
 
+\todo{A completar más tarde}
+
 %https://www.jeremyjordan.me/nn-learning-rate/
 
 
@@ -1274,8 +883,8 @@ El Comité Conjunto de Guías en Metrología (\textit{Joint Committe for Guides 
     Este Comité está formado por numerosas organizaciones internacionales de metrología y normalización: 
     BIPM, IEC, IFCC, ISO, IUPAC, IUPAP, OIML e ILAC. Su objetivo principal es mantener y promover las 
     guías internacionales clave en metrología, como la Guía para la Expresión de la Incertidumbre en la 
-    Medición (\textit{Guide to the Expression of Uncertainty in Measurement}, GUM) \cite{jcgm100:2008} y el 
-    Vocabulario Internacional de Metrología (\textit{Vocabulaire international de métrologie}, VIM) 
+    Medición (\textit{Guide to the Expression of Uncertainty in Measurement}) \cite{jcgm100:2008} y el 
+    Vocabulario Internacional de Metrología (\textit{Vocabulaire international de métrologie}) 
     \cite{jcgm200:2012}.
 }
 define el \textbf{error} como una ``medición imperfecta'' de la magnitud observada, que puede estar causada
@@ -1294,8 +903,9 @@ verdadero. En consecuencia, el propósito de la medición es aproximarse lo más
 minimizando las distintas componentes del error \cite{jcgm100:2008}:
 
 \begin{itemize}
+
     \item para el error aleatorio, esto se logra aumentando el número de observaciones, ya que su distribución 
-    tiene una media igual a cero; y
+    tiende una media igual a cero; y
 
     \item para el error sistemático, es necesario identificarlo y cuantificar su magnitud, lo que permite 
     aplicar factores de corrección que compensen su efecto.
@@ -1303,242 +913,250 @@ minimizando las distintas componentes del error \cite{jcgm100:2008}:
 \end{itemize}
 
 Se asume que el resultado de la medición ha sido corregido por todos los efectos sistemáticos identificados
-como significativos, de modelo que la esperanza matemática de esta componente sea igual a cero.
+como significativos, de modo que la esperanza matemática de esta componente sea igual a cero.
 
 Sin embargo, en la práctica no existen reglas claras para distinguir las componentes del error ni cómo estas 
-se combinan en el error total
- que permitan diferenciar claramente las componentes del error ni
-cómo estas se combinan en el error total. En general, solo es posible estimar un límite superior del valor 
+se combinan en el error total. En general, solo es posible estimar un límite superior del valor 
 absoluto del error total estimado, al que se denomina de forma inapropiada ``incertidumbre''. 
 
-Frente a enfoque anterior, se presenta el \textbf{enfoque basado en la incertidumbre} \cite{jcgm100:2008}, 
+Frente al enfoque anterior, se presenta el \textbf{enfoque basado en la incertidumbre} \cite{jcgm100:2008}, 
 cuyo propósito no es hallar el mejor valor posible, sino establecer un intervalo de valores razonables para el 
 mensurando, el cual puede refinarse con información adicional. Así, la medición misma se convierte en una 
-herramienta para determinar el error del instrumento. 
-
-% ------------------------------------------------------------------------------------------------------------
-
-\subsection{Intervalos de valores razonables}
-
-\todo{Creo que es mejor eliminar este apartado e incluirlo en el anexo pero lo dejo por ahora para 
-que vea la diferencia entre el intervalo de confianza, el de credibilidad y el de predicción}
-
-Veamos qué tipos de intervalos de valores nos permiten cuantificar la variabilidad de los resultados y, por 
-tanto, la incertidumbre de la medición realizada. 
-
-\begin{itemize}
-
-    \item El \textbf{intervalo de confianza (IC)} es una herramienta común de la estadística 
-    frecuentista
-    \footnote{
-        La estadística frecuentista ... ¿Anexo explicando las diferencias entre frecuentista y bayesiana?
-        (para agosto)
-    },
-    que permite estimar un rango de valores tal que podamos confiar en que contiene al valor verdadero de 
-    un parámetro poblacional desconocido $\theta$ (p.ej., la media) \cite{berrendero2025}.
-
-    Los métodos del cálculo del IC dependen de la distribución del estimador (p.ej., la distribución de la
-    media muestral) y los parámetros conocidos. 
-
-    Es importante aclarar un malentendido común: un intervalo de confianza con nivel 95\% para un parámetro 
-    $\theta$ no significa que exista un 95\% de probabilidad de que $\theta$ esté dentro del intervalo 
-    calculado a partir de una muestra específica. En realidad, el 95\% se refiere a la frecuencia con la que 
-    , si muestreásemos muchas veces los datos, los intervalos construidos a partir de esas muestras incluirían 
-    al valor verdadero de $\theta$ en aproximadamente el 95\% \cite{murphy2022}.
-
-
-    \item El \textbf{intervalo de credibilidad o región creíble (RC)} es, de hecho, la que determina que el 
-    parámetro $\theta$ está contenido en el rango de sus valores con una probabilidad determinada por la 
-    confianza. Este intervalo es la aproximación bayesiana equivalente al intervalo de confianza, y, como 
-    este, requiere conocer la distribución a priori de los datos.
-
-    La diferencia radica en que, a diferencia del intervalo de confianza, que parte de que $\theta$ es un 
-    parámetro fijo desconocido y los datos son tratados como aleatorios, el enfoque bayesiano fija los datos
-    (ya que son conocidos) y el parámetro $\theta$ lo trata como aleatorio (ya que es desconocido) 
-    \cite{murphy2022}.
-
-    Esta interpretación resulta más intuitiva y directa en comparación con la interpretación frecuentista del 
-    intervalo de confianza. En particular, una región creíble del 95\% sí puede interpretarse como que hay un
-    95\% de probabilidad de que el parámetro $\theta$ se encuentre dentro de ese intervalo, dado el conjunto
-    de datos observado y la distribución a priori asumida.
-
-    \todo{Incluir imagen comparando intervalo de confianza y credibilidad}
-
-
-    \item El \textbf{intervalo de predicción (\textit{prediction interval})} es radicalmente diferente a los 
-    intervalos previos, pues trata de predecir un valor futuro de una observación, no determinar un parámetro 
-    poblacional. Existen numerosos métodos, con mayores y menores garantías estadísticas, con y sin 
-    necesidad de conocer la distribución de los datos. El enfoque más prometedor es la predicción conformal, 
-    que han demostrado ser eficaz en contextos donde los supuestos clásicos (normalidad, homocedasticidad) no 
-    se cumplen \cite{romano2019}, y es actualmente el enfoque más robusto para la construcción de intervalos 
-    de predicción en aplicaciones modernas de ML 
-    \cite{romano2019, luo2025, sadinle2019, romano2020, angelopoulos2020}.
-
-\end{itemize}
-
-% Relacionándolo con el apartado anterior, los intervalos de confianza solo informan de la incertidumbre 
-% aleatoria, puesto que asumen que el modelo está bien especificado y que el error residual es la única fuente 
-% de variabilidad. 
-
-% Los intervalos de credibilidad sí integran la incertidumbre en los parámetros del modelo y en la estructura 
-% del modelo mismo, capturando así tanto la incertidumbre aleatoria como la incertidumbre epistémica.
-
-% Frente a estos, los intervalos de predicción obtenidos mediante predicción conformal sí presentan información
-% de los tres componentes de incertidumbre. 
-
-Como podemos esperar, a más estrecho sea el intervalo que manejemos, más se puede confiar en las predicciones,
-pero no todos los tipos de intervalos revelan la misma información sobre incertidumbre. 
+herramienta para determinar el error potencial del instrumento ---o modelo en ML---. 
 
 % ------------------------------------------------------------------------------------------------------------
 
 \subsection{Incertidumbre en \textit{machine learning}}
 
-El enfoque basado en incertidumbre se puede extrapolar a modelos de ML, incorporando técnicas de 
-\textbf{cuantificación de la incertidumbre (\textit{Uncertainty Quantification}, UQ)} para evaluar y comunicar 
-la confianza del modelo en sus predicciones. 
-En problemas de regresión, la analogía es directa: es deseable que los modelos no solo proporcionen una 
-predicción puntual, sino también un intervalo que indique el grado de incertidumbre asociado a cada 
-predicción, conocido como \textbf{intervalo de predicción (\textit{prediction interval})},
-el cual puede derivarse de métodos de UQ como \textit{bootstrapping} o predicción conformal
-En caso de los problemas de clasificación, el concepto equivalente
-al de intervalo de predicción se denomina \textbf{conjunto de predicción (\textit{prediction set})}, 
-que puede construirse mediante técnicas como estimaciones de probabilidad calibrada o predicción conformal.  
-
 Las fuentes de incertidumbre pueden ser muy variadas, y su identificación requiere en muchos casos de 
-conocimiento específico en el problema. Si bien se suelen considerar dos tipos de incertidumbre en las 
-predicciones realizadas en ML \cite{hullermeier2021}:
+conocimiento específico en el problema, si bien se suelen considerar dos tipos de incertidumbre en las 
+predicciones realizadas en ML \cite{hullermeier2021, nemani2023}:
 
 \begin{itemize}
     
-    \item La \textbf{incertidumbre aleatoria} es la relativa al dato individual. 
-    Esta incertidumbre se debe a la variabilidad inherente del fenómeno observado y no puede reducirse, aunque 
-    se disponga de más datos. Por ejemplo, en un entorno médico, puede reflejar la variabilidad entre 
-    pacientes con condiciones similares.
+    \item La \textbf{incertidumbre aleatoria o estocástica} procede de la variabilidad aleatoria de un 
+    fenómeno. 
+    Es irreducible por naturaleza, aunque se disponga de más datos. 
+    Un ejemplo típico es el resultado de lanzar una moneda al aire. Incluso el mejor modelo solo será capaz de 
+    dar probabilidades para las dos posibles salidas, sin una respuesta definitiva. 
+    
+    % En ML, esta incertidumbre representa la naturaleza inherentemente estocástica de las entradas, las salidas 
+    % y la dependencia entres estas dos. 
+
+    En el contexto de la estimación de la edad forense, esta incertidumbre se manifiesta en las diferentes 
+    edades biológicas que puede estimarse a individuos de la misma edad cronológica.
+    Se sabe que existe una correlación entre edad biológica y la cronológica, pero esta no es perfecta, 
+    debido a que existe variabilidad inherente al problema.
+
+    % \begin{itemize}
+    %     \item las entradas. Por ejemplo, 
+        
+    %     \item las salidas. Por ejemplo, el resultado de lanzar una moneda al aire; incluso el mejor modelo 
+    %     solo será capaz de dar probabilidades para las dos posibles salidas, sin una respuesta definitiva.
+        
+    %     \item la dependencia entre las anteriores. Por ejemplo, estimar la edad cronológica de un esqueleto  
+    %     un esqueleto de determina edad biológica
+    
+    % \end{itemize}
+
 
     \item La \textbf{incertidumbre epistémica} es la causada por falta de conocimiento o precisión del modelo.
-    Se relaciona con aspectos como la escasez de datos, la calidad de la información disponible o la capacidad 
-    limitada del modelo para generalizar. A diferencia de la incertidumbre aleatoria, la epistémica es 
-    reducible: puede disminuirse con más datos, mejores modelos o mayor comprensión del problema.
+    Se relaciona con aspectos como la escasez de datos, la calidad de la información disponible, las 
+    limitaciones teóricas y prácticas del modelo escogido, etc. 
+    A diferencia de la incertidumbre aleatoria, esta sí es reducible por naturaleza; puede reducirse con más
+    datos, mejores modelos o mayor comprensión del problema. 
     
 \end{itemize}
 
-A estos, se le puede añadir un tercero: el \textbf{\textit{drift}} \cite{gama2012}, que procede de cambios en 
-la distribución de los datos a lo largo del tiempo, ya sea en la distribución de las variables de entrada, en 
-la distribución de las variables de salida, o en la relación entre las dos previas. Por ejemplo: una imagen 
-de entrada a un modelo de clasificación que no corresponde a ninguna clase con la que se haya entrenado 
-anteriormente, un cambio en la población objetivo de una aplicación médica ---p.ej., debido a un cambio 
-demográfico o a la aparición de una nueva enfermedad---, entre otros. 
+A estos, se le puede añadir un tercer tipo: el \textbf{\textit{drift}} \cite{gama2012, nemani2023}, que 
+procede de cambios en la distribución de los datos a lo largo del tiempo, ya sea en la distribución de las 
+variables de entrada, en la distribución de las variables de salida, o en la relación entre las dos previas. 
+Por ejemplo: una imagen de entrada a un modelo de clasificación que no corresponde a ninguna clase con la que 
+se haya entrenado anteriormente; un cambio en la población objetivo de una aplicación médica ---p.ej., debido 
+a un cambio demográfico o a la aparición de una nueva enfermedad---; o la toma de imágenes médicas con una 
+máquina distinta a la que se empleó para obtener las imágenes con las que se ha entrenado el modelo.
 
 % ------------------------------------------------------------------------------------------------------------
 
-\subsection{Cuantificación de la incertidumbre en \textit{machine learning}}
+\subsection{Cuantificación de la incertidumbre en \textit{machine learning}} 
 
-La cuantificación de la incertidumbre puede abordarse desde dos perspectivas: 
+El desarrollo de las técnicas modernas de ML ha estado principalmente centrado en la minimización y 
+cuantificación del error de predicción. Este enfoque ha permitido que el aprendizaje automático despliegue un 
+gran potencial en multitud de aplicaciones.
+Sin embargo, cuando se trata de aplicaciones críticas ---como la medicina, los sistemas financieros o el 
+control de infraestructuras--- surge una necesidad esencial: no solo importa cuán precisa es una predicción, 
+sino también cuán confiable es \cite{begoli2019}. 
+En respuesta a esta necesidad, durante la última década se ha producido un creciente interés y desarrollo de 
+técnicas orientadas a la explicabilidad e interpretabilidad de la IA 
+\cite{angelov2021, ali2023, miller2019, loh2022} y la cuantificación de la incertidumbre
+\cite{abdar2021, psaros2023, nemani2023}.
 
-\begin{itemize}
-    
-    \item sobre nuevos datos (no vistos), donde el objetivo es estimar la confianza del modelo en situaciones 
-    reales de predicción, donde no se conoce el valor verdadero; o
+Mientras la explicabilidad de la IA busca entender las razones detrás de cada predicción centrándose en el 
+estudio del modelo y arquitectura concretos \cite{salvi2025}, la 
+\textbf{cuantificación de la incertidumbre (\textit{uncertainty quantification}, UQ)} evalúa el grado de 
+confianza en las predicciones realizadas y se centra en caracterizar las fuentes de variabilidad y posible 
+error en los datos, el modelo y el entorno de aplicación \cite{nemani2023}.
 
-    \item sobre datos ya observados, como los del conjunto de entrenamiento o validación. En este caso el 
-    propósito es evaluar si el modelo representa adecuadamente la variabilidad de los datos, detectar 
-    sobreajuste o validar la calibración de las predicciones.
+Existe una gran variedad de técnicas de UQ. Estas técnicas pueden clasificarse de distintas formas: algunas 
+son \textit{model-agnostic}, es decir, pueden aplicarse a cualquier tipo de modelo sin 
+requerir acceso a su estructura interna; otras son \textit{model-specific}, diseñadas para aprovechar 
+características particulares del modelo subyacente. 
+Algunas técnicas suponen que los datos siguen ciertas 
+distribuciones estadísticas explícitas, mientras que otras operan sin realizar tales suposiciones. 
+También existen métodos que asumen intercambiabilidad entre observaciones, frente a aquellos que no lo hacen 
+y requieren estructuras de dependencia más complejas. 
 
-\end{itemize}
+Los métodos más populares son \textit{gaussian process regression} (GPR),
 
-Nos centraremos en el estudio de la cuantificación de la incertidumbre sobre datos nuevos, pues es en este 
-contexto donde resulta más relevante para aplicaciones prácticas, como las de estimación del PB. 
-Esta provee información clave para la toma de decisiones tanto del valor predicho como de la certeza asociada
-a la predicción. 
-\todo{
-    ¿Es posible hablar de métodos de cuantificación de incertidumbre sobre datos nuevos sin mencionar los
-    métodos sobre datos previos? En clasificación, la calibración del modelo es importante para la 
-    cuantificación de incertidumbre. De hecho, es recomendable realizarla previamente a la aplicación de 
-    conformal prediction.
-}
-
-Además, nos centraremos en aquellos métodos que no requieran asumir distribuciones específicas en los datos
-ni dependan fuertemente de supuestos paramétricos, ya que en muchos problemas reales (como la 
-estimación del perfil biológico) los datos pueden presentar heterocedasticidad, asimetría o 
-comportamientos complejos que dificultan su modelización con enfoques clásicos.
-
-
-\subsubsection{Cuantificación de la incertidumbre en problemas de regresión}
-
-Existe multitud de maneras de cuantificar la incertidumbre en problemas de regresión, más y menos rigurosas.
-
-Una primera aproximación es la \textbf{regresión cuantílica (\textit{quantile regression})}, que añade dos 
-nuevas salidas en el modelo de regresión, que serán los límites inferior y superior de un intervalo de 
-predicción, correspondientes a cuantiles específicos (por ejemplo, los percentiles 10 y 90)
-\footnote{
-    El entrenamiento del modelo para estas dos salidas se realiza con la función de pérdida \textit{pinball},
-    \cite{steinwart2011} que combina los errores de predicción para múltiples cuantiles, penalizando
-    asimétricamente las desviaciones según el cuantil objetivo.
-}. 
-Esto permite estimar no solo la tendencia central (como en la regresión tradicional), sino también la 
-incertidumbre de las predicciones (véase la Figura \ref{fig:quantile_regression}).
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{capitulos/cap_02/imagenes/quantile_regression.png}
-    \caption[
-        Gráfico que ilustra las 3 predicciones que arroja un modelo de regresión cuantílica. Recuperado de 
-        \cite{vermorel2012}.
-    ]{
-        Gráfico que ilustra las 3 predicciones que arroja un modelo de regresión cuantílica. Recuperado de 
-        \cite{vermorel2012}. Se observa los límites superior e inferior los percentiles 75 y 25, 
-        respectivamente. 
-    }
-    \label{fig:quantile_regression}
-\end{figure}
-
-Sin embargo, este método presenta varios problemas:
+redes neuronales bayesianas (\textit{bayesian neural networks}, BNNs),
+redes neuronales \textit{ensemble}, 
+métodos deterministas
 
 \begin{itemize}
+    \item \textbf{Procesos de regresión gausiana (\textit{gaussian process regression}, GPR)}: 
+    
+    \item \textbf{Técnicas bayesianas}: Estas emplean
 
-    \item Sensibilidad a datos escasos o ruidosos: La estimación puede ser muy sensible a 
-    \textit{outliers}
-    \footnote{
-        Los valores atípicos o \textit{outliers} son instancias que se desvían significativamente del resto
-        de instancias del conjunto de datos. Un \textit{outlier} podría indicar un comportamiento anormal
-        del sistema (variabilidad natural del fenómeno observado, eventos excepcionales que refleja 
-        comportamientos reales pero poco frecuentes, ...) o un error de recolección y registro de los datos 
-        \cite{alpaydin2010}.   
-    } 
-    y a regiones con pocas observaciones, llevando a intervalos poco fiables. De hecho, se puede dar el 
-    fenómeno indeseable de que cuantiles mayores tengan valores predichos más bajos que cuantiles menores 
-    ---conocido como cruzamiento de cuantiles \cite{koenker2005}---.
-    
-    \item Falta de cobertura probabilística garantizada: No existe ningún tipo de garantía estadística que 
-    asegure que el cuantil estimado cubra la proporción deseada de observaciones en muestras futuras. 
-    
-    \item No captura la incertidumbre epistémica: Solo captura la incertidumbre aleatoria \cite{abdar2021},
-    dado que modela cómo los valores de salida varían dado un conjunto de entradas. No captura automáticamente 
-    incertidumbre epistémica, a menos que se combine con otros enfoques, como métodos bayesianos 
-    \cite{tokdar2012}.
-
-    \item Muestran gran incertidumbre en cuantiles extremos (cerca de cero o uno) \cite{feldman2023} y, por 
-    tanto, los intervalos de predicción obtenidos son extremedamente grandes, lo que logra una gran cobertura
-    pero poca utilidad práctica. 
-    
+    \item \textbf{Técnicas \textit{ensemble}}:  
 \end{itemize}
 
 
-Otra técnica que no ...
 
 
-\todo{Introducir la predicción conformal}
+% ¿Qué es la cuantificación de incertidumbre?
+
+% Es un proceso añadido sobre el actual proceso de entrenamiento de un modelo, ya sea ..., 
+% que genera un intervalo o distribución 
 
 
 
-\subsubsection{Cuantificación de la incertidumbre en problemas de clasificación}
+
+% La UQ puede abordarse desde dos perspectivas diferentes: 
+
+% \begin{itemize}
+
+%     \item sobre datos ya observados (como los de entrenamiento o validación), donde el objetivo es evaluar si 
+%     el modelo representa adecuadamente la variabilidad de los datos, detectar sobreajuste o validar la 
+%     calibración de las predicciones; o
+    
+%     \item sobre nuevos datos (no vistos), donde el objetivo es estimar la confianza del modelo en situaciones 
+%     reales de predicción, donde no se conoce el valor verdadero.
+
+% \end{itemize}
+
+% Algunos métodos de cuantificación de la incertidumbre
+
+% % Hablar sobre métodos de UQ en datos ya observados
+
+% Nos centraremos en el estudio de la cuantificación de la incertidumbre sobre datos nuevos, pues es en este 
+% contexto donde resulta más relevante para aplicaciones prácticas, como las de estimación del PB. 
+% Esta provee información clave para la toma de decisiones tanto del valor predicho como de la certeza asociada
+% a la predicción. 
+% \todo{
+%     ¿Es posible hablar de métodos de cuantificación de incertidumbre sobre datos nuevos sin mencionar los
+%     métodos sobre datos previos? En clasificación, la calibración del modelo es importante para la 
+%     cuantificación de incertidumbre. De hecho, es recomendable realizarla previamente a la aplicación de 
+%     conformal prediction.
+% }
+
+% En problemas de regresión, es deseable que los modelos no solo proporcionen una 
+% predicción puntual, sino también un intervalo que indique el grado de incertidumbre asociado a cada 
+% predicción, conocido como \textbf{intervalo de predicción (\textit{prediction interval})},
+% el cual puede derivarse de métodos de UQ como %%%%%%AÑADIRR MÁS \textit{bootstrapping} o predicción conformal
+
+% Además, nos centraremos en aquellos métodos que no requieran asumir distribuciones específicas en los datos
+% ni dependan fuertemente de supuestos paramétricos, ya que en muchos problemas reales (como la 
+% estimación del perfil biológico) los datos pueden presentar heterocedasticidad, asimetría o 
+% comportamientos complejos que dificultan su modelización con enfoques clásicos.
 
 
 
-\todo{¿Introducir la calibración de modelos y centrarse en el Platt Scaling y Temperature Scaling?}
 
 
-\todo{Introducir la predicción conformal}
+% \subsubsection{Cuantificación de la incertidumbre en problemas de regresión}
+
+% Existe multitud de maneras de cuantificar la incertidumbre en problemas de regresión.
+
+% % Comenzar hablando sobre los intervalos de predicción
+
+% % Reestructurar
+
+% Una primera aproximación es la \textbf{regresión cuantílica (\textit{quantile regression})}, que añade dos 
+% nuevas salidas en el modelo de regresión, que serán los límites inferior y superior de un intervalo de 
+% predicción, correspondientes a cuantiles específicos (por ejemplo, los percentiles 10 y 90)
+% \footnote{
+%     El entrenamiento del modelo para estas dos salidas se realiza con la función de pérdida \textit{pinball},
+%     \cite{steinwart2011} que combina los errores de predicción para múltiples cuantiles, penalizando
+%     asimétricamente las desviaciones según el cuantil objetivo.
+% }. 
+% Esto permite estimar no solo la tendencia central (como en la regresión tradicional), sino también la 
+% incertidumbre de las predicciones (véase la Figura \ref{fig:quantile_regression}).
+
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=0.8\textwidth]{capitulos/cap_02/imagenes/quantile_regression.png}
+%     \caption[
+%         Gráfico que ilustra las 3 predicciones que arroja un modelo de regresión cuantílica. Recuperado de 
+%         \cite{vermorel2012}.
+%     ]{
+%         Gráfico que ilustra las 3 predicciones que arroja un modelo de regresión cuantílica. Recuperado de 
+%         \cite{vermorel2012}. Se observa los límites superior e inferior los percentiles 75 y 25, 
+%         respectivamente. 
+%     }
+%     \label{fig:quantile_regression}
+% \end{figure}
+
+% Sin embargo, este método presenta varios problemas:
+
+% \begin{itemize}
+
+%     \item Sensibilidad a datos escasos o ruidosos: La estimación puede ser muy sensible a 
+%     \textit{outliers}
+%     \footnote{
+%         Los valores atípicos o \textit{outliers} son instancias que se desvían significativamente del resto
+%         de instancias del conjunto de datos. Un \textit{outlier} podría indicar un comportamiento anormal
+%         del sistema (variabilidad natural del fenómeno observado, eventos excepcionales que refleja 
+%         comportamientos reales pero poco frecuentes, ...) o un error de recolección y registro de los datos 
+%         \cite{alpaydin2010}.   
+%     } 
+%     y a regiones con pocas observaciones, llevando a intervalos poco fiables. De hecho, se puede dar el 
+%     fenómeno indeseable de que cuantiles mayores tengan valores predichos más bajos que cuantiles menores 
+%     ---conocido como cruzamiento de cuantiles \cite{koenker2005}---.
+    
+%     \item Falta de cobertura probabilística garantizada: No existe ningún tipo de garantía estadística que 
+%     asegure que el cuantil estimado cubra la proporción deseada de observaciones en muestras futuras. 
+    
+%     \item No captura la incertidumbre epistémica: Solo captura la incertidumbre aleatoria \cite{abdar2021},
+%     dado que modela cómo los valores de salida varían dado un conjunto de entradas. No captura automáticamente 
+%     incertidumbre epistémica, a menos que se combine con otros enfoques, como métodos bayesianos 
+%     \cite{tokdar2012}.
+
+%     \item Muestran gran incertidumbre en cuantiles extremos (cerca de cero o uno) \cite{feldman2023} y, por 
+%     tanto, los intervalos de predicción obtenidos son extremedamente grandes, lo que logra una gran cobertura
+%     pero poca utilidad práctica. 
+    
+% \end{itemize}
+
+
+% Otra técnica que no ...
+
+
+% \todo{Introducir la predicción conformal}
+
+
+
+% \subsubsection{Cuantificación de la incertidumbre en problemas de clasificación}
+
+% Por otro lado, en el caso de los problemas de clasificación, el concepto equivalente
+% al de intervalo de predicción se denomina \textbf{conjunto de predicción (\textit{prediction set})}, 
+% que puede construirse mediante técnicas como estimaciones de probabilidad calibrada o predicción conformal. 
+
+
+
+% \todo{¿Introducir la calibración de modelos y centrarse en el Platt Scaling y Temperature Scaling?}
+
+
+% \todo{Introducir la predicción conformal}
 
 
 
@@ -1546,26 +1164,194 @@ Otra técnica que no ...
 % CONFORMAL PREDICTION ---------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
 
-\section{Conformal Prediction}
+\section{Predicción conformal}
 
-La \textbf{predicción conformal (\textit{conformal predition}, CP)} 
-
-% ------------------------------------------------------------------------------------------------------------
-
-\subsection{Conformal Prediction en problemas de regresión}
-
-\subsubsection{Conformalized Quantile Regression (CQR)}
-
-
-\subsubsection{}
-
-
+La \textbf{predicción conformal (\textit{conformal predition}, CP)} \cite{vovk2005} es un marco teórico para 
+la UQ en modelos de ML, que proporciona intervalos o conjuntos de predicción con garantías estadísticas de 
+cobertura. Estas garantías son válidas bajo el supuesto mínimo de intercambiabilidad de los datos, sin 
+requerir hipótesis sobre la distribución subyacente de los mismos.
+Sin embargo, esta robustez tiene un coste: la CP requiere un conjunto de datos adicional para 
+\textbf{calibración}, que es el proceso por el cual se ajustan los intervalos de predicción para garantizar 
+las propiedades estadísticas prometidas.
+Vamos a definir más en detalle estos puntos.
 
 % ------------------------------------------------------------------------------------------------------------
 
-\subsection{Conformal Prediction en problemas de clasificación}
+\subsection{Propiedades de la predicción conformal}
 
-...
+La CP garantiza que las predicciones contengan el valor verdadero con al menor una probabilidad $1-\alpha$, 
+donde $\alpha$ es el nivel de significación:
+
+$$
+P(Y_{n+1} \in \hat{C_\alpha}(X_{n+1})) \ge 1 - \alpha
+$$
+
+Esta propiedad se denomina \textbf{cobertura marginal válida} \cite{prinster2024}, y se cumple para todas las 
+entrada $X$, siempre y cuando los datos sean intercambiables (\textit{interexchangeable}), es decir, todos los 
+datos procedan de la misma distribución y, por tanto, la posición del nuevo ejemplo dentro del conjunto 
+completo de datos sea estadísticamente indistinguible del resto. Esta intercambiabilidad en imágenes 
+implicaría que todas fueran tomadas en condiciones más o menos similares: mismo dominio, distribución de 
+valores de salida, iluminación, resolución, estilo, etc.
+
+En cambio, la CP no asegura \textbf{cobertura condicional válida} \cite{foygel2021}; es decir, no es posible 
+garantizar cobertura para todos los subgrupos de datos sin hacer suposiciones fuertes o sacrificar utilidad 
+práctica, en concordancia con el conocido Teorema \textit{No Free Lunch} \cite{wolpert1997}. 
+Además, el conjunto de calibración debe ser estadísticamente representativo de la distribución completa de los 
+datos. Esto crea un compromiso fundamental: asignar más muestras a la calibración mejora la precisión de los 
+intervalos predictivos, pero a costa de reducir el tamaño del conjunto de entrenamiento, lo que potencialmente 
+puede empeorar el rendimiento del modelo base.
+
+Bajo estas garantías estadísticas, el verdadero potencial de la CP está en su flexibilidad para ser 
+integradas con otros métodos UQ.
+
+Algunas características deseables en las técnicas de CP son:
+
+\begin{itemize}
+    \item \textbf{Independencia del modelo (\textit{model-agnostic})}: que no requiera reentrenar el modelo ni 
+    modificar su arquitectura, permitiendo su aplicación \textit{post-hoc} a modelos preentrenados.
+
+    \item \textbf{Independencia del dominio (\textit{domain-agnostic})}: que pueda manejar entradas de 
+    cualquier tipo sin restricciones. 
+     
+    \item \textbf{Predicción adaptativa (\textit{adaptive prediction})}: que se muestre mayor incertidumbre 
+    ---y por tanto, máyo rango o conjunto de valores--- en las predicciones a más ``difíciles''
+    \footnote{
+        La dificultad es un criterio a priori subjetivo que hay que definir objetivamente ---o, en su defecto,
+        dejar que un modelo lo aprenda en base a otros parámetros objetivos---.
+    } sean estas. 
+
+    \item \textbf{Ser eficiente computacionalmente}: es preferible que tanto la calibración como la inferencia 
+    no sean computacionalmente muy costosas. 
+    
+    \item \textbf{Robustez frente a datos ruidosos y detección de datos \textit{out-of-distribution}}
+    \footnote{
+        Los datos \textit{out-of-distribution} son datos que no provienen de la misma distribución que los 
+        datos con los que se entrenó el modelo.
+    }:
+    que los intervalos reflejen adecuadamente la incertidumbre ante datos corruptos o fuera del dominio de 
+    entrenamiento.  
+
+\end{itemize}
+
+En general, existe un \textit{trade-off} entre flexibilidad y precisión: las técnicas dependientes del modelo,
+del dominio o incluso del propio problema (incluyendo información experta), que asumen ciertas distribuciones 
+de los datos, cuantifican mejor la incertidumbre aleatoria y epistémica, y suelen producir intervalos más 
+ajustados e informativos. 
+
+% ------------------------------------------------------------------------------------------------------------
+
+\subsection{Calibración e inferencia conformal}
+
+La CP en general requiere: introducir un nuevo paso de calibración, en el que se ajusten
+las puntuaciones de no conformidad para garantizar validez distribucional; 
+y modificar la inferencia para introducir información conformal y realizar la predicción inteválica o conjunto
+de predicción.
+
+% ------------------------------------------------------------------------------------------------------------
+
+\subsubsection{Predicción conformal en problemas de regresión}
+
+En los problemas de regresión tendremos, además de la predicción puntual común, dos límites ---inferior y 
+superior--- que formarán el intervalo de predicción. 
+Este intervalo puede ser simétrico respecto a la predicción puntual o no, dependiendo de la técnica empleada.
+En problemas donde se da heterocedasticidad, es decir, cuando la variabilidad del error cambia con respecto a 
+los valores de entrada, es especialmente importante utilizar métodos que permitan construir intervalos 
+asimétricos.
+
+% Proceso de calibración: ...
+
+El proceso de calibración del modelo consta de los siguientes pasos:
+
+\begin{enumerate}
+    \item Se usa el modelo predictivo para realizar las estimaciones puntuales ---o interválicas en caso de la
+    regresión cuantílica--- sobre el conjunto de instancias de calibración. 
+
+    
+    \item Se calcula una \textbf{puntuación de no conformidad (\textit{nonconformity score})} sobre cada 
+    instancia del conjunto de calibración. 
+    Esta puntuación de no conformidad debe medir la incertidumbre alrededor de cada predicción. No hay
+    restricciones sobre cómo se debe cuantificar esta, salvo que debe presentar la misma distribución de 
+    valores en el conjunto de calibración y en los futuros ejemplos, para asegurar la cobertura marginal. 
+    Por tanto, puede emplearse tanto entradas, como salidas, representaciones internas del modelo y valores
+    reales para arrojar una medida de incertidumbre
+    \footnote{
+        Cabe decir que una técnica será independiente del modelo y del dominio cuando solo tenga en cuenta
+        las salidas del modelo y los valores reales del problema para realizar la CP.
+    }.  
+
+    La función de no conformidad más simple para la regresión es el error absoluto.
+    Sin embargo, para obtener intervalos asimétricos, se calcula la diferencia entre el valor predicho y el
+    real, o viceversa ---dependiendo de si el límite es inferior o superior---. 
+
+
+    \item Se calcula el cuantil que determina el \textbf{umbral de no conformidad} a utilizar.
+    Específicamente, para un nivel de significancia $\alpha$, se selecciona el $(1 - \alpha)(1 + 1/n)$-ésimo 
+    cuantil de las puntuaciones de no conformidad obtenidas en el conjunto de calibración, donde $n$ es el 
+    número de ejemplos de calibración
+    (véase la Figura \ref{fig:nonconformity_quantile_threshold_simetric}). 
+    Este valor sirve como corrección para asegurar validez estadística finito-muestral.
+
+    En caso de intervalos asimétricos, se calculan dos umbrales de conformidad (uno por cada cola de la 
+    distribución de error), por lo que se selecciona el $(1 - \alpha/2)(1 + 1/n)$-ésimo cuantil de las 
+    puntuaciones de no conformidad obtenidas para cada límite 
+    (véase la Figura \ref{fig:nonconformity_quantile_threshold_asimetric}).
+
+    \begin{figure}[h]
+        \centering
+
+        \begin{subfigure}[b]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/nonconformity_quantile_threshold_simetric.png}
+            \caption{Determinación del umbral de no conformidad para intervalos simétricos.}
+            \label{fig:nonconformity_quantile_threshold_simetric}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.5\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/nonconformity_quantile_threshold_asimetric.png}
+            \caption{Determinación de los umbrales de no conformidad para intervalos asimétricos.}
+            \label{fig:nonconformity_quantile_threshold_asimetric}
+        \end{subfigure}
+
+        \caption[
+            Determinación del umbral de no conformidad para intervalos simétricos y asimétricos.
+        ]{
+            Determinación del umbral de no conformidad para intervalos simétricos y asimétricos. 
+            Elaboración propia.
+        }
+        \label{fig:nonconformity_quantile_comparation}
+    \end{figure}
+
+\end{enumerate}
+
+Una vez se ha realizado la calibración, faltaría realizar la inferencia conformal. Para cada predicción de una
+nueva instancia:
+
+\begin{enumerate}
+
+    \item Se usa el modelo predictivo para realizar la estimación puntual ---o interválica en caso de la 
+    regresión cuantílica--- de la nueva instancia. 
+    
+    \item Se construye un intervalo predictivo utilizando el valor/es estimado/s y sumando el umbral/es de no
+    conformidad. Por ejemplo, para una regresión puntual con intervalo asimétrico, el intervalo conformal 
+    sería (sin suponer elementos de escala):
+
+    $$
+    \left[ \hat{y_i} + \hat{q}_{lower}, \hat{y_i} + \hat{q}_{upper} \right]
+    $$
+
+\end{enumerate}
+
+
+
+% ------------------------------------------------------------------------------------------------------------
+
+\subsubsection{Predicción conformal en problemas de clasificación}
+
+\todo{A completar más tarde}
+
+
+
 
 \begin{figure}[h]
     \centering
@@ -1582,21 +1368,6 @@ La \textbf{predicción conformal (\textit{conformal predition}, CP)}
     \label{fig:adversarial_example}
 \end{figure}
 
-\subsubsection{Least-Ambiguous Set-Valued Classifiers}
-
-...
-
-\subsubsection{Adaptive Prediction Sets}
-
-El \textbf{\textit{Adaptive Prediction Sets} (APS)} \cite{romano2020}
-
-\subsubsection{Regularized Adaptive Prediction Sets}
-
-\textbf{\textit{Regularized Adaptive Prediction Sets} (RAPS)} \cite{angelopoulos2020} es una variante del método APS, 
-que 
-
-añade una penalización a conjuntos de predicción demasiado grandes, realizando esto a través 
-de la suma de un componente 
 
 
 

@@ -14,6 +14,9 @@ Dentro de este campo, la \textbf{antropología forense (AF)} es el subcampo espe
 técnicas antropológicas para resolver cuestiones médico-legales \cite{nawrocki2006}, empleando conocimientos 
 de antropología física, aunque a veces también de la arqueología, para la correcta recuperación y análisis de 
 la evidencia forense.
+Aunque tradicionalmente asociada al estudio de restos humanos esqueletizados o en descomposición, la AF 
+también contribuye a la estimación del perfil biológico en individuos vivos, especialmente en contextos 
+legales.
 
 Tradicionalmente, los antropólogos forenses han tenido cinco principales objetivos en su trabajo 
 \cite{byers2023}:
@@ -21,8 +24,9 @@ Tradicionalmente, los antropólogos forenses han tenido cinco principales objeti
 \begin{enumerate}
 
     \item Determinar el \textbf{perfil biológico} de un individuo (es decir, sexo, edad, estatura y 
-    ascendencia) cuando los tejidos blandos se han deteriorado hasta el punto de que estas características no 
-    pueden determinarse mediante inspección visual. 
+    ascendencia), ya sea en restos esqueletizados donde los tejidos blandos se han deteriorado
+    hasta el punto de que estas características no pueden determinarse mediante inspección visual,
+    o en personas vivas mediante técnicas no invasivas como análisis radiográficos o morfológicos. 
 
     \item Identificar la naturaleza de lesiones traumáticas (como heridas de bala, puñaladas o fracturas) en 
     huesos humanos, así como sus causantes, con el objetivo de recopilar información sobre la causa y 
@@ -64,7 +68,7 @@ puede requerir tanto la estimación de la edad mínima como la edad más probabl
 priorizar la protección de los menores, evitando que queden expuestos a violaciones de sus derechos.
 
 
-\subsection{Limitaciones de la antropología forense}
+\subsection{Identificación humana y estimación del perfil biológico}
 
 Como hemos visto, la \textbf{identificación humana (ID)} es una de las principales tareas que aborda la AF.
 Consiste en la determinación y verificación de la identidad de una persona en base a \cite{thompson2006}: 
@@ -216,7 +220,8 @@ para la estimación de sexo, edad, etc.
 
 Este enfoque se ha visto potenciado por el auge del Deep Learning, permitiendo a las CNNs aprender patrones 
 complejos que podrían pasar inadvertidos por el ser humano, y mejorando la precisión de las predicciones 
-\cite{stern2019, venema2022}. 
+\cite{stern2019, venema2022}.
+
 Sin embargo, aún mejorando la exactitud de las predicciones, los modelos siguen mostrando carencias respecto a 
 la cuantificación de incertidumbre, pues no todas las predicciones tienen el mismo nivel de confianza o 
 fiabilidad. Ya en \cite{ferrante2009} se introducía no solo la necesidad de identificar el método adecuado 
@@ -231,20 +236,20 @@ Un ejemplo de este tipo de análisis se ilustra en la Figura \ref{fig:regression
 examina la distribución probabilística del error residual arrojado por el modelo de regresión propuesto en 
 \cite{verma2020}.
 
-% \begin{figure}[h]
-%     \centering
-%     \includegraphics[width=0.7\textwidth]{capitulos/cap_01/imagenes/regression_line_lentibia_stature.png}
-%     \caption[
-%         Línea de regresión del modelo de regresión propuesto en \cite{verma2020} que predice la estatura
-%         a partir de la longitud de la tibia.
-%     ]{
-%         Línea de regresión del modelo de regresión propuesto en \cite{verma2020} que predice la estatura 
-%         a partir de la longitud de la tibia. En rojo, la línea de regresión; en verde, la línea de los 
-%         intervalos de confianza del 95\%; y en naranja, la línea de los intervalos de predicción al 95\% de 
-%         confianza.
-%     } 
-%     \label{fig:regression_lentibia_stature}
-% \end{figure}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{capitulos/cap_01/imagenes/regression_line_lentibia_stature.png}
+    \caption[
+        Línea de regresión del modelo de regresión propuesto en \cite{verma2020} que predice la estatura
+        a partir de la longitud de la tibia.
+    ]{
+        Línea de regresión del modelo de regresión propuesto en \cite{verma2020} que predice la estatura 
+        a partir de la longitud de la tibia. En rojo, la línea de regresión; en verde, la línea de los 
+        intervalos de confianza del 95\%; y en naranja, la línea de los intervalos de predicción al 95\% de 
+        confianza.
+    } 
+    \label{fig:regression_lentibia_stature}
+\end{figure}
 
 Aunque existen métricas para evaluar el error cuando se dispone de \textit{ground truth}, la mayoría de los 
 modelos actuales se limitan a ofrecer predicciones puntuales en regresión 
@@ -316,31 +321,31 @@ técnicas de AF confiables actualmente son:
 
 \section{Objetivos}
 
-La \textbf{\textit{Conformal Prediction}} emerge como un marco teórico robusto para generar intervalos de 
-predicción con garantías estadísticas sólidas, independientemente de la distribución subyacente de los datos. 
-A diferencia de los enfoques tradicionales, este método no solo ofrece predicciones puntuales, sino que 
-cuantifica la incertidumbre asociada a cada estimación mediante intervalos adaptativos o conjuntos de 
+La \textbf{predicción conformal} emerge como un marco teórico robusto para 
+generar intervalos de predicción con garantías estadísticas sólidas, independientemente de la distribución 
+subyacente de los datos. Se ha propuesto gran variedad de técnicas, más y menos costosas y flexibles.
+
+A diferencia de los enfoques tradicionales, este método no solo ofrece predicciones puntuales sino que 
+cuantifica la incertidumbre asociada a cada estimación mediante intervalos o conjuntos de 
 predicción que reflejan la confiabilidad de la predicción en cada caso particular.
 
-% A revisar próximo párrafo: ¿se usarán finalmente datos tabulares?
+Este proyecto tiene un doble objetivo: por un lado, desde un prisma teórico, defender la cuantificación de
+incertidumbre como herramienta esencial en ML, ofrecer un panorama de técnicas destacadas, analizando sus
+ventajas y limitaciones, y centrarnos en la predicción conformal y sus variantes más populares; y, 
+por otro, aplicar la predicción conformal a un contexto práctico como es es el problema de estimación del PB, 
+centrándonos en la estimación de edad y de sexo a partir de datos biológicos e imágenes médicas. 
 
-Este proyecto tiene un doble objetivo: por un lado, desde un prisma teórico, estudiar las ventajas y costes 
-asociados a las diversas técnicas de inferencia conformal actuales
-\todo{
-    ¿Es más correcto ``técnicas de cuantificación de la incertidumbre''?
-}
-; y, por otro, aplicarlo a un contexto práctico como es es el problema de estimación del PB, 
-centrándonos en la estimación de edad y de sexo a partir de datos biológicos e imágenes médicas. De esta 
-forma, cuando estemos ante datos biológicos ambiguos, la conformal prediction podrá devolver conjuntos de 
-predicciones con más de una etiqueta predicha (p.ej., \{masculino, femenino\}) en problemas de clasificación, 
-o intervalos de predicción más amplios (p.ej., edad$\in$[17,20]) en problemas de regresión, en ambos casos 
-para un nivel de confianza determinado.
+De esta forma, podremos incorporar la incertidumbre propia del problema a resolver y del modelo entrenado para 
+él, para, en aquellos casos más confusos, devolver conjuntos de de predicciones con más de una etiqueta 
+predicha (p.ej., \{masculino, femenino\}) en problemas de clasificación, o intervalos de predicción más 
+amplios (p.ej., edad$\in$[16,20]) en problemas de regresión, en ambos casos para un nivel de confianza 
+determinado.
 
 Por tanto, ponemos desgranar los objetivos en:
 
 \begin{itemize}
 
-    \item Estudiar de forma exhaustiva la bibliografía sobre \textit{conformal prediction} y sus diversas 
+    \item Estudiar de forma exhaustiva la bibliografía sobre predicción conformal y sus diversas 
     variantes, así como de la estimación de sexo y edad, centrando nuestra atención en el estado del arte.
 
     \item Implementar, entrenar y validar modelos de regresión ---en problemas de estimación de edad--- y 
@@ -365,9 +370,33 @@ donde la interpretabilidad y robustez son críticas.
 
 % ------------------------------------------------------------------------------------------------------------
 
-\section{Planificación económica y temporal del proyecto}
+\section{Planificación temporal del proyecto}
 
-\todo{Falta escribir este apartado}
+
+
+% ------------------------------------------------------------------------------------------------------------
+
+\section{Planificación económica del proyecto}
+
+Ambos tutores han dispuesto de todos los recursos necesarios para abordar el trabajo. 
+
+Este trabajo ha sido realizado con dos equipos independientes: 
+
+\begin{itemize}
+
+    \item Un ordenador portátil personal, empleado principalmente para la redacción y compilación de este 
+    documento en \LaTeX.
+        
+    \item Un clúster de computación proporcionado por el Instituto de Ciencia de Datos e Inteligencia 
+    Artificial (DaSCI), de la Universidad de Granada, al que se accedió mediante conexión SSH. Para el 
+    desarrollo de los distintos modelos y variantes de CP, se utilizó el entorno de desarrollo Visual Studio 
+    Code de Microsoft.
+
+\end{itemize}
+
+% Gasto hardware
+
+En cuanto al software, todo el empleado es gratuito y de código abierto. 
 
 
 
