@@ -37,7 +37,7 @@ def quantile_interval_size(
     return quantile_value
 
 
-def plot_(
+def plot_confidence_predictions(
     pred_point_values: torch.Tensor,
     pred_lower_bound: torch.Tensor,
     pred_upper_bound: torch.Tensor,
@@ -72,6 +72,5 @@ def plot_(
     plt.grid(True)
     plt.tight_layout()
     plt.show()
-    
-    
-    
+
+

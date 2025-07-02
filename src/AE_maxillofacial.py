@@ -144,6 +144,13 @@ parser.add_argument(
     default = 0.9
 )
 
+# Argumento para determinar si se realiza embedding del metadato 'sex'
+parser.add_argument(
+    '--sex_embedding',
+    action = 'store_true',
+    help = "Si se espececifica, añade información de sexo a la entrada del modelo"
+)
+
 # Argumento para determinar la ruta del archivo para salida de resultados
 parser.add_argument(
     '-o', '--output_stream',
@@ -282,9 +289,18 @@ class MaxillofacialXRayDataset(Dataset):
         return len(self.metadata)
         
     def __getitem__(self, idx):
-        # Obteniene el nombre de la imagen y su valor desde los metadatos
+        # Obteniene el nombre de la imagen y los valores de sexo y edad desde los metadatos
         img_name = os.path.join(self.images_dir, self.metadata.iloc[idx]['ID'])  # Ajusta según la estructura
-        target = self.metadata.iloc[idx]['Age'].astype(np.float32)  # Ajusta según el formato de tus metadatos
+        
+        sex_map = {'M': 0, 'F': 1}
+        sex_char = self.metadata.iloc[idx]['Sex']
+        # sex = torch.tensor(sex_map[sex_char], dtype=torch.long)
+        
+        # target = self.metadata.iloc[idx]['Age'].astype(np.float32)  # Ajusta según el formato de tus metadatos
+        
+        sex = torch.tensor(sex_map[sex_char], dtype=torch.float32)
+
+        target = torch.tensor(self.metadata.iloc[idx]['Age'], dtype=torch.float32)
         
         # Abre la imagen
         image = Image.open(img_name)
@@ -293,7 +309,7 @@ class MaxillofacialXRayDataset(Dataset):
         if self.transform:
             image = self.transform(image)
         
-        return image, target
+        return image, sex, target
     
 # ------------------------------------------------------------------------------------------------------------
 
@@ -391,6 +407,7 @@ if args.load_model_path:
     #
     checkpoint = torch.load(args.load_model_path, weights_only=False)
     pred_model_type = checkpoint['pred_model_type']
+    use_metadata = checkpoint['use_metadata']
     
     #
     if pred_model_type != args.pred_model_type:
@@ -402,9 +419,18 @@ if args.load_model_path:
     
     # Obtiene la clase del modelo basado en el checkpoint
     model_class = MODEL_CLASSES.get(checkpoint['pred_model_type'])
+    
+    #
+    if use_metadata != args.sex_embedding:
+        raise ValueError(f"El modelo especificado no es compatible en sus entradas con el cargado")
+    
+    # Crea el modelo
+    if use_metadata: 
+        model = model_class(confidence=args.confidence, use_metadata=True, meta_input_size=1).to(device)
+    else:
+        model = model_class(confidence=args.confidence).to(device)
 
-    # Crea y carga el modelo
-    model = model_class(args.confidence).to(device)
+    # Carga el modelo
     model.load_checkpoint(checkpoint)
 
 else:
@@ -416,7 +442,10 @@ else:
     model_class = MODEL_CLASSES.get(pred_model_type)
     
     # Crea el modelo 
-    model = model_class(args.confidence).to(device)
+    if args.sex_embedding: 
+        model = model_class(confidence=args.confidence, use_metadata=True, meta_input_size=1).to(device)
+    else:
+        model = model_class(confidence=args.confidence).to(device)
 
 
 print("✅ Modelo cargado\n")
@@ -435,7 +464,7 @@ if args.train:
         param.requires_grad = False
 
     # Configura el optimizador para el entrenamiento de la nueva cabecera 
-    optimizer = torch.optim.AdamW(model.classifier.parameters(), lr=base_lr, weight_decay=wd)
+    optimizer = torch.optim.AdamW(model.classifier_parameters(), lr=base_lr, weight_decay=wd)
 
     # Numero de épocas que se entrena la nueva cabecera
     NUM_EPOCHS_HEAD = 1
