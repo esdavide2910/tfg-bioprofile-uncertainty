@@ -21,6 +21,7 @@ if not torch.cuda.is_available():
 device = 'cuda'
 
 import traceback
+import time
 
 #-------------------------------------------------------------------------------------------------------------
 
@@ -257,7 +258,7 @@ train_transform = transforms.Compose(
      transforms.RandomHorizontalFlip(p=0.5),
      transforms.RandomRotation(degrees=3),
      transforms.RandomAffine(degrees=0, translate=(0.02, 0.02), scale=(0.95, 1.05)), 
-     transforms.ColorJitter(brightness=0.1, contrast=0.1), 
+     transforms.ColorJitter(brightness=0.2, contrast=0.2), 
      transforms.ToTensor(),
      transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))]
 )
@@ -281,36 +282,42 @@ class MaxillofacialXRayDataset(Dataset):
         images_dir: Ruta al directorio de imágenes (entrenamiento o prueba)
         transform: Transformaciones a aplicar a las imágenes (normalización, etc.)
         """
-        self.metadata = pd.read_csv(metadata_file)  # Cargar los metadatos
+        metadata = pd.read_csv(metadata_file)  # Cargar los metadatos
+        
+        # 
+        self.img_ids = metadata['ID'].tolist()
+        
+        #
+        self.sexes = torch.from_numpy(np.where(metadata['Sex'] == 'M', 0, 1)).long()
+        
+        #
+        self.ages = torch.from_numpy(metadata['Age'].astype('float32').values)
+        
+        #
         self.images_dir = images_dir
         self.transform = transform
     
+    
     def __len__(self):
-        return len(self.metadata)
-        
+        return len(self.img_ids)
+    
+    
     def __getitem__(self, idx):
-        # Obteniene el nombre de la imagen y los valores de sexo y edad desde los metadatos
-        img_name = os.path.join(self.images_dir, self.metadata.iloc[idx]['ID'])  # Ajusta según la estructura
         
-        sex_map = {'M': 0, 'F': 1}
-        sex_char = self.metadata.iloc[idx]['Sex']
-        # sex = torch.tensor(sex_map[sex_char], dtype=torch.long)
-        
-        # target = self.metadata.iloc[idx]['Age'].astype(np.float32)  # Ajusta según el formato de tus metadatos
-        
-        sex = torch.tensor(sex_map[sex_char], dtype=torch.float32)
-
-        target = torch.tensor(self.metadata.iloc[idx]['Age'], dtype=torch.float32)
-        
-        # Abre la imagen
-        image = Image.open(img_name)
-        
-        # Aplica transformaciones si es necesario
+        # Obteniene la imagen
+        img_path = os.path.join(self.images_dir, self.img_ids[idx])
+        image = Image.open(img_path).convert('RGB')
         if self.transform:
             image = self.transform(image)
         
-        return image, sex, target
-    
+        # Obtiene el sexo
+        sex = self.sexes[idx]
+        
+        # Obtiene la edad
+        age = self.ages[idx]
+        
+        return image, sex, age
+
 # ------------------------------------------------------------------------------------------------------------
 
 # Crea el Dataset de entrenamiento con augmentations
@@ -340,7 +347,7 @@ testset  =  MaxillofacialXRayDataset(
 BATCH_SIZE = 32
 
 # Obtiene las edades enteras del trainset
-intAges = np.floor(trainset.metadata['Age'].astype(float).to_numpy()).astype(int)
+intAges = torch.floor(trainset.ages).int()
 # Hay una única instancia con edad 26, que el algoritmo de separación de entrenamiento y validación será 
 # incapaz de dividir de forma estratificada. Para evitar el error, reasigna esa instancia a la edad 
 # inmediatamente inferior
@@ -437,12 +444,13 @@ else:
     
     #
     pred_model_type = args.pred_model_type
+    use_metadata = args.sex_embedding
     
     #
     model_class = MODEL_CLASSES.get(pred_model_type)
     
     # Crea el modelo 
-    if args.sex_embedding: 
+    if use_metadata: 
         model = model_class(confidence=args.confidence, use_metadata=True, meta_input_size=1).to(device)
     else:
         model = model_class(confidence=args.confidence).to(device)
@@ -451,38 +459,64 @@ else:
 print("✅ Modelo cargado\n")
 
 #-------------------------------------------------------------------------------------------------------------
-# FINE-TUNING DE LA NUEVA CABECERA
+# FINE-TUNING DE LA NUEVA CABECERA Y EL EMBEDDING
 
 if args.train:
 
     # Establece el learning rate base y weight decay 
-    base_lr = 3e-2
+    # base_lr = 3e-2
     wd = 2e-4
 
     # Congela los parámetros del extractor de características
-    for param in model.feature_extractor_parameters():
+    for param in model.feature_extractor.parameters():
         param.requires_grad = False
 
     # Configura el optimizador para el entrenamiento de la nueva cabecera 
-    optimizer = torch.optim.AdamW(model.classifier_parameters(), lr=base_lr, weight_decay=wd)
+    if use_metadata:
+        # Lista de grupos de parámetros con diferentes configuraciones
+        parameters = [
+            {'params': model.classifier.fc2.parameters(), 'lr': 3e-2},
+            {'params': model.classifier.fc1.parameters(), 'lr': 2e-2},
+            {'params': model.embedding.parameters(), 'lr': 2e-2}
+        ]
+        optimizer = torch.optim.AdamW(parameters, weight_decay=wd)
+    else:
+        parameters = [
+            {'params': model.classifier.fc2.parameters(), 'lr': 3e-2},
+            {'params': model.classifier.fc1.parameters(), 'lr': 2e-2},
+        ]
+        optimizer = torch.optim.AdamW(parameters, weight_decay=wd)
 
     # Numero de épocas que se entrena la nueva cabecera
     NUM_EPOCHS_HEAD = 1
 
     for epoch in range(NUM_EPOCHS_HEAD):
+        
+        # Inicia el temporizador para esta época
+        start_time = time.time()
 
         # Entrena el modelo con el conjunto de entrenamiento
         head_train_loss = model.train_epoch(train_loader, optimizer)
 
         # Evalua el modelo con el conjunto de validación
         head_valid_loss = model.evaluate(valid_loader)
+        
+        # Calcula el tiempo transcurrido
+        epoch_time = time.time() - start_time
+        
+        # Alternativa para mostrar minutos y segundos
+        minutes = int(epoch_time // 60)
+        seconds = int(epoch_time % 60)
+        time_str = f"{minutes}m {seconds}s"
 
         # Imprime los valores de pérdida obtenidos en entrenamiento y validación 
-        print(f"Epoch {epoch+1:>2} | "+
+        print(
+            f"Epoch {epoch+1:>2} | "+
             f"Train Loss: {head_train_loss:>7.3f} | " + 
-            f"Validation Loss: {head_valid_loss:>7.3f}"
+            f"Validation Loss: {head_valid_loss:>7.3f} | " +
+            f"Time: {time_str}"
         )
-        
+    
     model.save_checkpoint(args.save_model_path)
 
     print("✅ Entrenamiento de la nueva cabecera completado\n")
@@ -491,6 +525,10 @@ if args.train:
 # ENTRENAMIENTO DE LA RED COMPLETA
 
 if args.train:
+
+    # Establece el learning rate base y weight decay 
+    base_lr = 3e-2
+    wd = 5e-4
 
     # Descongela todos los parámetros del modelo
     for param in model.parameters():
@@ -525,10 +563,10 @@ if args.train:
         )
 
     # Número máximo de épocas a entrenar (si no se activa el early stopping)
-    MAX_EPOCHS = 30
+    MAX_EPOCHS = 1
 
     # Número mínimo de épocas a entrenar
-    MIN_EPOCHS = 30
+    MIN_EPOCHS = 15
 
     # Número de épocas sin mejora antes de detener el entrenamiento
     PATIENCE = 10
@@ -546,7 +584,6 @@ if args.train:
     scheduler = torch.optim.lr_scheduler.OneCycleLR(
         optimizer, 
         max_lr=lrs, 
-        # pct_start=MIN_EPOCHS/MAX_EPOCHS * 0.7,
         steps_per_epoch=len(train_loader),
         epochs=30
     )
@@ -558,22 +595,35 @@ if args.train:
     # Bucle de entrenamiento por épocas
     for epoch in range(MAX_EPOCHS):
         
+        # Inicia el temporizador para esta época
+        start_time = time.time()
+        
         # Entrena el modelo con el conjunto de entrenamiento
         train_loss = model.train_epoch(train_loader, optimizer, scheduler)
         train_losses.append(train_loss)
         
         # Evalua el modelo con el conjunto de validación
-        valid_loss = model.evaluate(valid_loader)
+        valid_loss = model.evaluate(test_loader) #------------------------------------------------------------ CAMBIAR
         valid_losses.append(valid_loss)
         
+        # Calcula el tiempo transcurrido
+        epoch_time = time.time() - start_time
+        
+        # Alternativa para mostrar minutos y segundos
+        minutes = int(epoch_time // 60)
+        seconds = int(epoch_time % 60)
+        time_str = f"{minutes}m {seconds}s"
+
         # Imprime los valores de pérdida obtenidos en entrenamiento y validación  
-        print(f"Epoch {epoch+1:>2} | " +
-              f"Train Loss: {train_loss:>7.3f} | " +
-              f"Validation Loss: {valid_loss:>7.3f}"
+        print(
+            f"Epoch {epoch+1:>2} | " +
+            f"Train Loss: {train_loss:>7.3f} | " +
+            f"Validation Loss: {valid_loss:>7.3f} | " +
+            f"Time: {time_str}"
         )
         
         # Comprueba si la pérdida en validación ha mejorado
-        if valid_loss < best_valid_loss:
+        if valid_loss < best_valid_loss and (epoch+1) > MIN_EPOCHS:
             
             # Actualiza la mejor pérdida en validación obtenida hasta ahora
             best_valid_loss = valid_loss
@@ -647,6 +697,9 @@ if args.calibrate and pred_model_type not in ['base', 'QR']:
 # TEST
 
 if args.test:
+    
+    # Inicia el temporizador previo a la inferencia
+    start_time = time.time()
 
     if pred_model_type == 'base':
         # Solo predicciones puntuales
@@ -655,7 +708,18 @@ if args.test:
         # Predicciones puntuales e interválicas 
         test_pred_point_values, test_pred_lower_bound, test_pred_upper_bound, test_true_values = \
             model.inference(test_loader)
-            
+    
+    # Calcula el tiempo transcurrido
+    epoch_time = time.time() - start_time
+    
+    # Alternativa para mostrar minutos y segundos
+    minutes = int(epoch_time // 60)
+    seconds = int(epoch_time % 60)
+    time_str = f"{minutes}m {seconds}s"
+
+    #
+    print(f"Tiempo de inferencia del conjunto test: {time_str}")
+    
     #
     print("Métricas de las predicciones puntuales:")
 

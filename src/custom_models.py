@@ -56,8 +56,8 @@ class FeatureExtractorResNeXt(nn.Module):
         self.conv3 = resnext.layer2
         self.conv4 = resnext.layer3
         self.conv5 = resnext.layer4
-        
-        
+    
+    
     def forward(self, x):
         
         x = self.conv1(x)
@@ -70,104 +70,31 @@ class FeatureExtractorResNeXt(nn.Module):
 
 #-------------------------------------------------------------------------------------------------------------
 
-# class ClassifierResNeXt(nn.Module):
-
-#     # Constants for network architecture
-#     IMAGE_FEATURES_SIZE = 4096  # 2048 (avg) + 2048 (max)
-    
-#     FC_HIDDEN_LAYER_SIZE = 512
-    
-#     META_HIDDEN_LAYER1_SIZE = 128
-#     META_HIDDEN_LAYER2_SIZE = 256
-    
-#     def __init__(self, num_output=1, use_metadata=False, meta_input_size=0):
-
-#         super(ClassifierResNeXt, self).__init__()  
-        
-#         if use_metadata and meta_input_size <= 0:
-#             raise ValueError("Si use_metadata=True, entonces meta_input_size debe ser > 0")
-#         if use_metadata is False and meta_input_size != 0:
-#             raise ValueError("Si use_metadata=False, entonces meta_input_size debe ser = 0")
-        
-#         self.num_targets = num_targets
-#         self.use_metadata = use_metadata
-#         self.meta_input_size = meta_input_size
-        
-#         if use_metadata:
-            
-#             self.metadata_embedding = nn.Sequential(
-#                 nn.Linear(meta_input_size, self.META_HIDDEN_LAYER1_SIZE),
-#                 nn.ReLU(inplace=True),
-#                 nn.BatchNorm1d(self.META_HIDDEN_LAYER1_SIZE),
-#                 nn.Dropout(p = 0.5),
-#                 nn.Linear(self.META_HIDDEN_LAYER1_SIZE, self.META_HIDDEN_LAYER2_SIZE),
-#                 nn.ReLU(inplace=True),
-#                 nn.BatchNorm1d(self.META_HIDDEN_LAYER2_SIZE),
-#                 nn.Dropout(p = 0.5),
-#             )
-        
-#         n_input = self.IMAGE_FEATURES_SIZE + self.META_HIDDEN_LAYER2_SIZE if use_metadata else self.IMAGE_FEATURES_SIZE
-
-#         self.fc1 = nn.Sequential(
-#             nn.BatchNorm1d(n_input),  
-#             nn.Dropout(p = 0.5),
-#             nn.Linear(n_input, self.FC_HIDDEN_LAYER_SIZE),
-#             nn.ReLU(inplace=True)
-#         )
-
-#         self.fc2 = nn.Sequential(
-#             nn.BatchNorm1d(self.FC_HIDDEN_LAYER_SIZE),
-#             nn.Dropout(p = 0.5),
-#             nn.Linear(self.FC_HIDDEN_LAYER_SIZE, num_targets) 
-#         )
-        
-    
-#     def forward(self, x, metadata=None):
-        
-#         if self.use_metadata:
-#             if metadata is None:
-#                 raise ValueError("Se requieren metadatos si use_metadata=True")
-
-#             meta_embed = self.metadata_embedding(metadata)
-#             x = torch.cat([x, meta_embed], dim=1)
-        
-#         x = self.fc1(x)
-#         x = self.fc2(x)
-    
-#         # nn.Linear siempre devuelve una salida 2D
-#         # Aplanamos la salida si solo hay una variable target
-#         return x.squeeze(-1) if x.dim() > 1 and x.shape[-1] == 1 else x
-
-#-------------------------------------------------------------------------------------------------------------
-
 class ClassifierResNeXt(nn.Module):
     
-    def __init__(self, input_size=4096, layers_sizes=[512, 1]):
+    def __init__(self, input_size=4096, output_size=1):
 
         super(ClassifierResNeXt, self).__init__()  
         
-        layers = []
-        in_features = input_size
-        
-        for i, hidden_size in enumerate(layers_sizes):
-            is_last_layer = (i == len(layers_sizes) - 1)
+        self.fc1 = nn.Sequential(
+            nn.BatchNorm1d(input_size),
+            nn.ReLU(inplace=True),
+            nn.Dropout(p = 0.5),
+            nn.Linear(input_size, 512),
+        )
 
-            layers.append(nn.Linear(in_features, hidden_size))
-
-            if not is_last_layer:
-                layers.append(nn.BatchNorm1d(hidden_size))
-                layers.append(nn.ReLU(inplace=True))
-                layers.append(nn.Dropout(p=0.5))
-
-            in_features = hidden_size
-
-        self.classifier = nn.Sequential(*layers)
+        self.fc2 = nn.Sequential(
+            nn.BatchNorm1d(512),
+            nn.Dropout(p = 0.5),
+            nn.Linear(512, output_size) 
+        )
     
     
     def forward(self, x):
         
-        x = self.classifier(x)
-    
+        x = self.fc1(x)
+        x = self.fc2(x)
+
         # nn.Linear siempre devuelve una salida 2D
         # Aplanamos la salida si solo hay una variable target
         return x.squeeze(-1) if x.dim() > 1 and x.shape[-1] == 1 else x
@@ -175,28 +102,36 @@ class ClassifierResNeXt(nn.Module):
 
 #-------------------------------------------------------------------------------------------------------------
 
-class MetadataEmbedding(nn.Module):
+# class MetadataEmbedding(nn.Module):
     
-    def __init__(self, input_size=1, layers_sizes=[128, 256]):
+#     def __init__(self, input_size=1, layers_sizes=[32, 64]):
 
-        super(MetadataEmbedding, self).__init__()  
+#         super(MetadataEmbedding, self).__init__()  
         
-        layers = []
-        in_features = input_size
+#         self.input_size = input_size
+#         self.layers_sizes = layers_sizes
         
-        for _, hidden_size in enumerate(layers_sizes):
-            layers.append(nn.Linear(in_features, hidden_size))
-            layers.append(nn.BatchNorm1d(hidden_size))
-            layers.append(nn.ReLU(inplace=True))
-            layers.append(nn.Dropout(p=0.5))
-            in_features = hidden_size
+#         layers = []
+#         in_features = input_size
+        
+#         for _, hidden_size in enumerate(layers_sizes):
+#             layers.append(nn.Linear(in_features, hidden_size))
+#             layers.append(nn.BatchNorm1d(hidden_size))
+#             layers.append(nn.ReLU(inplace=True))
+#             layers.append(nn.Dropout(p=0.5))
+#             in_features = hidden_size
             
-        self.embedding = nn.Sequential(*layers)
+#         self.embedding = nn.Sequential(*layers)
     
     
-    def forward(self, x):
+#     def forward(self, x):
         
-        return self.embedding(x)
+#         return self.embedding(x)
+    
+
+#     def get_last_layer_size(self):
+        
+#         return self.layers_sizes[-1]
     
 
 #-------------------------------------------------------------------------------------------------------------
@@ -207,22 +142,38 @@ class ResNeXtRegressor(nn.Module):
         
         super().__init__()
         
-        self.use_metadata = use_metadata
-
         if use_metadata and meta_input_size <= 0:
             raise ValueError("Si use_metadata=True, entonces meta_input_size debe ser > 0")
         if not use_metadata and meta_input_size != 0:
             raise ValueError("Si use_metadata=False, entonces meta_input_size debe ser = 0")
         
+        self.use_metadata = use_metadata
+        
+        # Extractor de características
         self.feature_extractor = FeatureExtractorResNeXt()
+        
+        #
         self.pool_avg = nn.AdaptiveAvgPool2d((1,1))
-        self.pool_max = nn.AdaptiveMaxPool2d((1,1))
+        # self.pool_max = nn.AdaptiveMaxPool2d((1,1))
         self.flatten = nn.Flatten()
         
-        self.classifier = ClassifierResNeXt(use_metadata=use_metadata, meta_input_size=meta_input_size)
+        #
+        if self.use_metadata:
+            self.embedding = nn.Sequential(
+                nn.Embedding(num_embeddings=2, embedding_dim=16),
+                nn.LayerNorm(16)  # Normalización para embeddings
+            )
         
+        # Clasificador con inicialización mejorada
+        input_size = 2048 #4096  # Asumiendo que es el tamaño de cat(avg,max)
+        if use_metadata:
+            input_size += 16
+
+        self.classifier = ClassifierResNeXt(input_size)
+        
+        # Define la función de pérdida
         self.loss_function = nn.MSELoss()
-        
+    
     
     def save_checkpoint(self, save_model_path):
         
@@ -239,26 +190,29 @@ class ResNeXtRegressor(nn.Module):
         self.load_state_dict(checkpoint['torch_state_dict'])
         
     
-    def forward(self, x, metadata=None, return_deep_features=False):
+    def forward(self, image, metadata=None, return_deep_features=False):
         
         # Extracción de características
-        x = self.feature_extractor(x)
-        avg = self.pool_avg(x)
-        max = self.pool_max(x)
-        x = torch.cat([avg, max], dim=1) 
+        x = self.feature_extractor(image)
+        x = self.pool_avg(x)
+        # avg = self.pool_avg(x)
+        # max = self.pool_max(x)
+        # x = torch.cat([avg, max], dim=1)
         x = self.flatten(x)
         
         # Obtener deep features con o sin metadatos
         if self.use_metadata:
             if metadata is None:
                 raise ValueError("Metadatos requeridos pero no provistos.")
-            metadata = metadata.unsqueeze(1) if metadata.dim() == 1 else metadata
-            meta_embed = self.classifier.metadata_embedding(metadata)
-            x_cat = torch.cat([x, meta_embed], dim=1)
+            
+            if metadata.dim() > 1:
+                metadata = metadata.squeeze(1)
+            y = self.embedding(metadata)
+            z = torch.cat([x,y], dim=1)
         else:
-            x_cat = x
+            z = x
 
-        deep_features = self.classifier.fc1(x_cat)
+        deep_features = self.classifier.fc1(z)
         outputs = self.classifier.fc2(deep_features)
         outputs = outputs.squeeze(-1) if outputs.dim() > 1 and outputs.shape[-1] == 1 else outputs
 
@@ -275,22 +229,13 @@ class ResNeXtRegressor(nn.Module):
         layer_groups.append(list(self.feature_extractor.conv4.parameters()))
         layer_groups.append(list(self.feature_extractor.conv5.parameters()))
         
-        # Añadir metadata_embedding (si existe) al grupo final
-        if self.use_metadata:
-            layer_groups[-1].extend(self.classifier.metadata_embedding.parameters())
-        
+        #
         layer_groups.append(list(self.classifier.fc1.parameters()))
+        if self.use_metadata:
+            layer_groups[-1].extend(self.embedding.parameters())
         layer_groups.append(list(self.classifier.fc2.parameters()))
 
         return layer_groups
-
-
-    def classifier_parameters(self):
-        return self.classifier.parameters()
-
-
-    def feature_extractor_parameters(self):
-        return self.feature_extractor.parameters()
 
 
     def train_epoch(self, dataloader, optimizer, scheduler=None, loss_fn=None):
@@ -401,7 +346,6 @@ class ResNeXtRegressor(nn.Module):
         """
         Evalúa el modelo en un conjunto de datos.
         """
-
         # Determina la función de métrica
         metric_fn = metric_fn if metric_fn is not None else self.loss_function 
         
@@ -445,15 +389,14 @@ class ResNeXtRegressor_ICP(ResNeXtRegressor):
         Carga el estado del modelo desde un checkpoint
         """
         self.load_state_dict(checkpoint['torch_state_dict'])
-        self.alpha = checkpoint['alpha']
-        self.q_hat = checkpoint['q_hat']
+        self.alpha = checkpoint['alpha'] if 'alpha' in checkpoint else None
+        self.q_hat = checkpoint['q_hat'] if 'q_hat' in checkpoint else None
 
 
     def evaluate(self, dataloader, metric_fn=None):
         """
         Evalúa el modelo en un conjunto de datos.
         """
-        
         # Determina la función de métrica
         metric_fn = metric_fn if metric_fn is not None else self.loss_function 
         
@@ -508,12 +451,17 @@ class ResNeXtRegressor_QR(ResNeXtRegressor):
         super().__init__(use_metadata=use_metadata, meta_input_size=meta_input_size)
         self.alpha = 1-confidence
         self.quantiles = [0.5, self.alpha/2, 1-self.alpha]
-        self.classifier = ClassifierResNeXt(
-            num_targets=len(self.quantiles),
-            use_metadata=use_metadata,
-            meta_input_size=meta_input_size 
-        )
         self.loss_function = PinballLoss(self.quantiles)
+        
+        if self.use_metadata:
+            self.classifier = ClassifierResNeXt(
+                input_size = 4096+self.embedding.get_last_layer_size(), 
+                output_size = len(self.quantiles)
+            )
+        
+        else:
+            # Clasificador
+            self.classifier = ClassifierResNeXt(input_size = 4096)
         
     
     def save_checkpoint(self, save_model_path):
@@ -535,8 +483,8 @@ class ResNeXtRegressor_QR(ResNeXtRegressor):
         Carga el estado del modelo desde un checkpoint
         """
         self.load_state_dict(checkpoint['torch_state_dict'])
-        self.alpha = checkpoint['alpha']
-        self.quantiles = checkpoint['quantiles']
+        self.alpha = checkpoint['alpha'] if 'alpha' in checkpoint else None
+        self.quantiles = checkpoint['quantiles'] if 'quantiles' in checkpoint else None
 
 
     def evaluate(self, dataloader, metric_fn=None):
@@ -564,6 +512,10 @@ class ResNeXtRegressor_QR(ResNeXtRegressor):
         lower_pred_values = outputs[:,1]
         upper_pred_values = outputs[:,2]
         true_values = targets
+        
+        # Asegurar que lower <= point <= upper
+        lower_pred_values = np.minimum(lower_pred_values, point_pred_values)
+        upper_pred_values = np.maximum(upper_pred_values, point_pred_values)
         
         # Devuelve las predicciones puntuales, interválicas y valores reales
         return point_pred_values, lower_pred_values, upper_pred_values, true_values
@@ -603,10 +555,10 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
         Carga el estado del modelo desde un checkpoint
         """
         self.load_state_dict(checkpoint['torch_state_dict'])
-        self.alpha = checkpoint['alpha']
-        self.quantiles = checkpoint['quantiles']
-        self.q_hat_lower = checkpoint['q_hat_lower']
-        self.q_hat_upper = checkpoint['q_hat_upper']
+        self.alpha = checkpoint['alpha'] if 'alpha' in checkpoint else None
+        self.quantiles = checkpoint['quantiles'] if 'quantiles' in checkpoint else None
+        self.q_hat_lower = checkpoint['q_hat_lower'] if 'q_hat_lower' in checkpoint else None
+        self.q_hat_upper = checkpoint['q_hat_upper'] if 'q_hat_upper' in checkpoint else None
 
 
     def evaluate(self, dataloader, metric_fn=None):
@@ -636,7 +588,7 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
 
         # Calcula las puntuaciones de no conformidad para el límite inferior (diferencia entre predicción 
         # inferior y valor real) y para el límite superior (diferencia entre valor real y predicción superior)
-        calib_scores_lower_bound = calib_pred_lower_bound - calib_true_values
+        calib_scores_lower_bound = calib_pred_lower_bound - calib_true_values 
         calib_scores_upper_bound = calib_true_values - calib_pred_upper_bound
         
         # Calcula los umbrales de no conformidad como los cuantiles empíricos de las puntuaciones de no 
@@ -697,13 +649,10 @@ class ResNeXtRegressor_CRF(ResNeXtRegressor):
         Carga el estado del modelo desde un checkpoint
         """
         self.load_state_dict(checkpoint['torch_state_dict'])
-        self.alpha = checkpoint['alpha']
-        try:
-            self.q_hat_lower = checkpoint['q_hat_lower']
-            self.q_hat_upper = checkpoint['q_hat_upper']
-            self.sigma_model = checkpoint['sigma_model']
-        except:
-            pass
+        self.alpha = checkpoint['alpha'] if 'alpha' in checkpoint else None
+        self.q_hat_lower = checkpoint['q_hat_lower'] if 'q_hat_lower' in checkpoint else None
+        self.q_hat_upper = checkpoint['q_hat_upper'] if 'q_hat_upper' in checkpoint else None
+        self.sigma_model = checkpoint['sigma_model'] if 'sigma_model' in checkpoint else None
 
 
     def evaluate(self, dataloader, metric_fn=None):

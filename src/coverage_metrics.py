@@ -22,7 +22,7 @@ def mean_interval_size(
 ) -> torch.Tensor:
     
     # Calcula el ancho promedio de los intervalos y lo devuelve
-    mean_interval_size = (pred_upper_bound - pred_lower_bound).float().mean().item()
+    mean_interval_size = torch.abs(pred_upper_bound - pred_lower_bound).mean().item()
     return mean_interval_size
 
 
@@ -32,7 +32,7 @@ def quantile_interval_size(
     quantile: float
 ) -> torch.Tensor:
 
-    interval_sizes = (pred_upper_bound - pred_lower_bound).float()
+    interval_sizes = torch.abs(pred_upper_bound - pred_lower_bound)
     quantile_value = torch.quantile(interval_sizes, quantile)
     return quantile_value
 
