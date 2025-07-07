@@ -6,6 +6,7 @@ import seaborn as sns
 import plotly
 import plotly.graph_objects as go
 import math
+import sklearn
 
 
 def plot_image(
@@ -171,3 +172,7 @@ def plot_parallel_categories(df, cols_name, height=800, width=1200):
     plotly.offline.plot(fig, filename="graph.html")
     # Muestra el gráfico
     fig.show()
+    
+
+#-------------------------------------------------------------------------------------------------------------
+

@@ -42,8 +42,9 @@ class FeatureExtractorResNeXt(nn.Module):
     
     def __init__(self):
         
-        super(FeatureExtractorResNeXt, self).__init__()
+        super().__init__()
         
+        # Carga el modelo con pesos pre-entrenados
         resnext = torchvision.models.resnext50_32x4d(weights='DEFAULT')
         
         self.conv1 = nn.Sequential(
@@ -138,7 +139,7 @@ class ClassifierResNeXt(nn.Module):
 
 class ResNeXtRegressor(nn.Module):
     
-    def __init__(self, use_metadata=False, meta_input_size=0, *args):
+    def __init__(self, use_metadata=False, meta_input_size=0, *args, **kwargs):
         
         super().__init__()
         
@@ -154,7 +155,6 @@ class ResNeXtRegressor(nn.Module):
         
         #
         self.pool_avg = nn.AdaptiveAvgPool2d((1,1))
-        # self.pool_max = nn.AdaptiveMaxPool2d((1,1))
         self.flatten = nn.Flatten()
         
         #
@@ -164,8 +164,8 @@ class ResNeXtRegressor(nn.Module):
                 nn.LayerNorm(16)  # Normalización para embeddings
             )
         
-        # Clasificador con inicialización mejorada
-        input_size = 2048 #4096  # Asumiendo que es el tamaño de cat(avg,max)
+        # 
+        input_size = 2048 
         if use_metadata:
             input_size += 16
 
@@ -195,9 +195,6 @@ class ResNeXtRegressor(nn.Module):
         # Extracción de características
         x = self.feature_extractor(image)
         x = self.pool_avg(x)
-        # avg = self.pool_avg(x)
-        # max = self.pool_max(x)
-        # x = torch.cat([avg, max], dim=1)
         x = self.flatten(x)
         
         # Obtener deep features con o sin metadatos
@@ -336,10 +333,17 @@ class ResNeXtRegressor(nn.Module):
         return outputs, targets 
     
     
-    def inference(self, dataloader, include_deep_features=False):
+    def inference(self, dataloader, valid_loader):
         
-        return self._inference(dataloader, include_deep_features)
+        pred_point_values, true_values = self._inference(dataloader)
         
+        valid_pred_point_values, valid_true_values = self._inference(valid_loader)
+        valid_mae = torch.mean(torch.abs(valid_true_values - valid_pred_point_values))
+        
+        pred_lower_bound = pred_point_values - 2 * valid_mae
+        pred_upper_bound = pred_point_values + 2 * valid_mae
+        
+        return pred_point_values, pred_lower_bound, pred_upper_bound, true_values
 
 
     def evaluate(self, dataloader, metric_fn=None):
@@ -453,15 +457,15 @@ class ResNeXtRegressor_QR(ResNeXtRegressor):
         self.quantiles = [0.5, self.alpha/2, 1-self.alpha]
         self.loss_function = PinballLoss(self.quantiles)
         
-        if self.use_metadata:
-            self.classifier = ClassifierResNeXt(
-                input_size = 4096+self.embedding.get_last_layer_size(), 
-                output_size = len(self.quantiles)
-            )
-        
-        else:
-            # Clasificador
-            self.classifier = ClassifierResNeXt(input_size = 4096)
+        # 
+        input_size = 2048
+        if use_metadata:
+            input_size += 16
+            
+        self.classifier = ClassifierResNeXt(
+            input_size=input_size, 
+            output_size=len(self.quantiles)
+        )
         
     
     def save_checkpoint(self, save_model_path):
@@ -539,7 +543,7 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
         Guarda el estado del modelo en un archivo checkpoint.
         """
         checkpoint = {
-            'pred_model_type': 'QR',
+            'pred_model_type': 'CQR',
             'use_metadata': self.use_metadata,
             'torch_state_dict': self.state_dict(),
             'alpha': self.alpha,
@@ -611,6 +615,143 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
         
         # Devuelve las predicciones puntuales, interválicas y valores reales
         return point_pred_values, lower_pred_values, upper_pred_values, true_values
+    
+
+#-------------------------------------------------------------------------------------------------------------
+
+class ResNeXtRegressor_MCCQR(ResNeXtRegressor_CQR):
+    
+    def __init__(self, confidence=0.9, use_metadata=False, meta_input_size=0):
+        """
+        Inicializa el regresor ResNeXt con CQR (Conformalized Quantile Regression).
+        """
+        super().__init__(confidence, use_metadata=use_metadata, meta_input_size=meta_input_size)
+        self.q_hat_lower = None 
+        self.q_hat_upper = None
+
+    
+    def _enable_dropout(self, p=None):
+        for m in self.modules():
+            if isinstance(m, nn.Dropout):
+                m.train()
+                if p is not None:
+                    m.p = p
+    
+    
+    def _mc_dropout_inference(self, dataloader, patience=5, min_delta=0.01, max_mc=100, p=0.5):
+        
+        # Pone la red en modo evaluación 
+        self.eval()
+        
+        # 
+        self._enable_dropout(p)
+        
+        #
+        all_outputs = []
+        all_targets = []
+        has_targets = False
+        
+        # No calculamos gradientes (más rápido y consume menos memoria)
+        with torch.no_grad():
+            
+            for batch in dataloader:
+                
+                if isinstance(batch, (list, tuple)) and len(batch) == 3:
+                    images, metadata, targets = batch 
+                    images, metadata = images.to('cuda'), metadata.to('cuda')
+                    all_targets.append(targets.cpu())
+                    has_targets = True
+                    
+                elif isinstance(batch, (list, tuple)) and len(batch) == 2:
+                    images, metadata = batch 
+                    images, metadata = images.to('cuda'), metadata.to('cuda')
+                    
+                else:
+                    images = batch.to('cuda')
+                    metadata = None
+                
+                # 
+                batch_size = images.shape[0]
+                
+                # Almacena las predicciones MC aquí
+                preds = []
+                
+                # Contadores de paciencia por cada instancia del batch
+                current_patience = torch.zeros(batch_size, dtype=torch.int, device='cuda')
+                
+                # Almacena la varianza de la iteración anterior para comparar
+                prev_variance = None
+                
+                #
+                for mc_iter in range(max_mc):
+                    
+                    # Hace forward pass con dropout activado
+                    outputs = self.forward(images, metadata) # shape: [B, 3] para 3 cuantiles
+                    
+                    # Añade una dimensión para acumular fácilmente
+                    preds.append(outputs.unsqueeze(0)) # shape: [1, B, 3] 
+                    
+                    # Convertimos la lista de predicciones a tensor 
+                    preds_tensor = torch.cat(preds, dim=0) # shape: [mc_iter+1, B, 3]
+                    
+                    #  Calculamos la varianza de las predicciones actuales a lo largo de la dimensión MC
+                    variance = preds_tensor.std(dim=0) # shape: [B, 3]
+                    
+                    if mc_iter > 0:
+                        # Si ya tenemos al menos dos muestras, calculamos la diferencia de varianza
+                        var_diff = torch.abs(variance - prev_variance)  # shape: [B, 3]
+                        
+                        # Comprobamos, para cada muestra del batch, si todas sus salidas están dentro de 
+                        # min_delta
+                        stable = (var_diff <= min_delta).all(dim=1)  # shape: [B]
+                        
+                        #
+                        current_patience = torch.where(stable, current_patience + 1, 
+                                                       torch.zeros_like(current_patience))
+                        
+                        if (current_patience > patience).all():
+                            break
+                    
+                    # Guarda la varianza actual para comparar en la próxima iteración
+                    prev_variance = variance
+                    
+                #
+                mean_preds = preds_tensor.mean(dim=0) # shape: [B, 3]
+                
+                #
+                all_outputs.append(mean_preds.cpu())
+                
+        # Une todos los batches en un único tensor
+        outputs = torch.cat(all_outputs) # shape: [N, 3]
+        targets = torch.cat(all_targets) if has_targets else None
+            
+        return outputs, targets
+    
+    
+    def inference(self, dataloader, patience=5, min_delta=0.01, max_mc=100, p=0.5):
+        
+        if self.q_hat_lower is None or self.q_hat_upper is None:
+            raise ValueError("Modelo no calibrado. Faltan q_hat_lower y q_hat_upper.")
+        
+        # Hace inferencia MC (ya estabilizada) con dropout
+        outputs, targets = self._mc_dropout_inference(dataloader, patience=patience, 
+                                                      min_delta=min_delta, max_mc=max_mc, p=p)
+        
+        # Separa las predicciones en puntuales e interválicas
+        point_preds = outputs[:, 0]
+        lower_preds = outputs[:, 1]
+        upper_preds = outputs[:, 2]
+        
+        # Asegura orden: lower ≤ point ≤ upper
+        lower_preds = torch.minimum(lower_preds, point_preds)
+        upper_preds = torch.maximum(upper_preds, point_preds)
+
+        # Aplica la corrección conformal
+        lower_preds -= self.q_hat_lower
+        upper_preds += self.q_hat_upper
+
+        # Devuelve resultados
+        return point_preds, lower_preds, upper_preds, targets
 
 
 #-------------------------------------------------------------------------------------------------------------
@@ -700,9 +841,6 @@ class ResNeXtRegressor_CRF(ResNeXtRegressor):
         calib_pred_values, calib_true_values, calib_deep_features = \
             self._inference(calib_loader, include_deep_features=True)
             
-        # Calcula el nivel de cuantificación ajustado basado en el tamaño del conjunto de calibración y alpha
-        n = len(calib_true_values)
-        q_level = math.ceil((1.0 - (self.alpha / 2.0)) * (n + 1.0)) / n
         
         #
         sigma_hat_calib = self.sigma_model.predict(calib_deep_features.numpy())
@@ -712,6 +850,10 @@ class ResNeXtRegressor_CRF(ResNeXtRegressor):
         # dispersión predicha
         nonconformity_scores_upper = (calib_true_values - calib_pred_values) / sigma_hat_calib
         nonconformity_scores_lower = -nonconformity_scores_upper
+        
+        # Calcula el nivel de cuantificación ajustado basado en el tamaño del conjunto de calibración y alpha
+        n = len(calib_true_values)
+        q_level = math.ceil((1.0 - (self.alpha / 2.0)) * (n + 1.0)) / n
         
         # Calcula el umbral de no conformidad como el cuantil empírico de las puntuaciones de no conformidad
         self.q_hat_upper = torch.quantile(nonconformity_scores_upper, q_level, interpolation='higher')
@@ -738,6 +880,87 @@ class ResNeXtRegressor_CRF(ResNeXtRegressor):
         #
         return point_pred_values, lower_pred_values, upper_pred_values, true_values
 
+#-------------------------------------------------------------------------------------------------------------
+
+# class ResNeXtRegressor_R2CCP(ResNeXtRegressor):
+    
+#     def __init__(self, confidence=0.9, use_metadata=False, meta_input_size=0):
+#         """
+#         Inicializa el regresor ResNeXt con R2CCP (Regression-to-Classification Conformal Prediction)
+#         """
+#         super().__init__(use_metadata=use_metadata, meta_input_size=meta_input_size)
+#         self.alpha = 1-confidence
+#         self.q_hat = None 
+        
+    
+#     def save_checkpoint(self, save_model_path):
+#         """
+#         Guarda el estado del modelo en un archivo checkpoint.
+#         """
+#         checkpoint = {
+#             'pred_model_type': 'ICP',
+#             'use_metadata': self.use_metadata,
+#             'torch_state_dict': self.state_dict(),
+#             'alpha': self.alpha,
+#             'q_hat': self.q_hat
+#         }
+#         torch.save(checkpoint, save_model_path)
+    
+    
+#     def load_checkpoint(self, checkpoint):
+#         """
+#         Carga el estado del modelo desde un checkpoint
+#         """
+#         self.load_state_dict(checkpoint['torch_state_dict'])
+#         self.alpha = checkpoint['alpha'] if 'alpha' in checkpoint else None
+#         self.q_hat = checkpoint['q_hat'] if 'q_hat' in checkpoint else None
+
+
+#     def evaluate(self, dataloader, metric_fn=None):
+#         """
+#         Evalúa el modelo en un conjunto de datos.
+#         """
+#         # Determina la función de métrica
+#         metric_fn = metric_fn if metric_fn is not None else self.loss_function 
+        
+#         # Obtiene todas las predicciones y valores verdaderos
+#         all_predicted, all_targets = self._inference(dataloader)
+        
+#         # Calcula el valor de la métrica y lo devuelve
+#         metric_value = metric_fn(all_predicted, all_targets)
+#         return metric_value
+    
+    
+#     def calibrate(self, calib_loader):
+        
+#         # Obtiene predicciones y valores verdaderos del conjunto de calibración
+#         calib_pred_values, calib_true_values = self._inference(calib_loader)
+        
+#         # Calcula el nivel de cuantificación ajustado basado en el tamaño del conjunto de calibración y alpha
+#         n = len(calib_true_values)
+#         q_level = math.ceil((1.0 - self.alpha) * (n + 1.0)) / n
+        
+#         # Calcula las puntuaciones de no conformidad como valores absolutos de los errores
+#         nonconformity_scores = torch.abs(calib_true_values-calib_pred_values)
+        
+#         # Calcula el umbral de no conformidad como el cuantil empírico de las puntuaciones de no conformidad
+#         self.q_hat = torch.quantile(nonconformity_scores, q_level, interpolation='higher')
+    
+    
+#     def inference(self, dataloader):
+        
+#         if self.q_hat is None:
+#             raise ValueError("Modelo no calibrado. Parámetro 'q_hat' no determinado.")
+        
+#         # Obtiene predicciones puntuales y valores reales
+#         point_pred_values, true_values = self._inference(dataloader)
+        
+#         # Calcula las predicciones interválicas conformales
+#         lower_pred_values = point_pred_values - self.q_hat
+#         upper_pred_values = point_pred_values + self.q_hat
+        
+#         # Devuelve las predicciones puntuales, interválicas y valores reales
+#         return point_pred_values, lower_pred_values, upper_pred_values, true_values
 
 #-------------------------------------------------------------------------------------------------------------
 
