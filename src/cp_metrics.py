@@ -1,6 +1,10 @@
+#-------------------------------------------------------------------------------------------------------------
+# BIBLIOTECAS ------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------
+
 import torch
-import matplotlib.pyplot as plt
-import numpy as np
+
+#-------------------------------------------------------------------------------------------------------------
 
 
 # ------------------------------------------------------------------------------------------------------------
@@ -11,7 +15,7 @@ def empirical_coverage(
     pred_lower_bound : torch.Tensor,
     pred_upper_bound : torch.Tensor,
     true_values : torch.Tensor
-) -> torch.Tensor:
+) -> int:
     
     inside_interval = (true_values >= pred_lower_bound) & (true_values <= pred_upper_bound)
     empirical_coverage = inside_interval.float().mean().item()
@@ -22,7 +26,7 @@ def empirical_coverage(
 def mean_interval_size(
     pred_lower_bound : torch.Tensor,
     pred_upper_bound : torch.Tensor,
-) -> torch.Tensor:
+) -> int:
     
     # Calcula el ancho promedio de los intervalos y lo devuelve
     mean_interval_size = (pred_upper_bound - pred_lower_bound).mean().item()
@@ -48,9 +52,9 @@ def quantile_interval_size(
 # ------------------------------------------------------------------------------------------------------------
 
 def empirical_coverage_classification(
-    true_labels : torch.Tensor, 
-    pred_sets : torch.Tensor    
-) -> torch.Tensor:
+    pred_sets : torch.Tensor,
+    true_labels : torch.Tensor  
+) -> int:
     """
     Calcula la cobertura empírica para clasificación usando predicciones conformales.
 
@@ -70,13 +74,13 @@ def empirical_coverage_classification(
     # Verifica si la etiqueta verdadera está presente en el conjunto predicho
     covered = pred_sets[row_indices, true_labels]
     # Promedio de coberturas (float tensor)
-    return covered.float().mean()
+    return covered.float().mean().item()
 
 # ------------------------------------------------------------------------------------------------------------
 
 def empirical_coverage_by_class(
-    true_labels: torch.Tensor,
     pred_sets: torch.Tensor,
+    true_labels: torch.Tensor,
     num_classes: int
 ) -> torch.Tensor:
     """
@@ -116,7 +120,7 @@ def empirical_coverage_by_class(
 
 def mean_set_size(
     pred_sets: torch.Tensor
-) -> torch.Tensor:
+) -> int:
     """
     Calcula el tamaño promedio de los conjuntos de predicción.
 
@@ -130,7 +134,7 @@ def mean_set_size(
     # Sumar valores por fila => tamaño del conjunto para cada ejemplo
     set_sizes = pred_sets.sum(dim=1)
     # Calcular la media de los tamaños
-    return set_sizes.float().mean()
+    return set_sizes.float().mean().item()
 
 # ------------------------------------------------------------------------------------------------------------
 
@@ -153,5 +157,18 @@ def mean_set_size_by_class(
     class_counts = pred_sets.sum(dim=0)
     # Dividir por número total de ejemplos
     return class_counts.float() / pred_sets.shape[0]
+
+# ------------------------------------------------------------------------------------------------------------
+# Para clasificación binaria
+
+def indeterminancy_rate(
+    pred_sets: torch.Tensor
+) -> float:
+    # Suma valores por fila => tamaño del conjunto para cada ejemplo
+    set_sizes = pred_sets.sum(dim=1)
+    # Calcula el porcentaje de instancias con más de una clase predicha
+    indeterminate = (set_sizes > 1).sum().item()
+    total = pred_sets.size(0)
+    return indeterminate / total
 
 # ------------------------------------------------------------------------------------------------------------

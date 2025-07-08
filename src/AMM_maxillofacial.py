@@ -58,6 +58,7 @@ from sklearn.preprocessing import KBinsDiscretizer
 
 # Modelos y funciones de pérdida personalizados 
 from conformal_classification_models import *
+from classification_metrics import * 
 from cp_metrics import *
 
 #-------------------------------------------------------------------------------------------------------------
@@ -82,7 +83,7 @@ def validate_file_extension(filename, extensions, arg_name):
     return filename
 
 #
-PRED_MODEL_TYPES = ['base', 'CP']
+PRED_MODEL_TYPES = ['base', 'LAC', 'mondrian']
 
 # Agregado de argumentos 
 def add_model_args(parser):
@@ -90,7 +91,6 @@ def add_model_args(parser):
     parser.add_argument('--save_model_path', type=str, required=True)
     parser.add_argument('--pred_model_type', type=str, choices=PRED_MODEL_TYPES)
     parser.add_argument('--confidence', type=validate_confidence, default=0.9)
-    parser.add_argument('--sex_embedding', action='store_true', help="Añade información de sexo al modelo")
     return parser
 
 def add_training_args(parser):
@@ -103,7 +103,8 @@ def add_training_args(parser):
 
 def add_testing_args(parser):
     parser.add_argument('--test', action='store_true')
-    parser.add_argument('--save_test_results', action='store_true', help="Guarda resultados de test en CSV")
+    parser.add_argument('--save_test_results', action='store_true', 
+                        help="Guarda resultados de test en CSV")
     return parser
 
 def add_runtime_args(parser):
@@ -330,8 +331,6 @@ if args.pred_model_type in ['base','QR']:
         range(len(trainset)), train_size=0.80, shuffle=True, stratify=boolMaturity
     )
 
-    # train_idx, valid_idx = stratified_split(trainset.ages.numpy(), train_size=0.8, seed=args.seed)
-
     train_loader = create_loader(trainset, train_idx, shuffle=True, num_workers=num_workers)
     valid_loader = create_loader(validset, valid_idx)
 
@@ -342,9 +341,6 @@ else:
     # - Entrenamiento (68% de las instancias)
     # - Validación (17% de las instancias)
     # - Calibración (15% de las instancias)
-
-    # train_idx, calib_idx = stratified_split(trainset.ages.numpy(), train_size=0.85, seed=args.seed)
-    # train_idx, valid_idx = stratified_split([trainset.ages[i] for i in train_idx], train_size=0.8, seed=args.seed)
     
     train_idx, calib_idx = train_test_split(
         range(len(trainset)), train_size=0.85, shuffle=True, stratify=boolMaturity
@@ -367,13 +363,13 @@ print("✅ Datasets de imágenes cargados\n")
 # CARGA DE MODELO Y DEFINICIÓN DE FUNCIÓN DE PÉRDIDA
 
 MODEL_CLASSES = {
-    'base': ResNeXtClassifier
-    # 'CP': 
+    'base': ResNeXtClassifier,
+    'LAC': ResNeXtClassifier_LAC,
+    'mondrian': ResNeXtClassifier_Mondrian
 }
 
 #
 pred_model_type = args.pred_model_type
-use_metadata = args.sex_embedding
 confidence = args.confidence
 
 if pred_model_type not in PRED_MODEL_TYPES:
@@ -383,18 +379,13 @@ if pred_model_type not in PRED_MODEL_TYPES:
 model_class = MODEL_CLASSES.get(pred_model_type)
 
 #
-model = model_class(num_classes=2, confifence=confidence, use_metadata = use_metadata, 
-                    meta_input_size = 1 if use_metadata else 0).to(device)
+model = model_class(num_classes=2, confidence=confidence).to(device)
 
 
 if args.load_model_path:
     
     #
     checkpoint = torch.load(args.load_model_path, weights_only=False)
-    
-    #
-    if use_metadata != args.sex_embedding:
-        raise ValueError(f"El modelo especificado y el cargado no tienen entradas compatibles")
     
     # Carga el modelo
     model.load_checkpoint(checkpoint)
@@ -407,38 +398,26 @@ print("✅ Modelo cargado\n")
 
 if args.train or args.train_head:
 
-    # Establece el learning rate base y weight decay 
-    # base_lr = 3e-2
-    wd = 2e-4
-
     # Congela los parámetros del extractor de características
     for param in model.feature_extractor.parameters():
         param.requires_grad = False
+        
+    # Establece el weight decay 
+    wd = 2e-4
 
     # Configura el optimizador para el entrenamiento de la nueva cabecera 
-    if use_metadata:
-        # Lista de grupos de parámetros con diferentes configuraciones
-        parameters = [
-            {'params': model.classifier.fc2.parameters(), 'lr': 3e-2},
-            {'params': model.classifier.fc1.parameters(), 'lr': 2e-2},
-            {'params': model.embedding.parameters(), 'lr': 2e-2}
-        ]
-        optimizer = torch.optim.AdamW(parameters, weight_decay=wd)
-    else:
-        parameters = [
-            {'params': model.classifier.fc2.parameters(), 'lr': 3e-2},
-            {'params': model.classifier.fc1.parameters(), 'lr': 2e-2},
-        ]
-        optimizer = torch.optim.AdamW(parameters, weight_decay=wd)
+    parameters = [
+        {'params': model.classifier.fc2.parameters(), 'lr': 3e-2},
+        {'params': model.classifier.fc1.parameters(), 'lr': 2e-2},
+        {'params': model.embedding.parameters(), 'lr': 2e-2}
+    ]
+    optimizer = torch.optim.AdamW(parameters, weight_decay=wd)
 
     # Numero de épocas que se entrena la nueva cabecera
     NUM_EPOCHS_HEAD = 5
     
    # Inicializa la mejor pérdida de validación como la obtenida en el entrenamiento de la cabecera
     best_valid_loss = float('inf')
-
-    # Contador de épocas sin mejora
-    epochs_no_improve = 0 
 
     for epoch in range(NUM_EPOCHS_HEAD):
         
@@ -473,15 +452,8 @@ if args.train or args.train_head:
             # Actualiza la mejor pérdida en validación obtenida hasta ahora
             best_valid_loss = head_valid_loss
             
-            # Reinicia el contador de épocas sin mejora si la pérdida ha mejorado
-            epochs_no_improve = 0
-            
             # Guarda los pesos del modelo actual como los mejores hasta ahora
             model.save_checkpoint(args.save_model_path)
-            
-        else:
-            # Incrementa el contador si no hay mejora en la pérdida de validación
-            epochs_no_improve += 1
     
     # Carga los pesos del modelo que obtuvo la mejor validación
     checkpoint = torch.load(args.save_model_path)
@@ -494,12 +466,12 @@ if args.train or args.train_head:
 
 if args.train:
 
-    # Establece el weight decay 
-    wd = 5e-4
-
     # Descongela todos los parámetros del modelo
     for param in model.parameters():
         param.requires_grad = True
+    
+    # Establece el weight decay 
+    wd = 5e-4
 
     # Establece las reglas para el learning rate discriminativo
     max_lr = 1.5e-2         # Learning rate más alto (capa más superficial)
@@ -525,12 +497,6 @@ if args.train:
 
     # Número máximo de épocas a entrenar (si no se activa el early stopping)
     MAX_EPOCHS = 30
-
-    # Inicializa la mejor pérdida de validación como la obtenida en el entrenamiento de la cabecera
-    best_valid_loss = float('inf')
-
-    # Contador de épocas sin mejora
-    epochs_no_improve = 0 
 
     # Configura el optimizador con los hiperparámetros escogidos
     optimizer = torch.optim.AdamW(param_groups, lr=lrs, weight_decay=wd)
@@ -583,15 +549,9 @@ if args.train:
             # Actualiza la mejor pérdida en validación obtenida hasta ahora
             best_valid_loss = valid_loss
             
-            # Reinicia el contador de épocas sin mejora si la pérdida ha mejorado
-            epochs_no_improve = 0
-            
             # Guarda los pesos del modelo actual como los mejores hasta ahora
             model.save_checkpoint(args.save_model_path)
-            
-        else:
-            # Incrementa el contador si no hay mejora en la pérdida de validación
-            epochs_no_improve += 1
+    
     
     # Carga los pesos del modelo que obtuvo la mejor validación
     checkpoint = torch.load(args.save_model_path)
@@ -599,63 +559,44 @@ if args.train:
 
     print("✅ Entrenamiento de la red completa completado\n")
 
-# #-------------------------------------------------------------------------------------------------------------
-# # CALIBRACIÓN CONFORMAL
+#-------------------------------------------------------------------------------------------------------------
+# CALIBRACIÓN CONFORMAL
 
-# if args.calibrate and pred_model_type not in ['base', 'QR']:
+if args.calibrate and pred_model_type in ['LAC','mondrian']:
     
-#     if pred_model_type == 'ICP':
-#         model.calibrate(calib_loader)
+    #
+    model.calibrate(calib_loader)
         
-#     elif pred_model_type == 'CQR':
-#         model.calibrate(calib_loader)
-        
-#     elif pred_model_type == 'CRF':
-#         model.calibrate(calib_loader, valid_loader)
-        
-#     # Guarda los parámetros de calibración del modelo
-#     model.save_checkpoint(args.save_model_path)
+    # Guarda los parámetros de calibración del modelo
+    model.save_checkpoint(args.save_model_path)
     
-#     print("✅ Calibración completada\n")
+    print("✅ Calibración completada\n")
 
 #-------------------------------------------------------------------------------------------------------------
 # TEST
 
 if args.test:
 
-    if pred_model_type == 'base':
-        test_pred_classes, test_true_classes  = model.inference(test_loader, valid_loader)
-    else: #'CP'
-        pass
+    #
+    test_pred_classes, test_pred_sets, test_true_classes = model.inference(test_loader)
+
+    # Calcula y muestra la exactitud
+    accry = accuracy(test_pred_classes, test_true_classes)
+    print(f"Accuracy (%): {accry*100:>4.2f}")
     
-    correct = (test_pred_classes == test_true_classes).sum().item()
-    total = test_true_classes.size(0)
-    accuracy = correct / total
+    # Calcula y muestra la cobertura empírica 
+    ec = empirical_coverage_classification(test_pred_sets, test_true_classes)
+    print(f"Cobertura empírica (%): {ec*100:>4.2f}")
     
-    print("Accuracy: ", accuracy)
+    # Calcula y muestra el tamaño medio del conjunto
+    mss = mean_set_size(test_pred_sets)
+    print(f"Tamaño medio de conjunto (u.): {mss:>4.2f}",)
     
-#     #
-#     print("Métricas de las predicciones puntuales:")
+    #
+    ir = indeterminancy_rate(test_pred_sets)
+    print(f"Ratio de indeterminación (%): {ir*100:>4.2f}")
 
-#     # Calcula el MAE y lo imprime
-#     test_mae = torch.mean(torch.abs(test_true_values - test_pred_point_values))
-#     print(f"- Error Absoluto Medio (MAE) en test: {test_mae:.3f}")
-
-#     # Calcula e imprime el MSE y lo imprime
-#     test_mse = torch.mean((test_true_values - test_pred_point_values) ** 2)
-#     print(f"- Error Cuadrático Medio (MSE) en test: {test_mse:.3f}")
-
-#     print("Métricas de las predicciones interválicas:")
-
-#     # Calcula la cobertura empírica y lo imprime
-#     EC = empirical_coverage(test_pred_lower_bound, test_pred_upper_bound, test_true_values)
-#     print(f"- Cobertura empírica: {EC*100:>6.3f} %")
-
-#     # Calcula el tamaño medio del intervalo de predicción y lo imprime
-#     MIW = mean_interval_size(test_pred_lower_bound, test_pred_upper_bound)
-#     print(f"- Tamaño medio del intervalo: {MIW:>5.3f}")
-
-#     print("✅ Testeo de la red completado\n")
+    print("✅ Testeo de la red completado\n")
     
 # #-------------------------------------------------------------------------------------------------------------
     

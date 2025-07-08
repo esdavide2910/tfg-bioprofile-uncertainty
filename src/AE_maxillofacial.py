@@ -104,13 +104,6 @@ parser.add_argument(
     default = 0.9
 )
 
-# Argumento para determinar si se realiza embedding del metadato 'sex'
-parser.add_argument(
-    '--sex_embedding',
-    action = 'store_true',
-    help = "Si se espececifica, añade información de sexo a la entrada del modelo"
-)
-
 # Argumento 'train'
 parser.add_argument(
     '--train',
@@ -437,7 +430,6 @@ MODEL_CLASSES = {
 
 #
 pred_model_type = args.pred_model_type
-use_metadata = args.sex_embedding
 confidence = args.confidence
 
 if pred_model_type not in PRED_MODEL_TYPES:
@@ -447,21 +439,13 @@ if pred_model_type not in PRED_MODEL_TYPES:
 model_class = MODEL_CLASSES.get(pred_model_type)
 
 #
-model = model_class(
-    confidence=confidence, 
-    use_metadata = use_metadata, 
-    meta_input_size = 1 if use_metadata else 0
-).to(device)
+model = model_class(confidence=confidence).to(device)
 
 
 if args.load_model_path:
     
     #
     checkpoint = torch.load(args.load_model_path, weights_only=False)
-    
-    #
-    if use_metadata != args.sex_embedding:
-        raise ValueError(f"El modelo especificado y el cargado no tienen entradas compatibles")
     
     # Carga el modelo
     model.load_checkpoint(checkpoint)
@@ -470,7 +454,7 @@ if args.load_model_path:
 print("✅ Modelo cargado\n")
 
 #-------------------------------------------------------------------------------------------------------------
-# FINE-TUNING DE LA NUEVA CABECERA Y EL EMBEDDING
+# FINE-TUNING DE LA CABECERA Y EL EMBEDDING
 
 if args.train:
 
@@ -478,23 +462,18 @@ if args.train:
     for param in model.feature_extractor.parameters():
         param.requires_grad = False
 
-    # Configura el optimizador para el entrenamiento de la nueva cabecera 
-    if use_metadata:
-        # Lista de grupos de parámetros con diferentes configuraciones
-        parameters = [
-            {'params': model.classifier.fc2.parameters(), 'lr': 3e-2},
-            {'params': model.classifier.fc1.parameters(), 'lr': 2e-2},
-            {'params': model.embedding.parameters(), 'lr': 2e-2}
-        ]
-        optimizer = torch.optim.AdamW(parameters, weight_decay=2e-4)
-    else:
-        parameters = [
-            {'params': model.classifier.fc2.parameters(), 'lr': 3e-2},
-            {'params': model.classifier.fc1.parameters(), 'lr': 2e-2},
-        ]
-        optimizer = torch.optim.AdamW(parameters, weight_decay=2e-4)
+    # Establece el weight decay 
+    wd = 2e-4
 
-    # Numero de épocas que se entrena la nueva cabecera
+    # Configura el optimizador para el entrenamiento de la cabecera 
+    parameters = [
+        {'params': model.classifier.fc2.parameters(), 'lr': 3e-2},
+        {'params': model.classifier.fc1.parameters(), 'lr': 2e-2},
+        {'params': model.embedding.parameters(), 'lr': 2e-2}
+    ]
+    optimizer = torch.optim.AdamW(parameters, weight_decay=wd)
+
+    # Numero de épocas que se entrena la cabecera
     NUM_EPOCHS_HEAD = 2
 
     for epoch in range(NUM_EPOCHS_HEAD):
@@ -564,20 +543,11 @@ if args.train:
         )
 
     # Número máximo de épocas a entrenar (si no se activa el early stopping)
-    MAX_EPOCHS = 40
-
-    # Número mínimo de épocas a entrenar
-    MIN_EPOCHS = 30
-
-    # Número de épocas sin mejora antes de detener el entrenamiento
-    PATIENCE = 5
+    MAX_EPOCHS = 30
 
     # Inicializa la mejor pérdida de validación como la obtenida en el entrenamiento de la cabecera
     best_valid_loss = float('inf')
-
-    # Contador de épocas sin mejora
-    epochs_no_improve = 0 
-
+    
     # Configura el optimizador con los hiperparámetros escogidos
     optimizer = torch.optim.AdamW(param_groups, lr=lrs, weight_decay=wd)
 
@@ -585,7 +555,6 @@ if args.train:
     scheduler = torch.optim.lr_scheduler.OneCycleLR(
         optimizer, 
         max_lr=lrs, 
-        pct_start=0.3*MIN_EPOCHS/MAX_EPOCHS,
         steps_per_epoch=len(train_loader),
         epochs=MAX_EPOCHS
     )
@@ -630,21 +599,9 @@ if args.train:
             # Actualiza la mejor pérdida en validación obtenida hasta ahora
             best_valid_loss = valid_loss
             
-            # Reinicia el contador de épocas sin mejora si la pérdida ha mejorado
-            epochs_no_improve = 0
-            
             # Guarda los pesos del modelo actual como los mejores hasta ahora
             model.save_checkpoint(args.save_model_path)
-            
-        else:
-            # Incrementa el contador si no hay mejora en la pérdida de validación
-            epochs_no_improve += 1
-
-        # Si no hay mejora durante un número determinado de épocas (patience) y ya ha pasado el número mínimo de 
-        # épocas, detiene el entrenamiento
-        if epochs_no_improve >= PATIENCE and (epoch+1) > MIN_EPOCHS: 
-            print(f"Early stopping at epoch {epoch+1}")
-            break
+    
     
     # Carga los pesos del modelo que obtuvo la mejor validación
     checkpoint = torch.load(args.save_model_path)
@@ -739,7 +696,6 @@ if args.test:
         n = len(test_pred_point_values)
         df = pl.DataFrame({
             "pred_model_type": [pred_model_type] * n,
-            "sex_embedding": [use_metadata] * n,
             "confidence": [confidence] * n,
             "iteration": [args.test_results_iteration] * n,
             "pred_point_value": test_pred_point_values,
