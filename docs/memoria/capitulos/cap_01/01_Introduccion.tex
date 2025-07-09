@@ -188,39 +188,7 @@ grupos poco estudiados o con características atípicas.
 
 Frente a estas limitaciones, recientes avances en inteligencia artificial (IA) y machine learning (ML) han 
 demostrado el potencial de mejorar la exactitud y objetividad de estimación del PB, tanto para la estimación 
-de sexo \cite{curate2017, darmawan2015, pinto2016} como de edad \cite{kim2017, larson2018, lee2017}. 
-
-Estos modelos, que emplean imágenes médicas con algoritmos de visión por computador, siguen dos principales enfoques.
-En el primer enfoque, parten de un método de AF clásico e intentan automatizarlo y/o mejorarlo 
-\cite{stern2014, ajafernandez2004} (véase la Figura \ref{fig:MRI_pipeline}). 
-Para ello, es necesario especificar:
-
-\begin{enumerate}
-
-    \item cómo extraer las características relevantes de las imágenes médicas, mediante técnicas de procesamiento de 
-    imágenes o morfometría tradicional; y
-    
-    \item un modelo de clasificación o regresión (como SVM, redes neuronales simples o árboles de decisión) 
-    que opere sobre estas características predefinidas.
-
-\end{enumerate}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{capitulos/cap_01/imagenes/MRI_pipeline.png}
-    \caption{Procedimiento secuencial para el método propuesto en \cite{stern2014}.} 
-    \label{fig:MRI_pipeline}
-\end{figure}
-
-En cambio, en el enfoque más popular, el \textit{end-to-end}, el modelo aprende automáticamente tanto la 
-extracción de características como la clasificación/regresión a partir de los datos en bruto. Este enfoque es 
-posible gracias a las redes neuronales convolucionales, que eliminan la dependencia de criterios 
-antropológicos preestablecidos y permite al modelo extraer por sí mismo las características más relevantes 
-para la estimación de sexo, edad, etc. 
-
-Este enfoque se ha visto potenciado por el auge del Deep Learning, permitiendo a las CNNs aprender patrones 
-complejos que podrían pasar inadvertidos por el ser humano, y mejorando la precisión de las predicciones 
-\cite{stern2019, venema2022}.
+de sexo \cite{curate2017, darmawan2015, pinto2016} como de edad \cite{kim2017, larson2018, lee2017}.
 
 Sin embargo, aún mejorando la exactitud de las predicciones, los modelos siguen mostrando carencias respecto a 
 la cuantificación de incertidumbre, pues no todas las predicciones tienen el mismo nivel de confianza o 
@@ -274,9 +242,12 @@ técnicas de AF confiables actualmente son:
     \begin{figure}[h]
         \centering
         \includegraphics[width=\textwidth]{capitulos/cap_01/imagenes/hallazgos_cadaveres.png}
-        \caption{
+        \caption[
             Evolución de hallazgos/identificación de cadáveres en España (2010-2024) 
             \cite{interior2025desaparecidos}.
+        ]{
+            Evolución de hallazgos/identificación de cadáveres en España (2010-2024) 
+            \cite{interior2025desaparecidos}. Elaboración propia.
         } 
         \label{fig:evolucion_hallazgosID_cadaveres}
     \end{figure}
@@ -334,6 +305,7 @@ incertidumbre como herramienta esencial en ML, ofrecer un panorama de técnicas 
 ventajas y limitaciones, y centrarnos en la predicción conformal y sus variantes más populares; y, 
 por otro, aplicar la predicción conformal a un contexto práctico como es es el problema de estimación del PB, 
 centrándonos en la estimación de edad y de sexo a partir de datos biológicos e imágenes médicas. 
+\todo{Esto hay que actualizarlo a solo estimación de sexo y minoría/mayoría de edad/grupos etarios}
 
 De esta forma, podremos incorporar la incertidumbre propia del problema a resolver y del modelo entrenado para 
 él, para, en aquellos casos más confusos, devolver conjuntos de de predicciones con más de una etiqueta 
@@ -372,7 +344,7 @@ donde la interpretabilidad y robustez son críticas.
 
 \section{Planificación temporal del proyecto}
 
-
+\todo{Por completar (AGOSTO)}
 
 % ------------------------------------------------------------------------------------------------------------
 
@@ -389,8 +361,8 @@ Este trabajo ha sido realizado con dos equipos independientes:
         
     \item Un clúster de computación proporcionado por el Instituto de Ciencia de Datos e Inteligencia 
     Artificial (DaSCI), de la Universidad de Granada, al que se accedió mediante conexión SSH. Para el 
-    desarrollo de los distintos modelos y variantes de CP, se utilizó el entorno de desarrollo Visual Studio 
-    Code de Microsoft.
+    desarrollo de los distintos modelos y variantes de predicción conformal, se utilizó el entorno de 
+    desarrollo Visual Studio Code de Microsoft.
 
 \end{itemize}
 
@@ -398,5 +370,5 @@ Este trabajo ha sido realizado con dos equipos independientes:
 
 En cuanto al software, todo el empleado es gratuito y de código abierto. 
 
-
+\todo{Por completar (AGOSTO)}
 

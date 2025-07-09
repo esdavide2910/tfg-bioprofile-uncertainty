@@ -548,7 +548,7 @@ de \textbf{invarianza traslacional}, puesto que los pesos no se comparten entre 
 se suma una marcada ineficiencia por el elevado número de parámetros requeridos \cite{szeliski2010}.
 
 Precisamente para estos casos, otras arquitecturas profundas resultan más apropiadas.
-Las \textbf{redes neuronales convolucionales (\textit{Convolutional Neural Network} en inglés, CNNs)} son un 
+Las \textbf{redes neuronales convolucionales (\textit{Convolutional Neural Network}, CNNs)} son un 
 tipo de DNN que, aprovechando las ventajas de las operaciones convolucionales, explotan los principios de 
 localidad y correlación espacial. Esto les permite procesar imágenes (en 1D, 2D o 3D) de manera eficiente, 
 interpretando patrones visuales jerárquicos que un MLP no podría capturar, y con significativamente menos 
@@ -634,6 +634,9 @@ de las capas convolucionales o realizar \textit{pooling}
 
 
 \subsubsection{Capas de pooling}
+
+\todo{Me he estado informando después y resulta que ResNeXt no utiliza pooling, sino stride aumentado, por lo 
+que debería eliminar este apartado y explicar cómo funciona el stride. (AGOSTO)}
 
 Las \textbf{capas de agrupación (\textit{pooling layers})} tienen como objetivo principal comprimir la 
 información de la imagen, reduciendo sus dimensiones (alto y ancho) mientras se preservan los datos más 
@@ -814,7 +817,7 @@ las conexiones residuales han sido la contribución más significativa para reso
 
 Las \textbf{redes residuales (\textit{residual nets}, ResNet)} 
 
-\todo{A completar más tarde}
+\todo{Por completar (AGOSTO)}
 
 %https://www.jeremyjordan.me/nn-learning-rate/
 
@@ -944,7 +947,7 @@ predicciones realizadas en ML \cite{hullermeier2021, nemani2023}:
     % y la dependencia entres estas dos. 
 
     En el contexto de la estimación de la edad forense, esta incertidumbre se manifiesta en las diferentes 
-    edades biológicas que puede estimarse a individuos de la misma edad cronológica.
+    edades biológicas que puede obtenerse de individuos de la misma edad cronológica.
     Se sabe que existe una correlación entre edad biológica y la cronológica, pero esta no es perfecta, 
     debido a que existe variabilidad inherente al problema.
 
@@ -997,6 +1000,8 @@ estudio del modelo y arquitectura concretos \cite{salvi2025}, la
 confianza en las predicciones realizadas y se centra en caracterizar las fuentes de variabilidad y posible 
 error en los datos, el modelo y el entorno de aplicación \cite{nemani2023}.
 
+
+
 Existe una gran variedad de técnicas de UQ. Estas técnicas pueden clasificarse de distintas formas: algunas 
 son \textit{model-agnostic}, es decir, pueden aplicarse a cualquier tipo de modelo sin 
 requerir acceso a su estructura interna; otras son \textit{model-specific}, diseñadas para aprovechar 
@@ -1015,12 +1020,12 @@ métodos deterministas
 \begin{itemize}
     \item \textbf{Procesos de regresión gausiana (\textit{gaussian process regression}, GPR)}: 
     
-    \item \textbf{Técnicas bayesianas}: Estas emplean
+    \item \textbf{Técnicas bayesianas}: Monte Carlo Dropout
 
     \item \textbf{Técnicas \textit{ensemble}}:  
 \end{itemize}
 
-
+\todo{Por completar (lo antes posible)}
 
 
 % ¿Qué es la cuantificación de incertidumbre?
@@ -1166,14 +1171,73 @@ métodos deterministas
 
 \section{Predicción conformal}
 
-La \textbf{predicción conformal (\textit{conformal predition}, CP)} \cite{vovk2005} es un marco teórico para 
-la UQ en modelos de ML, que proporciona intervalos o conjuntos de predicción con garantías estadísticas de 
-cobertura. Estas garantías son válidas bajo el supuesto mínimo de intercambiabilidad de los datos, sin 
-requerir hipótesis sobre la distribución subyacente de los mismos.
-Sin embargo, esta robustez tiene un coste: la CP requiere un conjunto de datos adicional para 
-\textbf{calibración}, que es el proceso por el cual se ajustan los intervalos de predicción para garantizar 
-las propiedades estadísticas prometidas.
-Vamos a definir más en detalle estos puntos.
+La \textbf{predicción conformal (\textit{conformal predition}, CP)} \cite{vovk2005, angelopoulos2021} es un 
+marco teórico para la UQ en modelos de ML, que proporciona intervalos o conjuntos de predicción con garantías 
+estadísticas de cobertura, esto es, para una entrada dada $x$, el marco de CP genera un conjunto de posibles 
+salidas $\hat{C}(x) \subseteq Y$ que garantiza, con una probabilidad predefinida $1-\alpha$, que la verdadera 
+etiqueta o valor $y$ esté contenida en $\hat{C}(x)$ (véanse los ejemplos de la Figura 
+\ref{fig:educational_visual}).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/educational_visual.png}
+    \caption[
+        Ejemplo de predicción conformal en problemas de regresión (arriba) y clasificación (abajo).
+        Recuperado de \cite{mapie-docs2023}.
+    ]{
+        Ejemplo de predicción conformal en problemas de regresión (arriba) y clasificación (abajo).
+        Recuperado de \cite{mapie-docs2023}.
+    } 
+    \label{fig:educational_visual}
+\end{figure}
+
+
+Para construir los conjuntos de predicción conformal, se requiere dividir el conjunto de datos disponible en 
+al menos dos partes: un conjunto de entrenamiento, usado para ajustar el modelo base, y un conjunto de 
+calibración, cuya función es estimar la distribución de los errores o no conformidades del modelo.
+
+Con esto también se busca reducir la variabilidad de las predicciones puntuales, que pueden ser sensibles a 
+pequeños cambios en los datos de entrada, como el ejemplo de la Figura \ref{fig:adversarial_example}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/adversarial_example.png}
+    \caption[
+        Ejemplo adverario mal clasificado por un modelo ML entrenado con datos textuales.
+        Adaptado de la Figura 2 de \cite{hullermeier2021}, original de \cite{sato2018}.
+    ]{
+        Ejemplo adverario mal clasificado por un modelo ML entrenado con datos textuales.
+        Adaptado de la Figura 2 de \cite{hullermeier2021}, original de \cite{sato2018}.
+        Se observa que el cambio de una sola palabra ---y aparentemente sin mucha relevancia--- (destacada en 
+        negrita) basta para cambiar la predicción de ``sentimiento negativo'' a ``sentimiento positivo''.
+    } 
+    \label{fig:adversarial_example}
+\end{figure}
+
+Estas garantías son válidas bajo el supuesto mínimo de intercambiabilidad de los datos, sin requerir 
+hipótesis sobre la distribución subyacente de los mismos.
+
+% ------------------------------------------------------------------------------------------------------------
+
+\subsection{Métodos y técnicas de predicción conformal}
+
+Las técnicas de CP dependen del problema a resolver, es decir, existen técnicas específicas para problemas
+de regresión \cite{papadopoulos2002, romano2019, bethell2024} y para problemas de clasificación 
+\cite{sadinle2019, romano2020, angelopoulos2020}. También hay líneas de investigación para problemas de 
+series temporales \cite{xu2021, zaffran2022, stankeviciute2021}
+\footnote{
+    Antes se ha comentado que el marco de CP garantiza cobertura bajo el supuesto de intercambiabilidad de los
+    datos, pero esta no se cumple en series temporales, donde las observaciones son secuencialmente 
+    dependientes y, por tanto, no son intercambiables.
+    Sin embargo, se han desarrollado varias extensiones y adaptaciones de CP específicamente diseñadas para 
+    manejar la naturaleza no intercambiable de los datos temporales.
+}, 
+detección de anomalías \cite{laxhammar2015}, entre otros. 
+
+Bajo las garantías estadísticas que ofrece el marco teórico de la CP, esta muestra un gran potencial en su
+flexibilidad para ser integrada con otros métodos UQ. 
+\todo{Esto llevarlo al final del apartado o a estado del arte}
+
 
 % ------------------------------------------------------------------------------------------------------------
 
@@ -1195,14 +1259,31 @@ valores de salida, iluminación, resolución, estilo, etc.
 
 En cambio, la CP no asegura \textbf{cobertura condicional válida} \cite{foygel2021}; es decir, no es posible 
 garantizar cobertura para todos los subgrupos de datos sin hacer suposiciones fuertes o sacrificar utilidad 
-práctica, en concordancia con el conocido Teorema \textit{No Free Lunch} \cite{wolpert1997}. 
+práctica, en concordancia con el conocido Teorema \textit{No Free Lunch} \cite{wolpert1997}. En la Figura
+\ref{fig:coverage} se observa la diferencia entre cobertura marginal y condicional. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/coverage_types.png}
+    \caption[
+        Conjuntos de predicción con varias nociones de cobertura: no cobertura, cobertura marginal y cobertura
+        condicional. Recuperado de \cite{angelopoulos2021}.
+    ]{
+        Conjuntos de predicción con varias nociones de cobertura: no cobertura, cobertura marginal y cobertura
+        condicional. Recuperado de \cite{angelopoulos2021}.
+        En la primera columna vemos una cobertura deficiente en la muestra completa y en cada grupo. 
+        En la segunda, se garantiza cobertura marginal al 90\% de confianza en el conjunto completo, pero no 
+        se cumple cobertura condicional, ya que el error solo se da en una región concreta de un grupo.
+        En la tercera columna, se garantizan tanto cobertura marginal como condicional al 90\% de confianza,
+        ya que el error está uniformemente distribuido entre grupos y regiones del espacio. 
+    } 
+    \label{fig:coverage}
+\end{figure}
+
 Además, el conjunto de calibración debe ser estadísticamente representativo de la distribución completa de los 
 datos. Esto crea un compromiso fundamental: asignar más muestras a la calibración mejora la precisión de los 
 intervalos predictivos, pero a costa de reducir el tamaño del conjunto de entrenamiento, lo que potencialmente 
 puede empeorar el rendimiento del modelo base.
-
-Bajo estas garantías estadísticas, el verdadero potencial de la CP está en su flexibilidad para ser 
-integradas con otros métodos UQ.
 
 Algunas características deseables en las técnicas de CP son:
 
@@ -1229,23 +1310,29 @@ Algunas características deseables en las técnicas de CP son:
         datos con los que se entrenó el modelo.
     }:
     que los intervalos reflejen adecuadamente la incertidumbre ante datos corruptos o fuera del dominio de 
-    entrenamiento.  
+    entrenamiento, ya sea avisando de que el dato es anómalo o dando un intervalo/conjunto de predicción
+    muy amplio. 
 
 \end{itemize}
 
 En general, existe un \textit{trade-off} entre flexibilidad y precisión: las técnicas dependientes del modelo,
 del dominio o incluso del propio problema (incluyendo información experta), que asumen ciertas distribuciones 
-de los datos, cuantifican mejor la incertidumbre aleatoria y epistémica, y suelen producir intervalos más 
+de los datos, pueden cuantificar mejor la incertidumbre aleatoria y epistémica, y producir intervalos más 
 ajustados e informativos. 
+
 
 % ------------------------------------------------------------------------------------------------------------
 
 \subsection{Calibración e inferencia conformal}
 
-La CP en general requiere: introducir un nuevo paso de calibración, en el que se ajusten
+\todo{No sé si este apartado es mejor introducirlo en Materiales y métodos, o directamente borrarlo, ya que
+en Materiales y métodos se explica cada una de las técnicas específicas. Pero se me hace raro que no 
+haya ninguna alusión al proceso de calibración e inferencia conformal en Fundamentos Teóricos.}
+
+La implementación de CP requiere de: introducir un nuevo paso de calibración, en el que se ajusten
 las puntuaciones de no conformidad para garantizar validez distribucional; 
-y modificar la inferencia para introducir información conformal y realizar la predicción inteválica o conjunto
-de predicción.
+y modificar la inferencia para introducir información conformal y realizar la predicción inteválica o 
+conjunto de predicción conformal.
 
 % ------------------------------------------------------------------------------------------------------------
 
@@ -1253,12 +1340,13 @@ de predicción.
 
 En los problemas de regresión tendremos, además de la predicción puntual común, dos límites ---inferior y 
 superior--- que formarán el intervalo de predicción. 
-Este intervalo puede ser simétrico respecto a la predicción puntual o no, dependiendo de la técnica empleada.
-En problemas donde se da heterocedasticidad, es decir, cuando la variabilidad del error cambia con respecto a 
-los valores de entrada, es especialmente importante utilizar métodos que permitan construir intervalos 
-asimétricos.
+Este intervalo puede ser simétrico respecto a la predicción puntual o no, dependiendo de la implementación
+realizada.
+En problemas donde se da heterocedasticidad manifiesta, es decir, cuando la variabilidad del error cambia con 
+respecto a los valores de entrada, es especialmente importante utilizar métodos que permitan construir 
+intervalos asimétricos.
 
-% Proceso de calibración: ...
+\todo{Debería introducir una imagen sobre intuición de heterocedasticidad aquí?}
 
 El proceso de calibración del modelo consta de los siguientes pasos:
 
@@ -1267,46 +1355,69 @@ El proceso de calibración del modelo consta de los siguientes pasos:
     regresión cuantílica--- sobre el conjunto de instancias de calibración. 
 
     
-    \item Se calcula una \textbf{puntuación de no conformidad (\textit{nonconformity score})} sobre cada 
-    instancia del conjunto de calibración. 
-    Esta puntuación de no conformidad debe medir la incertidumbre alrededor de cada predicción. No hay
-    restricciones sobre cómo se debe cuantificar esta, salvo que debe presentar la misma distribución de 
-    valores en el conjunto de calibración y en los futuros ejemplos, para asegurar la cobertura marginal. 
-    Por tanto, puede emplearse tanto entradas, como salidas, representaciones internas del modelo y valores
-    reales para arrojar una medida de incertidumbre
+    \item Se calculan las \textbf{puntuaciones de no conformidad (\textit{nonconformity scores}) $R$}
+    \footnote{
+        En la literatura, a este vector de puntuaciones se le suele denotar como $R$ por \textit{`residual'}
+        o $E$ por \textit{`error'}, aunque no tiene por qué corresponderse con estas variables. 
+    } en base a una \textbf{heurística de incertidumbre}.
+    Esta heurística debe reflejar una noción de incertidumbre asociada a la predicción de cada instancia del
+    conjunto de calibración. 
+
+    $$
+    R = \left\{ R_1, R_2, ..., R_{n_{calib}} \right\}
+    $$
+
+    Esta no es una tarea trivial, cómo se mida la incertidumbre influye directamente en la forma y tamaño de 
+    los intervalos de predicción generados. Además, al ser una heurística, no existe una única manera 
+    correcta de definir esta puntuación. Pueden emplearse tanto entradas, como salidas, representaciones 
+    internas del modelo y valores reales ---siendo este último elemento obligatorio--- para arrojar una 
+    medida de incertidumbre
     \footnote{
         Cabe decir que una técnica será independiente del modelo y del dominio cuando solo tenga en cuenta
         las salidas del modelo y los valores reales del problema para realizar la CP.
-    }.  
+    }. 
 
-    La función de no conformidad más simple para la regresión es el error absoluto.
-    Sin embargo, para obtener intervalos asimétricos, se calcula la diferencia entre el valor predicho y el
-    real, o viceversa ---dependiendo de si el límite es inferior o superior---. 
+    Sin embargo, la condición fundamental que debe cumplir cualquier función de no conformidad es que sus 
+    puntuaciones sean intercambiables entre el conjunto de calibración y los datos futuros. Es decir, deben 
+    estar distribuidas de manera similar bajo la hipótesis de que los datos son independientes e idénticamente 
+    distribuidos. Esta propiedad es esencial para que el método de predicción conformal garantice la 
+    cobertura marginal válida a un nivel de confianza determinado.
+
+    Por tanto, aunque existe flexibilidad en el diseño de la función de no conformidad, su elección debe 
+    considerar tanto la capacidad para capturar incertidumbre útil como el cumplimiento del supuesto de 
+    intercambiabilidad. 
+    La función de no conformidad más simple para la regresión es el error absoluto. Sin embargo, para obtener
+    intervalos asimétricos, se calcula la diferencia entre el valor predicho y el real, o viceversa 
+    ---dependiendo de si el límite es inferior o superior---. 
 
 
-    \item Se calcula el cuantil que determina el \textbf{umbral de no conformidad} a utilizar.
+    \item Se calcula el cuantil que determina el \textbf{umbral de no conformidad $q_{1-\alpha}$} a utilizar.
     Específicamente, para un nivel de significancia $\alpha$, se selecciona el $(1 - \alpha)(1 + 1/n)$-ésimo 
     cuantil de las puntuaciones de no conformidad obtenidas en el conjunto de calibración, donde $n$ es el 
     número de ejemplos de calibración
     (véase la Figura \ref{fig:nonconformity_quantile_threshold_simetric}). 
     Este valor sirve como corrección para asegurar validez estadística finito-muestral.
 
-    En caso de intervalos asimétricos, se calculan dos umbrales de conformidad (uno por cada cola de la 
-    distribución de error), por lo que se selecciona el $(1 - \alpha/2)(1 + 1/n)$-ésimo cuantil de las 
-    puntuaciones de no conformidad obtenidas para cada límite 
+    $$
+    q_{1-\alpha} = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( R )
+    $$
+
+    En caso de intervalos asimétricos, en \cite{linusson2014} se propone calcular dos umbrales de conformidad 
+    (uno para cada límite de predicción), por lo que se selecciona el $(1 - \alpha/2)(1 + 1/n_{calib})$-ésimo 
+    cuantil de las puntuaciones de no conformidad obtenidas en cada cola
     (véase la Figura \ref{fig:nonconformity_quantile_threshold_asimetric}).
 
     \begin{figure}[h]
         \centering
 
-        \begin{subfigure}[b]{0.45\textwidth}
+        \begin{subfigure}[b]{0.47\textwidth}
             \centering
             \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/nonconformity_quantile_threshold_simetric.png}
             \caption{Determinación del umbral de no conformidad para intervalos simétricos.}
             \label{fig:nonconformity_quantile_threshold_simetric}
         \end{subfigure}
         \hfill
-        \begin{subfigure}[b]{0.5\textwidth}
+        \begin{subfigure}[b]{0.49\textwidth}
             \centering
             \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/nonconformity_quantile_threshold_asimetric.png}
             \caption{Determinación de los umbrales de no conformidad para intervalos asimétricos.}
@@ -1324,49 +1435,59 @@ El proceso de calibración del modelo consta de los siguientes pasos:
 
 \end{enumerate}
 
-Una vez se ha realizado la calibración, faltaría realizar la inferencia conformal. Para cada predicción de una
-nueva instancia:
+Una vez se ha realizado la calibración y, por tanto, tenemos el umbral de no conformidad, podemos realizar
+la inferencia conformal. Para cada predicción de una nueva instancia: 
 
 \begin{enumerate}
 
-    \item Se usa el modelo predictivo para realizar la estimación puntual ---o interválica en caso de la 
-    regresión cuantílica--- de la nueva instancia. 
-    
-    \item Se construye un intervalo predictivo utilizando el valor/es estimado/s y sumando el umbral/es de no
-    conformidad. Por ejemplo, para una regresión puntual con intervalo asimétrico, el intervalo conformal 
-    sería (sin suponer elementos de escala):
+    \item Se usa el modelo predictivo para realizar la inferencia puntual $\hat{f}(x_{n+1})$ ---o interválica 
+    en caso de la regresión cuantílica---.
+
+    \item Se define el intervalo de predicción conformal como todos los posibles valores de $y_{n+1}$ tales 
+    que la puntuación hipotética de no conformidad sea compatible con el umbral calculado en calibración
+    \footnote{
+        En la práctica, esto se traduce en despejar el valor real $y_{n+1}$ a partir de la igualdad entre la 
+        función de no conformidad evaluada en la nueva instancia y el umbral calibrado. Por ejemplo, si la 
+        puntuación de no conformidad es el error absoluto,
+        $$
+        R(y_i, \hat{y_i}) = | y_i - \hat{y_i} |
+        $$
+        entonces el umbral $q_{1-\alpha}$ satisface
+        $$
+        q_{1-\alpha} = | y_{n+1} - \hat{y}_{n+1} |
+        $$
+        lo que implica
+        $$
+        y_{n+1} = \hat{y}_{n+1} \pm q_{1-\alpha}
+        $$
+        Esta expresión determina los límites inferior y superior del intervalo de predicción conformal.
+    }
+    \todo{Pie de página demasiado largo y no sé si necesario. Tal vez podría introducirlo en una imagen 
+    esquemática del proceso. ¿Qué opina?}
+
+    Por ejemplo, para una regresión puntual con intervalo simétrico basado en el error absoluto como función 
+    de no conformidad, el intervalo conformal se expresa como
 
     $$
-    \left[ \hat{y_i} + \hat{q}_{lower}, \hat{y_i} + \hat{q}_{upper} \right]
+    \hat{C_\alpha}(x_{new})=
+        \left[ 
+            \hat{f}(x_{n+1}) - q_{1-\alpha}, 
+            \hat{f}(x_{n+1}) + q_{1-\alpha} 
+        \right]
     $$
+
 
 \end{enumerate}
-
-
 
 % ------------------------------------------------------------------------------------------------------------
 
 \subsubsection{Predicción conformal en problemas de clasificación}
 
-\todo{A completar más tarde}
+\todo{Por completar (JULIO)}
 
 
 
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/adversarial_example.png}
-    \caption[
-        Ejemplo adverario mal clasificado por un modelo ML entrenado con datos textuales.
-        Adaptado de la Figura 2 de \cite{hullermeier2021}, original de \cite{sato2018}.
-    ]{
-        Ejemplo adverario mal clasificado por un modelo ML entrenado con datos textuales.
-        Adaptado de la Figura 2 de \cite{hullermeier2021}, original de \cite{sato2018}.
-        Se observa que el cambio de una sola palabra ---y aparentemente sin mucha relevancia--- (destacada en 
-        negrita) basta para cambiar la predicción de ``sentimiento negativo'' a ``sentimiento positivo''.
-    } 
-    \label{fig:adversarial_example}
-\end{figure}
 
 
 

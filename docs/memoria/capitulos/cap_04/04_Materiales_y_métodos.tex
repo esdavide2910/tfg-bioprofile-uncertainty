@@ -5,10 +5,6 @@
 
 \section{Conjunto de datos disponibles}
 
-% ------------------------------------------------------------------------------------------------------------
-
-%\subsection{Radiografías panorámicas maxilofaciales}
-
 Disponemos de un conjunto de datos compuesto por radiografías panorámicas maxilofaciales de individuos de 
 diversos países y continentes (véase en la tabla \ref{tab:instituciones_fuente_dataset}), obtenidas con
 distintos modelos de máquinas de rayos X
@@ -16,7 +12,7 @@ distintos modelos de máquinas de rayos X
     Los modelos empleados fueron: \textit{Planmeca Promax Digital Panoramic}; \textit{Sirona ORTHOPHOS-XG}, 
     \textit{ORTHOPHOS-DS}, y \textit{SIDEXIS}. Las constantes radiológicas usadas fueron de 66 a a 70 kV, 7 a 
     11 mA, y 15 s.
-}. 
+}.
 Este conjunto de datos ha sido sido proporcionados por Panacea Cooperative Research, empresa \textit{spin-off} 
 de la Universidad de Granada.  
 
@@ -52,7 +48,7 @@ Este \textit{dataset} incluye:
 
     \item datos tabulares (en formato CSV), donde cada fila representa un ejemplo (un individuo), con los 
     siguientes campos: un identificador único, sexo del individuo, edad del individuo y ``sample'' 
-    (clasificación según el origen geográfico de la radiografía), e
+    (clasificación según el origen geográfico de la radiografía).
 
     \item imágenes bidimensionales de radiografías panorámicas maxilofaciales, con una imagen asociada 
     a cada individuo y se identifica mediante su ID único. 
@@ -62,10 +58,10 @@ Este \textit{dataset} incluye:
 Se proporcionan los datos ya preprocesados, por lo que no es necesario realizar tareas adicionales de limpieza 
 o transformación previa antes de su análisis.
 
-Se ha ignorado el campo de ``sample'', dado que se trata de una asignación
-sesgada y no representa necesariamente una clasificación fiable del origen poblacional de los individuos.
-Por tanto, este campo no se emplea en el análisis ni en el entrenamiento de los modelos, centrándose 
-exclusivamente en las variables de edad, sexo e imagen.
+Se ha ignorado el campo ``sample'', dado que se trata de una asignación sesgada y no representa 
+necesariamente una clasificación fiable del origen poblacional de los individuos. Por tanto, este campo no 
+se emplea en el análisis ni en el entrenamiento de los modelos, centrándose exclusivamente en las variables 
+de edad, sexo e imagen.
 
 En el \textit{dataset} hay un total de 10.739 ejemplos, de los que 5.756 son de individuos de sexo femenino 
 y 4.983 de sexo masculino. 
@@ -116,30 +112,30 @@ representatividad de la población original, favoreciendo una evaluación más r
 modelos en datos no vistos.
 
 \begin{figure}[h]
+    \centering
+
+    \begin{subfigure}[b]{0.47\textwidth}
         \centering
+        \includegraphics[width=\textwidth]{capitulos/cap_04/imagenes/kde_ages_F.png}
+        \caption{Distribución de edad de individuos de sexo femenino.}
+        \label{fig:kde_ages_F}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.47\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{capitulos/cap_04/imagenes/kde_ages_M.png}
+        \caption{Distribución de edad de individuos de sexo masculino.}
+        \label{fig:kde_ages_M}
+    \end{subfigure}
 
-        \begin{subfigure}[b]{0.47\textwidth}
-            \centering
-            \includegraphics[width=\textwidth]{capitulos/cap_04/imagenes/kde_ages_F.png}
-            \caption{Distribución de edad de individuos de sexo femenino.}
-            \label{fig:kde_ages_F}
-        \end{subfigure}
-        \hfill
-        \begin{subfigure}[b]{0.47\textwidth}
-            \centering
-            \includegraphics[width=\textwidth]{capitulos/cap_04/imagenes/kde_ages_M.png}
-            \caption{Distribución de edad de individuos de sexo masculino.}
-            \label{fig:kde_ages_M}
-        \end{subfigure}
-
-        \caption[
-            Distribución de edad de los individuos del conjunto de datos disponible por sexo.
-        ]{
-            Distribución de edad de los individuos del conjunto de datos disponible por sexo. 
-            Elaboración propia.
-        }
-        \label{fig:kde_ages_train_test}
-    \end{figure}
+    \caption[
+        Distribución de edad de los individuos del conjunto de datos disponible por sexo.
+    ]{
+        Distribución de edad de los individuos del conjunto de datos disponible por sexo. 
+        Elaboración propia.
+    }
+    \label{fig:kde_ages_train_test}
+\end{figure}
 
 
 % ------------------------------------------------------------------------------------------------------------
@@ -147,15 +143,43 @@ modelos en datos no vistos.
 
 \section{Problemas planteados}
 
-Como se ha anticipado anteriormente, este trabajo se centrar en los problemas de estimación de edad y ...
+Como se ha anticipado anteriormente, este trabajo se centrar en los problemas de estimación de edad y 
+(estimación de mayoría/minoría de edad o clasificación de grupos etarios?).
+Analicemos más en profundidad estos dos. 
 
 % ------------------------------------------------------------------------------------------------------------
 
 \subsection{Problema de estimación de edad}
 
-El problema de \textbf{estimación de edad (\textit{age estimation}, AE)} consiste en predecir la edad 
 
-Este se trata de un problema de regresión, 
+El problema de \textbf{estimación de edad (\textit{age estimation}, AE)} consiste en predecir la edad 
+cronológica de un individuo en una escala continua, lo que lo define como un problema de regresión.
+
+En este trabajo se plantea dos variantes del problema (véase la Figura \ref{fig:regression_problems}): 
+\begin{itemize}
+    \item Una que solo tenga como entrada imágenes de radiografías panorámicas maxilofaciales.
+    \item Otra que tenga como entrada tanto las imágenes de radiografías como el sexo del invididuo. 
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{capitulos/cap_04/imagenes/regression_problems.png}
+    \caption[
+        Esquema visual de los modelos de regresión propuestos. 
+        Elaboración propia.
+    ]{
+        Esquema visual de los modelos de regresión propuestos. 
+        Elaboración propia.
+        El primer modelo solo tiene radiografías maxilofaciales como entrada. 
+        El segundo tiene tanto las radiografías maxilofaciales como el sexo de cada inviduo. 
+    } 
+    \label{fig:regression_problems}
+\end{figure}
+
+Se espera que la información adicional del sexo, como mínimo mantenga el desempeño del modelo, y 
+potencialmente lo mejores, dado que el crecimiento y desarrollo óseo varía entre hombres y mujeres
+\cite{adserias2019, scheuer2000}, lo que sugiere que incluir el sexo como variable de entrada podría ayudar 
+al modelo a ajustar sus predicciones de manera más precisa. 
 
 
 % ------------------------------------------------------------------------------------------------------------
@@ -166,6 +190,8 @@ El problema inmediatamente derivado del anterior es la
 \textbf{estimación de minoría/mayoría de edad (\textit{assessment of the age of majority}, AAM)}.
 Este se trata de un problema de clasificación binaria, ...
 
+\todo{Por completar (JULIO)}
+
 
 % ------------------------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
@@ -175,9 +201,8 @@ Este se trata de un problema de clasificación binaria, ...
 \subsection{Arquitectura empleada}
 
 El primer problema propuesto es el de estimación de edad. Partiremos de un planteamiento muy simple: imágenes 
-bidimensionales de las radiografías panóramicas maxilofaciales como entrada, y estimación de edad a la salida.
-No incorporaremos el sexo del individuo en esta primera aproximación, si bien se explorará en el Anexo X. 
-\todo{¿Finalmente incluimos o no el sexo el sexo del individuo?}
+bidimensionales de las radiografías panóramicas maxilofaciales ---y sexo, opcionalmente---
+como entrada, y estimación de edad a la salida.
 
 Como modelo, empleamos una CNN, dado su buen desempeño en tareas de visión por computador. Específicamente,
 implementamos la arquitectura ResNeXt50 \cite{xie2017}, utilizando un modelo entrenado con el \textit{dataset} 
@@ -201,14 +226,23 @@ genéricos para detectar características visuales básicas, como bordes o textu
 
 \subsection{Regresión cuantílica}
 
+\todo{No sabía si incluir este apartado en Fundamentos teóricos, pero decidí incluirlo aquí porque es una 
+técnica más específica, que técnicamente no diverge mucho de lo explicado en los Fundamentos Teóricos, 
+¿Qué opina?}
+
 La \textbf{regresión cuantílica (\textit{quantile regression}, QR)} es un tipo de regresión que, a diferencia
 de la regresión puntual, predice intervalos o cuantiles específicos de la distribución de la variable 
 respuesta, en lugar de solo su media. 
 Esta técnica permite modelar límites inferiores y superiores (por ejemplo, el percentil 10\% y 90\%) para
 capturar la incertidumbre o heterocedasticidad en los datos.
 
-Esta técnica de regresión puede implementarse en diversos modelos, aunque su implementación difiere 
-significativamente. 
+No debe confundirse con una técnica de UQ, ya que no modela explícitamente la incertidumbre epistémica ni 
+proporciona garantías estadísticas de cobertura como lo hacen los métodos de predicción conformal, aunque 
+puede utilizarse como parte de un enfoque para cuantificar la incertidumbre aleatoria o 
+condicional al estimar intervalos de predicción directamente a partir de los datos.
+
+Esta técnica de regresión puede implementarse en modelos de redes neuronales y modelos tipo \textit{ensemble}, 
+aunque su implementación difiere significativamente. 
 
 En redes neuronales, esta regresión requiere de:
 
@@ -224,6 +258,8 @@ En redes neuronales, esta regresión requiere de:
     La \textbf{función de pérdida \textit{pinball}} es una generalización de la función de pérdida del MAE,
     que penaliza las predicciones de manera asimétrica según el cuantil objetivo. Para un cuantil 
     $\tau \in \left( 0,1\right)$, se define como:
+
+    \todo{¿Debería incluir la función de pérdida en el apartado de entrenamiento en el capítulo 5?}
 
     $$
     L_\tau(y,\hat{y}) = \left\{
@@ -259,9 +295,10 @@ En redes neuronales, esta regresión requiere de:
     \begin{itemize}
 
         \item Para $\tau = 0.05$ y $\tau = 0.95$, el modelo intentará que el 90\% de las observaciones reales 
-        ($y$) caigan entre los límites predichos ($\hat{y}{0.05}$ y $\hat{y}{0.95}$).
+        ($y$) caigan entre los límites predichos ($\hat{y}_{0.05}$ y $\hat{y}_{0.95}$).
 
-        \item La mediana ($\tau = 0.5$) proporciona una predicción central robusta, minimizando el MAE.
+        \item La mediana ($\tau = 0.5$) proporciona una predicción central robusta, equivalente a minimizar 
+        el MAE. 
         
     \end{itemize}
 
@@ -270,7 +307,7 @@ En redes neuronales, esta regresión requiere de:
 \end{itemize}
 
 Este tipo de regresión entonces da una estimación puntual $\hat{y}$ y una estimación interválica formado por 
-límites inferior y superior $\left[ \hat{q}_{lower}, \hat{q}_{upper} \right]$. Este enfoque es ampliamente
+límites inferior y superior $\left[ \hat{y}_{lower}, \hat{y}_{upper} \right]$. Este enfoque es ampliamente
 aplicable y obtiene intervalos adaptativos a la heterocedasticidad de los datos \cite{romano2019}. 
 Sin embargo, no tiene garantías estadísticas de cobertura bajo distribuciones arbitrarias de errores.
 Es por ello que se requiere de herramientas adicionales para garantizar la cobertura.
@@ -279,70 +316,200 @@ Es por ello que se requiere de herramientas adicionales para garantizar la cober
 
 \subsection{Métodos de predicción conformal para regresión}
 
+Todos los métodos propuestos en este trabajo son \textit{split calibration}, es decir, los datos de 
+entrenamiento se dividen en dos subconjuntos: entrenamiento y calibración. No hemos implementado técnicas 
+\textit{cross-calibration} como \cite{barber2021} dado que requieren un mayor coste computacional.
+Además, en los experimentos preliminares, \textit{split calibration} demostró ser suficiente para obtener
+valores razonablemente buenos de cobertura marginal y una eficiencia adecuada en los intervalos de predicción.
+
+% ------------------------------------------------------------------------------------------------------------
 
 \subsubsection{\textit{Inductive Conformal Prediction} (ICP)}
 
 La ICP \cite{papadopoulos2002} fue la primera técnica de predicción conformal desarrollada para problemas de 
 regresión. 
 
-Su implementación sigue estos pasos:
+El procedimiento sigue dos fases:
 
-\begin{enumerate}
-    \item División de datos: El conjunto se divide en dos subconjuntos: entrenamiento y calibración.
+\begin{itemize}
+
+    \item \textbf{Calibración}:
     
-    \item Entrenamiento: Se entrena el modelo de manera normal, para un problema de regresión. 
-    
-    \item Realiza la inferencia sobre cada uno de los ejemplos del conjunto de calibración, y calcula el
-          error absoluto entre el valor predicho y el valor real, y los introduce en $R$.
-          $$
-          R = \left\{ | y_i - \hat{y_i} | \right\}_{i=1,...,n_{calib}}
-          $$
-    
-    \item Calcula un umbral de no conformidad para un nivel de confianza dado $\delta_\alpha$, como el cuantil 
-    $(1-\alpha)(1+1/n_{calib})$ de $R$.
-    
-    \item Construye los intervalos de predicción como
+    \begin{itemize}
+        \item Se calculan las puntuaciones no conformidad $R$ sobre los datos del conjunto de calibración como el 
+        error absoluto entre el valor predicho y el real:
         $$
-        \hat{C_\alpha}(x_{new}) = \left[ \hat{f}(x_{new})- \delta_\alpha, \hat{f}(x_{new})+ \delta_\alpha\right]
+        R = \left\{ | y_i - \hat{f}(x_i) | \right\}_{i=1,...,n_{calib}}
         $$
+
+        \item Se calcula un umbral de no conformidad para un nivel de confianza dado $q_{1-\alpha}$, como el 
+        cuantil $(1-\alpha)(1+1/n)$ de $R$:
+        $$
+        q_{1-\alpha} = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( R )
+        $$
+
+    \end{itemize}
     
-\end{enumerate}
+    \item \textbf{Inferencia conformal}:
+    
+    \begin{itemize}
 
-Este algoritmo de CP ...
+        \item Se obtiene la inferencia puntual $\hat{f}(x_{n+1})$ de un nuevo ejemplo con el modelo.  
+        
+        \item Se construyen los intervalos de predicción como:
+        $$
+        \hat{C_\alpha}(x_{n+1}) = \left[ \hat{f}(x_{n+1}) - q_{1-\alpha}, \hat{f}(x_{n+1}) + q_{1-\alpha}\right]
+        $$
 
+    \end{itemize}
 
-El intervalo es simétrico, además de tener siempre el mismo ancho. 
+\end{itemize}
 
-% Imagen intuitiva
+Este método de CP presenta varias ventajas: 
 
+\begin{itemize}
+    \item \textbf{\textit{Model-agnostic} y \textit{domain-agnostic}}: Es independiente tanto del modelo como 
+    del dominio, ya que no utiliza representaciones internas del modelo ni de las entradas. 
+    
+    \item \textbf{Bajo coste computacional}: Solo añade coste computacional en la calibración, con el 
+    cálculo de puntuaciones de no conformidad en calibración $\left( \mathcal{O}(n_{calib}) \right)$ y
+    cálculo del cuantil empírico $\left( \mathcal{O}(n_{calib} \log n_{calib}) \right)$. La inferencia
+    conformal mantiene el mismo orden que el modelo base ($\mathcal{O}(1)$ por predicción). 
 
+\end{itemize}
+
+Sin embargo, también presenta importantes limitaciones: 
+
+\begin{itemize}
+    
+    \item \textbf{Intervalo simétrico y no adaptativo}: El intervalo es simétrico, además de tener siempre el 
+    mismo ancho ($2q_{1-\alpha}$), no permitiendo adaptarse a la incertidumbre específica de la predicción. 
+
+    \item \textbf{Sensibilidad a datos ruidosos o OOD}: 
+    Si el conjunto de calibración contiene \textit{outliers} o viola el supuesto de intercambiabilidad, el 
+    umbral \(q_{1-\alpha}\) puede inflarse, generando intervalos excesivamente conservadores. Tampoco detecta 
+    heterocedasticidad automáticamente.
+
+\end{itemize}
+
+% ------------------------------------------------------------------------------------------------------------
 
 \subsubsection{\textit{Conformalized Quantile Regression} (CQR)}
 
-Como su nombre indica, esta técnica se realiza sobre la regresión cuantílica. La CQR \cite{romano2019} 
+Como su nombre indica, esta técnica se realiza sobre la regresión cuantílica. La CQR \cite{romano2019}
+combina la flexibilidad de la regresión cuantílica para estimar directamente los cuantiles condicionales con 
+la garantía de validez estadística proporcionada por la conformalización. Esto permite obtener intervalos de 
+predicción que son asimétricos y adaptativos, ajustándose localmente a la variabilidad y distribución de los 
+datos.
+
+He optado por implementar la segunda definición del intervalo de predicción, presentada en el segundo teorema 
+de \cite{romano2019}, que incluye la calibración de ambas colas para obtener intervalos asimétricos 
+\cite{linusson2014}. Según el artículo, esta opción mejora las garantías de cobertura, aunque puede implicar 
+un aumento en el ancho del intervalo.
+
+\begin{itemize}
+
+    \item \textbf{Calibración}:
+    
+    \begin{itemize}
+        \item Se calculan dos arrays de puntuaciones de no conformidad sobre los datos del conjunto de 
+        calibración como las diferencias entre los valores observados y los límites del intervalo predictivo:
+        
+        \begin{equation*}
+        \begin{split}
+            R_{upper} = \left\{ y_i - \hat{f}_{upper}(x_i) \right\}_{i=1,...,n_{calib}} \\
+            R_{lower} = \left\{ \hat{f}_{lower}(x_i) - y_i \right\}_{i=1,...,n_{calib}}
+        \end{split}
+        \end{equation*}
+
+        donde $\hat{f}_{upper}(x_i)$ y $\hat{f}_{lower}(x_i)$ representan los límites superior e inferior del 
+        intervalo predictivo para la observación $x_i$, respectivamente, e $y_i$ es el valor observado real.
+
+        \item Se calcula un umbral de no conformidad para un nivel de confianza dado $q_{1-\alpha}$, como el 
+        cuantil $(1-\alpha)(1+1/n)$ de $R$:
+
+        \begin{equation*}
+        \begin{split}
+            q_{upper_{1-\alpha}} &= Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( R_{upper} ) \\
+            q_{lower_{1-\alpha}} &= Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( R_{lower} )
+        \end{split}
+        \end{equation*}
+
+    \end{itemize}
+    
+    \item \textbf{Inferencia conformal}:
+    
+    \begin{itemize}
+
+        \item Se obtiene la inferencia interválica $[\hat{f}_{lower}(x_{n+1}), \hat{f}_{upper}(x_{n+1})]$ de 
+        un nuevo ejemplo con el modelo.
+    
+        \item Se construyen los intervalos de predicción como:
+        $$
+        \hat{C_\alpha}(x_{n+1}) = 
+            \left[ 
+                \hat{f}_{lower}(x_{n+1}) - q_{lower_{1-\alpha}}, 
+                \hat{f}_{upper}(x_{n+1}) + q_{upper_{1-\alpha}}
+            \right]
+        $$
+
+    \end{itemize}
+
+\end{itemize}
+
+CQR, al igual que ICP, es independiente del modelo y del dominio, ya que solo emplea las salidas y 
+valores reales para realizar la calibración. También tiene el mismo orden de eficiencia computacional, puesto 
+que realiza prácticamente las mismas operaciones que ICP, pero para cada límite del intervalo predicho, 
+calibrando los cuantiles inferior y superior de manera independiente para mantener la cobertura deseada.
+
+Sin embargo, CQR logra intervalos asimétricos y adaptativos, dado que la regresión cuantílica
+estima directamente los cuantiles condicionales de la distribución de la variable objetivo,
+permitiendo que los límites del intervalo se ajusten según la heterocedasticidad y la forma local de la 
+distribución de los datos, en lugar de asumir una distribución simétrica o constante del error. 
+%Esto resulta en intervalos que reflejan mejor la incertidumbre en distintas regiones del espacio de 
+%entrada, mejorando la precisión y utilidad de las predicciones de intervalo.
+
+% ------------------------------------------------------------------------------------------------------------
+
+\subsubsection{\textit{Monte Carlo Conformalized Quantile Regression} (MCCQR)}
 
 
-$$
-R = \left\{ 
-        max\left\{ \hat{q}_{lower}(x_i) - y_i, 
-        y_i - \hat{q}_{upper}(x_i) \right\} 
-    \right\}_{i=1,...,n_{calib}}
-$$
+La MCCQR \cite{bethell2024} es una variante de CQR que añade el método de UQ \textit{Monte Carlo Dropout}, 
+que permite estimar la incertidumbre epistémica al realizar múltiples pasadas con \textit{dropout} activado 
+por la red neuronal durante la inferencia. Esto genera una distribución de predicciones, de la cual se puede 
+obtener una media (como predicción final) y una varianza (como medida de incertidumbre).
 
-Construye los intervalos:
 
-$$
-\hat{C_\alpha}(x_{new}) = 
-    \left[ 
-        \hat{q}_{lower}(x_{new}) - Q_{1-\alpha}(E,I_2), 
-        \hat{q}_{upper}(x_{new}) + Q_{1-\alpha}(E,I_2) 
-    \right]
-$$
 
+En lugar de utilizar un número fijo de pasadas, MCCQR implementa un esquema adaptativo que detiene el proceso 
+una vez que la varianza de las predicciones converge, redu ciendo significativamente el costo computacional.
+
+
+
+
+
+Esta técnica modifica la inferencia conformal (no modifica la calibración, por lo que se puede emplear el 
+mismo modelo con los mismos parámetros). Esta técnica incorpora \textit{Monte Carlo dropout adaptativo} 
+para generar múltiples predicciones por cada instancia nueva, permitiendo estimar una distribución de 
+salida a partir de la cual se calcula la varianza como medida de incertidumbre.
+
+Posteriormente, esta distribución es utilizada junto con los umbrales calibrados de CQR 
+para construir intervalos de predicción más robustos y menos conservadores que los producidos por métodos 
+conformales tradicionales. 
+
+\todo{Voy a borrar probablemente esta técica porque apenas modifica los resultados con CQR}
+
+
+
+
+
+% ------------------------------------------------------------------------------------------------------------
 
 \subsubsection{\textit{Conformal Residual Fitting} (CRF)}
 
-
+\todo{Esta técnica permite muchas implementaciones, ya que trata de predecir la incertidumbre de una 
+predicción mediante otro modelo ML. Estoy intentando implementar SCCP (Seedat, Nabeel et al., 2023),
+pero me está llevando más tiempo del esperado. }
 
 $$
 R = \left\{ 
@@ -366,12 +533,12 @@ $$
 \subsection{Métodos de predicción conformal para clasificación}
 
 
-\subsubsection{Least-Ambiguous Set-Valued Classifiers}
+\subsubsection{Least-Ambiguous set-valued Classifiers (LAC)}
 
-\textbf{Least-Ambiguous Set-Valued Classifiers (LAC)} es el primer método propuesto de predicción conformal 
-para problemas de clasificación. Propone un enfoque de clasificación de conjuntos de valores 
-(set-valued classification) en el que, en lugar de asignar una única etiqueta a cada instancia, se selecciona 
-un conjunto de etiquetas que garanticen un nivel de confianza predeterminada por el usuario.
+LAC es el primer método propuesto de predicción conformal para problemas de clasificación, en 
+\cite{sadinle2019}. Propone un enfoque de clasificación de conjuntos de valores (set-valued classification) 
+en el que, en lugar de asignar una única etiqueta a cada instancia, se selecciona un conjunto de etiquetas 
+que garanticen un nivel de confianza predeterminada por el usuario.
 
 Para cada instancia del conjunto de calibrado se obtiene un error, que es calculado como
 $$
@@ -390,11 +557,12 @@ correspondiente a la etiqueta verdadera.
 
 % Hablar sobre que este es el principal método para clasificación binaria
 
+\todo{Por completar (JULIO)}
 
 
-\subsubsection{Adaptive Prediction Sets}
+\subsubsection{Adaptive Prediction Sets (APS)}
 
-\textbf{Adaptive Prediction Sets (APS)} \cite{romano2020} ... ser más adaptativo, de forma que los conjuntos 
+APS \cite{romano2020} ... es más adaptativo, de forma que los conjuntos 
 de predicciones sean más pequeños en ejemplos fáciles de clasificar, y más grandes en ejemplos difíciles, 
 y de esta forma la predicción sea más informativa.
 
@@ -417,14 +585,14 @@ comunes entre varias clases y generar valores de certeza repartidos, y aun así 
 Lo crucial es que el valor de certeza más alto corresponda a la clase verdadera, y por eso APS ...
 
 
+\todo{Por completar (JULIO)}
 
 
 
-\subsubsection{Regularized Adaptive Prediction Sets}
+\subsubsection{Regularized Adaptive Prediction Sets (RAPS)}
 
-\textbf{Regularized Adaptive Prediction Sets (RAPS)} \cite{angelopoulos2020} es una variante del método APS,
-que añade una penalización a conjuntos de predicción demasiado grandes, realizando esto a través de la suma 
-de un componente calculado al error $R$.
+RAPS \cite{angelopoulos2020} es una variante del método APS, que añade una penalización a conjuntos de 
+predicción demasiado grandes, realizando esto a través de la suma de un componente calculado al error $R$.
 
 Para ello, introduce dos parámetros:
 $$
@@ -439,6 +607,7 @@ $$
 \end{itemize}
 
 
+\todo{Por completar (JULIO)}
 
 
 
