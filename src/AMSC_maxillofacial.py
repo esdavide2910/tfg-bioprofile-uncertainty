@@ -82,7 +82,7 @@ def validate_file_extension(filename, extensions, arg_name):
     return filename
 
 #
-PRED_MODEL_TYPES = ['base', 'LAC', 'MCM']
+PRED_MODEL_TYPES = ['base', 'LAC', 'MCM', 'APS', 'RAPS']
 
 # Agregado de argumentos 
 def add_model_args(parser):
@@ -126,7 +126,7 @@ def add_output_args(parser):
 # Crea el parser
 parser = argparse.ArgumentParser(
     description="Script para entrenamiento, calibración y/o evaluación del modelo para estimación de "+
-                "mayoría/minoría de edad a partir de radiografías maxilofaciales"
+                "..."
 )
 
 # Agrega todas las configuraciones al parser
@@ -166,7 +166,7 @@ try:
     if args.test_iteration and not args.save_test_results:
         parser.error("Se especificó '--test_iteration' pero no '--save_test_results'. " +
                      "El número de iteración solo tiene sentido si se guardan los resultados.")
-    
+        
     if args.save_test_results:
         validate_file_extension(args.save_test_results, ['.csv'], 'save_test_results')
     
@@ -253,6 +253,7 @@ test_transform = transforms.Compose(
      transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))]
 ) 
 
+
 # Define la clase MaxillofacialXRayDataset, que se utiliza para cargar imágenes de rayos X maxilofaciales 
 # junto con su edad correspondiente desde un fichero de metadatos. 
 class MaxillofacialXRayDataset(Dataset):
@@ -263,7 +264,7 @@ class MaxillofacialXRayDataset(Dataset):
         images_dir: Ruta al directorio de imágenes (entrenamiento o prueba)
         transform: Transformaciones a aplicar a las imágenes (normalización, etc.)
         """
-        metadata = pd.read_csv(metadata_file)
+        metadata = pd.read_csv(metadata_file)  
         self.images_dir = images_dir
         self.transform = transform
         
@@ -278,6 +279,9 @@ class MaxillofacialXRayDataset(Dataset):
         
         # Clasificación binaria de edad: 1 si >= 18, 0 si < 18
         self.majority = (self.ages >= 18).long()
+        
+        # Etiqueta sigue una clasificación combinada: 0 = (M<18), 1 = (M>=18), 2 = (F<18), 3 = (F>=18)
+        self.labels = self.sexes * 2 + self.majority
     
     
     def __len__(self):
@@ -290,8 +294,8 @@ class MaxillofacialXRayDataset(Dataset):
         image = Image.open(self.img_paths[idx]).convert('RGB')
         if self.transform:
             image = self.transform(image)
-
-        return image, self.majority[idx]
+        
+        return image, self.labels[idx]
 
 # ------------------------------------------------------------------------------------------------------------
 
@@ -341,6 +345,7 @@ def create_loader(dataset, indices=None, shuffle=False, num_workers=1):
         generator=g
     )
 
+
 # Obtiene las edades del trainset por tramos de 0.5 años
 halfAges = (np.floor(trainset.ages.numpy() * 2) / 2).astype(np.float32)
 # Hay una única instancia con edad 26, que el algoritmo de separación de entrenamiento y validación será 
@@ -359,14 +364,14 @@ num_workers = int(os.environ.get("SLURM_CPUS_PER_TASK", 1))
 
 # División para el modelo base
 if args.pred_model_type == 'base':
-    
+
     # Divide el conjunto de datos completo de entrenamiento en dos subconjuntos de forma estratificada:
     # - Entrenamiento (80% de las instancias)
     # - Validación (20% de las instancias)
     
     train_idx, valid_idx =  train_test_split(range(len(trainset)), train_size=0.8, shuffle=True, 
                                              random_state=SEED, stratify=stratify_labels)
-    
+
     train_loader = create_loader(trainset, train_idx, shuffle=True, num_workers=num_workers)
     valid_loader = create_loader(validset, valid_idx)
 
@@ -380,7 +385,7 @@ else:
     
     train_idx, calib_idx = train_test_split(range(len(trainset)), train_size=0.85, shuffle=True, 
                                             random_state=SEED, stratify=stratify_labels)
-    
+
     train_idx, valid_idx = train_test_split(train_idx, train_size=0.8, shuffle=True, random_state=SEED,
                                             stratify=[stratify_labels[i] for i in train_idx])
     
@@ -399,7 +404,9 @@ print("✅ Datasets de imágenes cargados\n")
 MODEL_CLASSES = {
     'base': ResNeXtClassifier,
     'LAC': ResNeXtClassifier_LAC,
-    'MCM': ResNeXtClassifier_MCM
+    'MCM': ResNeXtClassifier_MCM,
+    'APS': ResNeXtClassifier_APS,
+    'RAPS': ResNeXtClassifier_RAPS
 }
 
 # Obtiene los argumentos de tipo de modelo y nivel de confianza desde la línea de comandos
@@ -414,7 +421,7 @@ if pred_model_type not in PRED_MODEL_TYPES:
 model_class = MODEL_CLASSES.get(pred_model_type)
 
 # Instancia el modelo con el nivel de confianza especificado y lo envía a la GPU
-model = model_class(num_classes=2, confidence=confidence).to(device)
+model = model_class(num_classes=4, confidence=confidence).to(device)
 
 # Si se especificó una ruta para cargar un modelo previamente entrenado
 if args.load_model_path:
@@ -442,12 +449,12 @@ if args.train or args.train_head:
     # Configura el optimizador para el entrenamiento de la cabecera 
     parameters = [
         {'params': model.classifier.fc2.parameters(), 'lr': 3e-2},
-        {'params': model.classifier.fc1.parameters(), 'lr': 2e-2},
+        {'params': model.classifier.fc1.parameters(), 'lr': 2e-2}
     ]
     optimizer = torch.optim.AdamW(parameters, weight_decay=wd)
 
     # Numero de épocas que se entrena la cabecera
-    NUM_EPOCHS_HEAD = 5
+    NUM_EPOCHS_HEAD = 3
     
    # Inicializa la mejor pérdida de validación como la obtenida en el entrenamiento de la cabecera
     best_valid_loss = float('inf')
@@ -528,12 +535,12 @@ if args.train:
             {'params': layer_group, 'lr': lr}
         )
 
-    # Número de épocas a entrenar
-    NUM_EPOCHS = 30
-
     # Configura el optimizador con los hiperparámetros escogidos
     optimizer = torch.optim.AdamW(param_groups, weight_decay=wd)
 
+    # Número de épocas a entrenar
+    NUM_EPOCHS = 15
+    
     # Crea el scheduler OneCycleLR
     scheduler = torch.optim.lr_scheduler.OneCycleLR(
         optimizer, 
@@ -544,6 +551,9 @@ if args.train:
     
     # Inicializa la mejor pérdida de validación como la obtenida en el entrenamiento de la cabecera
     best_valid_loss = float('inf')
+    
+    # 
+    best_epoch = -1
 
     # Bucle de entrenamiento por épocas
     for epoch in range(NUM_EPOCHS):
@@ -576,6 +586,9 @@ if args.train:
         # Comprueba si la pérdida en validación ha mejorado
         if valid_loss < best_valid_loss:
             
+            #
+            best_epoch = epoch + 1
+            
             # Actualiza la mejor pérdida en validación obtenida hasta ahora
             best_valid_loss = valid_loss
             
@@ -583,10 +596,16 @@ if args.train:
             model.save_checkpoint(args.save_model_path)
     
     
-    # Carga los pesos del modelo que obtuvo la mejor validación
-    checkpoint = torch.load(args.save_model_path)
-    model.load_checkpoint(checkpoint)
-
+    if valid_loss > best_valid_loss:
+        
+        #
+        print(f"Restaurando los parámetros de la época {best_epoch}")
+        
+        # Carga los pesos del modelo que obtuvo la mejor validación
+        checkpoint = torch.load(args.save_model_path)
+        model.load_checkpoint(checkpoint)
+    
+    
     print("✅ Entrenamiento de la red completa completado\n")
 
 #-------------------------------------------------------------------------------------------------------------
@@ -631,50 +650,21 @@ if args.test:
 
     print("✅ Testeo de la red completado\n")
     
-#-------------------------------------------------------------------------------------------------------------
+# #-------------------------------------------------------------------------------------------------------------
     
-    if args.save_test_results:
+#     if args.save_test_results:
         
-        #
-        n = len(test_pred_classes)
-        new_df = pl.DataFrame({
-            "pred_model_type": [pred_model_type] * n,
-            "confidence": np.array([confidence] * n, dtype=np.float32),
-            "iteration": [args.test_iteration] * n,
-            "pred_class": np.array(test_pred_classes, dtype=np.uint8),
-            "pred_set_under_18": np.array(test_pred_sets[:, 0], dtype=np.uint8),
-            "pred_set_over_18":  np.array(test_pred_sets[:, 1], dtype=np.uint8),
-            "true_class": np.array(test_true_classes, dtype=np.uint8)
-        })
+#         #
+#         n = len(test_pred_classes)
+#         df = pl.DataFrame({
+#             "pred_model_type": [pred_model_type] * n,
+#             "confidence": [confidence] * n,
+#             "iteration": [args.test_iteration] * n,
+#             "test_pred_classes": test_pred_classes,
+#             "test_pred_sets": test_pred_sets,
+#             "test_true_classes": test_true_classes
+#         })
         
-        # Si el archivo ya existe, cargarlo y filtrar duplicados
-        if os.path.exists(args.save_test_results):
-            existing_df = pl.read_csv(args.save_test_results)
-            
-            # Forzar el esquema correcto para que coincida con new_df
-            existing_df = existing_df.cast({
-                "pred_model_type": pl.Utf8,
-                "confidence": pl.Float32,
-                "iteration": pl.Int64,
-                "pred_class": pl.UInt8,
-                "pred_set_under_18": pl.UInt8,
-                "pred_set_over_18": pl.UInt8,
-                "true_class": pl.UInt8
-                
-            })
-
-            # Filtrar todas las filas que NO tienen el mismo conjunto clave
-            mask = ~((existing_df["pred_model_type"] == pred_model_type) &
-                    (existing_df["confidence"] == confidence) &
-                    (existing_df["iteration"] == args.test_iteration))
-
-            filtered_df = existing_df.filter(mask)
-
-            # Concatenar el nuevo dataframe
-            final_df = pl.concat([filtered_df, new_df])
-        else:
-            final_df = new_df
-
-        # Guardar sobrescribiendo el archivo
-        final_df.write_csv(args.save_test_results, separator=",", include_header=True)
-        
+#         #
+#         with open(args.save_test_results, mode="a") as f:
+#             df.write_csv(f, separator=",", include_header=False)

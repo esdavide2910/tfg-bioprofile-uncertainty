@@ -80,7 +80,7 @@ class ClassifierResNeXt(nn.Module):
     
     def __init__(self, input_size=2048, output_size=1):
 
-        super(ClassifierResNeXt, self).__init__()  
+        super().__init__()  
         
         self.fc1 = nn.Sequential(
             nn.BatchNorm1d(input_size),
@@ -114,8 +114,11 @@ class ClassifierResNeXt(nn.Module):
 
 class ResNeXtRegressor(nn.Module):
     
+    PRED_MODEL_TYPE = 'base'
+    
     def __init__(self, **kwargs):
         
+        # Inicializa la clase padre
         super().__init__()
         
         # Define las componentes de la red: 
@@ -124,14 +127,8 @@ class ResNeXtRegressor(nn.Module):
         self.pool_avg = nn.AdaptiveAvgPool2d((1,1))
         self.flatten = nn.Flatten()
         
-        # 2) Metadata embedding
-        self.embedding = nn.Sequential(
-            nn.Embedding(num_embeddings=2, embedding_dim=16),
-            nn.LayerNorm(16)  # Normalización para embeddings
-        )
-        
-        # 3) Classifier
-        input_size = 2048 + 16 # características aplanadas + embedding
+        # 2) Classifier
+        input_size = 2048 # características aplanadas 
         output_size = 1 
         self.classifier = ClassifierResNeXt(input_size, output_size)
         
@@ -142,7 +139,7 @@ class ResNeXtRegressor(nn.Module):
     def save_checkpoint(self, save_model_path):
         """Guarda el estado actual de un modelo y parámetros de calibración en un archivo"""
         checkpoint = {
-            'pred_model_type': 'base',
+            'pred_model_type': self.PRED_MODEL_TYPE,
             'torch_state_dict': self.state_dict()
         }
         torch.save(checkpoint, save_model_path)
@@ -153,22 +150,15 @@ class ResNeXtRegressor(nn.Module):
         self.load_state_dict(checkpoint['torch_state_dict'])
         
     
-    def forward(self, image, metadata):
+    def forward(self, image):
         """Paso forward del modelo"""
-        
         # Extrae y aplana las características
         x = self.feature_extractor(image)
         x = self.pool_avg(x)
         x = self.flatten(x)
         
-        # Procesa los metadatos con el embedding
-        y = self.embedding(metadata)
-        
-        # Concatena las características profundas aplanadas con el embedding de sexo 
-        z = torch.cat([x,y], dim=1)
-        
         # Pasa por el clasificador para obtener las predicciones
-        outputs =  self.classifier(z)
+        outputs =  self.classifier(x)
         
         # Ajusta la dimensión de salida si es necesario
         outputs = outputs.squeeze(-1) if outputs.dim() > 1 and outputs.shape[-1] == 1 else outputs
@@ -178,17 +168,14 @@ class ResNeXtRegressor(nn.Module):
 
     def get_layer_groups(self):
         """Devuelve los parámetros del modelo agrupados por capas, de más superficiales a más profundas"""
-        
         layer_groups = []
-        
         layer_groups.append(list(self.feature_extractor.conv1.parameters()))
         layer_groups.append(list(self.feature_extractor.conv2.parameters()))
         layer_groups.append(list(self.feature_extractor.conv3.parameters()))
         layer_groups.append(list(self.feature_extractor.conv4.parameters()))
         layer_groups.append(list(self.feature_extractor.conv5.parameters()))
-        layer_groups.append(list(self.classifier.fc1.parameters(), self.embedding.parameters()))
+        layer_groups.append(list(self.classifier.fc1.parameters()))
         layer_groups.append(list(self.classifier.fc2.parameters()))
-
         return layer_groups
 
 
@@ -205,16 +192,16 @@ class ResNeXtRegressor(nn.Module):
         epoch_loss = 0
         
         # Itera sobre todos los batches del dataloader
-        for images, metadata, targets in dataloader:
+        for images, targets in dataloader:
             
-            # Obtiene las imágenes y metadata de entrenamiento y sus valores objetivo
-            images, metadata, targets = images.to('cuda'), metadata.to('cuda'), targets.to('cuda')
+            # Obtiene las imágenes de entrenamiento y sus valores objetivo
+            images, targets = images.to('cuda'), targets.to('cuda')
             
             # Limpia los gradientes de la iteración anterior
             optimizer.zero_grad()
             
             # Obtiene los valores predichos del modelo
-            outputs = self.forward(images, metadata)
+            outputs = self.forward(images)
             
             # Calcula la pérdida de las predicciones
             loss = loss_fn(outputs, targets)
@@ -253,24 +240,20 @@ class ResNeXtRegressor(nn.Module):
         with torch.no_grad():
             for batch in dataloader:
                 
-                # Verifica si el batch contiene (images, metadata, targets) o solo (images, metadata)
-                if isinstance(batch, (list, tuple)) and len(batch) == 3:
-                    images, metadata, targets = batch 
-                    images, metadata = images.to('cuda'), metadata.to('cuda')
+                # Verifica si el batch contiene (image, target) o solo (image)
+                    
+                if isinstance(batch, (list, tuple)) and len(batch) == 2:
+                    images, targets = batch 
+                    images = images.to('cuda')
                     has_targets = True
                     all_targets.append(targets.cpu())
-                    
-                elif isinstance(batch, (list, tuple)) and len(batch) == 2:
-                    images, metadata = batch 
-                    images, metadata = images.to('cuda'), metadata.to('cuda')
                     
                 else:
                     images = batch
                     images = images.to('cuda')
-                    metadata = None
 
                 # Ejecuta el modelo y recolecta resultados
-                outputs = self.forward(images, metadata)
+                outputs = self.forward(images)
                 all_outputs.append(outputs.cpu())
                 
         # Concatena los resultados
@@ -297,18 +280,18 @@ class ResNeXtRegressor(nn.Module):
         return pred_point_values, pred_lower_bound, pred_upper_bound, true_values
 
 
-    def evaluate(self, dataloader, metric_fn=None):
+    def evaluate(self, dataloader, loss_fn=None):
         """
         Evalúa el modelo en un conjunto de datos.
         """
         # Determina la función de métrica
-        metric_fn = metric_fn if metric_fn is not None else self.loss_function 
+        loss_fn = loss_fn if loss_fn is not None else self.loss_function 
         
         # Obtiene todas las predicciones y valores verdaderos
         all_predicted, all_targets = self._inference(dataloader)
         
         # Calcula el valor de la métrica y lo devuelve
-        metric_value = metric_fn(all_predicted, all_targets)
+        metric_value = loss_fn(all_predicted, all_targets)
         return metric_value
 
 
@@ -316,13 +299,14 @@ class ResNeXtRegressor(nn.Module):
 
 class ResNeXtRegressor_ICP(ResNeXtRegressor):
     
-    def __init__(self, confidence=0.9, use_metadata=False, meta_input_size=0):
+    PRED_MODEL_TYPE = 'ICP'
+    
+    def __init__(self, confidence=0.9):
         """
         Inicializa el regresor ResNeXt con ICP (Inductive Conformal Prediction).
         """
-        
-        # Inicializa la clase padre con los parámetros base
-        super().__init__(use_metadata=use_metadata, meta_input_size=meta_input_size)
+        # Inicializa la clase padre
+        super().__init__()
         
         # Parámetros para la conformal prediction
         self.alpha = 1-confidence
@@ -334,8 +318,7 @@ class ResNeXtRegressor_ICP(ResNeXtRegressor):
         Guarda el estado del modelo en un archivo checkpoint.
         """
         checkpoint = {
-            'pred_model_type': 'ICP',
-            'use_metadata': self.use_metadata,
+            'pred_model_type': self.PRED_MODEL_TYPE,
             'torch_state_dict': self.state_dict(),
             'alpha': self.alpha,
             'q_hat': self.q_hat
@@ -348,23 +331,25 @@ class ResNeXtRegressor_ICP(ResNeXtRegressor):
         Carga el estado del modelo desde un checkpoint
         """
         self.load_state_dict(checkpoint['torch_state_dict'])
-        if checkpoint['pred_model_type'] == 'ICP':
-            self.q_hat = checkpoint['q_hat'] 
-            self.alpha = checkpoint['alpha']
+        if (checkpoint['pred_model_type'] == self.PRED_MODEL_TYPE and
+            checkpoint['alpha'] == self.alpha and
+            'q_hat' in checkpoint
+        ):
+            self.q_hat = checkpoint['q_hat']
 
 
-    def evaluate(self, dataloader, metric_fn=None):
+    def evaluate(self, dataloader, loss_fn=None):
         """
         Evalúa el modelo en un conjunto de datos.
         """
-        # Determina la función de métrica
-        metric_fn = metric_fn if metric_fn is not None else self.loss_function 
+        # Determina la función de pérdida
+        loss_fn = loss_fn if loss_fn is not None else self.loss_function 
         
         # Obtiene todas las predicciones y valores verdaderos
         all_predicted, all_targets = self._inference(dataloader)
         
-        # Calcula el valor de la métrica y lo devuelve
-        metric_value = metric_fn(all_predicted, all_targets)
+        # Calcula el valor de la función de pérdida y lo devuelve
+        metric_value = loss_fn(all_predicted, all_targets)
         return metric_value
     
     
@@ -404,24 +389,26 @@ class ResNeXtRegressor_ICP(ResNeXtRegressor):
 
 class ResNeXtRegressor_QR(ResNeXtRegressor):
     
-    def __init__(self, confidence=0.9, use_metadata=False, meta_input_size=0):
+    PRED_MODEL_TYPE = 'QR'
+    
+    def __init__(self, confidence=0.9):
         """
         Inicializa el regresor ResNeXt con QR (Quantile Regression).
         """
-        super().__init__(use_metadata=use_metadata, meta_input_size=meta_input_size)
+        # Inicializa la clase padre
+        super().__init__()
+        
+        # Parámetros de Quantile Regression
         self.alpha = 1-confidence
         self.quantiles = [0.5, self.alpha/2, 1-self.alpha]
-        self.loss_function = PinballLoss(self.quantiles)
         
-        # 
+        # Define una nueva cabecera
         input_size = 2048
-        if use_metadata:
-            input_size += 16
-            
-        self.classifier = ClassifierResNeXt(
-            input_size=input_size, 
-            output_size=len(self.quantiles)
-        )
+        output_size = len(self.quantiles)
+        self.classifier = ClassifierResNeXt(input_size, output_size)
+        
+        # Define la función de pérdida
+        self.loss_function = PinballLoss(self.quantiles)
         
     
     def save_checkpoint(self, save_model_path):
@@ -429,8 +416,7 @@ class ResNeXtRegressor_QR(ResNeXtRegressor):
         Guarda el estado del modelo en un archivo checkpoint.
         """
         checkpoint = {
-            'pred_model_type': 'QR',
-            'use_metadata': self.use_metadata,
+            'pred_model_type': self.PRED_MODEL_TYPE,
             'torch_state_dict': self.state_dict(),
             'alpha': self.alpha,
             'quantiles': self.quantiles
@@ -443,24 +429,8 @@ class ResNeXtRegressor_QR(ResNeXtRegressor):
         Carga el estado del modelo desde un checkpoint
         """
         self.load_state_dict(checkpoint['torch_state_dict'])
-        if checkpoint['pred_model_type'] == 'QR':
-            self.alpha = checkpoint['alpha']
-            self.quantiles = checkpoint['quantiles']
-
-
-    def evaluate(self, dataloader, metric_fn=None):
-        """
-        Evalúa el modelo en un conjunto de datos.
-        """
-        # Determina la función de métrica
-        metric_fn = metric_fn if metric_fn is not None else self.loss_function 
-        
-        # Obtiene todas las predicciones y valores verdaderos
-        all_predicted, all_targets = self._inference(dataloader)
-        
-        # Calcula el valor de la métrica y lo devuelve
-        metric_value = metric_fn(all_predicted, all_targets)
-        return metric_value
+        self.quantiles = checkpoint['quantiles']
+        self.alpha = checkpoint['alpha']
     
     
     def inference(self, dataloader):
@@ -486,22 +456,26 @@ class ResNeXtRegressor_QR(ResNeXtRegressor):
 
 class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
     
-    def __init__(self, confidence=0.9, use_metadata=False, meta_input_size=0):
+    PRED_MODEL_TYPE = 'CQR'
+    
+    def __init__(self, confidence=0.9):
         """
         Inicializa el regresor ResNeXt con CQR (Conformalized Quantile Regression).
         """
-        super().__init__(confidence, use_metadata=use_metadata, meta_input_size=meta_input_size)
+        # Inicializa la clase padre
+        super().__init__(confidence)
+        
+        # Parámetros para la conformal prediction
         self.q_hat_lower = None 
         self.q_hat_upper = None
-        
+    
     
     def save_checkpoint(self, save_model_path):
         """
         Guarda el estado del modelo en un archivo checkpoint.
         """
         checkpoint = {
-            'pred_model_type': 'CQR',
-            'use_metadata': self.use_metadata,
+            'pred_model_type': self.PRED_MODEL_TYPE,
             'torch_state_dict': self.state_dict(),
             'alpha': self.alpha,
             'quantiles': self.quantiles,
@@ -516,26 +490,17 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
         Carga el estado del modelo desde un checkpoint
         """
         self.load_state_dict(checkpoint['torch_state_dict'])
-        if checkpoint['pred_model_type'] == 'CQR':
-            self.alpha = checkpoint['alpha'] 
-            self.quantiles = checkpoint['quantiles'] if 'quantiles' in checkpoint else None
-            self.q_hat_lower = checkpoint['q_hat_lower'] if 'q_hat_lower' in checkpoint else None
-            self.q_hat_upper = checkpoint['q_hat_upper'] if 'q_hat_upper' in checkpoint else None
-
-
-    def evaluate(self, dataloader, metric_fn=None):
-        """
-        Evalúa el modelo en un conjunto de datos.
-        """
-        # Determina la función de métrica
-        metric_fn = metric_fn if metric_fn is not None else self.loss_function 
+        if (checkpoint['pred_model_type'] == self.PRED_MODEL_TYPE and
+            checkpoint['quantiles'] == self.quantiles and
+            checkpoint['alpha'] == self.alpha and
+            'q_hat_lower' in checkpoint and
+            'q_hat_upper' in checkpoint
+        ):
+            self.q_hat_lower = checkpoint['q_hat_lower']
+            self.q_hat_upper = checkpoint['q_hat_upper']
         
-        # Obtiene todas las predicciones y valores verdaderos
-        all_predicted, all_targets = self._inference(dataloader)
-        
-        # Calcula el valor de la métrica y lo devuelve
-        metric_value = metric_fn(all_predicted, all_targets)
-        return metric_value
+        self.quantiles = checkpoint['quantiles']
+        self.alpha = checkpoint['alpha']
     
     
     def calibrate(self, calib_loader):
@@ -561,8 +526,8 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
     
     def inference(self, dataloader):
         
-        if self.q_hat_lower is None:
-            raise ValueError("Modelo no calibrado. Parámetro 'q_hat_lower' no determinado.")
+        if self.q_hat_lower is None or self.q_hat_upper is None:
+            raise ValueError("Modelo no calibrado")
         
         # Obtiene predicciones puntuales e interválicas y valores reales
         point_pred_values, lower_pred_values, upper_pred_values, true_values = super().inference(dataloader)

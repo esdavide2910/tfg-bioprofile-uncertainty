@@ -88,6 +88,7 @@ class ResNeXtClassifier(nn.Module):
     
     def __init__(self, num_classes, **kwargs):
         
+        # Inicializa la clase padre
         super().__init__()
         
         # Almacena el número de clases de clasificación
@@ -99,19 +100,16 @@ class ResNeXtClassifier(nn.Module):
         self.pool_avg = nn.AdaptiveAvgPool2d((1,1))
         self.flatten = nn.Flatten()
         
-        # 2) Metadata embedding
-        self.embedding = nn.Sequential(
-            nn.Embedding(num_embeddings=2, embedding_dim=16),
-            nn.LayerNorm(16)  # Normalización para embeddings
-        )
-        
-        # 3) Classifier según el tipo de clasificación
-        input_size = 2048 + 16 # características aplanadas + embedding
+        # 2) Classifier según el tipo de clasificación
+        input_size = 2048 # características aplanadas 
         output_size = 1 if num_classes==2 else num_classes
         self.classifier = ClassifierResNeXt(input_size, output_size)
         
         # Define la función de pérdida
         self.loss_function = nn.BCEWithLogitsLoss() if num_classes==2 else nn.CrossEntropyLoss()
+        
+        # Define la temperatura ... 
+        self.temperature = nn.Parameter(torch.ones(1) * 1) #*1.5
     
     
     def save_checkpoint(self, save_model_path):
@@ -126,10 +124,13 @@ class ResNeXtClassifier(nn.Module):
     
     def load_checkpoint(self, checkpoint):
         """Carga el estado del modelo desde un checkpoint"""
-        self.load_state_dict(checkpoint['torch_state_dict'])
+        if checkpoint['num_classes'] != self.num_classes:
+            # Quitar pesos de la capa final
+            checkpoint['torch_state_dict'].pop('classifier.fc2.2.weight', None)
+            checkpoint['torch_state_dict'].pop('classifier.fc2.2.bias', None)
+        self.load_state_dict(checkpoint['torch_state_dict'], strict=False)
     
-    
-    def forward(self, image, metadata):
+    def forward(self, image):
         """Paso forward del modelo"""
         
         # Extrae y aplana las características
@@ -137,37 +138,81 @@ class ResNeXtClassifier(nn.Module):
         x = self.pool_avg(x)
         x = self.flatten(x)
         
-        # Procesa los metadatos con el embedding
-        y = self.embedding(metadata)
-        
-        # Concatena las características profundas aplanadas con el embedding de sexo 
-        z = torch.cat([x,y], dim=1)
-        
         # Pasa por el clasificador para obtener las predicciones
-        outputs =  self.classifier(z)
+        logits =  self.classifier(x)
         
         # Ajusta la dimensión de salida si es necesario
-        outputs = outputs.squeeze(-1) if outputs.dim() > 1 and outputs.shape[-1] == 1 else outputs
+        logits = logits.squeeze(-1) if logits.dim() > 1 and logits.shape[-1] == 1 else logits
+        
+        # Aplica temperature scaling solo en modo evaluación
+        if not self.training:
+            logits = self.temperature_scale(logits)
+        
+        return logits
+    
+    
+    def temperature_scale(self, logits):
+        """
+        Perform temperature scaling on logits
+        """
+        if self.num_classes == 2:
+            # Logits de forma (batch,) o (batch, 1) — solo divide directamente
+            return logits / self.temperature
+        else:
+            # Logits de forma (batch, num_classes)
+            temperature = self.temperature.unsqueeze(1).expand(logits.size(0), logits.size(1))
+            return logits / temperature
+    
+    
+    def set_temperature(self, valid_loader):
+        
+        # Pone la red en modo evaluación 
+        self.eval()
+        
+        # Listas para almacenar logits y etiquetas verdaderas de todo el conjunto de validación
+        logits_list = []
+        labels_list = []
+        
+        # Desactiva el cálculo de gradientes para eficiencia
+        with torch.no_grad():
+            for images, labels in valid_loader:
+                images, labels = images.cuda(), labels.cuda()
+                # Obtiene los logits del modelo sin aplicar temperature scaling
+                logits = self.forward(images)  
+                logits_list.append(logits)
+                labels_list.append(labels)
+        
+        # Concatena todos los logits y etiquetas en un solo tensor para procesarlos juntos
+        logits = torch.cat(logits_list)
+        labels = torch.cat(labels_list)
+        
+        # Define el optimizador LBFGS para ajustar la temperatura (parámetro único)
+        optimizer = torch.optim.LBFGS([self.temperature], lr=0.01, max_iter=50)
+        
+        # Función requerida por LBFGS para reevaluar la función objetivo y los gradientes
+        def eval():
+            optimizer.zero_grad()
+            loss = self.loss_function(self.temperature_scale(logits), labels.float())
+            loss.backward()
+            return loss
 
-        return outputs
-
-
+        # Ejecuta la optimización para encontrar la temperatura que minimiza la pérdida
+        optimizer.step(eval)
+    
+    
     def get_layer_groups(self):
         """Devuelve los parámetros del modelo agrupados por capas, de más superficiales a más profundas"""
-        
         layer_groups = []
-        
         layer_groups.append(list(self.feature_extractor.conv1.parameters()))
         layer_groups.append(list(self.feature_extractor.conv2.parameters()))
         layer_groups.append(list(self.feature_extractor.conv3.parameters()))
         layer_groups.append(list(self.feature_extractor.conv4.parameters()))
         layer_groups.append(list(self.feature_extractor.conv5.parameters()))
-        layer_groups.append(list(self.classifier.fc1.parameters(), self.embedding.parameters()))
+        layer_groups.append(list(self.classifier.fc1.parameters()))
         layer_groups.append(list(self.classifier.fc2.parameters()))
-        
         return layer_groups
-
-
+    
+    
     def train_epoch(self, dataloader, optimizer, scheduler=None, loss_fn=None):
         """Entrena el modelo por una época completa"""
         
@@ -181,22 +226,22 @@ class ResNeXtClassifier(nn.Module):
         epoch_loss = 0
         
         # Itera sobre todos los batches del dataloader
-        for images, metadata, labels in dataloader:
+        for images, labels in dataloader:
             
-            # Obtiene las imágenes y metadata de entrenamiento y sus valores objetivo
-            images, metadata, labels = images.to('cuda'), metadata.to('cuda'), labels.to('cuda')
+            # Obtiene las imágenes de entrenamiento y sus clases verdaderas
+            images, labels = images.to('cuda'), labels.to('cuda')
             
             # Limpia los gradientes de la iteración anterior
             optimizer.zero_grad()
             
             # Obtiene las predicciones del modelo
-            outputs = self.forward(images, metadata)
-            
-            # Asegura que las etiquetas tengan el tipo correcto
-            labels = labels.float()
+            logits = self.forward(images)
             
             # Calcula la pérdida de las predicciones
-            loss = loss_fn(outputs, labels)
+            if self.num_classes == 2:
+                loss = loss_fn(logits, labels.float())
+            else:
+                loss = loss_fn(logits, labels.long())
             
             # Realiza la retropropagación para calcular los gradientes (propagación hacia atrás)
             loss.backward()
@@ -206,8 +251,8 @@ class ResNeXtClassifier(nn.Module):
             
             # Actualiza el scheduler de la tasa de aprendizaje (si se proporciona)
             if scheduler is not None:
-                scheduler.step()   
-    
+                scheduler.step()
+            
             # Acumula la pérdida de este batch
             epoch_loss += loss.item()  
         
@@ -216,93 +261,105 @@ class ResNeXtClassifier(nn.Module):
         return avg_loss
     
     
-    def _inference(self, dataloader):
+    def _inference(self, dataloader, return_probs=False):
         
         # Pone la red en modo evaluación 
         self.eval()
         
         # Inicializa listas si son requeridas
-        all_targets = [] 
         all_outputs = []
+        all_true_labels = [] 
         
-        # Flag para detectar si el dataloader entrega targets
-        has_targets = False
+        # Flag para detectar si el dataloader entrega etiquetas
+        has_true_labels = False
         
         # Desactiva el cálculo de gradientes para eficiencia
         with torch.no_grad():
             for batch in dataloader:
                 
-                # Verifica si el batch contiene (images, metadata, targets) o solo (images, metadata)
-                if isinstance(batch, (list, tuple)) and len(batch) == 3:
-                    images, metadata, targets = batch 
-                    images, metadata = images.to('cuda'), metadata.to('cuda')
-                    has_targets = True
-                    all_targets.append(targets.cpu())
-                    
-                elif isinstance(batch, (list, tuple)) and len(batch) == 2:
-                    images, metadata = batch 
-                    images, metadata = images.to('cuda'), metadata.to('cuda')
-                    
+                # Verifica si el batch contiene (image, target) o solo (image)
+                if isinstance(batch, (list, tuple)) and len(batch) == 2:
+                    images, true_labels = batch 
+                    images = images.to('cuda')
+                    has_true_labels = True
+                    all_true_labels.append(true_labels.cpu())
                 else:
-                    images = batch.to('cuda')
-                    metadata = None
-
+                    images = batch
+                    images = images.to('cuda')
+                
                 # Forward pass
-                outputs = self.forward(images, metadata)
+                logits = self.forward(images)
                 
-                # Convertir salidas a probabilidades
-                if self.num_classes == 2:
-                    # Para clasificación binaria: aplica sigmoide y crea formato (n, 2)
-                    p = torch.sigmoid(outputs)
-                    probabilities = torch.stack([1 - p, p], dim=1).squeeze()  # (n, 2)
+                if return_probs:
+                    if self.num_classes == 2:
+                        # Clasificación binaria: usa sigmoide y empaqueta como (n, 2)
+                        p = torch.sigmoid(logits)
+                        pred_scores = torch.stack([1 - p, p], dim=1).squeeze()
+                    else:
+                        # Clasificación multiclase: usa softmax
+                        pred_scores = torch.softmax(logits, dim=1)
+                    
+                    all_outputs.append(pred_scores.cpu())
                 else:
-                    # Para clasificación multiclase: aplica softmax normal
-                    probabilities = torch.softmax(outputs, dim=1)
-                
-                # Recolecta las probabilidades
-                all_outputs.append(probabilities.cpu())
+                    all_outputs.append(logits.cpu())
         
         # Concatena los resultados
         outputs = torch.cat(all_outputs)
-        targets = torch.cat(all_targets) if has_targets else None
+        true_labels = torch.cat(all_true_labels) if has_true_labels else None
         
-        # Devuelve las probabilidades predichas para cada clase y las clases verdaderas
-        return outputs, targets 
+        # Devuelve ... 
+        return outputs, true_labels
     
     
     def inference(self, dataloader):
         
-        # Obtiene las probabilidades predichas para cada clase y la clase verdadera para cada instancia
-        pred_scores, true_classes = self._inference(dataloader)
-        
+        # Obtiene las probabilidades predichas para cada clase y la etiqueta verdadera para cada instancia
+        pred_scores, true_labels = self._inference(dataloader, return_probs=True)
+
         # Determina la clase predicha (la de mayor probabilidad) para cada instancia
         _, pred_classes = torch.max(pred_scores, dim=1)
         
         # Convierte las clases predichas a one-hot encoding
         pred_sets = nn.functional.one_hot(pred_classes, num_classes=self.num_classes)
         
-        return pred_classes, pred_sets, true_classes
-
-
-    def evaluate(self, dataloader, metric_fn=None):
+        return pred_classes, pred_sets, true_labels
+    
+    
+    # def evaluate(self, dataloader, metric_fn=None):
+    #     """Evalúa el modelo en un conjunto de datos"""
+        
+    #     # Determina la función de métrica
+    #     metric_fn = metric_fn if metric_fn is not None else self.loss_function 
+        
+    #     # Obtiene las probabilidades predichas para cada clase y la clase verdadera para cada instancia
+    #     pred_scores, true_classes = self._inference(dataloader, return_probs=True)
+        
+    #     # Determina la clase  predicha como la clase  con mayor puntuación
+    #     _, pred_classes = torch.max(pred_scores, dim=1) 
+        
+    #     # Calcula el valor de la métrica y lo devuelve
+    #     return metric_fn(pred_classes, true_classes)
+    
+    
+    def evaluate(self, dataloader):
         """Evalúa el modelo en un conjunto de datos"""
         
-        # Determina la función de métrica
-        metric_fn = metric_fn if metric_fn is not None else self.loss_function 
+        # Determinamos la función de pérdida
+        loss_fn = self.loss_function 
         
-        # Obtiene todas las predicciones y valores verdaderos
-        all_predicted, all_targets = self._inference(dataloader)
+        # Obtiene las probabilidades predichas para cada clase y la clase verdadera para cada instancia
+        logits, true_labels = self._inference(dataloader)
         
-        if isinstance(metric_fn, nn.BCEWithLogitsLoss):
-            # Asegura que targets tengan dtype correcto (float) 
-            all_targets = all_targets.float()
+        # Calcula la pérdida en todos los datos
+        if self.num_classes == 2:
+            loss = loss_fn(logits, true_labels.float()).item()
+        else:
+            loss = loss_fn(logits, true_labels.long()).item()
         
-        # Calcula el valor de la métrica y lo devuelve
-        return metric_fn(all_predicted, all_targets)
-
+        return loss
 
 #-------------------------------------------------------------------------------------------------------------
-    
+
 class ResNeXtClassifier_LAC(ResNeXtClassifier):
     
     PRED_MODEL_TYPE = 'LAC'
@@ -331,7 +388,11 @@ class ResNeXtClassifier_LAC(ResNeXtClassifier):
     
     def load_checkpoint(self, checkpoint):
         """Carga el estado del modelo desde un checkpoint"""
-        self.load_state_dict(checkpoint['torch_state_dict'])
+        if checkpoint['num_classes'] != self.num_classes:
+            # Quitar pesos de la capa final
+            checkpoint['torch_state_dict'].pop('classifier.fc2.2.weight', None)
+            checkpoint['torch_state_dict'].pop('classifier.fc2.2.bias', None)
+        self.load_state_dict(checkpoint['torch_state_dict'], strict=False)
         if checkpoint['pred_model_type'] == self.PRED_MODEL_TYPE and checkpoint['alpha'] == self.alpha and 'q_hat' in checkpoint:
             self.q_hat = checkpoint['q_hat']
     
@@ -339,20 +400,17 @@ class ResNeXtClassifier_LAC(ResNeXtClassifier):
     def calibrate(self, calib_loader):
         
         # Obtiene las clases predichas y verdaderas para el conjunto de calibración
-        calib_pred_scores, calib_true_classes  = self._inference(calib_loader)
+        calib_pred_scores, calib_true_classes  = self._inference(calib_loader, return_probs=True)
         
         # Calcula el nivel de cuantificación ajustado basado en el tamaño del conjunto de calibración y alpha
         n = len(calib_true_classes)
         q_level = math.ceil((1.0 - self.alpha) * (n + 1.0)) / n
-        print("q_level: ", q_level)
         
         # Calcula las puntuaciones de no conformidad 
         nonconformity_scores = 1 - calib_pred_scores[torch.arange(n), calib_true_classes]
-        print("noncoformity_scores: ", nonconformity_scores)
         
         # Calcula el cuantil empírico q_hat que se usará para formar los conjuntos de predicción
         self.q_hat = torch.quantile(nonconformity_scores, q_level, interpolation='higher')
-        print("q_hat: ", self.q_hat)
     
     
     def inference(self, dataloader):
@@ -362,7 +420,7 @@ class ResNeXtClassifier_LAC(ResNeXtClassifier):
             raise ValueError("Modelo no calibrado")
         
         # Obtiene las predicciones y las clases verdaderas para el conjunto de evaluación
-        pred_scores, true_classes = self._inference(dataloader)
+        pred_scores, true_classes = self._inference(dataloader, return_probs=True)
         
         # Determina la clase  predicha como la clase  con mayor puntuación
         _, pred_classes = torch.max(pred_scores, dim=1) 
@@ -376,12 +434,12 @@ class ResNeXtClassifier_LAC(ResNeXtClassifier):
         
         # Devuelve las clases predichas, conjuntos de predicción y clases verdaderas
         return pred_classes, pred_sets, true_classes
-    
+
 #-------------------------------------------------------------------------------------------------------------
+
+class ResNeXtClassifier_MCM(ResNeXtClassifier):
     
-class ResNeXtClassifier_Mondrian(ResNeXtClassifier):
-    
-    PRED_MODEL_TYPE = 'mondrian'
+    PRED_MODEL_TYPE = 'MCM'
     
     def __init__(self, num_classes, confidence=0.9):
         
@@ -407,17 +465,24 @@ class ResNeXtClassifier_Mondrian(ResNeXtClassifier):
     
     def load_checkpoint(self, checkpoint):
         """Carga el estado del modelo desde un checkpoint"""
-        self.load_state_dict(checkpoint['torch_state_dict'])
-        if checkpoint['pred_model_type'] == self.PRED_MODEL_TYPE and checkpoint['alpha'] == self.alpha and 'q_hat_per_class' in checkpoint:
+        if checkpoint['num_classes'] != self.num_classes:
+            # Quitar pesos de la capa final
+            checkpoint['torch_state_dict'].pop('classifier.fc2.2.weight', None)
+            checkpoint['torch_state_dict'].pop('classifier.fc2.2.bias', None)
+        self.load_state_dict(checkpoint['torch_state_dict'], strict=False)
+        if (checkpoint['pred_model_type'] == self.PRED_MODEL_TYPE and 
+            checkpoint['alpha'] == self.alpha and 
+            'q_hat_per_class' in checkpoint
+        ):
             self.q_hat_per_class = checkpoint['q_hat_per_class']
     
     
     def calibrate(self, calib_loader):
         
         #
-        calib_pred_scores, calib_true_classes = self._inference(calib_loader)
+        calib_pred_scores, calib_true_classes = self._inference(calib_loader, return_probs=True)
         n = len(calib_true_classes)
-
+        
         # Inicializa estructura para guardar puntuaciones por clase verdadera
         scores_by_class = {k: [] for k in range(self.num_classes)}
         
@@ -435,17 +500,16 @@ class ResNeXtClassifier_Mondrian(ResNeXtClassifier):
             self.q_hat_per_class[cls] = torch.quantile(
                 torch.tensor(scores), q_level, interpolation="higher"
             )
-            print(f"Clase {cls} -> q_hat: {self.q_hat_per_class[cls]}")
     
-
+    
     def inference(self, dataloader):
         
         if not self.q_hat_per_class:
             raise ValueError("Modelo no calibrado")
         
-        pred_scores, true_classes = self._inference(dataloader)
+        pred_scores, true_classes = self._inference(dataloader, return_probs=True)
         _, pred_classes = torch.max(pred_scores, dim=1)
-
+        
         # Construye conjunto de predicción usando q_hat específico por clase
         n = pred_scores.shape[0]
         pred_sets = torch.zeros_like(pred_scores, dtype=torch.uint8)
@@ -453,9 +517,229 @@ class ResNeXtClassifier_Mondrian(ResNeXtClassifier):
         for c in range(self.num_classes):
             threshold = 1 - self.q_hat_per_class.get(c, 1.0)  # por defecto no incluye
             pred_sets[:, c] = (pred_scores[:, c] >= threshold).to(torch.uint8)
-
+        
         # Evita conjuntos vacíos
         empty_rows = (pred_sets.sum(dim=1) == 0)
         pred_sets[empty_rows, pred_classes[empty_rows]] = 1
-
+        
         return pred_classes, pred_sets, true_classes
+
+#-------------------------------------------------------------------------------------------------------------
+
+class ResNeXtClassifier_APS(ResNeXtClassifier):
+    
+    PRED_MODEL_TYPE = 'APS'
+    
+    def __init__(self, num_classes, confidence=0.9):
+        
+        # Inicializa la clase padre con los parámetros base
+        super().__init__(num_classes)
+        
+        # Parámetros para la conformal prediction
+        self.alpha = 1-confidence
+        self.q_hat = None 
+    
+    
+    def save_checkpoint(self, save_model_path):
+        """Guarda el estado del modelo en un archivo checkpoint"""
+        checkpoint = {
+            'pred_model_type': self.PRED_MODEL_TYPE,
+            'num_classes': self.num_classes,
+            'torch_state_dict': self.state_dict(),
+            'alpha': self.alpha,
+            'q_hat': self.q_hat
+        }
+        torch.save(checkpoint, save_model_path)
+    
+    
+    def load_checkpoint(self, checkpoint):
+        """Carga el estado del modelo desde un checkpoint"""
+        self.load_state_dict(checkpoint['torch_state_dict'], strict=False)
+        if (checkpoint['pred_model_type'] == self.PRED_MODEL_TYPE and 
+            checkpoint['alpha'] == self.alpha and 
+            'q_hat' in checkpoint
+        ):
+            self.q_hat_per_class = checkpoint['q_hat']
+    
+    
+    def calibrate(self, calib_loader):
+        
+        # Obtiene las clases predichas y verdaderas para el conjunto de calibración
+        pred_scores, true_labels  = self._inference(calib_loader, return_probs=True)
+        
+        # Obtiene el número de instancias del conjunto
+        n = len(true_labels)
+        
+        # Ordena los scores de mayor a menor y calcula la suma acumulada
+        sorted_scores, sorted_class_indices = torch.sort(pred_scores, dim=1, descending=True)
+        cumulative_scores = torch.cumsum(sorted_scores, dim=1)
+        
+        # Encuentra la posición de la clase verdadera en los índices ordenados
+        true_class_ranks = (sorted_class_indices == true_labels.unsqueeze(1)).float().argmax(dim=1)
+        
+        # Obtiene las puntuaciones  de no conformidad
+        nonconformity_scores = cumulative_scores[torch.arange(n), true_class_ranks]
+        
+        # Calcula el nivel de cuantificación ajustado basado en el tamaño del conjunto de calibración y alpha
+        q_level = math.ceil((1.0 - self.alpha) * (n + 1.0)) / n
+        
+        # Calcula el umbral de no conformidad como el percentil q_level de los valores de conformidad usando 
+        # cuantiles
+        self.q_hat = torch.quantile(nonconformity_scores, q_level, interpolation='higher').item()
+    
+    
+    def inference(self, dataloader):
+        
+        # Lanza un error si el modelo no está calibrado (q_hat no está determinado)
+        if self.q_hat is None:
+            raise ValueError("Modelo no calibrado")
+    
+        #---------------------------------------------------------------------------------------
+        
+        # Obtiene las predicciones y las clases verdaderas para el conjunto de evaluación
+        pred_scores, true_labels = self._inference(dataloader, return_probs=True)
+        
+        # Obtiene el número de instancias del conjunto
+        n = len(true_labels)
+        
+        #---------------------------------------------------------------------------------------
+        
+        # Determina la clase predicha como la clase con mayor puntuación
+        _, pred_labels = torch.max(pred_scores, dim=1) # Obtiene el índice de la score más alta para cada instancia
+        
+        #---------------------------------------------------------------------------------------
+        
+        # Ordena los scores de mayor a menor y calcula la suma acumulada
+        sorted_scores, sorted_class_indices = torch.sort(pred_scores, dim=1, descending=True)
+        cumulative_scores = torch.cumsum(sorted_scores, dim=1)
+        
+        # Construye conjunto predictivo: incluye clases con suma acumulada <= q_hat
+        inclusion_mask = cumulative_scores <= self.q_hat # máscara booleana (n, num_classes)
+        
+        # Para evitar conjuntos vacíos, primero verifica si hay filas con todo False
+        empty_rows = (~inclusion_mask.any(dim=1))  # (n,), True donde conjunto vacío
+
+        # En esas filas vacías, incluye la primera clase (de mayor score)                                     # O debería aquí incluir todas las clases?
+        inclusion_mask[empty_rows, 0] = True
+        
+        # Ahora construye la matriz de predicción (n, num_classes) en orden original 
+        pred_sets = torch.zeros_like(pred_scores, dtype=torch.uint8) 
+        
+        for i in range(n):
+            # Para cada instancia, obtiene las clases incluidas según la máscara
+            included_classes = sorted_class_indices[i][inclusion_mask[i]]
+            # Marca esas clases en la fila i de pred_sets
+            pred_sets[i, included_classes] = 1
+
+        return pred_labels, pred_sets, true_labels
+
+#-------------------------------------------------------------------------------------------------------------
+
+class ResNeXtClassifier_RAPS(ResNeXtClassifier_APS):
+    
+    PRED_MODEL_TYPE = 'RAPS'
+    
+    def __init__(self, num_classes, confidence=0.9):
+        
+        # Inicializa la clase padre con los parámetros base
+        super().__init__(num_classes, confidence)
+    
+    
+    # def save_checkpoint(self, save_model_path):
+    #     """Guarda el estado del modelo en un archivo checkpoint"""
+    #     checkpoint = {
+    #         'pred_model_type': self.PRED_MODEL_TYPE,
+    #         'num_classes': self.num_classes,
+    #         'torch_state_dict': self.state_dict(),
+    #         'alpha': self.alpha,
+    #         'q_hat': self.q_hat
+    #     }
+    #     torch.save(checkpoint, save_model_path)
+    
+    
+    # def load_checkpoint(self, checkpoint):
+    #     """Carga el estado del modelo desde un checkpoint"""
+    #     if checkpoint['num_classes'] != self.num_classes:
+    #         # Quitar pesos de la capa final
+    #         checkpoint['torch_state_dict'].pop('classifier.fc2.2.weight', None)
+    #         checkpoint['torch_state_dict'].pop('classifier.fc2.2.bias', None)
+    #     self.load_state_dict(checkpoint['torch_state_dict'], strict=False)
+    #     if (checkpoint['pred_model_type'] == self.PRED_MODEL_TYPE and 
+    #         checkpoint['alpha'] == self.alpha and 
+    #         'q_hat' in checkpoint
+    #     ):
+    #         self.q_hat_per_class = checkpoint['q_hat']
+    
+    
+    # def calibrate(self, calib_loader):
+        
+    #     # Obtiene las clases predichas y verdaderas para el conjunto de calibración
+    #     pred_scores, true_labels  = self._inference(calib_loader, return_probs=True)
+        
+    #     # Obtiene el número de instancias del conjunto
+    #     n = len(true_labels)
+        
+    #     # Ordena los scores de mayor a menor y calcula la suma acumulada
+    #     sorted_scores, sorted_class_indices = torch.sort(pred_scores, dim=1, descending=True)
+    #     cumulative_scores = torch.cumsum(sorted_scores, dim=1)
+        
+    #     # Encuentra la posición de la clase verdadera en los índices ordenados
+    #     true_class_ranks = (sorted_class_indices == true_labels.unsqueeze(1)).float().argmax(dim=1)
+        
+    #     # Obtiene las puntuaciones  de no conformidad
+    #     nonconformity_scores = cumulative_scores[torch.arange(n), true_class_ranks]
+        
+    #     # Calcula el nivel de cuantificación ajustado basado en el tamaño del conjunto de calibración y alpha
+    #     q_level = math.ceil((1.0 - self.alpha) * (n + 1.0)) / n
+        
+    #     # Calcula el umbral de no conformidad como el percentil q_level de los valores de conformidad usando 
+    #     # cuantiles
+    #     self.q_hat = torch.quantile(nonconformity_scores, q_level, interpolation='higher').item()
+    
+    
+    # def inference(self, dataloader):
+        
+    #     # Lanza un error si el modelo no está calibrado (q_hat no está determinado)
+    #     if self.q_hat is None:
+    #         raise ValueError("Modelo no calibrado")
+    
+    #     #---------------------------------------------------------------------------------------
+        
+    #     # Obtiene las predicciones y las clases verdaderas para el conjunto de evaluación
+    #     pred_scores, true_labels = self._inference(dataloader, return_probs=True)
+        
+    #     # Obtiene el número de instancias del conjunto
+    #     n = len(true_labels)
+        
+    #     #---------------------------------------------------------------------------------------
+        
+    #     # Determina la clase predicha como la clase con mayor puntuación
+    #     _, pred_labels = torch.max(pred_scores, dim=1) # Obtiene el índice de la score más alta para cada instancia
+        
+    #     #---------------------------------------------------------------------------------------
+        
+    #     # Ordena los scores de mayor a menor y calcula la suma acumulada
+    #     sorted_scores, sorted_class_indices = torch.sort(pred_scores, dim=1, descending=True)
+    #     cumulative_scores = torch.cumsum(sorted_scores, dim=1)
+        
+    #     # Construye conjunto predictivo: incluye clases con suma acumulada <= q_hat
+    #     inclusion_mask = cumulative_scores <= self.q_hat # máscara booleana (n, num_classes)
+        
+    #     # Para evitar conjuntos vacíos, primero verifica si hay filas con todo False
+    #     empty_rows = (~inclusion_mask.any(dim=1))  # (n,), True donde conjunto vacío
+
+    #     # En esas filas vacías, incluye la primera clase (de mayor score)                                     # O debería aquí incluir todas las clases?
+    #     inclusion_mask[empty_rows, 0] = True
+        
+    #     # Ahora construye la matriz de predicción (n, num_classes) en orden original 
+    #     pred_sets = torch.zeros_like(pred_scores, dtype=torch.uint8) 
+        
+    #     for i in range(n):
+    #         # Para cada instancia, obtiene las clases incluidas según la máscara
+    #         included_classes = sorted_class_indices[i][inclusion_mask[i]]
+    #         # Marca esas clases en la fila i de pred_sets
+    #         pred_sets[i, included_classes] = 1
+
+    #     return pred_labels, pred_sets, true_labels
+
+#-------------------------------------------------------------------------------------------------------------

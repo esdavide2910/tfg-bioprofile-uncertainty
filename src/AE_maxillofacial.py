@@ -10,7 +10,6 @@ import torch
 # 
 from torch.utils.data import Dataset, DataLoader, Subset
 from torchvision import transforms
-import torch.nn as nn
 
 #
 if not torch.cuda.is_available():
@@ -54,7 +53,6 @@ import random
 
 # Evaluación y partición de modelos
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import KBinsDiscretizer
 
 # Modelos y funciones de pérdida personalizados 
 from conformal_regression_models import *
@@ -63,170 +61,143 @@ from cp_metrics import *
 #-------------------------------------------------------------------------------------------------------------
 # CONFIGURACIÓN DE ARGUMENTOS PARA ENTRENAMIENTO Y EVALUACIÓN DE LOS MODELOS 
 
-# Crear el parser
-parser = argparse.ArgumentParser(description="Procesa algunos argumentos.")
-
 # Funciones auxiliares
 def validate_confidence(x):
-    x = float(x)
+    try:
+        x = float(x)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"'{x}' no es un número válido para el nivel de confianza")
     if not 0.0 <= x <= 1.0:
         raise argparse.ArgumentTypeError(f"El nivel de confianza debe estar entre 0 y 1 (se recibió {x})")
     return round(x, 2)
 
 def validate_file_extension(filename, extensions, arg_name):
-    if not filename.lower().endswith(extensions):
+    if not any(filename.lower().endswith(ext) for ext in extensions):
         raise argparse.ArgumentTypeError(
-            f"El archivo para '{arg_name}' debe tener extensión: {', '.join(extensions)}"
+            f"El archivo para '{arg_name}' debe tener una de las siguientes extensiones: "+
+            f"{', '.join(extensions)}"
         )
     return filename
 
+# Tipos de modelos de predicción soportados
+PRED_MODEL_TYPES = ['base', 'ICP', 'QR', 'CQR']
 
+# Agregado de argumentos 
+def add_model_args(parser):
+    parser.add_argument('--load_model_path', type=str)
+    parser.add_argument('--save_model_path', type=str)
+    parser.add_argument('--pred_model_type', type=str, choices=PRED_MODEL_TYPES)
+    parser.add_argument('--confidence', type=validate_confidence, default=0.9)
+    return parser
 
-# Argumento para determinar la ruta de donde se carga el modelo
-parser.add_argument(
-    '--load_model_path',
-    type = str,
-    required = False
+def add_training_args(parser):
+    parser.add_argument('--train_head', action='store_true', 
+                        help="Entrena solo la cabeza del modelo")
+    parser.add_argument('--train', action='store_true', 
+                        help="Entrena todo el modelo")
+    parser.add_argument('--training_plot', type=str, default=None, 
+                        help="Archivo para guardar el gráfico de entrenamiento (.png, .jpg, .jpeg)")
+    parser.add_argument('--calibrate', action='store_true')
+    return parser
+
+def add_testing_args(parser):
+    parser.add_argument('--test', action='store_true')
+    parser.add_argument('--save_test_results', type=str, default=None, 
+                        help="Archivo para guardar los resultados de test en CSV")
+    parser.add_argument('-i', '--test_iteration', type=int, default=None)
+    return parser
+
+def add_runtime_args(parser):
+    parser.add_argument('--inference', type=str)
+    parser.add_argument('--seed', type=int, default=22)
+    parser.add_argument('--ignore_warnings', action='store_true', 
+                        help="Ignora warnings")
+    return parser
+
+def add_output_args(parser):
+    parser.add_argument('-o', '--output_stream', type=str, default=None, 
+                        help="Archivo para redirigir salida (stdout + stderr)")
+    parser.add_argument('--append_output', action='store_true', 
+                        help="Añade en vez de sobrescribir salida")
+    return parser
+
+# Crea el parser
+parser = argparse.ArgumentParser(
+    description="Script para entrenamiento, calibración y/o evaluación del modelo para estimación de "+
+                "edad a partir de radiografías maxilofaciales"
 )
 
-# Argumento para determinar el tipo de predicción
-PRED_MODEL_TYPES = ['base', 'QR', 'ICP', 'CRF', 'CQR', 'MCCQR']
-parser.add_argument(
-    '--pred_model_type',
-    type = str,
-    choices = PRED_MODEL_TYPES,
-)
+# Agrega todas las configuraciones al parser
+add_model_args(parser)
+add_training_args(parser)
+add_testing_args(parser)
+add_runtime_args(parser)
+add_output_args(parser)
 
-# Argumento para determinar el nivel de confianza
-parser.add_argument(
-    '--confidence',
-    type = validate_confidence,
-    default = 0.9
-)
-
-# Argumento 'train'
-parser.add_argument(
-    '--train',
-    action = 'store_true'
-)
-
-# Argumento ruta al fichero de dibujado de curvas de aprendizaje de la red
-parser.add_argument(
-    '--training_plot',
-    type = argparse.FileType('wb'),
-    default=None,
-    help = "Archivo para guardar gráfico de curva de aprendizaje (.png, .jpg, .jpeg)"
-)
-
-# Argumento 'calibrate'
-parser.add_argument(
-    '--calibrate',
-    action = 'store_true'
-)
-
-# Argumento 'test'
-parser.add_argument(
-    '--test',
-    action = 'store_true'
-)
-
-# Argumento para guardar los resultados del test en CSV
-parser.add_argument(
-    '--save_test_results',
-    type = str,
-    default = None,
-    help = "Archivo para guardar el CSV con los resultados de predicciones obtenidos."
-)
-
-# Argumento para apuntar iteración de los resultados del test en CSV
-parser.add_argument('-i',
-    '--test_results_iteration',
-    type=int,
-    default=None,
-    help="Número de iteración correspondiente a los resultados del test (opcional)."
-)
-
-
-# Argumento para ...
-parser.add_argument(
-    '--inference', 
-    type=str,
-    default=None
-)
-
-# Argumento para determinar la ruta donde se guarda el modelo
-parser.add_argument(
-    '--save_model_path',
-    type = str,
-    required = True
-)
-
-# Argumento para determinar la ruta del archivo para salida de resultados
-parser.add_argument(
-    '-o', '--output_stream',
-    type = str,
-    default = None,
-    help = "Archivo para redirigir toda la salida (stdout + stderr). Usa '-' para terminal (por defecto)"
-)
-
-# Argumento para añadir la salida al archivo
-parser.add_argument(
-    '--append_output',
-    action = 'store_true',
-    help = "Si se especifica, añade la salida al archivo en vez de sobrescribirlo."
-)
-
-# Argumento para cambiar la semilla
-parser.add_argument('--seed', type=str, default = 23)
-
-# Argumento para ignorar los warnings
-parser.add_argument(
-    '--ignore_warnings', action = 'store_true', help = "Ignora todos los warnings durante la ejecución"
-)
-
-# Parsear los argumentos
+# Parsea los argumentos
 args = parser.parse_args()
 
 # Validaciones adicionales
 try:
-    # Validación de extensión para la ruta del fichero de guardado del modelo
-    validate_file_extension(args.save_model_path, ('.pth',), 'save_model_path')
     
-    # Validación de extensión para la ruta del fichero de carga del modelo
-    if hasattr(args, 'load_model_path') and args.load_model_path:
-        validate_file_extension(args.load_model_path, ('.pth',), 'load_model_path')
+    if (args.train or args.train_head) and not args.save_model_path:
+        parser.error("Debe especificar '--save_model_path' al entrenar el modelo.")
     
-    # Validación de extensión para el gráfico si se especifica
-    if hasattr(args, 'training_plot') and args.training_plot:
-        validate_file_extension(args.training_plot.name, ('.png', '.jpg', '.jpeg'), 'training_plot')
+    if args.save_model_path:
+        validate_file_extension(args.save_model_path, ['.pth'], 'save_model_path')
     
-    # Apertura segura del stream de salida
+    if args.load_model_path:
+        validate_file_extension(args.load_model_path, ['.pth'], 'load_model_path')
+        if not os.path.isfile(args.load_model_path):
+            parser.error(f"No se encontró el archivo del modelo en: {args.load_model_path}")
+    
+    if args.training_plot:
+        if not args.train:
+            parser.error("Se especificó '--training_plot' pero no se activó '--train'. "+
+                         "No se generará ningún gráfico sin entrenamiento.")
+        validate_file_extension(args.training_plot.name, ['.png', '.jpg', '.jpeg'], 'training_plot')
+    
+    if args.save_test_results and not args.test:
+        parser.error("Se especificó '--save_test_results' pero no se activó '--test'. " +
+                     "No se pueden guardar resultados si no se realiza una prueba.")
+    
+    if args.test_iteration and not args.save_test_results:
+        parser.error("Se especificó '--test_iteration' pero no '--save_test_results'. " +
+                     "El número de iteración solo tiene sentido si se guardan los resultados.")
+    
+    if args.save_test_results:
+        validate_file_extension(args.save_test_results, ['.csv'], 'save_test_results')
+    
+    # Redirección de salida si se especifica
     if args.output_stream is not None: 
         mode = 'a' if args.append_output else 'w'
         args.output_stream = open(args.output_stream, mode=mode, encoding='utf-8')
         sys.stdout = args.output_stream
         sys.stderr = args.output_stream
-        
+    
     # Configurar warnings
     if args.ignore_warnings:
         warnings.filterwarnings('ignore')
-        
+    
 except Exception as e:
     parser.error(str(e))
 
 #-------------------------------------------------------------------------------------------------------------
 
+# Determina la semilla
+SEED = args.seed
+
 # Fija la semilla para las operaciones aleatorias en Python puro
-random.seed(args.seed)
+random.seed(SEED)
 
 # Fija la semilla para las operaciones aleatorias en NumPy
-np.random.seed(args.seed)
+np.random.seed(SEED)
 
 # Fija la semilla para los generadores aleatorios de PyTorch en CPU
-torch.manual_seed(args.seed)
+torch.manual_seed(SEED)
 
 # Fija la semilla para todos los dispositivos GPU (todas las CUDA devices)
-torch.cuda.manual_seed_all(args.seed)
+torch.cuda.manual_seed_all(SEED)
 
 # Desactiva la autooptimización de algoritmos en cudnn, que puede introducir no determinismo
 # torch.backends.cudnn.benchmark = False
@@ -239,13 +210,13 @@ torch.cuda.manual_seed_all(args.seed)
 
 # Función auxiliar para asegurar que cada worker de DataLoader use una semilla basada en la global
 def seed_worker(worker_id):
-    worker_seed = torch.initial_seed() % 2**args.seed
+    worker_seed = torch.initial_seed() % 2**SEED
     np.random.seed(worker_seed)
     random.seed(worker_seed)
  
 # Generador de números aleatorios para DataLoader
 g = torch.Generator()
-g.manual_seed(args.seed)
+g.manual_seed(SEED)
 
 #-------------------------------------------------------------------------------------------------------------
 
@@ -280,7 +251,6 @@ test_transform = transforms.Compose(
      transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))]
 ) 
 
-
 # Define la clase MaxillofacialXRayDataset, que se utiliza para cargar imágenes de rayos X maxilofaciales 
 # junto con su edad correspondiente desde un fichero de metadatos. 
 class MaxillofacialXRayDataset(Dataset):
@@ -297,7 +267,11 @@ class MaxillofacialXRayDataset(Dataset):
         
         # Preprocesar los campos una sola vez
         self.img_paths = metadata['ID'].apply(lambda id_: os.path.join(images_dir, id_)).tolist()
+        
+        # Clasificación binaria de sexo: 1 para 'F' y 0 para 'M'
         self.sexes = torch.tensor((metadata['Sex'] != 'M').astype(int).values, dtype=torch.long)
+        
+        # Edad en float
         self.ages = torch.tensor(metadata['Age'].values, dtype=torch.float32)
     
     
@@ -312,7 +286,7 @@ class MaxillofacialXRayDataset(Dataset):
         if self.transform:
             image = self.transform(image)
 
-        return image, self.sexes[idx], self.ages[idx]
+        return image, self.ages[idx]
 
 # ------------------------------------------------------------------------------------------------------------
 
@@ -362,28 +336,31 @@ def create_loader(dataset, indices=None, shuffle=False, num_workers=1):
         generator=g
     )
 
-# Obtiene las edades enteras del trainset
-intAges = torch.floor(trainset.ages).to(torch.int).numpy()
+# Obtiene las edades del trainset por tramos de 0.5 años
+halfAges = (np.floor(trainset.ages.numpy() * 2) / 2).astype(np.float32)
 # Hay una única instancia con edad 26, que el algoritmo de separación de entrenamiento y validación será 
-# incapaz de dividir de forma estratificada. Para evitar el error, reasigna esa instancia a la edad 
+# incapaz de dividir de forma estratificada. Para evitar el error, reasigna esa instancia al tramo 
 # inmediatamente inferior
-intAges[intAges==26]=25
+halfAges[halfAges == 26.0] = 25.5
 
-#
+# Obtiene el sexo en binario
+sexes = trainset.sexes.numpy()
+
+# Crear etiquetas  combinadas de estratificación (p.ej.: "18.0_M", "17.5_F")
+stratify_labels = np.array([f"{age:.1f}_{sex}" for age, sex in zip(halfAges, sexes)])
+
+# Determina el número de hilos disponibles 
 num_workers = int(os.environ.get("SLURM_CPUS_PER_TASK", 1))
 
 # División para los modelos 'base' y 'QR'
 if args.pred_model_type in ['base','QR']:
-
+    
     # Divide el conjunto de datos completo de entrenamiento en dos subconjuntos de forma estratificada:
     # - Entrenamiento (80% de las instancias)
     # - Validación (20% de las instancias)
     
-    train_idx, valid_idx =  train_test_split(
-        range(len(trainset)), train_size=0.80, shuffle=True, stratify=intAges
-    )
-
-    # train_idx, valid_idx = stratified_split(trainset.ages.numpy(), train_size=0.8, seed=args.seed)
+    train_idx, valid_idx =  train_test_split(range(len(trainset)), train_size=0.8, shuffle=True, 
+                                             random_state=SEED, stratify=stratify_labels)
 
     train_loader = create_loader(trainset, train_idx, shuffle=True, num_workers=num_workers)
     valid_loader = create_loader(validset, valid_idx)
@@ -395,17 +372,12 @@ else:
     # - Entrenamiento (68% de las instancias)
     # - Validación (17% de las instancias)
     # - Calibración (15% de las instancias)
-
-    # train_idx, calib_idx = stratified_split(trainset.ages.numpy(), train_size=0.85, seed=args.seed)
-    # train_idx, valid_idx = stratified_split([trainset.ages[i] for i in train_idx], train_size=0.8, seed=args.seed)
     
-    train_idx, calib_idx = train_test_split(
-        range(len(trainset)), train_size=0.85, shuffle=True, stratify=intAges
-    )
-
-    train_idx, valid_idx = train_test_split(
-        train_idx, train_size=0.8, shuffle=True, stratify=[intAges[i] for i in train_idx]
-    )
+    train_idx, calib_idx = train_test_split(range(len(trainset)), train_size=0.85, shuffle=True, 
+                                            random_state=SEED, stratify=stratify_labels)
+    
+    train_idx, valid_idx = train_test_split(train_idx, train_size=0.8, shuffle=True, random_state=SEED,
+                                            stratify=[stratify_labels[i] for i in train_idx])
     
     train_loader = create_loader(trainset, train_idx, shuffle=True, num_workers=num_workers)
     valid_loader = create_loader(validset, valid_idx)
@@ -424,39 +396,39 @@ MODEL_CLASSES = {
     'QR': ResNeXtRegressor_QR,
     'ICP': ResNeXtRegressor_ICP,
     'CQR': ResNeXtRegressor_CQR,
-    'CRF': ResNeXtRegressor_CRF,
-    'MCCQR': ResNeXtRegressor_MCCQR
+    # 'CRF': ResNeXtRegressor_CRF,
+    # 'MCCQR': ResNeXtRegressor_MCCQR
 }
 
-#
+# Obtiene los argumentos de tipo de modelo y nivel de confianza desde la línea de comandos
 pred_model_type = args.pred_model_type
 confidence = args.confidence
 
+# Verifica que el tipo de modelo esté entre los tipos permitidos
 if pred_model_type not in PRED_MODEL_TYPES:
     raise ValueError(f"Tipo de predicción desconocida: {pred_model_type}")
 
-# Obtiene la clase del modelo
+# Obtiene la clase del modelo correspondiente al tipo especificado
 model_class = MODEL_CLASSES.get(pred_model_type)
 
-#
+# Instancia el modelo con el nivel de confianza especificado y lo envía a la GPU
 model = model_class(confidence=confidence).to(device)
 
-
+# Si se especificó una ruta para cargar un modelo previamente entrenado
 if args.load_model_path:
     
-    #
+    # Carga el checkpoint desde el archivo especificado 
     checkpoint = torch.load(args.load_model_path, weights_only=False)
     
     # Carga el modelo
     model.load_checkpoint(checkpoint)
 
-
 print("✅ Modelo cargado\n")
 
 #-------------------------------------------------------------------------------------------------------------
-# FINE-TUNING DE LA CABECERA Y EL EMBEDDING
+# FINE-TUNING DE LA CABECERA
 
-if args.train:
+if args.train or args.train_head:
 
     # Congela los parámetros del extractor de características
     for param in model.feature_extractor.parameters():
@@ -467,14 +439,16 @@ if args.train:
 
     # Configura el optimizador para el entrenamiento de la cabecera 
     parameters = [
-        {'params': model.classifier.fc2.parameters(), 'lr': 3e-2},
-        {'params': model.classifier.fc1.parameters(), 'lr': 2e-2},
-        {'params': model.embedding.parameters(), 'lr': 2e-2}
+        {'params': model.classifier.fc2.parameters(), 'lr': 2e-2},
+        {'params': model.classifier.fc1.parameters(), 'lr': 1e-2},
     ]
     optimizer = torch.optim.AdamW(parameters, weight_decay=wd)
 
     # Numero de épocas que se entrena la cabecera
-    NUM_EPOCHS_HEAD = 2
+    NUM_EPOCHS_HEAD = 3
+    
+    # Inicializa la mejor pérdida de validación como la obtenida en el entrenamiento de la cabecera
+    best_valid_loss = float('inf')
 
     for epoch in range(NUM_EPOCHS_HEAD):
         
@@ -502,11 +476,21 @@ if args.train:
             f"Validation Loss: {head_valid_loss:>7.3f} | " +
             f"Time: {time_str}"
         )
+        
+        # Comprueba si la pérdida en validación ha mejorado
+        if head_valid_loss < best_valid_loss:
+            
+            # Actualiza la mejor pérdida en validación obtenida hasta ahora
+            best_valid_loss = head_valid_loss
+            
+            # Guarda los pesos del modelo actual como los mejores hasta ahora
+            model.save_checkpoint(args.save_model_path)
     
-    #
-    model.save_checkpoint(args.save_model_path)
+    # Carga los pesos del modelo que obtuvo la mejor validación
+    checkpoint = torch.load(args.save_model_path)
+    model.load_checkpoint(checkpoint)
 
-    print("✅ Entrenamiento de la nueva cabecera completado\n")
+    print("✅ Entrenamiento de la cabecera completado\n")
 
 #-------------------------------------------------------------------------------------------------------------
 # ENTRENAMIENTO DE LA RED COMPLETA
@@ -542,21 +526,21 @@ if args.train:
             {'params': layer_group, 'lr': lr}
         )
 
-    # Número máximo de épocas a entrenar (si no se activa el early stopping)
-    MAX_EPOCHS = 30
+    # Número de épocas a entrenar 
+    NUM_EPOCHS = 30
 
     # Inicializa la mejor pérdida de validación como la obtenida en el entrenamiento de la cabecera
     best_valid_loss = float('inf')
     
     # Configura el optimizador con los hiperparámetros escogidos
-    optimizer = torch.optim.AdamW(param_groups, lr=lrs, weight_decay=wd)
+    optimizer = torch.optim.AdamW(param_groups, weight_decay=wd)
 
     # Crea el scheduler OneCycleLR
     scheduler = torch.optim.lr_scheduler.OneCycleLR(
         optimizer, 
         max_lr=lrs, 
         steps_per_epoch=len(train_loader),
-        epochs=MAX_EPOCHS
+        epochs=NUM_EPOCHS
     )
     
     # Listas para almacenar las pérdidas de entrenamiento y validación
@@ -564,7 +548,7 @@ if args.train:
     valid_losses = []
 
     # Bucle de entrenamiento por épocas
-    for epoch in range(MAX_EPOCHS):
+    for epoch in range(NUM_EPOCHS):
         
         # Inicia el temporizador para esta época
         start_time = time.time()
@@ -690,23 +674,49 @@ if args.test:
     
 #-------------------------------------------------------------------------------------------------------------
     
-    if args.save_test_results:
+    if args.save_test_results is not None:
         
         #
         n = len(test_pred_point_values)
-        df = pl.DataFrame({
+        new_df = pl.DataFrame({
             "pred_model_type": [pred_model_type] * n,
-            "confidence": [confidence] * n,
-            "iteration": [args.test_results_iteration] * n,
-            "pred_point_value": test_pred_point_values,
-            "pred_lower_bound": test_pred_lower_bound,
-            "pred_upper_bound": test_pred_upper_bound,
-            "true_value": test_true_values
+            "confidence": np.array([confidence] * n, dtype=np.float32),
+            "iteration": [args.test_iteration] * n,
+            "pred_point_value": np.array(test_pred_point_values, dtype=np.float32),
+            "pred_lower_bound": np.array(test_pred_lower_bound, dtype=np.float32),
+            "pred_upper_bound": np.array(test_pred_upper_bound, dtype=np.float32),
+            "true_value": np.array(test_true_values, dtype=np.float32),
         })
         
-        #
-        with open(args.save_test_results, mode="a") as f:
-            df.write_csv(f, separator = ",", include_header=False)
+        # Si el archivo ya existe, cargarlo y filtrar duplicados
+        if os.path.exists(args.save_test_results):
+            existing_df = pl.read_csv(args.save_test_results)
+            
+            # Forzar el esquema correcto para que coincida con new_df
+            existing_df = existing_df.cast({
+                "pred_model_type": pl.Utf8,
+                "confidence": pl.Float32,
+                "iteration": pl.Int64,
+                "pred_point_value": pl.Float32,
+                "pred_lower_bound": pl.Float32,
+                "pred_upper_bound": pl.Float32,
+                "true_value": pl.Float32
+            })
+
+            # Filtrar todas las filas que NO tienen el mismo conjunto clave
+            mask = ~((existing_df["pred_model_type"] == pred_model_type) &
+                    (existing_df["confidence"] == confidence) &
+                    (existing_df["iteration"] == args.test_iteration))
+
+            filtered_df = existing_df.filter(mask)
+
+            # Concatenar el nuevo dataframe
+            final_df = pl.concat([filtered_df, new_df])
+        else:
+            final_df = new_df
+
+        # Guardar sobrescribiendo el archivo
+        final_df.write_csv(args.save_test_results, separator=",", include_header=True)
 
 #-------------------------------------------------------------------------------------------------------------
 
