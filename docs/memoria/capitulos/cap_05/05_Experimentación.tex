@@ -1,56 +1,6 @@
 \chapter{Experimentación}
 
 
-
-% ------------------------------------------------------------------------------------------------------------
-% ------------------------------------------------------------------------------------------------------------
-
-\section{Experimentos propuestos}
-
-\subsection{Experimentos para la estimación de edad}
-
-Se plantea una comparativa entre diversos métodos de predicción para el problema de AE. 
-Todos los métodos presentan tanto predicción puntual como interválica. De esta forma queremos evaluar
-tanto su utilidad tradicional para estimar el valor más probable como su capacidad para proporcionar
-intervalos de confianza fiables que capturen la incertidumbre predictiva y sean computacionalmente eficientes.
-
-Los métodos seleccionados abarcan tanto aproximaciones clásicas como técnicas modernas de conformal prediction,
-lo que nos permitirá analizar:
-\begin{itemize}
-    \item La precisión en la estimación puntual.
-    \item La validez y eficiencia de los intervalos de predicción.
-    \item El coste computacional asociado a cada aproximación.
-\end{itemize}
-
-El objetivo es alcanzar el 90\% de confianza en las predicciones interválicas. 
-\todo{Quería plantear también 95\%, pero los intervalos ya salían muy amplios. ¿Con qué otra cobertura cree 
-que debería probar?}
-Los métodos propuestos son los siguientes: 
-
-\begin{itemize}
-    \item \textbf{Método `base'}: Se trata de un modelo de regresión puntual sin técnicas de CP. La predicción 
-    interválica se construirá con la predicción puntual +/- 2 veces el error absoluto medio obtenido en el
-    conjunto de validación, que es una aproximación heurística común para construir intervalos de predicción 
-    sin distribución de errores.
-    Este método sirve como `baseline' para comparar la mejora que aportan las técnicas más sofisticadas.
-
-    \item \textbf{Método `ICP'}: Este modelo implementa la técnica ICP.
-    
-    \item \textbf{Método `QR'}: Este modelo implementa QR. Utiliza tres cuantiles 
-    $$
-    [0.5, \alpha/2, 1-\alpha/2]
-    $$ 
-    para predecir la predicción puntual, límite inferior y límite superior, respectivamente.
-
-    \item \textbf{Método `CQR'}: Este modelo implementa la técnica CQR, que combina la flexibilidad de QR con las 
-    garantías de cobertura de CP, calibrando los cuantiles estimados mediante un conjunto de calibración.
-
-    \item \textbf{Método `MCCQR'}: Este modelo implementa la técnica MCCQR.
-    
-    \item \textbf{Método `CRF'}: Este modelo implementa la técnica CRF.
-\end{itemize} 
-
-
 % ------------------------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
 
@@ -69,16 +19,16 @@ entrenamiento y test, manteniendo así la validez de las métricas obtenidas en 
 Sin embargo, si se optimizan los parámetros del modelo durante el entrenamiento sin disponer de un conjunto 
 independiente para evaluar su rendimiento, se corre el riesgo de sobreajustarse a los datos de entrenamiento.
 Es por ello que, además del conjunto de entrenamiento y test, es esencial tener un \textbf{conjunto de 
-validación} independiente que permita evaluar el modelo durante su desarrollo, ajustar hiperparémtros y 
+validación} independiente que permita evaluar el modelo durante su desarrollo, ajustar hiperparámetros y 
 comparar diferentes configuraciones sin contaminar la evaluación final en el conjunto de test.
-
 Se consideró realizar validación cruzada (\textit{cross-validation}), pero debido al elevado coste 
 computacional que implica, los resultados satisfactorios obtenidos mediante una simple partición de los datos 
-(\textit{train/validation split}), y la ausencia de necesidad de optimizar el modelo al máximo para los 
-objetivos de este trabajo, se decidió prescindir de su aplicación.
+(\textit{train/validation split}), se decidió prescindir de su aplicación.
 
 En la Figura \ref{fig:data_split_base} podemos ver la división del \textit{dataset} planteada. Cabe comentar
-que la división se ha realizado de forma estratificada en base a la edad ---como dato de tipo entero---.
+que la división se ha realizado de forma estratificada en base a la edad y el sexo
+\footnote{La estratificación se realizó en intervalos de medio año de edad y por sexo; por ejemplo, una 
+instancia con edad 17.7 y sexo masculino se etiquetó como ``17.5\_M''.}.
 
 \begin{figure}[h]
     \centering
@@ -92,13 +42,20 @@ que la división se ha realizado de forma estratificada en base a la edad ---com
     \label{fig:data_split_base}
 \end{figure}
 
+Es importante destacar que esta división se mantiene constante en todos los experimentos y para todos los 
+problemas planteados, asegurando que las mismas instancias permanezcan en los mismos subconjuntos.
+Esto permite garantizar que ningún modelo preentrenado reutilice datos previamente utilizados en etapas de 
+validación o calibración, algo especialmente relevante dado que los problemas abordados están jerárquicamente 
+relacionados (la clasificación de sexo y mayoría de edad se deriva directamente de la clasificación de 
+mayoría de edad, que a su vez se deriva de la estimación de edad).
+
 Sin embargo, al emplear métodos de calibración o predicción conformal, si usamos los mismos datos de 
-entrenamiento para la calibriación, 
+entrenamiento para la calibración, 
 las probabilidades o intervalos de predicción tenderán a ser optimistas, pues el modelo ha sido entrenado
 con esos datos \cite{niculescu2005}. Por tanto, para evitar el sobreajuste y garantizar validez estadística 
-se requiere de un subconjunto de datos adicional: el \textbf{conjunto de calibración}. Yo he escogido el 
-15\% de los ejemplos de entrenamiento para calibración, basándome en los resultados empíricos de 
-\cite{sesia2020} (que recomienda entre un 10\% y 30\% de datos de entrenamiento dedicados a calibración), 
+se requiere de un subconjunto de datos adicional: el \textbf{conjunto de calibración}. Se ha escogido destinar
+el  20\% de los ejemplos de entrenamiento para calibración, basándose en los resultados empíricos de 
+\cite{sesia2020} (que recomienda dedicar entre un 10\% y 30\% de datos de entrenamiento a calibración), 
 tal y como se muestra en la Figura \ref{fig:data_split_conformal}.
 
 \begin{figure}[h]
@@ -114,9 +71,9 @@ tal y como se muestra en la Figura \ref{fig:data_split_conformal}.
     \label{fig:data_split_conformal}
 \end{figure}
 
-Para una comparativa más justa entre métodos que usan CP y los que no, se utilizará la siguiente estrategia: 
-los métodos que no emplean Conformal Prediction (CP) seguirán el esquema tradicional de división de datos 
-(entrenamiento, validación y test), mientras que los métodos basados en CP incorporarán además un conjunto 
+Para una comparativa más justa entre los métodos que usan CP y los que no, se utilizará la siguiente 
+estrategia: los métodos que no emplean CP seguirán el esquema tradicional de división de datos (en 
+entrenamiento, validación y test), mientras que los métodos basados en CP incorporarán además un conjunto 
 de calibración independiente. Esta diferencia en el diseño experimental nos permitirá cuantificar cómo afecta 
 a la capacidad predictiva de los modelos el hecho de reservar parte de los datos para el proceso de 
 calibración.
@@ -174,15 +131,154 @@ calibración.
 %     \label{fig:CVDiagram}
 % \end{figure}
 
+
+
+
 % ------------------------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
 
-\section{Entrenamiento del modelo}
+\section{Experimentos propuestos}
+
+% ------------------------------------------------------------------------------------------------------------
+
+\subsection{Experimentos para la estimación de edad}
+
+Se plantea una comparativa entre diversos métodos de predicción para el problema de AE. 
+Todos los métodos presentan tanto predicción puntual como interválica. De esta forma queremos evaluar
+tanto su utilidad tradicional para estimar el valor más probable como su capacidad para proporcionar
+intervalos de confianza fiables que capturen la incertidumbre predictiva y sean computacionalmente eficientes.
+
+Los métodos seleccionados abarcan tanto aproximaciones clásicas como técnicas modernas de conformal prediction,
+lo que nos permitirá analizar:
+\begin{itemize}
+    \item La precisión en la estimación puntual.
+    \item La validez y eficacia de los intervalos de predicción.
+    \item El coste computacional asociado a cada aproximación.
+\end{itemize}
+
+El objetivo es alcanzar el 95\% de confianza en las predicciones interválicas, que es la cifra de confianza
+generalmente empleada en AF. 
+Los métodos propuestos son los siguientes: 
+
+\begin{itemize}
+    \item \textbf{Método `base'}: Se trata de un modelo de regresión puntual sin técnicas de CP. La predicción 
+    interválica se construirá con la predicción puntual +/- 2 veces el error absoluto medio obtenido en el
+    conjunto de validación, que es una aproximación heurística común para construir intervalos de predicción 
+    sin distribución de errores.
+    Este método sirve como \textit{baseline} para comparar la mejora que aportan las técnicas más 
+    sofisticadas.
+
+    \item \textbf{Método `ICP'}: Implementa el método ICP, mediante el cual se ...
+    
+    \item \textbf{Método `QR'}: Este modelo implementa QR. Utiliza tres cuantiles 
+    $$
+    [0.5, \alpha/2, 1-\alpha/2]
+    $$ 
+    para predecir la predicción puntual, límite inferior y límite superior, respectivamente.
+
+    \item \textbf{Método `CQR'}: Este modelo implement
+
+\end{itemize} 
+
+Para cada método se entrenarán 10 modelos independientes desde cero, con el objetivo de capturar la 
+variabilidad inherente al proceso de entrenamiento. Esto permite una comparación más robusta del rendimiento 
+entre métodos. Además, se busca mantener condiciones de entrenamiento lo más reproducibles posible, a pesar 
+de que cada técnica pueda utilizar diferentes funciones de pérdida. Cabe destacar que los métodos con y sin 
+CP se entrenan por separado, ya que emplean divisiones distintas del conjunto de datos: mientras los métodos 
+sin CP aprovechan un mayor volumen de datos de entrenamiento, los métodos con CP requieren reservar una parte 
+del conjunto para calibración.
+
+% ------------------------------------------------------------------------------------------------------------
+
+\subsection{Experimentos para la estimación de mayoría de edad}
+
+Todos los métodos propuestos para el problema de AAM presentan una predicción puntual ---de una sola 
+etiqueta---, además de un conjunto de predicción, formado por una o más etiquetas. 
+
+Los métodos propuestos son:
+
+\begin{itemize}
+
+\item \textbf{Método `base'}: Se trata del modelo de clasificación de una sola etiqueta sin uso de técnicas de 
+CP. El conjunto de predicción se considerará aquel formado exclusivamente por la clase más probable. 
+El entrenamiento de este modelo partirá de un modelo `base' ya entrenado para el problema de AE, al cual se 
+realizará un \textit{fine-tuning} de la cabecera.  
+Este método sirve de \textit{baseline} para comparar con el resto. 
+
+\item \textbf{Método `LAC'}: Este método implementa la técnica LAC para CP. 
+El entrenamiento del modelo partirá de un modelo ICP ya entrenado para regresión.
+
+\item \textbf{Método `MCM'}: Este método implementa la técnica MCM para CP. 
+El modelo será exactamente el mismo que el de LAC. Solo cambiará la calibración e inferencia conformal. 
+
+\end{itemize} 
+
+No se han implementado los métodos APS y RAPS, puesto que no son aplicables directamente al caso de 
+clasificación binaria.
+
+A diferencia de lo que ocurría en la regresión, las etiquetas predichas aquí darán los mismos resultados en 
+todos los métodos CP, ya que usarán el mismo modelo con la misma salida puntual. 
+Por tanto, el análisis se centrará principalmente en evaluar la validez de la cobertura y la eficiencia del 
+conjunto de predicción generado por cada técnica de CP, considerando métricas como la tasa de cobertura 
+empírica y el tamaño promedio del conjunto predicho.
+
+
+% ------------------------------------------------------------------------------------------------------------
+
+\subsection{Experimentos para la clasificación combinada de mayoría de edad y sexo}
+
+Al igual que en el problema de AAM, para el problema de AMSC se ha seguido la misma lógica de evaluación, 
+aplicando tanto predicción puntual como técnicas de CP para obtener conjuntos de predicción. 
+\todo{No me gusta mucho usar estas siglas en el texto, no sé si debería directamente eliminarlas del trabajo
+o solo dejarlas para usar en los resultados (para tablas y gráficos, donde no cabe mucho texto)}
+
+En este caso, se ha empleado la técnica de calibración de probabilidades \textit{Platt Scaling} para ajustar 
+las salidas del modelo de clasificación multiclase, con el objetivo de mejorar la calidad de las 
+probabilidades utilizadas durante la fase de inferencia conformal. Esta calibración probabilística se 
+realiza antes de aplicar los métodos de CP.
+Se ha optado por utilizar el conjunto de validación para llevar a cabo dicha calibración de probabilidades, 
+dado que, aunque no es el enfoque más riguroso ---ya que lo ideal sería dividir el conjunto de calibración en 
+dos subconjuntos independientes, uno para la calibración de probabilidades y otro para la calibración 
+conformal--- esta estrategia mostró buenos resultados en la práctica. Esto se debe a que el conjunto de 
+validación empleado era suficientemente representativo y permitió obtener probabilidades calibradas de manera 
+adecuada. Esta calibración probabilística no afecta a la variabilidad entre modelos con los mismos pesos, 
+dado que el algoritmo es determinístico y produce resultados consistentes para un mismo conjunto de datos y 
+parámetros. 
+
+Partiendo de esto, los métodos propuestos son:
+
+\begin{itemize}
+
+\item \textbf{Método `base'}: Al igual que en AMM, funciona como un clasificador normal sin métodos de CP, y
+se usa de \textit{baseline} para comparar con el resto.
+El entrenamiento de este modelo partirá de un modelo `base' ya entrenado para el problema de AMM.
+
+\item \textbf{Método `LAC'}: Este método implementa la técnica LAC para CP. 
+El entrenamiento de este modelo partirá del modelo `LAC' ya entrenado para el problema de AMM.
+
+\item \textbf{Método `MCM'}: Este método implementa la técnica MCM para CP. 
+El modelo será exactamente el mismo que el de LAC para este mismo problema. 
+
+\item \textbf{Método `APS'}: Este método implementa la técnica APS para CP. 
+El modelo será exactamente el mismo que el de LAC para este mismo problema.
+
+\item \textbf{Método `RAPS'}: Este método implementa la técnica RAPS para CP. 
+El modelo será exactamente el mismo que el de LAC para este mismo problema. 
+
+\end{itemize} 
+
+
+% ------------------------------------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------------------------------------
+
+\section{Entrenamiento de los modelos}
 
 \subsection{Preparación de los datos de entrenamiento}
 
-Ya tenemos el conjunto de datos que se destina a esto. Se ha establecido un tamaño de \textit{batch} de 32, 
-tras encontrar preeliminarmente un equilibrio entre regularización y buen ritmo de aprendizaje. 
+Dado que las imágenes del conjunto de datos disponible son significativamente más anchas que altas, se ha 
+optado por adaptar su tamaño a 448x224.  
+Se ha establecido un tamaño de \textit{batch} de 32, tras encontrar preeliminarmente un equilibrio entre 
+regularización y buen ritmo de aprendizaje. 
 Y también se ha realizado \textit{data augmentation} en el conjunto de entrenamiento, introduciendo 
 transformaciones aleatorias en cada época para simular condiciones de posicionamiento del paciente y de la 
 máquina e iluminación ligeramente variables: 
@@ -194,16 +290,24 @@ máquina e iluminación ligeramente variables:
     \item cambios de brillo y contraste entre 80 y 120\%. 
 \end{itemize}
 
+% ------------------------------------------------------------------------------------------------------------
 
 \subsection{Adaptación de la red para la estimación de edad}
 
-Como se venía anticipando en el anterior capítulo, cambiaremos la cabecera del modelo ResNeXt50 por otra 
-para realizar la regresión. Sustituiremos la última capa del modelo por un \textit{adaptive average pooling}
----que se concatena con un \textit{sex embedding} de 8 dimensiones, en caso de utilizarse este metadato---
-justo antes de la capa de \textit{flatten}, seguida por dos bloques que contienen una 
-\textit{batch normalization}, una capa de \textit{dropout} y una capa FC, con una activación ReLU entre 
-ambos bloques. La primera capa FC tiene 4.096 neuronas, la segunda 512, y finalmente una capa de salida 
-de una sola neurona. 
+Como se venía anticipando en el anterior capítulo, adaptaremos la arquitectura del modelo ResNeXt50 para el 
+problema de regresión. El tamaño de las imágenes de entrada no modifica la arquitectura del modelo, pues el 
+extractor de características conserva la dimensionalidad relativa a través de sus bloques convolucionales, 
+si bien todas las imágenes las hemos adaptado al tamaño 448x224 para garantizar una entrada uniforme.
+Sustituiremos la última capa del modelo por un \textit{adaptive average pooling}, que permite reducir la 
+dimensionalidad espacial de forma flexible independientemente del tamaño exacto de entrada. A continuación, 
+este tensor de características se aplana en la capa \textit{flatten}.
+
+La salida aplanada pasa por dos bloques densos consecutivos, cada uno compuesto por un capa 
+\textit{batch normalization}, una capa de \textit{dropout} y una capa completamente conectada (FC), 
+con una activación ReLU entre ambos bloques. La primera capa FC contiene 4.096 neuronas, la segunda 512, y 
+finalmente se incluye una capa de salida de una sola neurona. 
+Esta configuración ha sido seleccionada siguiendo la recomendación de los tutores, quienes cuentan con 
+experiencia previa en el trabajo con este conjunto de datos.
 
 \todo{Añadir un dibujo con el cambio de cabecera (AGOSTO)}
 
@@ -213,13 +317,13 @@ Los componentes clave del \textit{pipeline} de entrenamiento son:
     \item Error cuadrático medio (\textit{mean squared error}, MSE) como función de pérdida en modelos de 
     predicción puntual y \textit{pinball} para modelos QR. 
     
-    MSE es la función de pérdida por defecto para problemas de regresión, por muchas razones: los errores 
-    siguen una distribución normal, lo que hace que minimizar el MSE equivalga a maximizar la verosimilitud 
-    de los datos bajo este supuesto; penaliza los errores grandes más que proporcionalmente en comparación 
-    con los pequeños, lo que ayuda a evitar predicciones extremadamente alejadas de los valores reales; y es 
-    derivable en todo su dominio, ---además de que su derivada es lineal, lo que facilita el cálculo en la 
-    retropropagación---, y convexa, lo que garantiza la existencia de un único mínimo global, facilitando la 
-    convergencia en problemas lineales.
+    MSE es la función de pérdida por defecto para problemas de regresión, por las siguientes razones: los 
+    errores siguen una distribución normal, lo que hace que minimizar el MSE equivalga a maximizar la 
+    verosimilitud de los datos bajo este supuesto; penaliza los errores grandes más que los pequeños, lo que 
+    ayuda a evitar predicciones extremadamente alejadas de los valores reales; y es derivable en todo su 
+    dominio, ---además de que su derivada es lineal, lo que facilita el cálculo en la retropropagación---, 
+    y convexa, lo que garantiza la existencia de un único mínimo global, facilitando la convergencia en 
+    problemas lineales.
         
     \item Optimizador AdamW \cite{loshchilov2017}. Se ha escogido este optimizador dado que, por lo general,
     no requiere un ajuste exhaustivo de hiperparámetros para lograr buenos resultados. 
@@ -227,30 +331,100 @@ Los componentes clave del \textit{pipeline} de entrenamiento son:
 \end{itemize}
 
 Para el entrenamiento de la nueva cabecera, se han congelado todas las capas de la arquitectura salvo las 
-nuevas capas FC, de las cuales se han entrenado los pesos con \textit{learning rate} de 3e-2 y 
-\textit{weight decay} 2e-4 durante dos épocas. 
+nuevas capas densas, de las cuales se han entrenado los pesos con \textit{learning rate} de 3e-2 y 
+\textit{weight decay} 2e-4 durante dos épocas.
 
-Tras esto, se ha entrenado la red completa. Primero, se han descongelado todas las capas del modelo y se ha 
-establecido \textit{learning rate} discriminativo por capas, siguiendo una escala exponencial desde 1.5e-4 en 
-las capas más supeficiales hasta 1.5e-2 en las capas más profundas. 
+Tras esto, se ha entrenado la red completa. Para ello, se han descongelado todas las capas y se ha aplicado 
+una estrategia de optimización basada en \textbf{\textit{learning rates} discriminativos} combinada con
+la política de ajuste de \textit{learning rate} \textbf{OneCycle} \cite{smith2018}.
 
-Además, se ha usado el \textit{learning rate scheduler}, que modifica el \textit{learning rate} según una 
-estrategia adaptativa. En concreto, se ha utilizado el método OneCycle \cite{smith2018}, que sigue una 
-política cíclica de un solo ciclo, en la que el learning rate se incrementa progresivamente desde un valor 
-inicial bajo hasta un valor máximo, para luego disminuir de forma suave hasta un valor final aún menor. Esta 
-estrategia busca acelerar la convergencia durante las primeras etapas del entrenamiento y afinar los pesos en 
-las etapas finales, mejorando el rendimiento general del modelo.
+En concreto, se han definido diferentes tasas de aprendizaje para cada grupo de capas del modelo, asignadas 
+según su profundidad. Los bloques convolucionales iniciales ---más generales y preentrenados--- reciben 
+\textit{learning rates} más bajos, mientras que las capas más profundas ---específicas de la tarea y 
+recientemente añadidas--- se entrenan con tasas más altas. Esta asignación se ha realizado mediante una 
+progresión exponencial, que varía desde 1.5e-4 en los bloques más profundos hasta 1.5e-2 en los más 
+superficiales. Este enfoque busca preservar el conocimiento útil de las capas inferiores y permitir una 
+adaptación más rápida en las superiores.
 
-Se ha establecido un número de 30 épocas. 
-Para evitar un posible sobreajuste del modelo, se ha hecho \textit{checkpointing} con los pesos
-correspondientes a la época en la que se obtuvo la mejor puntuación en el conjunto de validación, permitiendo 
-así conservar el estado del modelo con mayor capacidad de generalización (el que haya obtenido menor pérdida
-en validación). Estos pesos se restauran al final del entrenamiento.
+La política OneCycle se ha aplicado individualmente a cada grupo de capas, haciendo que cada uno siga un 
+ciclo de una sola fase:
+el \textit{learning rate} comienza en un valor inicial bajo, aumenta progresivamente durante las primeras 
+épocas (\textit{warm-up}), y desciende de forma suave hasta un valor final aún menor
+\footnote{
+    Se han mantenido los parámetros por defecto del método OneCycle en PyTorch. Con esta configuración, cada 
+    grupo de capas comienza con una tasa de aprendizaje equivalente al 4\% del valor máximo asignado. Durante 
+    aproximadamente el 30\% inicial de las épocas, esta tasa crece de forma progresiva, y posteriormente 
+    decrece hasta alcanzar el 0,01\% del learning rate máximo.
+}. 
+Esta estrategia permite acelerar la convergencia en las fases iniciales del entrenamiento y afinar los pesos 
+en las etapas finales, mejorando tanto la estabilidad como el rendimiento del modelo.
+
+Esta combinación entre \textit{learning rates} discriminativos y la política de un solo ciclo permite 
+acelerar la convergencia en las primeras etapas del entrenamiento, al tiempo que se mejora la capacidad de 
+generalización mediante un afinado progresivo de los pesos en las fases finales.
+
+El entrenamiento se ha llevado a cabo durante un total de 30 épocas. Para mitigar el riesgo de sobreajuste,
+se ha implementado una estrategia de \textit{checkpointing}, guardando los pesos del modelo correspondientes 
+a la época en la que se obtuvo la mejor puntuación en el conjunto de validación (menor pérdida).
+Al finalizar el entrenamiento, se restauran estos pesos, asegurando así que se conserve la versión del modelo 
+con mayor capacidad de generalización.
+
+\todo{Tengo que hablar aquí de la adaptación de esta arquitectura y modelo para la Quantile Regression?
+Ya la expliqué en el capítulo 4, pero no sé si debería ir más bien aquí. Siento que si lo pongo aquí 
+la información estará más ordenada, pero costará más entender la Quantile Regression.}
+
+% ------------------------------------------------------------------------------------------------------------
+
+\subsection{Adaptación de la red para la estimación de mayoría de edad}
+
+Dado que la tarea de estimación de mayoría de edad guarda una estrecha relación con la estimación de edad 
+continua, se ha optado por reutilizar el extractor de características previamente entrenado para esta última. 
+Al tratarse de una clasificación binaria cuya frontera de decisión es el umbral de los 18 años, se considera 
+que las representaciones latentes aprendidas por el modelo son igualmente útiles para resolver esta nueva 
+tarea.
+
+En consecuencia, únicamente se ha ajustado la cabecera del modelo, manteniendo congelados los pesos del 
+extractor de características. Se ha empleado el mismo optimizador AdamW que en la tarea de regresión y se ha 
+seguido el mismo procedimiento de entrenamiento descrito para la cabecera: dos épocas con un 
+\textit{learning rate} de 3e-2 y un \textit{weight decay} de 2e-4.
+
+La función de pérdida utilizada en este caso ha sido la \textbf{\textit{Binary Cross-Entropy Loss}}, 
+adecuada para tareas de clasificación binaria. Esta función combina de forma eficiente una activación 
+sigmoide y la entropía cruzada, lo que permite interpretar la salida del modelo como una probabilidad. 
+Su formulación penaliza de forma asimétrica las predicciones incorrectas, lo 
+que resulta especialmente útil cuando se requiere una buena calibración de las probabilidades de salida.
+
+% ------------------------------------------------------------------------------------------------------------
+
+\subsection{Adaptación de la red para la clasificación combinada de mayoría de edad y sexo}
+
+La clasificación combinada de mayoría de edad y sexo introduce una segunda variable objetivo. Por ello, se 
+ha partido de un modelo preentrenado para la clasificación de mayoría de edad, y se ha procedido a entrenar 
+tanto la cabecera como el conjunto completo de la red.
+
+La última capa del modelo ha sido ajustada para producir cuatro salidas, correspondientes a las clases del 
+problema. 
+La activación \textit{softmax} se aplica durante la inferencia para obtener probabilidades normalizadas.
+
+A diferencia del caso anterior, aquí se ha entrenado tanto la cabecera como la red completa. En la primera 
+fase, se ha entrenado únicamente la cabecera durante dos épocas con los mismos hiperparámetros que en los 
+casos anteriores. Posteriormente, se ha llevado a cabo un \textit{fine-tuning } o de toda la red, aplicando 
+de nuevo la estrategia de \textit{learning rates} discriminativos junto con la política OneCycle, pero 
+reduciendo a la mitad el número de épocas (15) al observarse una convergencia más rápida.
+Se ha mantenido el uso del optimizador AdamW en todo el proceso.
+
+La función de pérdida utilizada ha sido la \textbf{\textit{Cross-Entropy Loss}}, adecuada para clasificación 
+multiclase mutuamente excluyente. Esta función compara la distribución de probabilidad predicha por el modelo 
+con la distribución real codificada como etiqueta única, y penaliza fuertemente las asignaciones erróneas. 
+Su formulación es robusta, ampliamente utilizada y permite una interpretación probabilística directa de la 
+salida del modelo cuando se combina con una capa de activación \textit{softmax} al final.
 
 % ------------------------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
 
 \section{Métricas}
+
+\todo{Javier dijo que le cuadraba más que este apartado etuviera en materiales y métodos. Hay que discutirlo.}
 
 \subsection{Métricas para regresión}
 
@@ -292,8 +466,8 @@ interválica) y la \textit{ground truth}. Las métricas que empleamos para estas
 
 Por otra parte, las métricas aplicadas a las predicciones interválicas examinan tanto la capacidad del modelo 
 para abarcar el valor real dentro del intervalo predicho ---conocida como 
-\textbf{cobertura (\textit{coverage})}--- como la \textbf{amplitud} del mismo, que es el ancho del rango de valores 
-del intervalo de predicción. 
+\textbf{cobertura (\textit{coverage})}--- como la \textbf{amplitud} del mismo, que es el ancho del rango de 
+valores del intervalo de predicción. 
 Generalmente, existe un equilibrio entre ambos aspectos: al aumentar la amplitud, es más probable que el 
 intervalo contenga el valor real, pero esto disminuye la precisión y utilidad práctica de la predicción.
 Veamos las métricas para este tipo de predicciones: 
@@ -304,9 +478,12 @@ Veamos las métricas para este tipo de predicciones:
     
     $$
     EC = \frac{1}{n} 
-        \sum_{i=1}^n{ \mathbb{I} \left[ y_{{lower}_i} \le y_i \le y_{{upper}_i} \right] } 
+        \sum_{i=1}^n{ \mathbb{I} \left[ l_i \le y_i \le u_i \right] } 
             \in \left[0, 1\right]
     $$
+
+    donde $l_i$ y $u_i$ son los límites inferior y superior, respectivamente, de los intervalos de predicción 
+    obtenidos mediante inferencia conformal.
 
     Cuanto mayor sea el valor, mejor cobertura ofrece el modelo, si bien coberturas altas suelen conllevar 
     intervalos excesivamente amplios, lo que reduce su utilidad práctica. Es por ello que, empleando métodos
@@ -318,34 +495,43 @@ Veamos las métricas para este tipo de predicciones:
     promedio los intervalos predichos.
     
     $$
-    MIW = \frac{1}{n} \sum_{i=1}^n{ \left( y_{{upper}_i} - y_{{lower}_i} \right) } \in (0, +\infty)
+    MIW = \frac{1}{n} \sum_{i=1}^n{ \left( u_i - l_i \right) } \in (0, +\infty)
     $$
     
     Se desea matener este valor lo más pequeño posible, dado un nivel de cobertura adecuado. Valores altos
     indican intervalos anchos y, por tanto, poco útiles para la toma de decisiones. 
 
 
-    % \item La \textbf{\textit{interval score} (IS)} \cite{gneiting2007} trata de unificar en una sola métrica
-    % el \textit{trade-off} cobertura vs. ancho. Su expresión es la siguiente:
+    \item La \textbf{\textit{interval score} (IS)} \cite{gneiting2007} trata de unificar en una sola métrica
+    el \textit{trade-off} cobertura vs. ancho del intervalo. Su expresión es la siguiente:
 
-    % $$
-    % IS = \frac{1}{n} \sum_{i=1}^n{
-    %         \left(         
-    %             (u_i-l_i) 
-    %             + \frac{2}{\alpha} \left( l_i-y_i \right) \mathbb{I}\left[ y_i<l_i \right] 
-    %             + \frac{2}{\alpha}  \left( y_i-u_i \right) \mathbb{I}\left[ y_i>u_i \right]
-    %         \right)
-    %     }
-    % $$
+    $$
+    IS = \frac{1}{n} \sum_{i=1}^n{
+            \left(         
+                (u_i-l_i) 
+                + \frac{2}{\alpha} \left( l_i-y_i \right) \mathbb{I}\left[ y_i<l_i \right] 
+                + \frac{2}{\alpha}  \left( y_i-u_i \right) \mathbb{I}\left[ y_i>u_i \right]
+            \right)
+        } 
+        \in (0, +\infty)
+    $$
 
-    % El primer término ($u_i-l_i$) penaliza la anchura del intervalo de predicción, incentivando intervalos 
-    % más precisos y estrechos.
-    
-    % El segundo y tercer término penalizan los casos en que el valor real cae fuera del intervalo, con una 
-    % penalización proporcional a la distancia entre el valor verdadero y el borde del intervalo. Además, esta 
-    % penalización se ajusta por el nivel de significancia $\alpha$, de modo que a niveles de confianza más 
-    % altos (es decir, $\alpha$ más pequeños), las penalizaciones por valores fuera del intervalo son más 
-    % severas.
+    Al igual que el MIW, se interpreta como que una puntuación más baja es mejor. 
+    El primer término ($u_i-l_i$) representa directamente la anchura de cada intervalo, mientras que 
+    el segundo y tercer términos:
+
+    \begin{itemize}
+        \item $\frac{2}{\alpha} \left( l_i-y_i \right) \mathbb{I}\left[ y_i<l_i \right]$ penaliza los casos en 
+        que el valor verdadero $y_i$ está por debajo del límite inferior $l_i$, proporcionalmente a la 
+        distancia ($l_i-y_i$).
+        \item $\frac{2}{\alpha}  \left( y_i-u_i \right) \mathbb{I}\left[ y_i>u_i \right]$ penaliza los casos en 
+        que el valor verdadero $y_i$ está por encima del límite superior $u_i$, proporcionalmente a la 
+        distancia ($y_i-u_i$).
+    \end{itemize}
+
+    Estos dos últimos términos aplican una penalización crecientemente severa cuando las predicciones no 
+    cubren el valor verdadero ---y lo hacen multiplicando por $2/\alpha$, lo que enfatiza aún más los errores 
+    externos a medida que disminuye $\alpha$, es decir, cuando se busca mayor confianza.
 
 \end{itemize}
 
@@ -369,20 +555,98 @@ Y, finalmente, también añadiremos elementos visuales para valorar el desempeñ
 
 \subsection{Métricas para clasificación}
 
-\todo{Por completar (JULIO)}
+Como con la regresión, diferenciaremos entre las métricas de clasificación de etiqueta única y las de
+múltiples etiquetas para valorar los conjuntos de predicciones obtenidos con las técnicas de CP.
 
-% ------------------------------------------------------------------------------------------------------------
-% ------------------------------------------------------------------------------------------------------------
+\begin{itemize}
 
-\section{Ajuste de hiperparámetros de predicción conformal}
+    \item La \textbf{matriz de confusión} es una herramienta fundamental que permite visualizar el rendimiento 
+    de modelos de clasificación, tanto binarios como multiclase. Esta muestra una tabla con tantas columnas y 
+    filas como clases haya. En un eje, se representan las clases reales (etiquetas verdaderas), y en el otro 
+    eje, las clases predichas por el modelo. Cada celda de la matriz indica la cantidad de ejemplos que 
+    pertenecen a una clase real específica y que han sido clasificados como una clase predicha específica 
+    (véase la Figura \ref{fig:conf_matrix_binary}).
+    Idealmente, los valores se concentrarían en la diagonal principal, lo que indicaría que las predicciones 
+    coinciden con los valores reales.
+    Esta visualización admite muchas variantes, por ejemplo, como la vista en la Figura 
+    \ref{fig:conf_matrix_binary_relative}.
+    Prácticamente todas las métricas y visualizaciones parten de la información ofrecida en esta matriz. 
 
-No hay ninguna técnica (por ahora) que requiera ajuste de hiperparámetros. 
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.6\textwidth]{capitulos/cap_02/imagenes/confusion_matrix_binary.png}
+        \caption{
+            Matriz de confusión para la estimación de sexo según el modelo \textit{random forest} 
+            propuesto en \cite{bidmos2023}.
+        } 
+        \label{fig:conf_matrix_binary}
+    \end{figure}
+    
+    \begin{figure}[h]
+        \centering
+    
+        \begin{subfigure}[b]{0.3\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/confusion_matrix_binary_1.png}
+            \caption{Sin información de sexo}
+            \label{fig:conf_matrix_general}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.3\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/confusion_matrix_binary_2.png}
+            \caption{Sexo femenino}
+            \label{fig:conf_matrix_female}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.3\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/confusion_matrix_binary_3.png}
+            \caption{Sexo masculino}
+            \label{fig:conf_matrix_male}
+        \end{subfigure}
+    
+        \caption[
+            Matrices de confusión para la estimación de mayoría/minoría de edad según el modelo de 
+            \cite{porto2020}.
+        ]{
+            Matrices de confusión para la estimación de mayoría/minoría de edad según el modelo de 
+            \cite{porto2020}.
+            Se representan los valores de cada celda en términos porcentuales de los ejemplos reales que hay 
+            de cada clase ($< 18$ y $\ge 18$), lo que permite comparar la matriz de confusión general de todos 
+            los ejemplos (\ref{sub@fig:conf_matrix_general}) con la de ejemplos se sexo femenino 
+            (\ref{sub@fig:conf_matrix_female}) y sexo masculino (\ref{sub@fig:conf_matrix_male}), permitiendo 
+            identificar posibles sesgos en el modelo respecto al género, y así realizar una evaluación más 
+            precisa del rendimiento del modelo en diferentes subgrupos de la población.
+        }
+        \label{fig:conf_matrix_binary_relative}
+
+    \end{figure}
+
+
+    \item La \textbf{cobertura empírica (\textit{empirical coverage}, EC)}, de forma análoga a la regresión, 
+    mide la proporción de veces que la etiqueta verdadera está contenida dentro del conjunto predicho.
+
+    $$
+    EC = \frac{1}{n} \sum_{i=1}^{n} \mathbb{I}(y_i \in \Gamma_\alpha(x_i))
+    $$
+
+    \item El \textbf{tamaño del conjunto promedio (\textit{mean set size}, MSS)} mide qué cuántas etiquetas,
+    en promedio, incluyen los conjuntos de predicción $\Gamma_\alpha(x)$.
+
+    $$
+    MSS = \frac{1}{n} \sum_{i=1}^n | \Gamma_\alpha(x_i) |
+    $$
+
+\end{itemize}
+
 
 % ------------------------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
 
 \section{Resultados}
 
+\subsection{Estimación de edad}
 
 
 
@@ -427,6 +691,16 @@ No hay ninguna técnica (por ahora) que requiera ajuste de hiperparámetros.
 \end{figure}
 
 \todo{Mejorar el diseño y legibilidad de todas las gráficas (JULIO)}
+
+% ------------------------------------------------------------------------------------------------------------
+
+
+Las mejoras de MCM sobre LAC no destacan en este problema donde las clases están balanceadas. 
+
+
+% ------------------------------------------------------------------------------------------------------------
+
+
 
 
 % ------------------------------------------------------------------------------------------------------------
