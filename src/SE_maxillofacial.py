@@ -82,14 +82,14 @@ def validate_file_extension(filename, extensions, arg_name):
     return filename
 
 #
-PRED_MODEL_TYPES = ['base', 'LAC', 'MCM', 'APS', 'RAPS']
+PRED_MODEL_TYPES = ['base', 'LAC', 'MCM']
 
 # Agregado de argumentos 
 def add_model_args(parser):
     parser.add_argument('--load_model_path', type=str)
     parser.add_argument('--save_model_path', type=str)
     parser.add_argument('--pred_model_type', type=str, choices=PRED_MODEL_TYPES)
-    parser.add_argument('--confidence', type=validate_confidence, default=0.95)
+    parser.add_argument('--confidence', type=validate_confidence, default=0.9)
     return parser
 
 def add_training_args(parser):
@@ -126,7 +126,7 @@ def add_output_args(parser):
 # Crea el parser
 parser = argparse.ArgumentParser(
     description="Script para entrenamiento, calibración y/o evaluación del modelo para estimación de "+
-                "..."
+                "mayoría/minoría de edad a partir de radiografías maxilofaciales"
 )
 
 # Agrega todas las configuraciones al parser
@@ -166,7 +166,7 @@ try:
     if args.test_iteration and not args.save_test_results:
         parser.error("Se especificó '--test_iteration' pero no '--save_test_results'. " +
                      "El número de iteración solo tiene sentido si se guardan los resultados.")
-        
+    
     if args.save_test_results:
         validate_file_extension(args.save_test_results, ['.csv'], 'save_test_results')
     
@@ -276,14 +276,8 @@ class MaxillofacialXRayDataset(Dataset):
         # Edad en float
         self.ages = torch.tensor(metadata['Age'].values, dtype=torch.float32)
         
-        # Clasificación binaria de edad: 1 si >= 18, 0 si < 18
-        self.majority = (self.ages >= 18).long()
-        
-        # Etiqueta sigue una clasificación combinada: 0 = (M<18), 1 = (M>=18), 2 = (F<18), 3 = (F>=18)
-        self.labels = self.sexes * 2 + self.majority
-        
-        #
-        self.num_classes = len(torch.unique(self.labels))
+        # 
+        self.num_classes = len(torch.unique(self.sexes))
     
     
     def __len__(self):
@@ -297,7 +291,7 @@ class MaxillofacialXRayDataset(Dataset):
         if self.transform:
             image = self.transform(image)
         
-        return image, self.labels[idx]
+        return image, self.sexes[idx]
 
 
 # ------------------------------------------------------------------------------------------------------------
@@ -348,7 +342,6 @@ def create_loader(dataset, indices=None, shuffle=False, num_workers=1):
         generator=g
     )
 
-
 # Obtiene las edades del trainset por tramos de 0.5 años
 halfAges = (np.floor(trainset.ages.numpy() * 2) / 2).astype(np.float32)
 # Hay una única instancia con edad 26, que el algoritmo de separación de entrenamiento y validación será 
@@ -386,7 +379,7 @@ else:
     # - Validación (17% de las instancias)
     # - Calibración (15% de las instancias)
     
-    train_idx, calib_idx = train_test_split(range(len(trainset)), train_size=0.8, shuffle=True, 
+    train_idx, calib_idx = train_test_split(range(len(trainset)), train_size=0.85, shuffle=True, 
                                             random_state=SEED, stratify=stratify_labels)
     
     train_idx, valid_idx = train_test_split(train_idx, train_size=0.8, shuffle=True, random_state=SEED,
@@ -407,9 +400,7 @@ print("✅ Datasets de imágenes cargados\n")
 MODEL_CLASSES = {
     'base': ResNeXtClassifier,
     'LAC': ResNeXtClassifier_LAC,
-    'MCM': ResNeXtClassifier_MCM,
-    'APS': ResNeXtClassifier_APS,
-    'RAPS': ResNeXtClassifier_RAPS
+    'MCM': ResNeXtClassifier_MCM
 }
 
 # Obtiene los argumentos de tipo de modelo y nivel de confianza desde la línea de comandos
@@ -418,13 +409,13 @@ confidence = args.confidence
 
 # Verifica que el tipo de modelo esté entre los tipos permitidos
 if pred_model_type not in PRED_MODEL_TYPES:
-    raise ValueError(f"Tipo de predicción desconocida: {pred_model_type}")     
+    raise ValueError(f"Tipo de predicción desconocida: {pred_model_type}")
 
 # Obtiene la clase del modelo correspondiente al tipo especificado
 model_class = MODEL_CLASSES.get(pred_model_type)
 
 # Instancia el modelo con el nivel de confianza especificado y lo envía a la GPU
-model = model_class(num_classes=trainset.num_classes, confidence=confidence).to(device)
+model = model_class(num_classes=2, confidence=confidence).to(device)
 
 # Si se especificó una ruta para cargar un modelo previamente entrenado
 if args.load_model_path:
@@ -452,12 +443,12 @@ if args.train or args.train_head:
     # Configura el optimizador para el entrenamiento de la cabecera 
     parameters = [
         {'params': model.classifier.fc2.parameters(), 'lr': 3e-2},
-        {'params': model.classifier.fc1.parameters(), 'lr': 2e-2}
+        {'params': model.classifier.fc1.parameters(), 'lr': 2e-2},
     ]
     optimizer = torch.optim.AdamW(parameters, weight_decay=wd)
 
     # Numero de épocas que se entrena la cabecera
-    NUM_EPOCHS_HEAD = 3
+    NUM_EPOCHS_HEAD = 5
     
    # Inicializa la mejor pérdida de validación como la obtenida en el entrenamiento de la cabecera
     best_valid_loss = float('inf')
@@ -538,12 +529,12 @@ if args.train:
             {'params': layer_group, 'lr': lr}
         )
 
+    # Número de épocas a entrenar
+    NUM_EPOCHS = 30
+
     # Configura el optimizador con los hiperparámetros escogidos
     optimizer = torch.optim.AdamW(param_groups, weight_decay=wd)
 
-    # Número de épocas a entrenar
-    NUM_EPOCHS = 15
-    
     # Crea el scheduler OneCycleLR
     scheduler = torch.optim.lr_scheduler.OneCycleLR(
         optimizer, 
@@ -554,9 +545,6 @@ if args.train:
     
     # Inicializa la mejor pérdida de validación como la obtenida en el entrenamiento de la cabecera
     best_valid_loss = float('inf')
-    
-    # 
-    best_epoch = -1
 
     # Bucle de entrenamiento por épocas
     for epoch in range(NUM_EPOCHS):
@@ -589,9 +577,6 @@ if args.train:
         # Comprueba si la pérdida en validación ha mejorado
         if valid_loss < best_valid_loss:
             
-            #
-            best_epoch = epoch + 1
-            
             # Actualiza la mejor pérdida en validación obtenida hasta ahora
             best_valid_loss = valid_loss
             
@@ -599,33 +584,22 @@ if args.train:
             model.save_checkpoint(args.save_model_path)
     
     
-    if valid_loss > best_valid_loss:
-        
-        #
-        print(f"Restaurando los parámetros de la época {best_epoch}")
-        
-        # Carga los pesos del modelo que obtuvo la mejor validación
-        checkpoint = torch.load(args.save_model_path)
-        model.load_checkpoint(checkpoint)
-    
-    
+    # Carga los pesos del modelo que obtuvo la mejor validación
+    checkpoint = torch.load(args.save_model_path)
+    model.load_checkpoint(checkpoint)
+
     print("✅ Entrenamiento de la red completa completado\n")
 
 #-------------------------------------------------------------------------------------------------------------
 # CALIBRACIÓN CONFORMAL
 
-if args.calibrate:
+if args.calibrate and pred_model_type != 'base':
     
     #
-    model.set_temperature(valid_loader)
-
-    #
-    if pred_model_type == 'RAPS':
-        model.auto_configure(valid_loader) # valid_loader
+    # model.set_temperature(valid_loader)
     
     #
-    if pred_model_type != 'base':
-        model.calibrate(calib_loader)
+    model.calibrate(calib_loader)
         
     # Guarda los parámetros de calibración del modelo
     model.save_checkpoint(args.save_model_path)
@@ -658,7 +632,7 @@ if args.test:
 
     print("✅ Testeo de la red completado\n")
     
-# #-------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------
     
     if args.save_test_results:
         
@@ -669,10 +643,8 @@ if args.test:
             "confidence": np.array([confidence] * n, dtype=np.float32),
             "iteration": [args.test_iteration] * n,
             "pred_class": np.array(test_pred_classes, dtype=np.uint8),
-            "pred_set_male_under_18": np.array(test_pred_sets[:, 0], dtype=np.uint8),
-            "pred_set_male_over_18":  np.array(test_pred_sets[:, 1], dtype=np.uint8),
-            "pred_set_female_under_18": np.array(test_pred_sets[:, 2], dtype=np.uint8),
-            "pred_set_female_over_18":  np.array(test_pred_sets[:, 3], dtype=np.uint8),
+            "pred_set_under_18": np.array(test_pred_sets[:, 0], dtype=np.uint8),
+            "pred_set_over_18":  np.array(test_pred_sets[:, 1], dtype=np.uint8),
             "true_class": np.array(test_true_classes, dtype=np.uint8)
         })
         
@@ -686,10 +658,8 @@ if args.test:
                 "confidence": pl.Float32,
                 "iteration": pl.Int64,
                 "pred_class": pl.UInt8,
-                "pred_set_male_under_18": pl.UInt8,
-                "pred_set_male_over_18": pl.UInt8,
-                "pred_set_female_under_18": pl.UInt8,
-                "pred_set_female_over_18": pl.UInt8,
+                "pred_set_under_18": pl.UInt8,
+                "pred_set_over_18": pl.UInt8,
                 "true_class": pl.UInt8
                 
             })
@@ -708,3 +678,4 @@ if args.test:
 
         # Guardar sobrescribiendo el archivo
         final_df.write_csv(args.save_test_results, separator=",", include_header=True)
+        

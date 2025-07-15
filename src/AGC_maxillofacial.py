@@ -276,14 +276,19 @@ class MaxillofacialXRayDataset(Dataset):
         # Edad en float
         self.ages = torch.tensor(metadata['Age'].values, dtype=torch.float32)
         
-        # Clasificación binaria de edad: 1 si >= 18, 0 si < 18
-        self.majority = (self.ages >= 18).long()
+        # Edad como enteros (en años completos)
+        metadata['IntAge'] = metadata['Age'].apply(lambda x: int(float(x)))
+        self.int_ages = torch.tensor(metadata['IntAge'].values, dtype=torch.long)
         
-        # Etiqueta sigue una clasificación combinada: 0 = (M<18), 1 = (M>=18), 2 = (F<18), 3 = (F>=18)
-        self.labels = self.sexes * 2 + self.majority
+        # Obtener edades únicas ordenadas
+        unique_ages = sorted(metadata['IntAge'].unique())
+        self.age_to_idx = {age: idx for idx, age in enumerate(unique_ages)}
+        
+        # Mapear cada edad entera a su índice de clase
+        self.labels = torch.tensor(metadata['IntAge'].map(self.age_to_idx).values, dtype=torch.long)
         
         #
-        self.num_classes = len(torch.unique(self.labels))
+        self.num_classes = len(unique_ages)
     
     
     def __len__(self):
@@ -347,6 +352,11 @@ def create_loader(dataset, indices=None, shuffle=False, num_workers=1):
         worker_init_fn=seed_worker,
         generator=g
     )
+
+
+#
+num_classes = max(trainset.num_classes, validset.num_classes, testset.num_classes)
+print("Num_classes: ", trainset.num_classes)
 
 
 # Obtiene las edades del trainset por tramos de 0.5 años
@@ -424,7 +434,7 @@ if pred_model_type not in PRED_MODEL_TYPES:
 model_class = MODEL_CLASSES.get(pred_model_type)
 
 # Instancia el modelo con el nivel de confianza especificado y lo envía a la GPU
-model = model_class(num_classes=trainset.num_classes, confidence=confidence).to(device)
+model = model_class(num_classes=num_classes, confidence=confidence).to(device)
 
 # Si se especificó una ruta para cargar un modelo previamente entrenado
 if args.load_model_path:
@@ -457,7 +467,7 @@ if args.train or args.train_head:
     optimizer = torch.optim.AdamW(parameters, weight_decay=wd)
 
     # Numero de épocas que se entrena la cabecera
-    NUM_EPOCHS_HEAD = 3
+    NUM_EPOCHS_HEAD = 5
     
    # Inicializa la mejor pérdida de validación como la obtenida en el entrenamiento de la cabecera
     best_valid_loss = float('inf')
@@ -621,7 +631,7 @@ if args.calibrate:
 
     #
     if pred_model_type == 'RAPS':
-        model.auto_configure(valid_loader) # valid_loader
+        model.auto_configure(valid_loader)
     
     #
     if pred_model_type != 'base':
@@ -669,10 +679,19 @@ if args.test:
             "confidence": np.array([confidence] * n, dtype=np.float32),
             "iteration": [args.test_iteration] * n,
             "pred_class": np.array(test_pred_classes, dtype=np.uint8),
-            "pred_set_male_under_18": np.array(test_pred_sets[:, 0], dtype=np.uint8),
-            "pred_set_male_over_18":  np.array(test_pred_sets[:, 1], dtype=np.uint8),
-            "pred_set_female_under_18": np.array(test_pred_sets[:, 2], dtype=np.uint8),
-            "pred_set_female_over_18":  np.array(test_pred_sets[:, 3], dtype=np.uint8),
+            "pred_set_14": np.array(test_pred_sets[:, 0], dtype=np.uint8),
+            "pred_set_15": np.array(test_pred_sets[:, 1], dtype=np.uint8),
+            "pred_set_16": np.array(test_pred_sets[:, 2], dtype=np.uint8),
+            "pred_set_17": np.array(test_pred_sets[:, 3], dtype=np.uint8),
+            "pred_set_18": np.array(test_pred_sets[:, 4], dtype=np.uint8),
+            "pred_set_19": np.array(test_pred_sets[:, 5], dtype=np.uint8),
+            "pred_set_20": np.array(test_pred_sets[:, 6], dtype=np.uint8),
+            "pred_set_21": np.array(test_pred_sets[:, 7], dtype=np.uint8),
+            "pred_set_22": np.array(test_pred_sets[:, 8], dtype=np.uint8),
+            "pred_set_23": np.array(test_pred_sets[:, 9], dtype=np.uint8),
+            "pred_set_24": np.array(test_pred_sets[:, 10], dtype=np.uint8),
+            "pred_set_25": np.array(test_pred_sets[:, 11], dtype=np.uint8),
+            "pred_set_26": np.array(test_pred_sets[:, 12], dtype=np.uint8),
             "true_class": np.array(test_true_classes, dtype=np.uint8)
         })
         
@@ -686,10 +705,19 @@ if args.test:
                 "confidence": pl.Float32,
                 "iteration": pl.Int64,
                 "pred_class": pl.UInt8,
-                "pred_set_male_under_18": pl.UInt8,
-                "pred_set_male_over_18": pl.UInt8,
-                "pred_set_female_under_18": pl.UInt8,
-                "pred_set_female_over_18": pl.UInt8,
+                "pred_set_14": pl.UInt8,
+                "pred_set_15": pl.UInt8,
+                "pred_set_16": pl.UInt8,
+                "pred_set_17": pl.UInt8,
+                "pred_set_18": pl.UInt8,
+                "pred_set_19": pl.UInt8,
+                "pred_set_20": pl.UInt8,
+                "pred_set_21": pl.UInt8,
+                "pred_set_22": pl.UInt8,
+                "pred_set_23": pl.UInt8,
+                "pred_set_24": pl.UInt8,
+                "pred_set_25": pl.UInt8,
+                "pred_set_26": pl.UInt8,
                 "true_class": pl.UInt8
                 
             })

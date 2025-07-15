@@ -89,7 +89,7 @@ def add_model_args(parser):
     parser.add_argument('--load_model_path', type=str)
     parser.add_argument('--save_model_path', type=str)
     parser.add_argument('--pred_model_type', type=str, choices=PRED_MODEL_TYPES)
-    parser.add_argument('--confidence', type=validate_confidence, default=0.9)
+    parser.add_argument('--confidence', type=validate_confidence, default=0.95)
     return parser
 
 def add_training_args(parser):
@@ -278,6 +278,9 @@ class MaxillofacialXRayDataset(Dataset):
         
         # Clasificación binaria de edad: 1 si >= 18, 0 si < 18
         self.majority = (self.ages >= 18).long()
+        
+        #
+        self.num_classes = len(torch.unique(self.majority))
     
     
     def __len__(self):
@@ -292,6 +295,7 @@ class MaxillofacialXRayDataset(Dataset):
             image = self.transform(image)
 
         return image, self.majority[idx]
+
 
 # ------------------------------------------------------------------------------------------------------------
 
@@ -378,7 +382,7 @@ else:
     # - Validación (17% de las instancias)
     # - Calibración (15% de las instancias)
     
-    train_idx, calib_idx = train_test_split(range(len(trainset)), train_size=0.85, shuffle=True, 
+    train_idx, calib_idx = train_test_split(range(len(trainset)), train_size=0.8, shuffle=True, 
                                             random_state=SEED, stratify=stratify_labels)
     
     train_idx, valid_idx = train_test_split(train_idx, train_size=0.8, shuffle=True, random_state=SEED,
@@ -414,7 +418,7 @@ if pred_model_type not in PRED_MODEL_TYPES:
 model_class = MODEL_CLASSES.get(pred_model_type)
 
 # Instancia el modelo con el nivel de confianza especificado y lo envía a la GPU
-model = model_class(num_classes=2, confidence=confidence).to(device)
+model = model_class(num_classes=trainset.num_classes, confidence=confidence).to(device)
 
 # Si se especificó una ruta para cargar un modelo previamente entrenado
 if args.load_model_path:
@@ -474,8 +478,8 @@ if args.train or args.train_head:
         # Imprime los valores de pérdida obtenidos en entrenamiento y validación 
         print(
             f"Epoch {epoch+1:>2} | "+
-            f"Train Loss: {head_train_loss:>7.3f} | " + 
-            f"Validation Loss: {head_valid_loss:>7.3f} | " +
+            f"Train Loss: {head_train_loss:>6.3f} | " + 
+            f"Validation Loss: {head_valid_loss:>6.3f} | " +
             f"Time: {time_str}"
         )
         
@@ -544,6 +548,9 @@ if args.train:
     
     # Inicializa la mejor pérdida de validación como la obtenida en el entrenamiento de la cabecera
     best_valid_loss = float('inf')
+    
+    # 
+    best_epoch = -1
 
     # Bucle de entrenamiento por épocas
     for epoch in range(NUM_EPOCHS):
@@ -568,13 +575,16 @@ if args.train:
         # Imprime los valores de pérdida obtenidos en entrenamiento y validación  
         print(
             f"Epoch {epoch+1:>2} | " +
-            f"Train Loss: {train_loss:>7.3f} | " +
-            f"Validation Loss: {valid_loss:>7.3f} | " +
+            f"Train Loss: {train_loss:>6.3f} | " +
+            f"Validation Loss: {valid_loss:>6.3f} | " +
             f"Time: {time_str}"
         )
         
         # Comprueba si la pérdida en validación ha mejorado
         if valid_loss < best_valid_loss:
+            
+            #
+            best_epoch = epoch + 1
             
             # Actualiza la mejor pérdida en validación obtenida hasta ahora
             best_valid_loss = valid_loss
@@ -583,9 +593,14 @@ if args.train:
             model.save_checkpoint(args.save_model_path)
     
     
-    # Carga los pesos del modelo que obtuvo la mejor validación
-    checkpoint = torch.load(args.save_model_path)
-    model.load_checkpoint(checkpoint)
+    if valid_loss > best_valid_loss:
+        
+        #
+        print(f"Restaurando los parámetros de la época {best_epoch}")
+        
+        # Carga los pesos del modelo que obtuvo la mejor validación
+        checkpoint = torch.load(args.save_model_path)
+        model.load_checkpoint(checkpoint)
 
     print("✅ Entrenamiento de la red completa completado\n")
 
@@ -595,7 +610,7 @@ if args.train:
 if args.calibrate and pred_model_type != 'base':
     
     #
-    # model.set_temperature(valid_loader)
+    model.set_temperature(valid_loader)
     
     #
     model.calibrate(calib_loader)

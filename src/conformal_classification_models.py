@@ -5,6 +5,8 @@ import torch
 import torch.nn as nn
 import torchvision 
 import math
+from cp_metrics import mean_set_size
+from typing import Tuple
 
 #-------------------------------------------------------------------------------------------------------------
 
@@ -102,14 +104,14 @@ class ResNeXtClassifier(nn.Module):
         
         # 2) Classifier según el tipo de clasificación
         input_size = 2048 # características aplanadas 
-        output_size = 1 if num_classes==2 else num_classes
-        self.classifier = ClassifierResNeXt(input_size, output_size)
+        self.output_size = 1 if num_classes==2 else num_classes
+        self.classifier = ClassifierResNeXt(input_size, self.output_size)
         
         # Define la función de pérdida
         self.loss_function = nn.BCEWithLogitsLoss() if num_classes==2 else nn.CrossEntropyLoss()
         
         # Define la temperatura ... 
-        self.temperature = nn.Parameter(torch.ones(1) * 1) #*1.5
+        self.temperature = nn.Parameter(torch.ones(1) * 1.5) 
     
     
     def save_checkpoint(self, save_model_path):
@@ -124,11 +126,18 @@ class ResNeXtClassifier(nn.Module):
     
     def load_checkpoint(self, checkpoint):
         """Carga el estado del modelo desde un checkpoint"""
-        if checkpoint['num_classes'] != self.num_classes:
-            # Quitar pesos de la capa final
-            checkpoint['torch_state_dict'].pop('classifier.fc2.2.weight', None)
-            checkpoint['torch_state_dict'].pop('classifier.fc2.2.bias', None)
+        # Extrae el número de salidas del modelo guardado
+        weight_key = 'classifier.fc2.2.weight'
+        bias_key = 'classifier.fc2.2.bias'
+        
+        if weight_key in checkpoint['torch_state_dict']:
+            out_features = checkpoint['torch_state_dict'][weight_key].shape[0]
+            
+            if out_features != self.output_size:
+                checkpoint['torch_state_dict'].pop(weight_key, None)
+                checkpoint['torch_state_dict'].pop(bias_key, None)
         self.load_state_dict(checkpoint['torch_state_dict'], strict=False)
+    
     
     def forward(self, image):
         """Paso forward del modelo"""
@@ -171,20 +180,20 @@ class ResNeXtClassifier(nn.Module):
         
         # Listas para almacenar logits y etiquetas verdaderas de todo el conjunto de validación
         logits_list = []
-        labels_list = []
+        true_labels_list = []
         
         # Desactiva el cálculo de gradientes para eficiencia
         with torch.no_grad():
-            for images, labels in valid_loader:
-                images, labels = images.cuda(), labels.cuda()
+            for images, true_labels in valid_loader:
+                images, true_labels = images.cuda(), true_labels.cuda()
                 # Obtiene los logits del modelo sin aplicar temperature scaling
                 logits = self.forward(images)  
                 logits_list.append(logits)
-                labels_list.append(labels)
+                true_labels_list.append(true_labels)
         
         # Concatena todos los logits y etiquetas en un solo tensor para procesarlos juntos
         logits = torch.cat(logits_list)
-        labels = torch.cat(labels_list)
+        true_labels = torch.cat(true_labels_list)
         
         # Define el optimizador LBFGS para ajustar la temperatura (parámetro único)
         optimizer = torch.optim.LBFGS([self.temperature], lr=0.01, max_iter=50)
@@ -192,7 +201,10 @@ class ResNeXtClassifier(nn.Module):
         # Función requerida por LBFGS para reevaluar la función objetivo y los gradientes
         def eval():
             optimizer.zero_grad()
-            loss = self.loss_function(self.temperature_scale(logits), labels.float())
+            if self.num_classes == 2:
+                loss = self.loss_function(self.temperature_scale(logits), true_labels.float())
+            else:
+                loss = self.loss_function(self.temperature_scale(logits), true_labels.long())
             loss.backward()
             return loss
 
@@ -388,10 +400,16 @@ class ResNeXtClassifier_LAC(ResNeXtClassifier):
     
     def load_checkpoint(self, checkpoint):
         """Carga el estado del modelo desde un checkpoint"""
-        if checkpoint['num_classes'] != self.num_classes:
-            # Quitar pesos de la capa final
-            checkpoint['torch_state_dict'].pop('classifier.fc2.2.weight', None)
-            checkpoint['torch_state_dict'].pop('classifier.fc2.2.bias', None)
+        # Extrae el número de salidas del modelo guardado
+        weight_key = 'classifier.fc2.2.weight'
+        bias_key = 'classifier.fc2.2.bias'
+        
+        if weight_key in checkpoint['torch_state_dict']:
+            out_features = checkpoint['torch_state_dict'][weight_key].shape[0]
+            
+            if out_features != self.output_size:
+                checkpoint['torch_state_dict'].pop(weight_key, None)
+                checkpoint['torch_state_dict'].pop(bias_key, None)
         self.load_state_dict(checkpoint['torch_state_dict'], strict=False)
         if checkpoint['pred_model_type'] == self.PRED_MODEL_TYPE and checkpoint['alpha'] == self.alpha and 'q_hat' in checkpoint:
             self.q_hat = checkpoint['q_hat']
@@ -430,7 +448,7 @@ class ResNeXtClassifier_LAC(ResNeXtClassifier):
         
         # Asegura que ninguna muestra tenga conjunto vacío
         empty_rows = (pred_sets.sum(dim=1) == 0)  # (n,)
-        pred_sets[empty_rows, pred_classes[empty_rows]] = 1
+        pred_sets[empty_rows, :] = 1
         
         # Devuelve las clases predichas, conjuntos de predicción y clases verdaderas
         return pred_classes, pred_sets, true_classes
@@ -465,10 +483,17 @@ class ResNeXtClassifier_MCM(ResNeXtClassifier):
     
     def load_checkpoint(self, checkpoint):
         """Carga el estado del modelo desde un checkpoint"""
-        if checkpoint['num_classes'] != self.num_classes:
-            # Quitar pesos de la capa final
-            checkpoint['torch_state_dict'].pop('classifier.fc2.2.weight', None)
-            checkpoint['torch_state_dict'].pop('classifier.fc2.2.bias', None)
+        # Extrae el número de salidas del modelo guardado
+        weight_key = 'classifier.fc2.2.weight'
+        bias_key = 'classifier.fc2.2.bias'
+        
+        if weight_key in checkpoint['torch_state_dict']:
+            out_features = checkpoint['torch_state_dict'][weight_key].shape[0]
+            
+            if out_features != self.output_size:
+                checkpoint['torch_state_dict'].pop(weight_key, None)
+                checkpoint['torch_state_dict'].pop(bias_key, None)
+        
         self.load_state_dict(checkpoint['torch_state_dict'], strict=False)
         if (checkpoint['pred_model_type'] == self.PRED_MODEL_TYPE and 
             checkpoint['alpha'] == self.alpha and 
@@ -520,7 +545,7 @@ class ResNeXtClassifier_MCM(ResNeXtClassifier):
         
         # Evita conjuntos vacíos
         empty_rows = (pred_sets.sum(dim=1) == 0)
-        pred_sets[empty_rows, pred_classes[empty_rows]] = 1
+        pred_sets[empty_rows,:] = 1
         
         return pred_classes, pred_sets, true_classes
 
@@ -554,12 +579,24 @@ class ResNeXtClassifier_APS(ResNeXtClassifier):
     
     def load_checkpoint(self, checkpoint):
         """Carga el estado del modelo desde un checkpoint"""
+        # Extrae el número de salidas del modelo guardado
+        weight_key = 'classifier.fc2.2.weight'
+        bias_key = 'classifier.fc2.2.bias'
+        
+        if weight_key in checkpoint['torch_state_dict']:
+            out_features = checkpoint['torch_state_dict'][weight_key].shape[0]
+            
+            if out_features != self.output_size:
+                checkpoint['torch_state_dict'].pop(weight_key, None)
+                checkpoint['torch_state_dict'].pop(bias_key, None)
+        
         self.load_state_dict(checkpoint['torch_state_dict'], strict=False)
+        
         if (checkpoint['pred_model_type'] == self.PRED_MODEL_TYPE and 
             checkpoint['alpha'] == self.alpha and 
             'q_hat' in checkpoint
         ):
-            self.q_hat_per_class = checkpoint['q_hat']
+            self.q_hat = checkpoint['q_hat']
     
     
     def calibrate(self, calib_loader):
@@ -593,8 +630,6 @@ class ResNeXtClassifier_APS(ResNeXtClassifier):
         # Lanza un error si el modelo no está calibrado (q_hat no está determinado)
         if self.q_hat is None:
             raise ValueError("Modelo no calibrado")
-    
-        #---------------------------------------------------------------------------------------
         
         # Obtiene las predicciones y las clases verdaderas para el conjunto de evaluación
         pred_scores, true_labels = self._inference(dataloader, return_probs=True)
@@ -602,12 +637,8 @@ class ResNeXtClassifier_APS(ResNeXtClassifier):
         # Obtiene el número de instancias del conjunto
         n = len(true_labels)
         
-        #---------------------------------------------------------------------------------------
-        
         # Determina la clase predicha como la clase con mayor puntuación
         _, pred_labels = torch.max(pred_scores, dim=1) # Obtiene el índice de la score más alta para cada instancia
-        
-        #---------------------------------------------------------------------------------------
         
         # Ordena los scores de mayor a menor y calcula la suma acumulada
         sorted_scores, sorted_class_indices = torch.sort(pred_scores, dim=1, descending=True)
@@ -635,111 +666,285 @@ class ResNeXtClassifier_APS(ResNeXtClassifier):
 
 #-------------------------------------------------------------------------------------------------------------
 
-class ResNeXtClassifier_RAPS(ResNeXtClassifier_APS):
+class ResNeXtClassifier_RAPS(ResNeXtClassifier):
     
     PRED_MODEL_TYPE = 'RAPS'
     
-    def __init__(self, num_classes, confidence=0.9):
+    def __init__(self, num_classes, confidence=0.9, lambda_reg=0.0, k_reg=0):
         
         # Inicializa la clase padre con los parámetros base
-        super().__init__(num_classes, confidence)
+        super().__init__(num_classes)
+        
+        # Parámetros para la conformal prediction
+        self.alpha = 1 - confidence
+        self.q_hat = None
+        self.lambda_reg = lambda_reg
+        self.k_reg = k_reg
     
     
-    # def save_checkpoint(self, save_model_path):
-    #     """Guarda el estado del modelo en un archivo checkpoint"""
-    #     checkpoint = {
-    #         'pred_model_type': self.PRED_MODEL_TYPE,
-    #         'num_classes': self.num_classes,
-    #         'torch_state_dict': self.state_dict(),
-    #         'alpha': self.alpha,
-    #         'q_hat': self.q_hat
-    #     }
-    #     torch.save(checkpoint, save_model_path)
+    def save_checkpoint(self, save_model_path):
+        """Guarda el estado del modelo en un archivo checkpoint"""
+        checkpoint = {
+            'pred_model_type': self.PRED_MODEL_TYPE,
+            'num_classes': self.num_classes,
+            'torch_state_dict': self.state_dict(),
+            'alpha': self.alpha,
+            'q_hat': self.q_hat,
+            'lambda_reg': self.lambda_reg,
+            'k_reg': self.k_reg
+        }
+        torch.save(checkpoint, save_model_path)
     
     
-    # def load_checkpoint(self, checkpoint):
-    #     """Carga el estado del modelo desde un checkpoint"""
-    #     if checkpoint['num_classes'] != self.num_classes:
-    #         # Quitar pesos de la capa final
-    #         checkpoint['torch_state_dict'].pop('classifier.fc2.2.weight', None)
-    #         checkpoint['torch_state_dict'].pop('classifier.fc2.2.bias', None)
-    #     self.load_state_dict(checkpoint['torch_state_dict'], strict=False)
-    #     if (checkpoint['pred_model_type'] == self.PRED_MODEL_TYPE and 
-    #         checkpoint['alpha'] == self.alpha and 
-    #         'q_hat' in checkpoint
-    #     ):
-    #         self.q_hat_per_class = checkpoint['q_hat']
+    def load_checkpoint(self, checkpoint):
+        """Carga el estado del modelo desde un checkpoint"""
+        # Extrae el número de salidas del modelo guardado
+        weight_key = 'classifier.fc2.2.weight'
+        bias_key = 'classifier.fc2.2.bias'
+        
+        if weight_key in checkpoint['torch_state_dict']:
+            out_features = checkpoint['torch_state_dict'][weight_key].shape[0]
+            
+            if out_features != self.output_size:
+                print("Out features: ", out_features)
+                print("Output size: ", self.output_size)
+                checkpoint['torch_state_dict'].pop(weight_key, None)
+                checkpoint['torch_state_dict'].pop(bias_key, None)
+        
+        self.load_state_dict(checkpoint['torch_state_dict'], strict=False)
+        
+        if (checkpoint['pred_model_type'] == self.PRED_MODEL_TYPE and 
+            checkpoint['alpha'] == self.alpha and 
+            'q_hat' in checkpoint
+        ):
+            self.q_hat = checkpoint['q_hat']
+            self.lambda_reg = checkpoint.get('lambda_reg', 0.0)
+            self.k_reg = checkpoint.get('k_reg', 0)
     
     
-    # def calibrate(self, calib_loader):
+    @staticmethod
+    def _calibrate_RAPS(
+        pred_scores: torch.Tensor,
+        true_labels: torch.Tensor,
+        lmbda: float,
+        k_reg: int,
+        alpha: float
+    ) -> float:
         
-    #     # Obtiene las clases predichas y verdaderas para el conjunto de calibración
-    #     pred_scores, true_labels  = self._inference(calib_loader, return_probs=True)
+        # Obtiene el número de instancias del conjunto y el número de clases
+        n, num_classes = pred_scores.shape
         
-    #     # Obtiene el número de instancias del conjunto
-    #     n = len(true_labels)
+        # Ordena los scores de mayor a menor y calcula la suma acumulada
+        sorted_scores, sorted_class_index = torch.sort(pred_scores, dim=1, descending=True)
+        cumulative_scores = torch.cumsum(sorted_scores, dim=1)
         
-    #     # Ordena los scores de mayor a menor y calcula la suma acumulada
-    #     sorted_scores, sorted_class_indices = torch.sort(pred_scores, dim=1, descending=True)
-    #     cumulative_scores = torch.cumsum(sorted_scores, dim=1)
+        # Crea un vector de penalización acumulada para cada posición 
+        # (a partir de la posición k_reg en adleante añade penalización cte. de lambda_reg)
+        penalties = torch.zeros((1, num_classes))
+        penalties[0, k_reg:] += lmbda
+        cumulative_penalties = torch.cumsum(penalties, dim=1)
         
-    #     # Encuentra la posición de la clase verdadera en los índices ordenados
-    #     true_class_ranks = (sorted_class_indices == true_labels.unsqueeze(1)).float().argmax(dim=1)
+        # Encuentra, para cada instancia, la posición (0-indexed) de la clase verdadera en el ranking
+        idx = (sorted_class_index == true_labels.unsqueeze(1)).nonzero(as_tuple=False)[:,1] 
         
-    #     # Obtiene las puntuaciones  de no conformidad
-    #     nonconformity_scores = cumulative_scores[torch.arange(n), true_class_ranks]
+        # Genera un vector de valores aleatorios entre 0 y 1, uno por instancia 
+        U = torch.rand(n)
         
-    #     # Calcula el nivel de cuantificación ajustado basado en el tamaño del conjunto de calibración y alpha
-    #     q_level = math.ceil((1.0 - self.alpha) * (n + 1.0)) / n
-        
-    #     # Calcula el umbral de no conformidad como el percentil q_level de los valores de conformidad usando 
-    #     # cuantiles
-    #     self.q_hat = torch.quantile(nonconformity_scores, q_level, interpolation='higher').item()
-    
-    
-    # def inference(self, dataloader):
-        
-    #     # Lanza un error si el modelo no está calibrado (q_hat no está determinado)
-    #     if self.q_hat is None:
-    #         raise ValueError("Modelo no calibrado")
-    
-    #     #---------------------------------------------------------------------------------------
-        
-    #     # Obtiene las predicciones y las clases verdaderas para el conjunto de evaluación
-    #     pred_scores, true_labels = self._inference(dataloader, return_probs=True)
-        
-    #     # Obtiene el número de instancias del conjunto
-    #     n = len(true_labels)
-        
-    #     #---------------------------------------------------------------------------------------
-        
-    #     # Determina la clase predicha como la clase con mayor puntuación
-    #     _, pred_labels = torch.max(pred_scores, dim=1) # Obtiene el índice de la score más alta para cada instancia
-        
-    #     #---------------------------------------------------------------------------------------
-        
-    #     # Ordena los scores de mayor a menor y calcula la suma acumulada
-    #     sorted_scores, sorted_class_indices = torch.sort(pred_scores, dim=1, descending=True)
-    #     cumulative_scores = torch.cumsum(sorted_scores, dim=1)
-        
-    #     # Construye conjunto predictivo: incluye clases con suma acumulada <= q_hat
-    #     inclusion_mask = cumulative_scores <= self.q_hat # máscara booleana (n, num_classes)
-        
-    #     # Para evitar conjuntos vacíos, primero verifica si hay filas con todo False
-    #     empty_rows = (~inclusion_mask.any(dim=1))  # (n,), True donde conjunto vacío
+        #
+        nonconformity_scores = torch.empty_like(idx, dtype=sorted_scores.dtype)  # preasignar
 
-    #     # En esas filas vacías, incluye la primera clase (de mayor score)                                     # O debería aquí incluir todas las clases?
-    #     inclusion_mask[empty_rows, 0] = True
-        
-    #     # Ahora construye la matriz de predicción (n, num_classes) en orden original 
-    #     pred_sets = torch.zeros_like(pred_scores, dtype=torch.uint8) 
-        
-    #     for i in range(n):
-    #         # Para cada instancia, obtiene las clases incluidas según la máscara
-    #         included_classes = sorted_class_indices[i][inclusion_mask[i]]
-    #         # Marca esas clases en la fila i de pred_sets
-    #         pred_sets[i, included_classes] = 1
+        # Máscara: idx == 0
+        mask_0 = idx == 0
+        mask_not0 = ~mask_0
 
-    #     return pred_labels, pred_sets, true_labels
+        # Caso idx > 0
+        # Calcula las puntuaciones de no conformidad para cada instancia:
+        # - Suma acumulada de scores hasta la clase verdadera
+        # - Menos una fracción aleatoria del score de la clase verdadera (para romper empates)
+        # - Más la penalización acumulada por incluir esa cantidad de clases
+        nonconformity_scores[mask_not0] = (
+            cumulative_scores[mask_not0, idx[mask_not0]] -
+            U[mask_not0] * sorted_scores[mask_not0, idx[mask_not0]] +
+            cumulative_penalties[0, idx[mask_not0]]
+        )
+
+        # Caso idx == 0 → sin permitir conjuntos vacíos → usar score directamente (sin acumulado)
+        nonconformity_scores[mask_0] = (
+            sorted_scores[mask_0, 0] + cumulative_penalties[0, 0]
+        )
+        
+        # Calcula el nivel de cuantificación ajustado basado en el tamaño del conjunto de calibración y alpha
+        q_level = math.ceil((1.0 - alpha) * (n + 1.0)) / n
+        
+        # Calcula el umbral de no conformidad como el percentil q_level de los valores de conformidad usando 
+        # cuantiles
+        q_hat = torch.quantile(nonconformity_scores, q_level, interpolation='higher').item()
+        
+        return q_hat
+    
+    
+    @staticmethod
+    def _inference_RAPS(
+        pred_scores : torch.Tensor, 
+        q_hat : float, 
+        lmbda : float, 
+        k_reg : int 
+    ) -> torch.Tensor:
+        
+        # Obtiene el número de instancias del conjunto y el número de clases
+        n, num_classes = pred_scores.shape
+        
+        # Ordena los scores de mayor a menor y calcula la suma acumulada
+        sorted_scores, sorted_class_index = torch.sort(pred_scores, dim=1, descending=True)
+        cumulative_scores = torch.cumsum(sorted_scores, dim=1)
+        
+        # Crea un vector de penalización acumulada para cada posición 
+        penalties = torch.zeros((1, num_classes))
+        penalties[0, k_reg:] += lmbda
+        cumulative_penalties = torch.cumsum(penalties, dim=1)
+        
+        # Suma total acumulada: suma de scores más penalización para cada etiqueta adicional ordenada
+        total_scores = cumulative_scores + cumulative_penalties
+        
+        # Tamaño base del conjunto predictivo: incluye clases mientras total ≤ q_hat
+        sizes_base = (total_scores <= q_hat).sum(dim=1) + 1
+        sizes_base = torch.clamp(sizes_base, max=num_classes)
+        
+        # Caso especial: si q_hat = 1.0 (nivel de confianza = 0), se incluyen todas las clases
+        if q_hat == 1.0:
+            sizes = torch.full((n,), num_classes, dtype=torch.long)
+        
+        else:
+            
+            # V es un vector de 0 o 1 que decide si se incluye una clase extra o no (con probabilidad adaptativa)
+            V = torch.zeros(n, dtype=torch.long)
+            
+            # Se genera una variable aleatoria uniforme U[0,1]
+            U = torch.rand(n)
+            
+            for i in range(n):
+                
+                # Índice de la última clase incluida según sizes_base
+                last_idx = sizes_base[i]-1
+                
+                # 
+                score_last = sorted_scores[i, last_idx]
+                cumsum_scores_last = cumulative_scores[i, last_idx]
+                cumsum_penalty_last = cumulative_penalties[0, last_idx]
+                
+                #
+                # threshold = (1 / score_last) * (q_hat - (cumsum_scores_last-score_last) - cumsum_penalty_last)
+                threshold = (1 / score_last) * (cumsum_scores_last + cumsum_penalty_last - q_hat)
+                
+                #
+                V[i] = (threshold >= U[i]).long()
+            
+            # Ajusta los tamaños finales restando V, asegurando que haya al menos una clase
+            sizes = torch.clamp(sizes_base - V, min=1)
+        
+        # Inicializa la matriz binaria de conjuntos de predicción (0 = no incluido, 1 = incluido)
+        pred_sets = torch.zeros_like(pred_scores, dtype=torch.uint8)
+        
+        # Asigna 1 a las clases seleccionadas (según los índices ordenados)
+        for i in range(n):
+            pred_sets[i, sorted_class_index[i, :sizes[i]]] = 1
+        
+        return pred_sets
+    
+    
+    def calibrate(self, calib_loader):
+        
+        # Obtiene las clases predichas y verdaderas para el conjunto de calibración
+        pred_scores, true_labels  = self._inference(calib_loader, return_probs=True)
+        
+        #
+        self.q_hat = self._calibrate_RAPS(pred_scores, true_labels, self.lambda_reg, self.k_reg, self.alpha)
+    
+    
+    def inference(self, dataloader):
+        
+        # Lanza un error si el modelo no está calibrado (q_hat no está determinado)
+        if self.q_hat is None:
+            raise ValueError("Modelo no calibrado")
+        
+        # Obtiene las predicciones y las clases verdaderas para el conjunto de evaluación
+        pred_scores, true_labels = self._inference(dataloader, return_probs=True)
+        
+        # Determina la clase predicha como la clase con mayor score
+        _, pred_labels = torch.max(pred_scores, dim=1) 
+        
+        #
+        pred_sets = self._inference_RAPS(pred_scores, self.q_hat, self.lambda_reg, self.k_reg)
+        
+        return pred_labels, pred_sets, true_labels
+    
+    
+    def _get_kstar(self, pred_scores, true_labels):
+        """
+        Calcula el valor óptimo de k_reg (k*), que ...
+        """
+        # Obtiene el número de instancias del conjunto
+        n = len(true_labels)
+
+        # Obtiene el ranking descendente de las predicciones
+        sorted_pred_index = torch.argsort(pred_scores, dim=1, descending=True)
+
+        # Encuentra la posición (0-indexed) de la clase verdadera en el ranking
+        true_label_idx = (sorted_pred_index == true_labels.unsqueeze(1)).nonzero(as_tuple=False)[:,1]
+        
+        # Calcula el cuantil ajustado
+        k_level = math.ceil((1.0 - self.alpha) * (n + 1.0)) / n
+        khat = torch.quantile(true_label_idx.float(), k_level, interpolation='higher').item() + 1
+
+        return int(khat)
+    
+    
+    def _get_lambda(self, pred_scores, true_labels, k_reg):
+        """
+        Busca el valor de lambda que minimiza el tamaño medio del conjunto predictivo,
+        manteniendo cobertura conforme a RAPS.
+        """
+        # Lista de valores de lambda a evaluar
+        lambdas = [0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0]
+        
+        #
+        n = len(true_labels)
+        
+        # Variables para almacenar el tamaño medio mínimo y lambda
+        min_mean_size = pred_scores.shape[1] 
+        best_lambda = lambdas[0]
+        
+        # Itera sobre cada valor de lambda para encontrar el óptimo
+        for lmbda in lambdas:
+            
+            # 
+            q_hat = self._calibrate_RAPS(pred_scores, true_labels, lmbda, k_reg, self.alpha)
+            
+            # Genera los conjuntos de predicción usando el método RAPS
+            pred_sets = self._inference_RAPS(pred_scores, q_hat, lmbda, k_reg)
+            
+            # Calcula el tamaño medio de los conjuntos de predicción
+            mean_size = mean_set_size(pred_sets)
+            
+            print("Mean size: ", mean_size)
+            # Actualiza el lambda óptimo si se encuentra un tamaño medio menor
+            if mean_size < min_mean_size:
+                best_lambda = lmbda
+                min_mean_size = mean_size
+        
+        # Devuelve el lambda que minimiza el tamaño medio de los conjuntos de predicción
+        return best_lambda
+    
+    
+    def auto_configure(self, dataloader):
+        
+        # Pasa por el modelo y obtiene scores y etiquetas verdaderas
+        pred_scores, true_labels = self._inference(dataloader, return_probs=True)
+        
+        #
+        self.k_reg = self._get_kstar(pred_scores, true_labels)
+        print("k_reg: ", self.k_reg)
+        self.lambda_reg = self._get_lambda(pred_scores, true_labels, self.k_reg)
+        print("lambda: ", self.lambda_reg)
 
 #-------------------------------------------------------------------------------------------------------------

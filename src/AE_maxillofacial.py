@@ -87,7 +87,7 @@ def add_model_args(parser):
     parser.add_argument('--load_model_path', type=str)
     parser.add_argument('--save_model_path', type=str)
     parser.add_argument('--pred_model_type', type=str, choices=PRED_MODEL_TYPES)
-    parser.add_argument('--confidence', type=validate_confidence, default=0.9)
+    parser.add_argument('--confidence', type=validate_confidence, default=0.95)
     return parser
 
 def add_training_args(parser):
@@ -373,7 +373,7 @@ else:
     # - Validación (17% de las instancias)
     # - Calibración (15% de las instancias)
     
-    train_idx, calib_idx = train_test_split(range(len(trainset)), train_size=0.85, shuffle=True, 
+    train_idx, calib_idx = train_test_split(range(len(trainset)), train_size=0.8, shuffle=True, 
                                             random_state=SEED, stratify=stratify_labels)
     
     train_idx, valid_idx = train_test_split(train_idx, train_size=0.8, shuffle=True, random_state=SEED,
@@ -395,9 +395,7 @@ MODEL_CLASSES = {
     'base': ResNeXtRegressor,
     'QR': ResNeXtRegressor_QR,
     'ICP': ResNeXtRegressor_ICP,
-    'CQR': ResNeXtRegressor_CQR,
-    # 'CRF': ResNeXtRegressor_CRF,
-    # 'MCCQR': ResNeXtRegressor_MCCQR
+    'CQR': ResNeXtRegressor_CQR
 }
 
 # Obtiene los argumentos de tipo de modelo y nivel de confianza desde la línea de comandos
@@ -472,8 +470,8 @@ if args.train or args.train_head:
         # Imprime los valores de pérdida obtenidos en entrenamiento y validación 
         print(
             f"Epoch {epoch+1:>2} | "+
-            f"Train Loss: {head_train_loss:>7.3f} | " + 
-            f"Validation Loss: {head_valid_loss:>7.3f} | " +
+            f"Train Loss: {head_train_loss:>6.3f} | " + 
+            f"Validation Loss: {head_valid_loss:>6.3f} | " +
             f"Time: {time_str}"
         )
         
@@ -528,9 +526,6 @@ if args.train:
 
     # Número de épocas a entrenar 
     NUM_EPOCHS = 30
-
-    # Inicializa la mejor pérdida de validación como la obtenida en el entrenamiento de la cabecera
-    best_valid_loss = float('inf')
     
     # Configura el optimizador con los hiperparámetros escogidos
     optimizer = torch.optim.AdamW(param_groups, weight_decay=wd)
@@ -542,6 +537,12 @@ if args.train:
         steps_per_epoch=len(train_loader),
         epochs=NUM_EPOCHS
     )
+
+    # Inicializa la mejor pérdida de validación como la obtenida en el entrenamiento de la cabecera
+    best_valid_loss = float('inf')
+    
+    # 
+    best_epoch = -1
     
     # Listas para almacenar las pérdidas de entrenamiento y validación
     train_losses = []
@@ -572,13 +573,16 @@ if args.train:
         # Imprime los valores de pérdida obtenidos en entrenamiento y validación  
         print(
             f"Epoch {epoch+1:>2} | " +
-            f"Train Loss: {train_loss:>7.3f} | " +
-            f"Validation Loss: {valid_loss:>7.3f} | " +
+            f"Train Loss: {train_loss:>6.3f} | " +
+            f"Validation Loss: {valid_loss:>6.3f} | " +
             f"Time: {time_str}"
         )
         
         # Comprueba si la pérdida en validación ha mejorado
         if valid_loss < best_valid_loss:
+            
+            #
+            best_epoch = epoch + 1
             
             # Actualiza la mejor pérdida en validación obtenida hasta ahora
             best_valid_loss = valid_loss
@@ -587,9 +591,14 @@ if args.train:
             model.save_checkpoint(args.save_model_path)
     
     
-    # Carga los pesos del modelo que obtuvo la mejor validación
-    checkpoint = torch.load(args.save_model_path)
-    model.load_checkpoint(checkpoint)
+    if valid_loss > best_valid_loss:
+        
+        #
+        print(f"Restaurando los parámetros de la época {best_epoch}")
+        
+        # Carga los pesos del modelo que obtuvo la mejor validación
+        checkpoint = torch.load(args.save_model_path)
+        model.load_checkpoint(checkpoint)
 
     print("✅ Entrenamiento de la red completa completado\n")
 
