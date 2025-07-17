@@ -494,6 +494,32 @@ distribución de los datos, en lugar de asumir una distribución simétrica o co
 %Esto resulta en intervalos que reflejan mejor la incertidumbre en distintas regiones del espacio de 
 %entrada, mejorando la precisión y utilidad de las predicciones de intervalo.
 
+En la Tabla \ref{tab:comparativa_cp} observamos un cuadro comparativo de los distintos métodos propuestos de 
+CP. 
+
+\renewcommand{\arraystretch}{1.5}
+\begin{sidewaystable}
+\centering
+\begin{tabular}{lllll}
+\hline
+Característica                                                               & base                  & ICP            & QR                    & CQR                                                                      \\ \hline
+\begin{tabular}[c]{@{}l@{}}Cobertura \\ Marginal\end{tabular}                & No garantizada        & Garantizada    & No garantizada        & Garantizada                                                              \\
+\begin{tabular}[c]{@{}l@{}}Cobertura \\ Condicionada\end{tabular}            & No garantizada        & No garantizada & No garantizada        & \begin{tabular}[c]{@{}l@{}}No garantizada, \\ pero aproxima\end{tabular} \\
+Model-agnostic                                                               & Sí                    & Sí             & Sí                    & Sí                                                                       \\
+Domain-agnostic                                                              & Sí                    & Sí             & Sí                    & Sí                                                                       \\
+\begin{tabular}[c]{@{}l@{}}Intervalos \\ simétricos/asimétricos\end{tabular} & Simétricos            & Simétricos     & Asimétricos           & Asimétricos                                                              \\
+Intervalos adaptativos                                                       & No                    & No             & Sí                    & Sí                                                                       \\
+Coste calibración                                                            & No existe calibración & O(n log(n))    & No existe calibración & O(n log(n))                                                              \\
+\begin{tabular}[c]{@{}l@{}}Coste inferencia \\ (por predicción)\end{tabular} & O(1)                  & O(1)           & O(1)                  & O(1)                                                                     \\ \hline
+\end{tabular}
+\caption[
+    Comparativa de métodos propuestos de CP para problemas de regresión.
+]{   
+    Comparativa de métodos propuestos de CP para problemas de regresión.
+}
+\label{tab:comparativa_cp}
+\end{sidewaystable}
+
 % ------------------------------------------------------------------------------------------------------------
 
 % \subsubsection{\textit{Conformal Residual Fitting} (CRF)}
@@ -536,15 +562,15 @@ Propone un enfoque de clasificación de conjuntos de valores (\textit{set-valued
 en lugar de asignar una única etiqueta a cada instancia, se selecciona un conjunto de etiquetas que 
 garanticen un nivel de confianza predeterminada por el usuario.
 
-Las puntuacines de no conformidad obtenidas del conjunto de calibración, se calculan como la unidad menos la 
-probabilidad
+La función de no conformidad es conocida como \textbf{probabilidad inversa o \textit{hinge loss}} 
+\cite{johansson2017}, y se calcula como la unidad menos la probabilidad de la clase verdadera 
 \footnote{
     Se le denomina probabilidad a un valor de certeza que realmente no tiene garantías estadísticas,
     ya que proviene directamente de la salida \textit{softmax} o sigmoide del modelo. Estas salidas no 
     están necesariamente bien calibradas ni corresponden a verdaderas probabilidades, si bien el término 
     se utiliza frecuentemente por motivos de simplicidad y comunicación.
 }
-de la clase verdadera o, lo que es lo mismo, la suma de valores de probabilidad de todas las clases salvo
+o, lo que es lo mismo, la suma de valores de probabilidad de todas las clases salvo
 la correspondiente a la etiqueta verdadera:
 $$
 R = \left\{ 1 - \hat{\pi}_{y_i}(x_i) \right\}_{i=1,...,n}

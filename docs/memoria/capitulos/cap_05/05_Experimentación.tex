@@ -71,6 +71,8 @@ tal y como se muestra en la Figura \ref{fig:data_split_conformal}.
     \label{fig:data_split_conformal}
 \end{figure}
 
+% La comparativa entre métodos se realizará unica y exclusivamente sobre el conjunto test, para garantizar que 
+% la evaluación sea objetiva y no esté influenciada por ninguna etapa del entrenamiento o calibración.
 Para una comparativa más justa entre los métodos que usan CP y los que no, se utilizará la siguiente 
 estrategia: los métodos que no emplean CP seguirán el esquema tradicional de división de datos (en 
 entrenamiento, validación y test), mientras que los métodos basados en CP incorporarán además un conjunto 
@@ -141,30 +143,21 @@ calibración.
 
 % ------------------------------------------------------------------------------------------------------------
 
-\subsection{Experimentos para la estimación de edad}
+\subsection{Comparativa de métodos para la estimación de edad}
 
 Se plantea una comparativa entre diversos métodos de predicción para el problema de AE. 
 Todos los métodos presentan tanto predicción puntual como interválica. De esta forma queremos evaluar
-tanto su utilidad tradicional para estimar el valor más probable como su capacidad para proporcionar
+tanto su utilidad tradicional para estimar el valor esperado como su capacidad para proporcionar
 intervalos de confianza fiables que capturen la incertidumbre predictiva y sean computacionalmente eficientes.
-
-Los métodos seleccionados abarcan tanto aproximaciones clásicas como técnicas modernas de conformal prediction,
-lo que nos permitirá analizar:
-\begin{itemize}
-    \item La precisión en la estimación puntual.
-    \item La validez y eficacia de los intervalos de predicción.
-    \item El coste computacional asociado a cada aproximación.
-\end{itemize}
-
-El objetivo es alcanzar el 95\% de confianza en las predicciones interválicas, que es la cifra de confianza
+El objetivos es alcanzar el 95\% de confianza en las predicciones interválicas, que es la cifra de confianza
 generalmente empleada en AF. 
 Los métodos propuestos son los siguientes: 
 
 \begin{itemize}
     \item \textbf{Método `base'}: Se trata de un modelo de regresión puntual sin técnicas de CP. La predicción 
     interválica se construirá con la predicción puntual +/- 2 veces el error absoluto medio obtenido en el
-    conjunto de validación, que es una aproximación heurística común para construir intervalos de predicción 
-    sin distribución de errores.
+    conjunto de validación, que es una aproximación heurística común para construir intervalos de predicción
+    que no asumen una distribución de errores específica. 
     Este método sirve como \textit{baseline} para comparar la mejora que aportan las técnicas más 
     sofisticadas.
 
@@ -180,20 +173,18 @@ Los métodos propuestos son los siguientes:
 
 \end{itemize} 
 
-Para cada método se entrenarán 10 modelos independientes desde cero, con el objetivo de capturar la 
-variabilidad inherente al proceso de entrenamiento. Esto permite una comparación más robusta del rendimiento 
-entre métodos. Además, se busca mantener condiciones de entrenamiento lo más reproducibles posible, a pesar 
-de que cada técnica pueda utilizar diferentes funciones de pérdida. Cabe destacar que los métodos con y sin 
-CP se entrenan por separado, ya que emplean divisiones distintas del conjunto de datos: mientras los métodos 
-sin CP aprovechan un mayor volumen de datos de entrenamiento, los métodos con CP requieren reservar una parte 
-del conjunto para calibración.
+Para cada método se ha entrenado 10 modelos independientes desde cero, con el objetivo de capturar la 
+variabilidad inherente al proceso de entrenamiento. 
+Todas las métricas se calculan sobre el conjunto de test, evaluando tanto predicciones puntuales como
+interválicas, para garantizar que la evaluación sea objetiva y no esté influenciada por ninguna etapa del
+entrenamiento o calibración. 
 
 % ------------------------------------------------------------------------------------------------------------
 
-\subsection{Experimentos para la estimación de mayoría de edad}
+\subsection{Comparativa de métodos para la estimación de mayoría de edad}
 
-Todos los métodos propuestos para el problema de AAM presentan una predicción puntual ---de una sola 
-etiqueta---, además de un conjunto de predicción, formado por una o más etiquetas. 
+Todos los métodos propuestos para el problema de AAM presentan una predicción puntual (de una sola 
+etiqueta), además de un conjunto de predicción, formado por una o más etiquetas. 
 
 Los métodos propuestos son:
 
@@ -213,19 +204,15 @@ El modelo será exactamente el mismo que el de LAC. Solo cambiará la calibraci�
 
 \end{itemize} 
 
-No se han implementado los métodos APS y RAPS, puesto que no son aplicables directamente al caso de 
-clasificación binaria.
+No se han implementado los otros métodos de clasificación APS y RAPS, puesto que no son aplicables 
+directamente al caso de clasificación binaria.
 
-A diferencia de lo que ocurría en la regresión, las etiquetas predichas aquí darán los mismos resultados en 
-todos los métodos CP, ya que usarán el mismo modelo con la misma salida puntual. 
-Por tanto, el análisis se centrará principalmente en evaluar la validez de la cobertura y la eficiencia del 
-conjunto de predicción generado por cada técnica de CP, considerando métricas como la tasa de cobertura 
-empírica y el tamaño promedio del conjunto predicho.
-
+En este caso, también se han obtenido 10 modelos indepenndientes para cada método, y las métricas 
+se han calculado sobre el conjunto de test. 
 
 % ------------------------------------------------------------------------------------------------------------
 
-\subsection{Experimentos para la clasificación combinada de mayoría de edad y sexo}
+\subsection{Comparativas de métodos para la clasificación combinada de mayoría de edad y sexo}
 
 Al igual que en el problema de AAM, para el problema de AMSC se ha seguido la misma lógica de evaluación, 
 aplicando tanto predicción puntual como técnicas de CP para obtener conjuntos de predicción. 
@@ -242,7 +229,7 @@ dos subconjuntos independientes, uno para la calibración de probabilidades y ot
 conformal--- esta estrategia mostró buenos resultados en la práctica. Esto se debe a que el conjunto de 
 validación empleado era suficientemente representativo y permitió obtener probabilidades calibradas de manera 
 adecuada. Esta calibración probabilística no afecta a la variabilidad entre modelos con los mismos pesos, 
-dado que el algoritmo es determinístico y produce resultados consistentes para un mismo conjunto de datos y 
+dado que el algoritmo es determinista y produce resultados consistentes para un mismo conjunto de datos y 
 parámetros. 
 
 Partiendo de esto, los métodos propuestos son:
@@ -267,6 +254,9 @@ El modelo será exactamente el mismo que el de LAC para este mismo problema.
 
 \end{itemize} 
 
+Como en los anteriores problemas, se han obtenido 10 modelos independientes para cada método, a partir de los 
+métodos propuestos para el problema de AMM como se ha especificado anteriormente, y las métricas se han 
+calculado sobre el conjunto de test.
 
 % ------------------------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
@@ -275,8 +265,12 @@ El modelo será exactamente el mismo que el de LAC para este mismo problema.
 
 \subsection{Preparación de los datos de entrenamiento}
 
-Dado que las imágenes del conjunto de datos disponible son significativamente más anchas que altas, se ha 
-optado por adaptar su tamaño a 448x224.  
+Dado que las imágenes del conjunto de datos disponible son significativamente más anchas que altas, se 
+normalizaron todas las dimensiones a 448×224 píxeles para homogenizar las entradas del modelo
+\footnote{
+El redimensionado se aplicó de forma consistente a todo el conjunto (entrenamiento, validación, calibración y 
+test), utilizando interpolación bilineal.
+}.
 Se ha establecido un tamaño de \textit{batch} de 32, tras encontrar preeliminarmente un equilibrio entre 
 regularización y buen ritmo de aprendizaje. 
 Y también se ha realizado \textit{data augmentation} en el conjunto de entrenamiento, introduciendo 
@@ -296,8 +290,7 @@ máquina e iluminación ligeramente variables:
 
 Como se venía anticipando en el anterior capítulo, adaptaremos la arquitectura del modelo ResNeXt50 para el 
 problema de regresión. El tamaño de las imágenes de entrada no modifica la arquitectura del modelo, pues el 
-extractor de características conserva la dimensionalidad relativa a través de sus bloques convolucionales, 
-si bien todas las imágenes las hemos adaptado al tamaño 448x224 para garantizar una entrada uniforme.
+extractor de características conserva la dimensionalidad relativa a través de sus bloques convolucionales.
 Sustituiremos la última capa del modelo por un \textit{adaptive average pooling}, que permite reducir la 
 dimensionalidad espacial de forma flexible independientemente del tamaño exacto de entrada. A continuación, 
 este tensor de características se aplana en la capa \textit{flatten}.
@@ -314,16 +307,18 @@ experiencia previa en el trabajo con este conjunto de datos.
 Los componentes clave del \textit{pipeline} de entrenamiento son:
 
 \begin{itemize}
-    \item Error cuadrático medio (\textit{mean squared error}, MSE) como función de pérdida en modelos de 
-    predicción puntual y \textit{pinball} para modelos QR. 
-    
-    MSE es la función de pérdida por defecto para problemas de regresión, por las siguientes razones: los 
-    errores siguen una distribución normal, lo que hace que minimizar el MSE equivalga a maximizar la 
-    verosimilitud de los datos bajo este supuesto; penaliza los errores grandes más que los pequeños, lo que 
-    ayuda a evitar predicciones extremadamente alejadas de los valores reales; y es derivable en todo su 
-    dominio, ---además de que su derivada es lineal, lo que facilita el cálculo en la retropropagación---, 
+    \item Error cuadrático medio como función de pérdida en modelos de predicción puntual y 
+    \textit{pinball loss} para modelos QR. 
+
+    El error cuadrático medio es la función de pérdida por defecto para problemas de regresión: 
+    los errores siguen una distribución normal, lo que hace que minimizar el MSE equivalga a maximizar
+    la verosimilitud de los datos;
+    penaliza los errores grandes más que los pequeños, lo que ayuda a evitar predicciones extremadamente 
+    alejadas de los valores reales;
+    y es derivable en todo su dominio, ---además de que su derivada es lineal, lo que facilita el cálculo 
+    en la retropropagación--- 
     y convexa, lo que garantiza la existencia de un único mínimo global, facilitando la convergencia en 
-    problemas lineales.
+    problemas lineales. 
         
     \item Optimizador AdamW \cite{loshchilov2017}. Se ha escogido este optimizador dado que, por lo general,
     no requiere un ajuste exhaustivo de hiperparámetros para lograr buenos resultados. 
@@ -336,7 +331,7 @@ nuevas capas densas, de las cuales se han entrenado los pesos con \textit{learni
 
 Tras esto, se ha entrenado la red completa. Para ello, se han descongelado todas las capas y se ha aplicado 
 una estrategia de optimización basada en \textbf{\textit{learning rates} discriminativos} combinada con
-la política de ajuste de \textit{learning rate} \textbf{OneCycle} \cite{smith2018}.
+la política de ajuste de \textit{learning rate \textbf{OneCycle}} \cite{smith2018}.
 
 En concreto, se han definido diferentes tasas de aprendizaje para cada grupo de capas del modelo, asignadas 
 según su profundidad. Los bloques convolucionales iniciales ---más generales y preentrenados--- reciben 
@@ -422,9 +417,12 @@ salida del modelo cuando se combina con una capa de activación \textit{softmax}
 % ------------------------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
 
-\section{Métricas}
+\section{Métricas usadas en los experimentos}
 
 \todo{Javier dijo que le cuadraba más que este apartado etuviera en materiales y métodos. Hay que discutirlo.}
+
+\todo{También podría reformular este apartado y llamarlo `Evaluación de los experimentos', e incluir tanto
+métricas como las tests estadísticos que empleo en experimentación.}
 
 \subsection{Métricas para regresión}
 
@@ -502,23 +500,19 @@ Veamos las métricas para este tipo de predicciones:
     indican intervalos anchos y, por tanto, poco útiles para la toma de decisiones. 
 
 
-    \item La \textbf{\textit{interval score} (IS)} \cite{gneiting2007} trata de unificar en una sola métrica
-    el \textit{trade-off} cobertura vs. ancho del intervalo. Su expresión es la siguiente:
+    \item La \textbf{\textit{mean interval score} (MIS)} \cite{gneiting2007} trata de unificar en una sola 
+    métrica el \textit{trade-off} cobertura vs. amplitud del intervalo. Su expresión es la siguiente:
 
-    $$
-    IS = \frac{1}{n} \sum_{i=1}^n{
-            \left(         
-                (u_i-l_i) 
-                + \frac{2}{\alpha} \left( l_i-y_i \right) \mathbb{I}\left[ y_i<l_i \right] 
-                + \frac{2}{\alpha}  \left( y_i-u_i \right) \mathbb{I}\left[ y_i>u_i \right]
-            \right)
-        } 
-        \in (0, +\infty)
-    $$
+    \begin{align*} 
+    MIS = \frac{1}{n} \sum_{i=1}^n
+    \biggl( (u_i-l_i) \biggr.&+ \frac{2}{\alpha} \left( l_i-y_i \right) \mathbb{I}\left[ y_i<l_i \right] \\
+    &+\left. \frac{2}{\alpha}  \left( y_i-u_i \right) \mathbb{I}\left[ y_i>u_i \right] \right)
+    \in \left( 0, +\infty \right)
+    \end{align*}
 
-    Al igual que el MIW, se interpreta como que una puntuación más baja es mejor. 
-    El primer término ($u_i-l_i$) representa directamente la anchura de cada intervalo, mientras que 
-    el segundo y tercer términos:
+    Al igual que con el \textit{mean interval width}, una puntuación más baja en el \textit{mean interval 
+    score} indica un mejor rendimiento del modelo. El primer término ($u_i-l_i$) representa directamente la 
+    amplitud de cada intervalo, mientras que el segundo y tercer términos:
 
     \begin{itemize}
         \item $\frac{2}{\alpha} \left( l_i-y_i \right) \mathbb{I}\left[ y_i<l_i \right]$ penaliza los casos en 
@@ -568,8 +562,6 @@ múltiples etiquetas para valorar los conjuntos de predicciones obtenidos con la
     (véase la Figura \ref{fig:conf_matrix_binary}).
     Idealmente, los valores se concentrarían en la diagonal principal, lo que indicaría que las predicciones 
     coinciden con los valores reales.
-    Esta visualización admite muchas variantes, por ejemplo, como la vista en la Figura 
-    \ref{fig:conf_matrix_binary_relative}.
     Prácticamente todas las métricas y visualizaciones parten de la información ofrecida en esta matriz. 
 
     \begin{figure}[h]
@@ -582,56 +574,56 @@ múltiples etiquetas para valorar los conjuntos de predicciones obtenidos con la
         \label{fig:conf_matrix_binary}
     \end{figure}
     
-    \begin{figure}[h]
-        \centering
+    % \begin{figure}[h]
+    %     \centering
     
-        \begin{subfigure}[b]{0.3\textwidth}
-            \centering
-            \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/confusion_matrix_binary_1.png}
-            \caption{Sin información de sexo}
-            \label{fig:conf_matrix_general}
-        \end{subfigure}
-        \hfill
-        \begin{subfigure}[b]{0.3\textwidth}
-            \centering
-            \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/confusion_matrix_binary_2.png}
-            \caption{Sexo femenino}
-            \label{fig:conf_matrix_female}
-        \end{subfigure}
-        \hfill
-        \begin{subfigure}[b]{0.3\textwidth}
-            \centering
-            \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/confusion_matrix_binary_3.png}
-            \caption{Sexo masculino}
-            \label{fig:conf_matrix_male}
-        \end{subfigure}
+    %     \begin{subfigure}[b]{0.3\textwidth}
+    %         \centering
+    %         \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/confusion_matrix_binary_1.png}
+    %         \caption{Sin información de sexo}
+    %         \label{fig:conf_matrix_general}
+    %     \end{subfigure}
+    %     \hfill
+    %     \begin{subfigure}[b]{0.3\textwidth}
+    %         \centering
+    %         \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/confusion_matrix_binary_2.png}
+    %         \caption{Sexo femenino}
+    %         \label{fig:conf_matrix_female}
+    %     \end{subfigure}
+    %     \hfill
+    %     \begin{subfigure}[b]{0.3\textwidth}
+    %         \centering
+    %         \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/confusion_matrix_binary_3.png}
+    %         \caption{Sexo masculino}
+    %         \label{fig:conf_matrix_male}
+    %     \end{subfigure}
     
-        \caption[
-            Matrices de confusión para la estimación de mayoría/minoría de edad según el modelo de 
-            \cite{porto2020}.
-        ]{
-            Matrices de confusión para la estimación de mayoría/minoría de edad según el modelo de 
-            \cite{porto2020}.
-            Se representan los valores de cada celda en términos porcentuales de los ejemplos reales que hay 
-            de cada clase ($< 18$ y $\ge 18$), lo que permite comparar la matriz de confusión general de todos 
-            los ejemplos (\ref{sub@fig:conf_matrix_general}) con la de ejemplos se sexo femenino 
-            (\ref{sub@fig:conf_matrix_female}) y sexo masculino (\ref{sub@fig:conf_matrix_male}), permitiendo 
-            identificar posibles sesgos en el modelo respecto al género, y así realizar una evaluación más 
-            precisa del rendimiento del modelo en diferentes subgrupos de la población.
-        }
-        \label{fig:conf_matrix_binary_relative}
+    %     \caption[
+    %         Matrices de confusión para la estimación de mayoría/minoría de edad según el modelo de 
+    %         \cite{porto2020}.
+    %     ]{
+    %         Matrices de confusión para la estimación de mayoría/minoría de edad según el modelo de 
+    %         \cite{porto2020}.
+    %         Se representan los valores de cada celda en términos porcentuales de los ejemplos reales que hay 
+    %         de cada clase ($< 18$ y $\ge 18$), lo que permite comparar la matriz de confusión general de todos 
+    %         los ejemplos (\ref{sub@fig:conf_matrix_general}) con la de ejemplos se sexo femenino 
+    %         (\ref{sub@fig:conf_matrix_female}) y sexo masculino (\ref{sub@fig:conf_matrix_male}), permitiendo 
+    %         identificar posibles sesgos en el modelo respecto al género, y así realizar una evaluación más 
+    %         precisa del rendimiento del modelo en diferentes subgrupos de la población.
+    %     }
+    %     \label{fig:conf_matrix_binary_relative}
 
-    \end{figure}
+    % \end{figure}
 
 
-    \item La \textbf{cobertura empírica (\textit{empirical coverage}, EC)}, de forma análoga a la regresión, 
+    \item La \textbf{cobertura empírica (\textit{empirical coverage})}, de forma análoga a la regresión, 
     mide la proporción de veces que la etiqueta verdadera está contenida dentro del conjunto predicho.
 
     $$
     EC = \frac{1}{n} \sum_{i=1}^{n} \mathbb{I}(y_i \in \Gamma_\alpha(x_i))
     $$
 
-    \item El \textbf{tamaño del conjunto promedio (\textit{mean set size}, MSS)} mide qué cuántas etiquetas,
+    \item El \textbf{tamaño del conjunto promedio (\textit{mean set size})} mide qué cuántas etiquetas,
     en promedio, incluyen los conjuntos de predicción $\Gamma_\alpha(x)$.
 
     $$
@@ -646,60 +638,487 @@ múltiples etiquetas para valorar los conjuntos de predicciones obtenidos con la
 
 \section{Resultados}
 
-\subsection{Estimación de edad}
+% ------------------------------------------------------------------------------------------------------------
+
+\subsection{Resultados para la estimación de edad}
+
+\subsubsection{Análisis de métricas para la estimación de edad puntual}
+
+La Tabla \ref{tab:AE_MAE_MSE_comparative} presenta las métricas que evalúan el rendimiento del modelo de 
+regresión en sus estimaciones del valor esperado de edad.
+En general, se observa \textbf{poca variabilidad entre modelos y ejecuciones}, con diferencias de solo unas 
+centésimas en las métricas evaluadas. Sin embargo, el análisis de varianza (ANOVA)
+\footnote{
+    La aplicación del ANOVA se basó en las suposiciones de independencia entre errores medios por modelo y 
+    ejecución, normalidad aproximada de los residuos y homogeneidad de varianzas entre grupos.
+} 
+de un factor reveló 
+diferencias estadísticamente significativas entre los modelos para ambas métricas: 
+MAE ($F(3, 28) = 20.38$, $p < 0.001$) y MSE ($F(3, 28) = 15.09$, $p < 0.001$).
+Para identificar qué pares de modelos presentaban diferencias significativas, se aplicó la prueba 
+\textit{post-hoc} de comparaciones múltiples de Tukey (véanse las Tablas \ref{tab:AE_tukey_mae} y 
+\ref{tab:AE_tukey_mse}). Los resultados indicaron lo siguiente:
+
+\todo{¿Debería indicar los supuestos a la hora de usar ANOVA y Tukey? Por ejemplo: se asume que cada método
+presenta distribución normal en las métricas}
+
+\renewcommand{\arraystretch}{1.4}
+\begin{table}[h]
+    \small
+    \begin{tabular}{clcccclcccc}
+    % \hline
+    \toprule
+    \multirow{2}{*}{\textbf{Método}} &  & \multicolumn{4}{c}{\textbf{Error Absoluto Medio}}         &  & \multicolumn{4}{c}{\textbf{Error Cuadrático Medio}}           \\ \cline{3-6} \cline{8-11} 
+                                    &  & \textbf{base} & \textbf{ICP} & \textbf{QR} & \textbf{CQR}  &  & \textbf{base} & \textbf{ICP} & \textbf{QR} & \textbf{CQR} \\ \cline{1-1} \cline{3-6} \cline{8-11} 
+    Ejecución 1                      &  & 1.17          & 1.20         & 1.17        & 1.18         &  & 2.39          & 2.50         & 2.38        & 2.46         \\
+    Ejecución 2                      &  & 1.15          & 1.18         & 1.17        & 1.20         &  & 2.33          & 2.45         & 2.40        & 2.49         \\
+    Ejecución 3                      &  & 1.17          & 1.21         & 1.17        & 1.17         &  & 2.38          & 2.55         & 2.42        & 2.36         \\
+    Ejecución 4                      &  & 1.16          & 1.20         & 1.14        & 1.17         &  & 2.34          & 2.47         & 2.32        & 2.41         \\
+    Ejecución 5                      &  & 1.16          & 1.21         & 1.16        & 1.18         &  & 2.37          & 2.52         & 2.39        & 2.42         \\
+    Ejecución 6                      &  & 1.15          & 1.20         & 1.17        & 1.17         &  & 2.33          & 2.51         & 2.40        & 2.40         \\
+    Ejecución 7                      &  & 1.16          & 1.20         & 1.18        & 1.19         &  & 2.34          & 2.48         & 2.46        & 2.43         \\
+    Ejecución 8                      &  & 1.18          & 1.20         & 1.17        & 1.20         &  & 2.39          & 2.43         & 2.40        & 2.47         \\
+    Ejecución 9                      &  &               &              &             &              &  &               &              &             &              \\
+    Ejecución 10                     &  &               &              &             &              &  &               &              &             &              \\ \cline{1-1} \cline{3-6} \cline{8-11} 
+    Media                            &  & 1.16          & 1.20         & 1.16        & 1.19         &  & 2.36          & 2.49         & 2.38        & 2.44         \\ 
+    \bottomrule
+    \end{tabular}
+    \caption[
+        Error absoluto medio y error cuadrático medio obtenidos por cada método de predicción a lo 
+        largo de distintas ejecuciones.
+    ]{
+        Error absoluto medio y error cuadrático medio obtenidos por cada método de predicción a lo 
+        largo de distintas ejecuciones. Se presentan los valores para cada ejecución individual, así como la 
+        media final de cada métrica.
+        Punto como separador decimal.
+    }
+    \label{tab:AE_MAE_MSE_comparative}
+\end{table}
+
+\renewcommand{\arraystretch}{1.2}
+\begin{table}[h]
+    \small
+    \centering
+    \begin{tabular}{llllll}
+    \toprule
+    \textbf{Modelo 1} & \textbf{Modelo 2} & \textbf{Dif. media} & \textbf{Valor $p$} & \textbf{IC 95\%} & \textbf{Signif.} \\
+    \midrule
+    CQR  & ICP   & 0.0122 & 0.176  & [-0.0036,\ 0.0279] & No  \\
+    CQR  & QR    & -0.0244 & 0.0013 & [-0.0401,\ -0.0086] & \textbf{Sí} \\
+    CQR  & base  & -0.0250 & 0.0010 & [-0.0407,\ -0.0092] & \textbf{Sí} \\
+    ICP  & QR    & -0.0365 & \textless 0.0001 & [-0.0523,\ -0.0208] & \textbf{Sí} \\
+    ICP  & base  & -0.0371 & \textless 0.0001 & [-0.0529,\ -0.0214] & \textbf{Sí} \\
+    QR   & base  & -0.0006 & 0.9996 & [-0.0164,\ 0.0152] & No \\
+    \bottomrule
+    \end{tabular}
+    \caption[
+        Resultados de la prueba \textit{post-hoc} de Tukey HSD para MAE entre pares de modelos.
+    ]{
+        Resultados de la prueba \textit{post-hoc} de Tukey HSD para MAE entre pares de modelos. Se muestran 
+        la diferencia media entre grupos, el valor $p$ ajustado, el intervalo de confianza al 95\% y si la 
+        diferencia es estadísticamente significativa ($\alpha = 0.05$).
+    }
+    \label{tab:AE_tukey_mae}
+\end{table}
+
+\renewcommand{\arraystretch}{1.2}
+\begin{table}[h]
+    \small
+    \centering
+    \begin{tabular}{llllll}
+    \toprule
+    \textbf{Modelo 1} & \textbf{Modelo 2} & \textbf{Dif. media} & \textbf{Valor $p$} & \textbf{IC 95\%} & \textbf{Signif.} \\
+    \midrule
+    CQR  & ICP   & 0.0484  & 0.1353   & [-0.0104,\ 0.1072]     & No            \\
+    CQR  & QR    & -0.0595 & 0.0464   & [-0.1183,\ -0.0007]    & \textbf{Sí}   \\
+    CQR  & base  & -0.0825 & 0.0035   & [-0.1413,\ -0.0237]    & \textbf{Sí}   \\
+    ICP  & QR    & -0.1079 & 0.0002   & [-0.1667,\ -0.0491]    & \textbf{Sí}   \\
+    ICP  & base  & -0.1309 & \textless 0.0001  & [-0.1896,\ -0.0721]    & \textbf{Sí}   \\
+    QR   & base  & -0.0229 & 0.7128   & [-0.0817,\ 0.0358]     & No            \\
+    \bottomrule
+    \end{tabular}
+    \caption[
+        Resultados de la prueba \textit{post-hoc} de Tukey HSD para MSE entre pares de modelos.
+    ]{
+        Resultados de la prueba \textit{post-hoc} de Tukey HSD para MSE entre pares de modelos. Se muestran la 
+        diferencia media entre grupos, el valor $p$ ajustado, el intervalo de confianza al 95\% y si la 
+        diferencia es estadísticamente significativa ($\alpha = 0.05$).
+    }
+    \label{tab:AE_tukey_mse}
+\end{table}
+
+\begin{itemize}
+    
+    \item No se encontraron diferencias significativas entre los modelos `QR' y `base' en ninguna métrica, al
+    igual que tampoco entre los modelos `CQR' e `ICP', lo que sugiere rendimientos similares entre estos pares
+    de modelos. Esto indica que los modelos de regresión cuantílica obtiene resultados equivalentes a los 
+    modelos de regresión central.  
+
+    \item Los modelos conformales (`ICP' y `CQR') mostraron errores significativamente mayores ($p<0.01$) 
+    que los modeloss no conformales (`base' y `QR'). Esto era esperable, pues los métodos conformales tienen 
+    menos ejemplos para entrenarse y, por tanto, generalizan peor. 
+
+\end{itemize}
 
 
+\subsubsection{Análisis de métricas para la estimación de edad interválica}
+
+A continuación, la Tabla \ref{tab:AE_EC_MPIW_comparative} presenta las métricas sobre las 
+predicciones interválicas de los métodos. 
+A primera vista, se observan diferencias marcadas entre los métodos conformales y no conformales en las 
+métricas de cobertura empírica y amplitud del intervalo. En particular, los métodos no 
+conformales (`base' y QR) muestran coberturas inferiores al nivel deseado (alrededor del 88-89\% frente al 
+95\% nominal), lo que indica una infracobertura sistemática. 
+Esto ocurre porque ni la heurística del método `base' ni las regiones generadas por la regresión cuantílica 
+en QR cuentan con garantías teóricas de cobertura estadística.
+
+\renewcommand{\arraystretch}{1.5}
+\begin{table}[h]
+    \small 
+    \centering
+    \begin{tabular}{cc@{\hskip 3pt}ccccc@{\hskip 3pt}cccc}
+    \toprule
+    \multirow{2}{*}{\textbf{Método}} &  & \multicolumn{4}{c}{\textbf{Cobertura Empírica (\%)}}      &  & \multicolumn{4}{c}{\textbf{\begin{tabular}[c]{@{}c@{}}Amplitud Media \\[-0.8ex] del Intervalo\end{tabular}}}          \\ \cline{3-6} \cline{8-11} 
+                                     &  & \textbf{base} & \textbf{ICP} & \textbf{QR} & \textbf{CQR} &  & \textbf{base} & \textbf{ICP} & \textbf{QR} & \textbf{CQR} \\ \cline{1-1} \cline{3-6} \cline{8-11} 
+    Ejecución 1                      &  & 87.41         & 94.47        & 89.03       & 95.31        &  & 4.53          & 6.17         & 4.71        & 6.23         \\
+    Ejecución 2                      &  & 87.96         & 94.84        & 89.27       & 94.8         &  & 4.57          & 6.27         & 4.67        & 6.11         \\
+    Ejecución 3                      &  & 87.73         & 95.03        & 88.38       & 95.45        &  & 4.60          & 6.34         & 4.65        & 6.02         \\
+    Ejecución 4                      &  & 88.06         & 94.19        & 89.5        & 94.61        &  & 4.58          & 6.04         & 4.63        & 5.90         \\
+    Ejecución 5                      &  & 87.87         & 95.03        & 89.13       & 94.93        &  & 4.63          & 6.28         & 4.59        & 5.92         \\
+    Ejecución 6                      &  & 88.62         & 95.91        & 89.73       & 95.17        &  & 4.71          & 6.52         & 4.66        & 5.98         \\
+    Ejecución 7                      &  & 88.24         & 95.21        & 88.8        & 95.26        &  & 4.61          & 6.33         & 4.63        & 6.00         \\
+    Ejecución 8                      &  & 87.55         & 94.7         & 88.01       & 95.12        &  & 4.64          & 6.12         & 4.67        & 6.08         \\
+    Ejecución 9                      &  &               &              &             &              &  &               &              &             &              \\
+    Ejecución 10                     &  &               &              &             &              &  &               &              &             &              \\ \cline{1-1} \cline{3-6} \cline{8-11} 
+    Media                            &  & 87.93         & 94.92        & 88.98       & 95.08        &  & 4.61          & 6.26         & 4.65        & 6.03         \\ 
+    \bottomrule
+    \end{tabular}
+    \caption[
+        Cobertura empírica y amplitud media del intervalo de predicción obtenidos por cada método de predicción a lo 
+        largo de distintas ejecuciones.
+    ]{   
+        Cobertura empírica y amplitud media del intervalo de predicción obtenidos por cada método de predicción a lo 
+        largo de distintas ejecuciones. Se presentan los valores para cada ejecución individual, así como la 
+        media final de cada métrica.
+        Punto como separador decimal.
+    }
+    \label{tab:AE_EC_MPIW_comparative}
+\end{table}
+
+En contraste, los métodos conformales (ICP y CQR) sí logran coberturas próximas al valor nominal, tal como
+se espera dada su fundamentación estadística. Esta mayor cobertura, sin embargo, tiene un costo en cuanto
+a la amplitud del intervalo, que tiende a ser mayor que en los métodos conformales.
+Esta relación de compromiso o \textit{trade-off} entre cobertura y amplitud de los intervalos ---típico en
+la predicción interválica--- se visualiza claramente en la Figura \ref{fig:AE_scatterplot_EC-MPIW}, donde se 
+observa una alta correlación entre la cobertura empírica y el tamaño del intervalo de predicción.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AE_scatterplot_EC-MPIW.png}
+    \caption[
+        Gráfica de dispersión \textit{Empirical Coverage}-\textit{Mean Interval Width}
+    ]{
+        Gráfica de dispersión \textit{Empirical Coverage}-\textit{Mean Interval Width}. 
+        Elaboración propia. 
+
+    }
+    \label{fig:AE_scatterplot_EC-MPIW}
+\end{figure}
+
+Sin embargo, CQR presenta unas amplitudes promedias de intervalo significativamente más reducidas que ICP, 
+logrando ambos métodos coberturas muy similares. De hecho, en la Tabla \ref{tab:AE_MIS_comparative} apreciamos
+cómo CQR logra significativamente menores valores de \textit{interval score} que ICP, indicando que
+CQR tiene un mejor equilibrio entre cobertura y tamaño del intervalo.
+
+En consecuencia, CQR se perfila como una opción más ventajosa, con garantías de cobertura e intervalos de 
+predicción ajustados. 
+
+\todo{Apliqué ANOVA y Tukey aquí, pero no resultaron muy útiles ya que no tienen en cuenta la relación de
+correlación entre cobertura empírica y tamaño medio del intervalo, y resultaba en que ICP y CQR no mostraban
+coberturas significativamente diferentes, lo que es verdad, pero no presenta una información completa. 
+¿Merece la pena hacer MANOVA (ANOVA para múltiples variables) o directamente con la figura ya queda claro?}
+
+\renewcommand{\arraystretch}{1.5}
+\begin{table}[h]
+    \small \centering
+    \begin{tabular}{cccccc}
+    \toprule
+    \multirow{2}{*}{\textbf{Método}} &  & \multicolumn{4}{c}{\textbf{Mean Interval Score}}          \\ \cline{3-6} 
+                                     &  & \textbf{base}  & \textbf{ICP}  & \textbf{QR}   & \textbf{CQR} \\ \cline{1-1} \cline{3-6} 
+    Ejecución 1                      &  & 9.16           & 8.17          & 8.48          & 8.02         \\
+    Ejecución 2                      &  & 8.93           & 8.21          & 8.72          & 8.04         \\
+    Ejecución 3                      &  & 8.90           & 8.24          & 8.86          & 7.85         \\
+    Ejecución 4                      &  & 8.69           & 8.00          & 8.59          & 7.98         \\
+    Ejecución 5                      &  & 8.88           & 8.27          & 8.82          & 7.89         \\
+    Ejecución 6                      &  & 8.75           & 8.23          & 8.40          & 8.06         \\
+    Ejecución 7                      &  & 8.81           & 8.19          & 8.96          & 7.85         \\
+    Ejecución 8                      &  & 8.88           & 8.03          & 8.8           & 7.91         \\
+    Ejecución 9                      &  &                &               &               &              \\
+    Ejecución 10                     &  &                &               &               &              \\ \cline{1-1} \cline{3-6} 
+    Media                            &  & 8.88           & 8.17          & 8.71          & 7.95         \\ 
+    \bottomrule
+    \end{tabular}
+    \caption[
+        Resultados de las predicciones obtenidas por los modelos para el problema de estimación de edad en cada 
+        ejecución.
+    ]{   
+        Resultados de las predicciones obtenidas por los modelos para el problema de estimación de edad en cada 
+        ejecución.
+        Punto como separador decimal.
+    }
+    \label{tab:AE_MIS_comparative}
+\end{table}
+
+
+\subsubsection{Análisis de la cobertura en base al tamaño del intervalo}
+
+En los métodos donde los intervalos de predicción varían en amplitud entre instancias (QR y CQR), resulta 
+relevante analizar cómo se comporta la cobertura empírica en función de dicho tamaño. La hipótesis subyacente 
+es que intervalos más amplios reflejan una mayor incertidumbre asociada a la predicción, mientras que 
+intervalos más estrechos denotan mayor confianza.
+
+Particularmente, se busca determinar si los intervalos más estrechos tienden a infracubrir (es decir, no 
+contienen el valor real con la frecuencia esperada), y si los intervalos más amplios tienden a sobrecubrir 
+(conteniendo el valor real más allá del nivel objetivo de confianza).
+
+En la Figura \ref{fig:AE_EC_by_PIW} se presentan los histogramas de la amplitud de los intervalos de 
+predicción para dos modelos representativos, uno QR y otro CQR. En cada caso, se diferencia visualmente la 
+proporción de instancias cuya predicción cubre el valor real de aquellas en las que no lo hace. Es notable 
+en ambas figuras la presencia de dos grupos principales de instancias: uno más reducido, asociado a intervalos 
+más estrechos, y otro más numeroso, correspondiente a intervalos de mayor amplitud.
+Respecto a la cobertura, el modelo QR presenta valores inferiores, lo cual es consistente con su cobertura
+marginal, que ya se encontraba por debajo del 89\%. En cuanto al ratio entre cobertura e incobertura, este 
+parece mantenerse relativamente estable a lo largo de los distintos rangos de amplitud del intervalo. Sin 
+embargo, para un análisis más detallado y específico sobre cómo varía la cobertura en función del tamaño del 
+intervalo, observemos la información desglosada en la Tabla \ref{tab:AE_EC_by_PIW}.
+
+
+\todo{Esto ocurre, pero no sé por qué. Voy a investigar, pero me temo que va a ser difícil hallar la razón,
+ya que muy probablemente sea fruto del funcionamiento de la red en regresión cuantílica, y al ser un modelo
+de caja negra, no pueda hacer nada.}
 
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/EC-MIW.png}
+
+    \begin{subfigure}[b]{0.8\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AE_histogram_EC_by_PIW_QR.png}
+        \caption{
+            Histograma de amplitud del intervalo de predicción con diferenciación por cobertura (modelo QR).
+        }
+        \label{fig:AE_EC_by_PIW_QR}
+    \end{subfigure}
+
+    \vspace{0.5cm}
+    
+    \begin{subfigure}[b]{0.8\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AE_histogram_EC_by_PIW_CQR.png}
+        \caption{
+            Histograma de amplitud del intervalo de predicción con diferenciación por cobertura 
+            (modelo CQR).
+        }
+        \label{fig:AE_EC_by_PIW_CQR}
+    \end{subfigure}
+
     \caption[
-        Gráfica de dispersión EC-MIW
+        Histogramas del amplitud del intervalo de predicción según cobertura, en los modelos QR y CQR.
     ]{
-        Gráfica de dispersión EC-MIW. Triángulo = con sex embedding. 
+        Histogramas del amplitud del intervalo de predicción con diferenciación por cobertura, 
+        correspondientes a los modelos QR y CQR. Para cada tipo de método se seleccionó el modelo con el mejor 
+        \textit{interval score}. La comparación permite visualizar cómo varía la capacidad de cobertura en 
+        función del tamaño del intervalo.
     }
-    \label{fig:ec-miw}
+    \label{fig:AE_EC_by_PIW}
 \end{figure}
 
 
-\begin{figure}[h]
+En la Tabla \ref{tab:AE_EC_by_PIW} se ofrece información detallada sobre la cobertura empírica alcanzada por 
+cada método de predicción (en todas sus ejecuciones) en función de diferentes rangos de amplitud del intervalo 
+de predicción. Esta desagregación permite analizar si existe una relación entre el tamaño del intervalo y la 
+capacidad del modelo para cubrir el valor real. 
+
+Como era de esperar, los modelos basados en regresión cuantílica (QR y CQR) presentan una mayor diversidad en 
+la amplitud de sus intervalos, dado que generan límites adaptativos y específicos para cada instancia, a 
+diferencia de los métodos conformales de tamaño más constante.
+
+Llama la atención que se logra sobrecobertura tanto en los intervalos más estrechos como en los más amplios, a 
+costa de una infracobertura en los intervalos de amplitud intermedia, concretamente entre 5.5 y 6.5 años, 
+siendo especialmente más bajas en el último medio tramo, donde la cobertura alcanza un 93.4\%.
+
+\todo{No estoy entrando a hacer valoraciones de lo grave o leve que sea que la cobertura se reduzca de un 95 
+a un 93.4, porque entiendo que aquí entraría mi subjetividad, y esa debe ir más en las conclusiones que aquí, 
+¿correcto?}
+
+
+\renewcommand{\arraystretch}{1.4}
+\begin{table}[h]
     \centering
-    \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/violin_interval_width.png}
+    \begin{tabular}{cccccccc}
+        \toprule
+        \multicolumn{2}{c}{\multirow{2}{*}{\textbf{Método}}} & & \multicolumn{4}{c}{\textbf{Cobertura Empírica (\%)}} \\ \cmidrule{4-7}
+        \multicolumn{2}{c}{} & & \textbf{base} & \textbf{ICP} & \textbf{QR} & \textbf{CQR} \\ \midrule
+        \multirow{8}{*}{\begin{tabular}[c]{@{}c@{}}Amplitud del\\ intervalo\end{tabular}} 
+        & $[4.0 , 4.5)$  & & --    & --    & 91.58 & 100   \\
+        & $[4.5 , 5.0)$  & & 87.93 & --    & 92.85 & 96.32 \\
+        & $[5.0 , 5.5)$  & & --    & --    & 88.45 & 96.47 \\
+        & $[5.5 , 6.0)$  & & --    & --    & 85.62 & 94.82 \\
+        & $[6.0 , 6.5)$  & & --    & 94.78 & 89.43 & 93.40 \\
+        & $[6.5 , 7.0)$  & & --    & 95.91 & 97.14 & 96.09 \\
+        & $[7.0 , 7.5)$  & & --    & --    & --    & 97.37 \\
+        & $[7.5 , 8.0)$  & & --    & --    & --    & 100   \\
+        \bottomrule
+    \end{tabular}
     \caption[
-        Gráfica de violin de tamaños de intervalos
+        Cobertura empírica del intervalo de predicción obtenida por cada método de predicción para distintas
+        franjas de amplitud de intervalos.
     ]{
-        Gráfica de violin de tamaños de intervalos.
-        Con estas diferencias entre problema con sex embedding y sin sex embedding, no sé si merece la pena
-        esta comparación. Mi idea era que con sex embedding se reduciría la incertidumbre del problema y los 
-        intervalos quedarías más ajustados, pero el rendimiento del modelo no mejora, y tampoco lo hacen por 
-        consiguiente los intervalos de la CP. 
+        Cobertura empírica del intervalo de predicción obtenida por cada método de predicción para distintas
+        franjas de amplitud de intervalos. Nota: Los métodos de intervalos de tamaño fijo (como ICP, en este
+        caso) pueden mostrar varias franjas debido a que los tamaños de intervalo pueden variar ligeramente 
+        entre entrenamientos para un mismo método.     
     }
-    \label{fig:violin_interval_width}
-\end{figure}
+    \label{tab:AE_EC_by_PIW}
+\end{table}
 
 
-\begin{figure}[h]
+\subsection{Análisis de la cobertura en base a la edad cronológica}
+
+Por último, se ha analizado la cobertura en base a la edad real de los individuos. En la Tabla \ref{}
+
+\renewcommand{\arraystretch}{1.5}
+\begin{table}[]
+    \small
     \centering
-    \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/conformal_prediction_sorted_by_true.png}
+    \begin{tabular}{cccccccccccc}
+    \toprule
+    \multirow{2}{*}{\textbf{Método}} &  & \multicolumn{4}{c}{\textbf{Cobertura Empírica (\%)}}      &  & \multicolumn{4}{c}{\textbf{\begin{tabular}[c]{@{}c@{}}Amplitud Media \\ del Intervalo\end{tabular}}} \\ \cline{3-6} \cline{8-11} 
+                                    &  & \textbf{base} & \textbf{ICP} & \textbf{QR} & \textbf{CQR} &  & \textbf{base}            & \textbf{ICP}            & \textbf{QR}           & \textbf{CQR}           \\ \cline{1-1} \cline{3-6} \cline{8-11} 
+    Edad 14                          &  & 92.82         & 97.52        & 91.27       & 96.1         &  & 4.61                     & 6.26                    & 3.74                  & 5.15                   \\
+    Edad 15                          &  & 88.92         & 96.05        & 90.09       & 95.22        &  & 4.61                     & 6.26                    & 3.98                  & 5.37                   \\
+    Edad 16                          &  & 90.33         & 95.43        & 91.58       & 95.27        &  & 4.61                     & 6.26                    & 4.23                  & 5.61                   \\
+    Edad 17                          &  & 89.77         & 96.11        & 90.31       & 95.28        &  & 4.61                     & 6.26                    & 4.46                  & 5.82                   \\
+    Edad 18                          &  & 85.74         & 95.45        & 86.65       & 95.21        &  & 4.61                     & 6.26                    & 4.65                  & 6                      \\
+    Edad 19                          &  & 90.1          & 97.07        & 91.26       & 96.79        &  & 4.61                     & 6.26                    & 4.87                  & 6.22                   \\
+    Edad 20                          &  & 90.88         & 97.04        & 93.72       & 97.52        &  & 4.61                     & 6.26                    & 4.99                  & 6.36                   \\
+    Edad 21                          &  & 92.4          & 97.24        & 93.75       & 97.12        &  & 4.61                     & 6.26                    & 5.09                  & 6.47                   \\
+    Edad 22                          &  & 86.9          & 94.01        & 87.2        & 94.39        &  & 4.61                     & 6.26                    & 5.14                  & 6.51                   \\
+    Edad 23                          &  & 79.17         & 90.1         & 81.55       & 92.04        &  & 4.61                     & 6.26                    & 5.2                   & 6.6                    \\
+    Edad 24                          &  & 74.54         & 83.49        & 75.31       & 87.04        &  & 4.61                     & 6.26                    & 5.29                  & 6.7                    \\
+    Edad 25                          &  & 63.75         & 76.25        & 66.25       & 85.62        &  & 4.61                     & 6.26                    & 5.37                  & 6.8                    \\ 
+    \bottomrule
+    \end{tabular}
     \caption[
-        Gráfica de líneas con predicción central e intervalo predictivo ordenado por valor real
+        Cobertura empírica y amplitud media del intervalo de predicción obtenidos por cada método de 
+        predicción para distintas edades cronológicas.
     ]{
-        Gráfica de líneas con predicción central e intervalo predictivo ordenado por valor real
+        Cobertura empírica y amplitud media del intervalo de predicción obtenidos por cada método de 
+        predicción para distintas edades cronológicas.
     }
-    \label{fig:conformal_prediction_sorted_by_true}
-\end{figure}
+    \label{}
+\end{table}
 
-\todo{Mejorar el diseño y legibilidad de todas las gráficas (JULIO)}
+
+
+
+
+
+
+
+
+
+Se ha escogido el mejor modelo en cada método
+
+En la figura \ref{fig:AE_scatterplot_EC-MPIW} se 
+
+
+se aprecia el \textit{trade-off} entre cobertura y tamaño, concretamente 
+
+
+
+
+¿Por qué las predicciones interválicas de ancho intermedio son las que menos cobertura ofrecen?
+
+Se podría calibrar CQR por deciles?
 
 % ------------------------------------------------------------------------------------------------------------
 
+% \subsection{Resultados para la estimación de mayoría de edad}
 
-Las mejoras de MCM sobre LAC no destacan en este problema donde las clases están balanceadas. 
+
+% \begin{table}[]
+% \begin{tabular}{|c|ccc|ccc|ccc|}
+% \hline
+% Método       & \multicolumn{3}{c|}{base} & \multicolumn{3}{c|}{LAC} & \multicolumn{3}{c|}{MCM} \\ \hline
+% Métrica      & EC      & MPSS   & MSS    & EC      & MPSS   & MSS   & EC      & MPSS   & MSS   \\ \hline
+% Unidad       & \%      & —      & —      & \%      & —      & —     & \%      & —      & —     \\ \hline
+% Ejecución 1  & 87.87   & 1      & 3.43   & 94.80   & 1.20   & 2.25  & 93.91   & 1.19   & 2.41  \\ 
+% Ejecución 2  & 87.87   & 1      & 3.43   & 95.07   & 1.20   & 2.19  & 94.38   & 1.21   & 2.33  \\ 
+% Ejecución 3  & 87.59   & 1      & 3.48   & 95.12   & 1.23   & 2.20  & 94.24   & 1.23   & 2.38  \\ 
+% Ejecución 4  & 87.59   & 1      & 3.48   & 93.96   & 1.19   & 2.40  & 94.42   & 1.21   & 2.33  \\ 
+% Ejecución 5  & 87.64   & 1      & 3.47   & 94.05   & 1.18   & 2.37  & 93.54   & 1.19   & 2.48  \\ 
+% Ejecución 6  & 87.27   & 1      & 3.55   & 93.96   & 1.18   & 2.38  & 93.63   & 1.20   & 2.47  \\ 
+% Ejecución 7  & 88.06   & 1      & 3.39   & 94.10   & 1.19   & 2.37  & 93.87   & 1.20   & 2.42  \\ 
+% Ejecución 8  &         &        &        &         &        &       &         &        &       \\ 
+% Ejecución 9  &         &        &        &         &        &       &         &        &       \\ 
+% Ejecución 10 &         &        &        &         &        &       &         &        &       \\ \hline
+% \rowcolor[HTML]{EFEFEF} 
+% MEDIA        & 87.7    & 1      & 3.46   & 94.44   & 1.2    & 2.31  & 94      & 1.2    & 2.4   \\ \hline
+% \end{tabular}
+% \caption[
+%     Resultados de las predicciones obtenidas por los modelos para el problema de estimación de mayoría de 
+%     edad en cada ejecución.
+% ]{   
+%     Resultados de las predicciones obtenidas por los modelos para el problema de estimación de mayoría de 
+%     edad en cada ejecución.
+%     Punto como separador decimal.
+%     Leyenda: EC (Empiricial Coverage), MPSS (Mean Prediction Set Size), MSS (Mean Set Score).
+% }
+% \label{tab:comparativa_conformal_AMM}
+% \end{table}
+
+
+
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/violin_interval_width.png}
+%     \caption[
+%         Gráfica de violin de tamaños de intervalos
+%     ]{
+%         Gráfica de violin de tamaños de intervalos.
+%         Con estas diferencias entre problema con sex embedding y sin sex embedding, no sé si merece la pena
+%         esta comparación. Mi idea era que con sex embedding se reduciría la incertidumbre del problema y los 
+%         intervalos quedarías más ajustados, pero el rendimiento del modelo no mejora, y tampoco lo hacen por 
+%         consiguiente los intervalos de la CP. 
+%     }
+%     \label{fig:violin_interval_width}
+% \end{figure}
+
+
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/conformal_prediction_sorted_by_true.png}
+%     \caption[
+%         Gráfica de líneas con predicción central e intervalo predictivo ordenado por valor real
+%     ]{
+%         Gráfica de líneas con predicción central e intervalo predictivo ordenado por valor real
+%     }
+%     \label{fig:conformal_prediction_sorted_by_true}
+% \end{figure}
+
+%Las mejoras de MCM sobre LAC no destacan en este problema donde las clases están balanceadas.
+
+% ------------------------------------------------------------------------------------------------------------
+
+%\subsection{Resultados para la clasificación combinada de sexo y edad}
+
+ 
 
 
 % ------------------------------------------------------------------------------------------------------------
 
+%\subsection{Resultados para la estimación de edad como problema de clasificación}
 
 
 
