@@ -59,7 +59,7 @@ def plot_coverage_vs_interval_width(
     # Etiquetas y título
     plt.xlabel("Mean Prediction Interval Width", fontsize=12)
     plt.ylabel("Empirical Coverage", fontsize=12)
-    plt.title("Empirical Coverage vs. Mean Prediction Interval Width")
+    plt.title("Empirical Coverage vs. Mean Prediction Interval Width", pad=15)
 
     # Legend
     seen = set()
@@ -71,6 +71,12 @@ def plot_coverage_vs_interval_width(
                            markerfacecolor=color, markersize=8, markeredgecolor='white')
             )
             seen.add(model)
+    
+    # Obtener los límites actuales del eje Y
+    ymin, ymax = plt.gca().get_ylim()
+
+    # Ajustar los ticks cada 0.01 dentro del rango visible
+    plt.yticks(np.arange(np.floor(ymin*100)/100, np.ceil(ymax*100)/100 + 0.01, 0.01))
 
     plt.legend(handles=legend_elements, title="Model Type")
     plt.tight_layout()
@@ -120,7 +126,7 @@ def plot_coverage_vs_set_size(
     # Etiquetas y título
     plt.xlabel("Mean Prediction Set Sizes", fontsize=12)
     plt.ylabel("Empirical Coverage", fontsize=12)
-    plt.title("Empirical Coverage vs. Mean Prediction Set Sizes")
+    plt.title("Empirical Coverage vs. Mean Prediction Set Sizes", pad=15)
 
     # Legend
     seen = set()
@@ -132,6 +138,12 @@ def plot_coverage_vs_set_size(
                            markerfacecolor=color, markersize=8, markeredgecolor='white')
             )
             seen.add(model)
+    
+    # Obtener los límites actuales del eje Y
+    ymin, ymax = plt.gca().get_ylim()
+
+    # Ajustar los ticks cada 0.01 dentro del rango visible
+    plt.yticks(np.arange(np.floor(ymin*100)/100, np.ceil(ymax*100)/100 + 0.01, 0.01))
 
     plt.legend(handles=legend_elements, title="Model Type")
     plt.tight_layout()
