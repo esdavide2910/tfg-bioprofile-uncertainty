@@ -12,7 +12,8 @@ def plot_coverage_vs_interval_width(
     model_types: Iterable[str],
     colors: Iterable[str],
     confidence_level: float = None,
-    figsize: Tuple[float, float] = (8, 6)
+    figsize: Tuple[float, float] = (8, 6),
+    dpi: int = 100 
 ) -> None:
     """
     Dibuja un scatterplot de Empirical Coverage vs. Mean Prediction Interval Width,
@@ -36,7 +37,7 @@ def plot_coverage_vs_interval_width(
     if not (len(mean_pred_interval_widths) == len(empirical_coverages) == len(model_types) == len(colors)):
         raise ValueError("All input iterables must have the same length.")
     
-    plt.figure(figsize=figsize)
+    plt.figure(figsize=figsize, dpi=dpi)
     plt.grid(True, zorder=0)
 
     # Graficar todos los puntos como círculos
@@ -56,8 +57,8 @@ def plot_coverage_vs_interval_width(
         plt.axhline(y=confidence_level, color='black', linestyle='--', linewidth=1.0, zorder=2)
 
     # Etiquetas y título
-    plt.xlabel("Mean Prediction Interval Width")
-    plt.ylabel("Empirical Coverage")
+    plt.xlabel("Mean Prediction Interval Width", fontsize=12)
+    plt.ylabel("Empirical Coverage", fontsize=12)
     plt.title("Empirical Coverage vs. Mean Prediction Interval Width")
 
     # Legend
@@ -67,7 +68,7 @@ def plot_coverage_vs_interval_width(
         if model not in seen:
             legend_elements.append(
                 plt.Line2D([0], [0], marker='o', color='w', label=model,
-                           markerfacecolor=color, markersize=10, markeredgecolor='white')
+                           markerfacecolor=color, markersize=8, markeredgecolor='white')
             )
             seen.add(model)
 
@@ -82,7 +83,8 @@ def plot_coverage_vs_set_size(
     model_types: Iterable[str],
     colors: Iterable[str],
     confidence_level: float = None,
-    figsize: Tuple[float, float] = (8, 6)
+    figsize: Tuple[float, float] = (8, 6),
+    dpi: int = 100 
 ) -> None:
     """
     """
@@ -96,7 +98,7 @@ def plot_coverage_vs_set_size(
     if not (len(mean_pred_set_sizes) == len(empirical_coverages) == len(model_types) == len(colors)):
         raise ValueError("All input iterables must have the same length.")
     
-    plt.figure(figsize=figsize)
+    plt.figure(figsize=figsize, dpi=dpi)
     plt.grid(True, zorder=0)
 
     # Graficar todos los puntos como círculos
@@ -116,8 +118,8 @@ def plot_coverage_vs_set_size(
         plt.axhline(y=confidence_level, color='black', linestyle='--', linewidth=1.0, zorder=2)
 
     # Etiquetas y título
-    plt.xlabel("Mean Prediction Set Sizes")
-    plt.ylabel("Empirical Coverage")
+    plt.xlabel("Mean Prediction Set Sizes", fontsize=12)
+    plt.ylabel("Empirical Coverage", fontsize=12)
     plt.title("Empirical Coverage vs. Mean Prediction Set Sizes")
 
     # Legend
@@ -127,52 +129,13 @@ def plot_coverage_vs_set_size(
         if model not in seen:
             legend_elements.append(
                 plt.Line2D([0], [0], marker='o', color='w', label=model,
-                           markerfacecolor=color, markersize=10, markeredgecolor='white')
+                           markerfacecolor=color, markersize=8, markeredgecolor='white')
             )
             seen.add(model)
 
     plt.legend(handles=legend_elements, title="Model Type")
     plt.tight_layout()
     plt.show()
-
-
-def sort_by_column(
-    df: pl.DataFrame,
-    column: str,
-    order: Optional[Iterable[Union[str, int]]] = None
-) -> pl.DataFrame:
-    """
-    Ordena un DataFrame de Polars según un orden personalizado en una columna,
-    o por orden natural si no se especifica un orden.
-
-    Parámetros:
-    - df: DataFrame de Polars.
-    - column: nombre de la columna a ordenar.
-    - order: iterable con el orden deseado de los valores, o None para orden natural.
-
-    Retorna:
-    - DataFrame ordenado.
-    """
-    if order is not None:
-        # Convertir a lista para usar .index()
-        order_list = list(order)
-
-        # Validación: asegurar que todos los valores están en el orden
-        unique_vals = set(df[column].to_list())
-        missing = unique_vals - set(order_list)
-        if missing:
-            raise ValueError(f"Valores no presentes en 'order': {missing}")
-
-        return (
-            df.with_columns(
-                pl.col(column).map_elements(lambda x: order_list.index(x), return_dtype=pl.Int32).alias("_custom_sort_index")
-            )
-            .sort("_custom_sort_index")
-            .drop("_custom_sort_index")
-        )
-    else:
-        # Orden natural: string alfabético o numérico ascendente
-        return df.sort(column)
 
 
 def plot_confidence_predictions(
@@ -213,3 +176,66 @@ def plot_confidence_predictions(
     plt.grid(True)
     plt.tight_layout()
     plt.show()
+
+
+
+def plot_interval_width_histogram(
+    df: pd.DataFrame, 
+    pred_model_type: str, 
+    confidence: float,
+    bins: int = 30
+) -> plt.Figure:
+    """
+    Genera un histograma apilado del ancho de intervalos, diferenciando entre coberturas correctas y fallidas.
+    """
+    # Filtrar datos y asegurarse de que existe la columna is_covered
+    filtered_data = df[
+        (df['pred_model_type'] == pred_model_type) & 
+        (df['confidence'] == confidence)
+    ].copy()
+    
+    if len(filtered_data) == 0:
+        raise ValueError(f"No hay datos para {pred_model_type} con confianza {confidence}")
+    
+    if 'is_covered' not in filtered_data.columns:
+        raise ValueError("El DataFrame debe contener la columna 'is_covered'")
+    
+    # Convertir booleanos a strings para mejor visualización
+    filtered_data['coverage_status'] = filtered_data['is_covered'].map({
+        True: 'Cubre valor real',
+        False: 'No cubre valor real'
+    })
+    
+    # Crear figura
+    fig, ax = plt.subplots(figsize=(12, 7))
+    
+    # Histograma apilado con hue
+    sns.histplot(
+        data=filtered_data,
+        x='pred_interval_width',
+        hue='coverage_status',
+        bins=bins,
+        multiple='stack',
+        palette=['#4CAF50', '#F44336'],  # Verde y rojo
+        edgecolor='white',
+        linewidth=0.5,
+        ax=ax,
+        kde=True,
+        legend=True
+    )
+    
+    # Calcular estadísticos
+    coverage_rate = filtered_data['is_covered'].mean()
+    
+    # Personalización
+    ax.set_title(
+        f"Distribución del ancho de intervalo\n"
+        f"Modelo: {pred_model_type} | Confianza: {confidence}\n"
+        f"Cobertura empírica: {coverage_rate:.1%}",
+        pad=20
+    )
+    ax.set_xlabel("Ancho del intervalo de predicción")
+    ax.set_ylabel("Frecuencia")
+    
+    plt.tight_layout()
+    return fig
