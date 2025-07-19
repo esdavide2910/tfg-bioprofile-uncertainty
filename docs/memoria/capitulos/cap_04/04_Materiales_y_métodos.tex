@@ -7,7 +7,7 @@
 
 Disponemos de un conjunto de datos compuesto por radiografías panorámicas maxilofaciales de individuos de 
 12 países distintos (véase en la tabla \ref{tab:instituciones_fuente_dataset}), obtenidas con distintos 
-modelos de máquinas de rayos X
+modelos de máquinas de rayos X%
 \footnote{
     Los modelos empleados fueron: \textit{Planmeca Promax Digital Panoramic}; \textit{Sirona ORTHOPHOS-XG}, 
     \textit{ORTHOPHOS-DS}, y \textit{SIDEXIS}. Las constantes radiológicas usadas fueron de 66 a a 70 kV, 7 a 
@@ -77,7 +77,6 @@ representación notablemente menor en los grupos de 24, 25 y 26 años.
         Histograma de edad de los individuos del conjunto de datos disponible.
     ]{
         Histograma de edad de los individuos del conjunto de datos disponible. 
-        Elaboración propia.
     } 
     \label{fig:histogram_ages}
 \end{figure}
@@ -94,7 +93,6 @@ distribuciones.
         Gráficas de densidad y de caja de edad por sexo de los individuos del conjunto de datos disponible.
     ]{
         Gráficas de densidad y de caja de edad por sexo de los individuos del conjunto de datos disponible. 
-        Elaboración propia.
     } 
     \label{fig:kde_and_boxplot_ages_sex}
 \end{figure}
@@ -136,7 +134,6 @@ distribución será igual en ambos datasets.
 %         Distribución de edad de los individuos del conjunto de datos disponible por sexo.
 %     ]{
 %         Distribución de edad de los individuos del conjunto de datos disponible por sexo. 
-%         Elaboración propia.
 %     }
 %     \label{fig:kde_ages_train_test}
 % \end{figure}
@@ -159,8 +156,6 @@ el ámbito de la AF, se tratan de diferente forma en el campo del ML:
     multiclase, combinando en cuatro clases sexo (masculino o femenino) y la edad (mayor o menor a 18 años).
 \end{enumerate}
 
-Analicemos más en profundidad estos problemas.  
-
 % ------------------------------------------------------------------------------------------------------------
 
 \subsection{Problema de estimación de edad}
@@ -180,10 +175,8 @@ además de que su exclusión simplifica la arquitectura.
     \includegraphics[width=\textwidth]{capitulos/cap_04/imagenes/regression_problem.png}
     \caption[
         Esquema visual del modelos de regresión propuesto. 
-        Elaboración propia.
     ]{
         Esquema visual del modelos de regresión propuesto. 
-        Elaboración propia.
         El modelo solo tiene radiografías maxilofaciales como entrada. 
     } 
     \label{fig:regression_problems}
@@ -232,60 +225,31 @@ El primer problema propuesto es el de estimación de edad. Partiremos de un plan
 bidimensionales de las radiografías panóramicas maxilofaciales ---y sexo, opcionalmente---
 como entrada, y estimación de edad a la salida.
 
-Como modelo, empleamos una CNN, dado su buen desempeño en tareas de visión por computador. Específicamente,
-utilizamos la arquitectura ResNeXt50 \cite{xie2017} preentrenada en Imagenet. 
-\footnote{
-    El dataset Imagenet contiene 1.000 clases de objetos. Estas clases abarcan una
-    amplia variedad de categorías, como animales (\textit{tiger}, \textit{koala}, \textit{zebra}, ...), 
-    vehículos (\textit{ambulance}, \textit{airliner}, \textit{mountain bike}, ...), alimentos 
-    (\textit{strawberry}, \textit{pizza}, \textit{bagel}, ...), entre otras. 
-}
-\cite{deng2009} como punto de partida. 
-Aunque ResNeXt50 fue entrenado originalmente para una tarea de clasificación, se puede adaptar fácilmente a
-tareas de regresión ---como la estimación de edad--- reemplazando su capa final por una capa de salida 
-adecuada.
-Por otro lado, a pesar de haber sido entrenado en un dominio diferente al de nuestro problema, el uso de 
-pesos preentrenados ofrece una ventaja significativa: permite una inicialización más robusta que comenzar 
-desde cero, ya que la arquitectura ya ha aprendido a extraer patrones visuales básicos, como bordes y 
-texturas, mediante filtros genéricos.
+Como modelo, empleamos una CNN, dado su buen desempeño en tareas de visión por computador. Específicamente, utilizamos la arquitectura ResNeXt50 \cite{xie2017} preentrenada en Imagenet \cite{deng2009} como punto de partida. Aunque ResNeXt50 fue entrenado originalmente para una tarea de clasificación, se puede adaptar fácilmente a tareas de regresión ---como la estimación de edad--- reemplazando su capa final por una capa de salida adecuada. 
+Por otro lado, a pesar de haber sido entrenado en un dominio diferente al de nuestro problema, el uso de pesos preentrenados ofrece una ventaja significativa: permite una inicialización más robusta que comenzar desde cero, ya que la arquitectura ya ha aprendido a extraer patrones visuales básicos, como bordes y texturas, mediante filtros genéricos.
 
 % ------------------------------------------------------------------------------------------------------------
 
 \subsection{Regresión cuantílica}
 
-La \textbf{regresión cuantílica (\textit{quantile regression}, QR)} es un tipo de regresión que, a diferencia
-de la regresión puntual, predice intervalos o cuantiles específicos de la distribución de la variable 
-respuesta, en lugar de solo su media. Esta técnica parte de la noción de que la inferencia estadística no se 
-limita a un valor único, sino que puede representarse mediante una distribución de valores probables, de la
-cual es posible estimar ciertos cuantiles para describir la variabilidad del comportamiento de la variable 
-objetivo.
+La \textbf{regresión cuantílica (\textit{quantile regression}, QR)} es un tipo de regresión que, a diferencia de la regresión puntual, predice intervalos o cuantiles específicos de la distribución de la variable respuesta, en lugar de solo su media. Esta técnica parte de la noción de que la inferencia estadística no se limita a un valor único, sino que puede representarse mediante una distribución de valores probables, de la cual es posible estimar ciertos cuantiles para describir la variabilidad del comportamiento de la variable objetivo.
 
-En este sentido, la regresión cuantílica permite modelar límites inferiores y superiores (por ejemplo, el 
-percentil 10\% y 90\%) para capturar la incertidumbre o heterocedasticidad en los datos.
-No debe confundirse con una técnica de UQ, ya que no modela explícitamente la incertidumbre epistémica ni 
-proporciona garantías estadísticas de cobertura como lo hacen los métodos de predicción conformal. Sin 
-embargo, puede utilizarse como parte de un enfoque para cuantificar la incertidumbre aleatoria o 
-condicional al estimar intervalos de predicción directamente a partir de los datos.
+En este sentido, la regresión cuantílica permite modelar límites inferiores y superiores (por ejemplo, el percentil 10\% y 90\%) para capturar la incertidumbre o heterocedasticidad en los datos. No debe confundirse con una técnica de UQ, ya que no modela explícitamente la incertidumbre epistémica ni proporciona garantías estadísticas de cobertura como lo hacen los métodos de predicción conformal. Sin embargo, puede utilizarse como parte de un enfoque para cuantificar la incertidumbre aleatoria o condicional al estimar intervalos de predicción directamente a partir de los datos.
 
-Esta técnica de regresión puede implementarse en modelos de redes neuronales y modelos tipo \textit{ensemble}, 
-aunque su implementación difiere significativamente. 
+Esta técnica de regresión puede implementarse en modelos de redes neuronales y modelos tipo \textit{ensemble}, aunque su implementación difiere significativamente. 
 
 En redes neuronales, esta regresión requiere de:
 
 \begin{itemize}
 
     \item Definir una capa de salida con múltiples neuronas, una por cada cuantil deseado ($\hat{q}_\tau$). 
-    Por ejemplo, para obtener una región del 90\% con predicción puntual, tendríamos que inferir     
-    los cuantiles 0.05 y 0.95 para los límites inferior y superior, respectivamente, junto con el cuantil 0.5 
-    para la predicción central.
+    Por ejemplo, para obtener una región del 90\% con predicción puntual, tendríamos que inferir los cuantiles 0.05 y 0.95 para los límites inferior y superior, respectivamente, junto con el cuantil 0.5 para la predicción central.
 
-    \item Cambiar la función de pérdida para la estimación de cuantiles. En general, se suele utilizar la 
-    la pérdida \textit{pinball} \cite{steinwart2011}.
+    \item Cambiar la función de pérdida para la estimación de cuantiles. En general, se suele utilizar la pérdida \textit{pinball} \cite{steinwart2011}.
     La \textbf{función de pérdida \textit{pinball}} es una generalización de la función de pérdida 
-    \textit{L1}
+    \textit{L1}%
     \footnote{
-        También conocida como error absoluto medio, cuantifica la diferencia entre los valores predichos por 
-        un modelo y los valores reales como la diferencia absoluta entre cada par:
+        También conocida como error absoluto medio, cuantifica la diferencia entre los valores predichos por un modelo y los valores reales como la diferencia absoluta entre cada par:
         $$
         L1\textnormal{ loss} = \frac{1}{n} \sum_{i=1}^n |y_i-\hat{y}_i|
         $$
@@ -563,7 +527,7 @@ en lugar de asignar una única etiqueta a cada instancia, se selecciona un conju
 garanticen un nivel de confianza predeterminada por el usuario.
 
 La función de no conformidad es conocida como \textbf{probabilidad inversa o \textit{hinge loss}} 
-\cite{johansson2017}, y se calcula como la unidad menos la probabilidad de la clase verdadera 
+\cite{johansson2017}, y se calcula como la unidad menos la probabilidad de la clase verdadera%
 \footnote{
     Se le denomina probabilidad a un valor de certeza que realmente no tiene garantías estadísticas,
     ya que proviene directamente de la salida \textit{softmax} o sigmoide del modelo. Estas salidas no 
@@ -576,7 +540,7 @@ $$
 R = \left\{ 1 - \hat{\pi}_{y_i}(x_i) \right\}_{i=1,...,n}
 $$
 
-donde $\hat{\pi}_{y_i}(x_i)$ es la probabilidad para la clase de la etiqueta verdadera
+donde $\hat{\pi}_{y_i}(x_i)$ es la probabilidad para la clase de la etiqueta verdadera%
 \footnote{
     $\hat{\pi}(x_i)$ es el vector de probabilidades de las clases para la instancia $i$.
 }.

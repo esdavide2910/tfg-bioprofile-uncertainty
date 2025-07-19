@@ -2,11 +2,34 @@
 
 \section{Conclusiones}
 
-%
+\subsection{Conclusiones sobre mejor método }
 
-% --------------------------------------------------------------------------------------------------------------------------
-% --------------------------------------------------------------------------------------------------------------------------
-% --------------------------------------------------------------------------------------------------------------------------
+Tengo que sintetizar y redactar:
+
+CQR es el mejor método empleado para estimación de edad, pero hay mucha incertidumbre en las edades más avanzadas, por lo que es mejor emplearlo cuando hay indicios de que el individuo tiene una edad joven. 
+
+Los métodos de CP apenas reducen el rendimiento en sus predicciones puntuales respecto a método sin CP.
+
+Los resultados de los métodos de CP mejorarán a medida que se mejore el desempeño general del modelo.
+
+Teorema de No Free Lunch, pero en la práctica sí hay métodos mejores para dejar de sobrecubrir tanto en algunos grupos para cubrir más en grupos infracubiertos. El objetivo es la cobertura condicional.
+
+Al igual que con las predicciones puntuales, se sigue requierendo un estudio previo con las métricas en base a las variables específicas de cada problema, para conocer las debilidades y fortalezas del modelo (donde estima mejor y dónde peor el modelo, donde infracubre y dónde sobrecubre). 
+
+Dentro del procedimiento de estimación del perfil biológico, una predicción con gran incertidumbre puede indicar que hay que revisar la imagen para repetir la prueba o hacer otra prueba distinta. 
+
+El potencial de las herramientas de CP está en la flexibilidad para integrarse con otros métodos de estimación de incertidumbre e incluir información del problema específico para reducir la incertidumbre en las predicciones conformales.
+
+¿Es posible recalibrar el modelo para mejorar su cobertura condicional? Por ejemplo, una vez calibrado el modelo con CQR se podría calibrar de nuevo pero con el cálculo de más umbrales sobre los mismos datos de calibración en base a: el decil de tamaño de intervalo, o la edad predicha (parte entera), si bien hay riesgo de poblaciones reducidas no representativas para calibrar varios umbrales ; aunque esto también se podría mitigar con número de cuantiles o grupos de edad adaptativos que se ajusten con un conjunto de datos adicional, que podría ser validación. A explorar en un anexo. 
+
+
+Para clasificación, especialmente en aquellos problemas en los que las clases se pisan en el espacio de entrada (p.ej., una misma edad biológica puede corresponderse a una edad entera y la inmediatamente posterior), los métodos tradicionales de clasificación pueden verse forzados a elegir una única clase, incluso cuando existe ambigüedad o solapamiento entre ellas. La CP permite devolver conjuntos de clases en lugar de una sola etiqueta, lo que es particularmente útil en estos escenarios de ambigüedad inherente.
+
+Hay dos maneras de mejorar la cobertura condicional: mejorando la cobertura sobre los grupos infracubiertos concretos con un método de conformal prediction o mejorando las predicciones del modelo sobre los grupos infracubiertos, de manera que el error se asemeje más al de los grupos cubiertos. 
+
+
+% ------------------------------------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------------------------------------
 
 
 \section{Trabajos futuros}

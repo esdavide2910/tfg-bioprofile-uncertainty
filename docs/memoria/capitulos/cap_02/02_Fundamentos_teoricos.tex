@@ -163,7 +163,7 @@ donde
     \item $X_{i0},X_{i1}, \dots, X_{in}$ son las características o atributos del ejemplo $i$,
     \item $Y_i$ es el valor real de la variable objetivo para ese ejemplo,
     \item $\hat{Y_i}$ es la predicción generada por el modelo, y
-    \item $\varepsilon_i$ representa el error o residuo 
+    \item $\varepsilon_i$ representa el error o residuo%
     \footnote{
         A pesar de que en la literatura más especializada ---que veremos a continuación---, los términos 
         ``error'' y ``residuo'' se distinguen. 
@@ -200,8 +200,8 @@ Existen multitud de variante de clasificación, que pueden diferenciarse según 
 
 No obstante, la mayoría de los problemas estudiados en la literatura de ML, y concretamente en antropología 
 forense, corresponden a clasificación binaria o multiclase, con etiquetas únicas y asignación precisa 
-\cite{bishop2006}, que serán el foco de este trabajo. La cardinalidad de las clases tiene implicanciones 
-significativas en el diseño del modelo y la evaluación de su desempeño:
+\cite{bishop2006}, que será el tipo de clasificación en el que nos centraremos. La cardinalidad de las 
+clases tiene implicanciones significativas en el diseño del modelo y la evaluación de su desempeño:
 
 \begin{itemize}
 
@@ -275,12 +275,13 @@ escenas compuestas.
 Esta propiedad las hace excepcionalmente versátiles, ya que procesan datos de muy diversa naturaleza ---datos 
 tabulares, imágenes, audio, texto o señales temporales---, dados que ellas mismas aprenden los procesos de 
 extracción de características de estos, hasta ahora realizados ``a mano'' (mediante procesos diseñados por la 
-ingeniería de características) \cite{rusell2021} 
+ingeniería de características)%
 \footnote{
     Este enfoque se denomina aprendizaje extremo a extremo (\textit{end-to-end learning}), en el cual tanto la 
     extracción de características como la clasificación son parte de un modelo integral que se entrena de 
     manera conjunta, optimizando todos los componentes del sistema en un mismo proceso \cite{rusell2021}.
-}. 
+}
+\cite{rusell2021}. 
 Gracias a ello, las DNNs han alcanzado rendimientos sobresalientes en dominios como visión por computador 
 (clasificación de imágenes, detección de objetos, segmentación) o procesamiento de lenguaje natural 
 (traducción, generación de texto) \cite{redhat2024DeepLearningDefinition}.
@@ -309,7 +310,7 @@ $$
 y = f \left( \sum_{i=1}^n{w_ix_i+b} \right)
 $$
 
-donde $x_i$ son las entradas, $w_i$ son los pesos entrenables ($w_0$ el sesgo)
+donde $x_i$ son las entradas, $w_i$ son los pesos entrenables ($w_0$ el sesgo)%
 \footnote{
     El sesgo se considera un peso, puesto que, en la implementación, son un peso más conectado a una unidad
     de sesgo con valor constante unitario (1).
@@ -328,20 +329,20 @@ donde $x_i$ son las entradas, $w_i$ son los pesos entrenables ($w_0$ el sesgo)
 
 
 Esta \textbf{función de activación} a la salida de la unidad es un componente esencial que introduce no 
-linealidad en el modelo, permitiendo a la red aprender relaciones complejas en los datos
+linealidad en el modelo, permitiendo a la red aprender relaciones complejas en los datos%
 \footnote{
     Sin ella, el MLP se reduciría a una simple combinación lineal de las entradas, incapaz de
     representar jerarquías de características \cite{murphy2022}.
 }.
 Existe multitud de funciones de activación, como la sigmoide, la tangente hiperbólica o ReLu ---y sus 
-múltiples variantes---, cada una con sus ventajas y limitaciones
+múltiples variantes---, cada una con sus ventajas y limitaciones%
 \footnote{
     Si bien, actualmente, ReLU y sus variantes (\textit{Leaky} ReLU, \textit{Parametric ReLU} o 
     \textit{Swish}) se han convertido en el estándar \textit{de facto} para las capas ocultas en DNNs,
     por su eficiencia computacional, y su eficacia empírica \cite{vargas2021}.
 }.
 
-La arquitectura de un MLP conecta estas unidades formando una red neuronal retroalimentada
+La arquitectura de un MLP conecta estas unidades formando una red neuronal retroalimentada%
 \footnote{
     Una red neuronal retroalimentada (\textit{feed-forward neural network}) es aquella en la que las 
     conexiones entre las unidades no forman un ciclo y, por tanto, la información solo se mueve en una 
@@ -369,7 +370,7 @@ que consta de tres partes (véase la Figura \ref{fig:neural_network}):
         
         \item en problemas de clasificación, esta capa tendrá una sola unidad ---generalmente, con activación 
         sigmoide--- en clasificación binaria, o múltiples unidades ---con activación 
-        \textit{softmax}
+        \textit{softmax}%
         \footnote{
             La activación \textit{softmax} no se aplica sobre la salida de una única unidad, sino que se 
             aplica sobre un vector de salidas de múltiples unidades, transformándolas en una distribución de 
@@ -467,7 +468,7 @@ eficacia:
 
     En problemas de regresión se emplean funciones de pérdida como el error cuadrático medio, que mide la 
     diferencia promedio al cuadrado entre las predicciones y los valores reales, o el error absoluto medio, 
-    que calcula la diferencia promedio en valor absoluto
+    que calcula la diferencia promedio en valor absoluto%
     \footnote{
         Aunque esta no es derivable en $x=0$, se define la derivada en ese punto como 0.
     }.
@@ -477,7 +478,8 @@ eficacia:
     incorrectas y ayuda a optimizar las probabilidades predichas para cada clase.
 
 
-    \item Existen multitud de \textbf{algoritmos de optimización de parámetros}, como SGD, Adam o RMSProp. 
+    \item Existen multitud de \textbf{algoritmos de optimización de parámetros}, como el \textit{Stocastic 
+    Gradient Descent}, Adam o RMSProp. 
     Estos algoritmos determinan cómo actualizar los pesos del modelo durante el entrenamiento para minimizar 
     la función de pérdida. 
     Están basados en el descenso de gradiente, que ajusta los pesos en dirección opuesta al gradiente de 
@@ -490,9 +492,9 @@ eficacia:
     entrenamiento, como la búsqueda de un \textit{learning rate} de punto de partida 
 
 
-    \item Si bien existen métodos de entrenamiento de redes ejemplo a ejemplo ---como el Gradiente Descendente 
-    Estocástico (SGD) puro\cite{bottou2010}---, estas se suelen entrenar por lotes 
-    (\textit{minibatches})
+    \item Si bien existen métodos de entrenamiento de redes ejemplo a ejemplo ---como el \textit{Stocastic 
+    Gradient Descent} puro \cite{bottou2010}---, estas se suelen entrenar por lotes 
+    (\textit{minibatches})%
     \footnote{
         Se denomina \textit{batch} al \textit{dataset} completo, y \textit{minibatch} a los subconjuntos de
         este cuyo tamaño está determinado por el hiperparámetro \textit{batch size}.
@@ -557,12 +559,12 @@ parámetros.
 \subsubsection{Capas convolucionales}
 
 Como se ha introducido antes, el operador de \textbf{convolución} es la base de las CNNs. Este operador 
-matemático aplica un \textbf{filtro} (también denominado \textit{kernel})
+matemático aplica un \textbf{filtro} (también denominado \textit{kernel})%
 \footnote{
     Aunque, como veremos a continuación, filtro y \textit{kernel} a la hora de hablar de capas 
     convolucionales, no son técnicamente lo mismo.
 } 
-a regiones locales de una imagen de entrada, realizando un producto punto
+a regiones locales de una imagen de entrada, realizando un producto punto%
 \footnote{
     El producto punto o producto escalar de dos vectores, se define como la suma de los productos componente a 
     componente. 
@@ -593,7 +595,7 @@ Las CNNs aprovechan la convolución mediante \textbf{capas convolucionales}. Cad
 compuesta por un conjunto de filtros convolucionales, donde cada uno a su vez tiene tantos \textit{kernels} 
 como canales de entrada de la imagen haya en la capa (si es la primera capa convolucional, habrá 1 canal en 
 imágenes de escala de grises, o 3 en imágenes RGB). El número de filtros en cada capa, su tamaño y la forma
-en que se deslizan sobre la entrada
+en que se deslizan sobre la entrada%
 \footnote{                                                                      
     Definidos mediante los parámetros de \textit{stride} y \textit{padding}, que controlan el desplazamiento       
     del filtro y la cantidad de relleno alrededor de la entrada, respectivamente.
@@ -603,7 +605,7 @@ entrenables.
 
 Cada filtro convolucional realiza la operación convolucional sobre cada canal con el \textit{kernel} que le 
 corresponde. Después, se suman los mapas de activación de cada canal (pixel a pixel) añadiendo un sesgo 
-(un mismo valor a todos los píxeles
+(un mismo valor a todos los píxeles%
 \footnote{
     Es por ello que no rompe la propiedad de equivarianza.
 }),
@@ -624,7 +626,7 @@ datos de entrenamiento). Es por esto que, en aquellos problemas en los que no es
 información de localización de las características, ---como en los que nos enfocamos en este trabajo: 
 clasificación y regresión---, y, por tanto, el modelo sea invariante a la ubicación, se emplean técnicas de 
 submuestreo (\textit{downsampling}) \cite{murphy2022}, como usar \textit{stride} mayor de 1 en los filtros
-de las capas convolucionales o realizar \textit{pooling}
+de las capas convolucionales o realizar \textit{pooling}%
 \footnote{
     Nos centraremos en el último dado su amplio uso y fácil comprensión, además de su demostrada efectividad 
     empírica.
@@ -684,7 +686,7 @@ la dimensionalidad y se han obtenido representaciones abstractas de alto nivel, 
 predicción (en problemas de clasificación y regresión). 
 Aquí es donde las \textbf{capas completamente conectadas (\textit{fully-connected}, FC)} juegan un papel 
 crucial. Se utilizan en las últimas etapas de la red convolucional para combinar todas las características 
-extraídas y producir una predicción final. Es decir, actúan como el clasificador/regresor
+extraídas y producir una predicción final. Es decir, actúan como el clasificador/regresor%
 \footnote{
     Si bien, independientemente de la tarea ---regresión o clasificación---, a esta parte de la red se le 
     denomina clasificador
@@ -829,7 +831,6 @@ Las \textbf{redes residuales (\textit{residual nets}, ResNet)}
 El \textbf{aprendizaje por transferencia (\textit{transfer learning})} es una técnica que consiste en 
 aprovechar el conocimiento aprendido por un modelo entrenado en una tarea como punto de partida para
 mejorar el rendimiento y acelerar el entrenamiento en una nueva tarea relacionada \cite{rusell2021}.
-
 En redes neuronales, el aprendizaje consiste en ajustar pesos, y en el caso del \textit{transfer learning}, 
 estos pesos se inicializan con valores previamente optimizados para una tarea fuente, en lugar de comenzar con 
 valores aleatorios (véase la Figura \ref{fig:fine-tuning}).
@@ -838,6 +839,14 @@ Se conoce como \textbf{fine-tuning} a la técnica de inicialización de los peso
 (como capas convolucionales) con los pesos previamente aprendidos, y que continúa el entrenamiento con los 
 datos específicos de la nueva tarea. En este contexto, se denomina \textit{head} a las capas finales del 
 modelo que se sustituyen para adaptarse a la nueva tarea. 
+Por ejemplo, en \cite{venema2022} se utilizan dos modelos de CNN preentrenados en clasificación con ImageNet 
+(que contiene imágenes de 1000 clases): VGG16 y ResNet50. Estos modelos se ajustan (\textit{fine-tuning}) 
+para estimar el sexo de una persona a partir de radiografías de húmero. Aunque ambas tareas parecen muy 
+diferentes, las primeras capas de la red, especializadas en detectar características generales como bordes y 
+texturas, pueden ser útiles en los dos casos, lo que permite una transferencia efectiva del conocimiento.
+El \textit{fine-tuning} puede aplicarse de forma gradual: primero se entrena solo el \textit{head} 
+(manteniendo el resto del modelo congelado) y luego, si es necesario, se afinan también algunas capas 
+preentrenadas para mejorar el rendimiento en la tarea específica.
 
 \begin{figure}[h]
     \centering
@@ -854,24 +863,13 @@ modelo que se sustituyen para adaptarse a la nueva tarea.
     \label{fig:fine-tuning}
 \end{figure}
 
-Por ejemplo, en \cite{venema2022} se utilizan dos modelos de CNN preentrenados en clasificación con ImageNet 
-(que contiene imágenes de 1000 clases): VGG16 y ResNet50. Estos modelos se ajustan (\textit{fine-tuning}) 
-para estimar el sexo de una persona a partir de radiografías de húmero. Aunque ambas tareas parecen muy 
-diferentes, las primeras capas de la red, especializadas en detectar características generales como bordes y 
-texturas, pueden ser útiles en los dos casos, lo que permite una transferencia efectiva del conocimiento.
-
-El \textit{fine-tuning} puede aplicarse de forma gradual: primero se entrena solo el \textit{head} 
-(manteniendo el resto del modelo congelado) y luego, si es necesario, se afinan también algunas capas 
-preentrenadas para mejorar el rendimiento en la tarea específica.
-
-
 % ------------------------------------------------------------------------------------------------------------
 % INCERTIDUMBRE ----------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
 
 \section{Incertidumbre}
 
-La metrología
+La metrología%%%
 \footnote{
     Ciencia de las mediciones y sus aplicaciones \cite{jcgm200:2012}.
 },
@@ -880,7 +878,7 @@ el ML. Mientras la metrología establece los fundamentos conceptuales de error e
 proporciona métodos para cuantificar, modelar y reducir estos factores durante el desarrollo y validación de 
 modelos.
 
-El Comité Conjunto de Guías en Metrología (\textit{Joint Committe for Guides in Metrology})
+El Comité Conjunto de Guías en Metrología (\textit{Joint Committe for Guides in Metrology})%%
 \footnote{
     Este Comité está formado por numerosas organizaciones internacionales de metrología y normalización: 
     BIPM, IEC, IFCC, ISO, IUPAC, IUPAP, OIML e ILAC. Su objetivo principal es mantener y promover las 
@@ -895,27 +893,27 @@ error, más conocida como \textbf{sesgo}).
 Por otro lado, define a la \textbf{incertidumbre} como ``parámetro, asociado con el resultado de una medición, 
 que caracteriza la dispersión de los valores que podrían atribuirse razonablemente al \textbf{mensurado}, que
 es como se denomina a la magnitud a ser medida. [...] El parámetro puede ser, por ejemplo, una desviación 
-estándar, o la anchura de un intervalo con un nivel de confianza establecido'' \cite{jcgm100:2008}.
+estándar, o la amplitud de un intervalo con un nivel de confianza establecido'' \cite{jcgm100:2008}.
 
 Partiendo de estas definiciones generales, veamos las diferencias entre los dos enfoques principales en la 
 evaluación de mediciones: el enfoque basado en el error y el enfoque basado en la incertidumbre.
 
 El \textbf{enfoque basado en el error} o enfoque tradicional parte de la premisa de que existe un valor 
-verdadero. En consecuencia, el propósito de la medición es aproximarse lo más posible a dicho valor, 
+verdadero. En consecuencia, el propósito de la medición es aproximarse lo máximo posible a dicho valor, 
 minimizando las distintas componentes del error \cite{jcgm100:2008}:
 
 \begin{itemize}
 
     \item para el error aleatorio, esto se logra aumentando el número de observaciones, ya que su distribución 
-    tiende una media igual a cero; y
+    tiende a una media igual a cero; y
 
     \item para el error sistemático, es necesario identificarlo y cuantificar su magnitud, lo que permite 
     aplicar factores de corrección que compensen su efecto.
 
 \end{itemize}
 
-Se asume que el resultado de la medición ha sido corregido por todos los efectos sistemáticos identificados
-como significativos, de modo que la esperanza matemática de esta componente sea igual a cero.
+% Se asume que el resultado de la medición ha sido corregido por todos los efectos sistemáticos identificados
+% como significativos, de modo que la esperanza matemática de esta componente sea igual a cero.
 
 Sin embargo, en la práctica no existen reglas claras para distinguir las componentes del error ni cómo estas 
 se combinan en el error total. En general, solo es posible estimar un límite superior del valor 
@@ -931,8 +929,8 @@ herramienta para determinar el error potencial del instrumento ---o modelo en ML
 \subsection{Incertidumbre en \textit{machine learning}}
 
 Las fuentes de incertidumbre pueden ser muy variadas, y su identificación requiere en muchos casos de 
-conocimiento específico en el problema, si bien se suelen considerar dos tipos de incertidumbre en las 
-predicciones realizadas en ML \cite{hullermeier2021, nemani2023}:
+conocimiento específico del problema. No obstante, en términos prácticos, suelen considerarse dos tipos de 
+incertidumbre en las predicciones realizadas en ML \cite{hullermeier2021, nemani2023}:
 
 \begin{itemize}
     
@@ -941,12 +939,8 @@ predicciones realizadas en ML \cite{hullermeier2021, nemani2023}:
     Es irreducible por naturaleza, aunque se disponga de más datos. 
     Un ejemplo típico es el resultado de lanzar una moneda al aire. Incluso el mejor modelo solo será capaz de 
     dar probabilidades para las dos posibles salidas, sin una respuesta definitiva. 
-    
-    % En ML, esta incertidumbre representa la naturaleza inherentemente estocástica de las entradas, las salidas 
-    % y la dependencia entres estas dos. 
-
     En el contexto de la estimación de la edad forense, esta incertidumbre se manifiesta en las diferentes 
-    edades biológicas que puede obtenerse de individuos de la misma edad cronológica.
+    edades biológicas que pueden obtenerse para individuos de la misma edad cronológica.
     Se sabe que existe una correlación entre edad biológica y la cronológica, pero esta no es perfecta, 
     debido a que existe variabilidad inherente al problema.
 
@@ -970,10 +964,10 @@ predicciones realizadas en ML \cite{hullermeier2021, nemani2023}:
     
 \end{itemize}
 
-A estos, se le puede añadir un tercer tipo: el \textbf{\textit{drift}} \cite{gama2012, nemani2023}, que 
+A estos, se les puede añadir un tercer tipo: el \textbf{\textit{drift}} \cite{gama2012, nemani2023}, que 
 procede de cambios en la distribución de los datos a lo largo del tiempo, ya sea en la distribución de las 
 variables de entrada, en la distribución de las variables de salida, o en la relación entre las dos previas. 
-Por ejemplo: una imagen de entrada a un modelo de clasificación que no corresponde a ninguna clase con la que 
+Por ejemplo, una imagen de entrada a un modelo de clasificación que no corresponde a ninguna clase con la que 
 se haya entrenado anteriormente; un cambio en la población objetivo de una aplicación médica ---p.ej., debido 
 a un cambio demográfico o a la aparición de una nueva enfermedad---; o la toma de imágenes médicas con una 
 máquina distinta a la que se empleó para obtener las imágenes con las que se ha entrenado el modelo.
@@ -982,8 +976,10 @@ máquina distinta a la que se empleó para obtener las imágenes con las que se 
 
 \subsection{Cuantificación de la incertidumbre en \textit{machine learning}} 
 
-El desarrollo de las técnicas modernas de ML ha estado principalmente centrado en la minimización y 
-cuantificación del error de predicción. Este enfoque ha permitido que el aprendizaje automático despliegue un 
+El desarrollo de las técnicas modernas de ML 
+se asocia con un enfoque basado en el error, centrándose en la minimización y cuantificación del error en
+predicción. 
+Este enfoque ha permitido que el aprendizaje automático despliegue un 
 gran potencial en multitud de aplicaciones.
 Sin embargo, cuando se trata de aplicaciones críticas ---como la medicina, los sistemas financieros o el 
 control de infraestructuras--- surge una necesidad esencial: no solo importa cuán precisa es una predicción, 
@@ -999,32 +995,36 @@ estudio del modelo y arquitectura concretos \cite{salvi2025}, la
 confianza en las predicciones realizadas y se centra en caracterizar las fuentes de variabilidad y posible 
 error en los datos, el modelo y el entorno de aplicación \cite{nemani2023}.
 
+Existe una gran variedad de técnicas de UQ. Estas técnicas pueden clasificarse de distintas formas: 
 
+\begin{itemize}
 
-Existe una gran variedad de técnicas de UQ. Estas técnicas pueden clasificarse de distintas formas: algunas 
-son \textit{model-agnostic}, es decir, pueden aplicarse a cualquier tipo de modelo sin 
-requerir acceso a su estructura interna; otras son \textit{model-specific}, diseñadas para aprovechar 
-características particulares del modelo subyacente. 
-Algunas técnicas suponen que los datos siguen ciertas 
-distribuciones estadísticas explícitas, mientras que otras operan sin realizar tales suposiciones. 
-También existen métodos que asumen intercambiabilidad entre observaciones, frente a aquellos que no lo hacen 
-y requieren estructuras de dependencia más complejas. 
+    \item Algunas son \textit{model-agnostic}, es decir, pueden aplicarse a cualquier tipo de modelo sin 
+    requerir acceso a su estructura interna; otras son \textit{model-specific}, diseñadas para aprovechar 
+    características particulares del modelo subyacente. 
 
-Los métodos más populares son \textit{gaussian process regression} (GPR),
+    \item Algunas técnicas suponen que los datos siguen ciertas distribuciones estadísticas explícitas, 
+    mientras que otras operan sin realizar tales suposiciones.
 
-redes neuronales bayesianas (\textit{bayesian neural networks}, BNNs),
-redes neuronales \textit{ensemble}, 
-métodos deterministas
+    \item También existen métodos que asumen intercambiabilidad entre observaciones, frente a aquellos que 
+    no lo hacen y requieren estructuras de dependencia más complejas. 
+
+\end{itemize} 
+
 
 \begin{itemize}
     \item \textbf{Procesos de regresión gausiana (\textit{gaussian process regression}, GPR)}: 
     
-    \item \textbf{Técnicas bayesianas}: Monte Carlo Dropout
+    \item \textbf{Técnicas bayesianas}: Monte Carlo Dropout,
+    redes neuronales bayesianas (\textit{bayesian neural networks}, BNNs)
 
     \item \textbf{Técnicas \textit{ensemble}}:  
+    
+    \item Métodos deterministas: 
+
 \end{itemize}
 
-\todo{Por completar (lo antes posible)}
+\todo{Pablo: De hecho, aquí repites cosas... Tal y como dices, se ve que está por completar... Aún así, como consejo para todo lo que falta por completar: no te rayes ni líes mucho. Ya llevas 131 páginas y, bajo ningún concepto, queremos superar por mucho este valor (150 páginas podría estar bien, pero mucho más de eso... me parecería excesivo). Da pinceladas que demuestren que entiendes de lo que hablas, pero sin entrar en demasiado detalle. Si alguien quiere saber más: que se lea las referencias que incluyas y/o que te pregunte durante la defensa.}
 
 
 % ¿Qué es la cuantificación de incertidumbre?
@@ -1185,7 +1185,8 @@ etiqueta o valor $y$ esté contenida en $\hat{C}(x)$ (véanse los ejemplos de la
         Recuperado de \cite{mapie-docs2023}.
     ]{
         Ejemplo de predicción conformal en problemas de regresión (arriba) y clasificación (abajo).
-        Recuperado de \cite{mapie-docs2023}.
+        Recuperado de \cite{mapie-docs2023}. MAPIE es una biblioteca de Python para para la cuantificación
+        de incertidumbre, principalmente con técnicas de CP. 
     } 
     \label{fig:educational_visual}
 \end{figure}
@@ -1197,7 +1198,9 @@ calibración}, usado para calibrar la predicción conformal, tal y como veremos 
 Con esto también se busca reducir la variabilidad de las predicciones puntuales, que pueden ser sensibles a 
 pequeños cambios en los datos de entrada, como el ejemplo de la Figura \ref{fig:adversarial_example}.
 Estas garantías son válidas bajo el supuesto mínimo de intercambiabilidad de los datos, sin requerir 
-hipótesis sobre la distribución subyacente de los mismos.
+hipótesis sobre la distribución subyacente de los mismos. La intercambiabilidad de los datos 
+se refiere a que el orden de las observaciones no aporta información adicional, es decir, la distribución
+conjunta es invariante ante cualquier permutación de los índices. 
 
 \begin{figure}[h]
     \centering
@@ -1210,6 +1213,8 @@ hipótesis sobre la distribución subyacente de los mismos.
         Adaptado de la Figura 2 de \cite{hullermeier2021}, original de \cite{sato2018}.
         Se observa que el cambio de una sola palabra ---y aparentemente sin mucha relevancia--- (destacada en 
         negrita) basta para cambiar la predicción de ``sentimiento negativo'' a ``sentimiento positivo''.
+        Con la CP se busca que predicciones no solo proporcionen una etiqueta puntual, sino un conjunto de 
+        posibles etiquetas que capture de manera robusta la incertidumbre asociada al ejemplo de entrada.
     } 
     \label{fig:adversarial_example}
 \end{figure}
@@ -1226,30 +1231,40 @@ P(Y_{n+1} \in \hat{C_\alpha}(X_{n+1})) \ge 1 - \alpha
 $$
 
 Esta propiedad se denomina \textbf{cobertura marginal válida} \cite{prinster2024}, y se cumple para todas las 
-entrada $X$, siempre y cuando los datos sean intercambiables (\textit{interexchangeable}), es decir, todos los 
-datos procedan de la misma distribución y, por tanto, la posición del nuevo ejemplo dentro del conjunto 
-completo de datos sea estadísticamente indistinguible del resto. Esta intercambiabilidad en imágenes 
-implicaría que todas fueran tomadas en condiciones similares: mismo dominio, distribución de valores de 
-salida, iluminación, resolución, estilo, etc.
+entrada $X$, siempre y cuando los datos sean intercambiables (\textit{interexchangeable}). 
+Esta intercambiabilidad en imágenes implicaría que todas fueran tomadas en condiciones similares: mismo 
+dominio, distribución de valores de salida, iluminación, resolución, estilo, etc.
 Sin embargo, la CP no asegura \textbf{cobertura condicional válida} \cite{foygel2021}; es decir, no es posible 
 garantizar cobertura para todos los subgrupos de datos sin hacer suposiciones fuertes o sacrificar utilidad 
-práctica, en concordancia con el conocido Teorema \textit{No Free Lunch} \cite{wolpert1997}. En la Figura
-\ref{fig:coverage} se observa la diferencia entre cobertura marginal y condicional. 
+práctica, en concordancia con el conocido \textit{No Free Lunch Theorem} \cite{wolpert1997}. En la Figura
+\ref{fig:coverage} se presenta una noción de la diferencia entre cobertura marginal y condicional. 
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/coverage_types.png}
     \caption[
-        Conjuntos de predicción con varias nociones de cobertura: no cobertura, cobertura marginal y cobertura
-        condicional. Recuperado de \cite{angelopoulos2021}.
+        Conjuntos de predicción bajo distintas nociones de cobertura: sin cobertura garantizada, con 
+        cobertura marginal y con cobertura condicional. Recuperado de \cite{angelopoulos2021}.
     ]{
-        Conjuntos de predicción con varias nociones de cobertura: no cobertura, cobertura marginal y cobertura
-        condicional. Recuperado de \cite{angelopoulos2021}.
-        En la primera columna vemos una cobertura deficiente en la muestra completa y en cada grupo. 
-        En la segunda, se garantiza cobertura marginal al 90\% de confianza en el conjunto completo, pero no 
-        se cumple cobertura condicional, ya que el error solo se da en una región concreta de un grupo.
-        En la tercera columna, se garantizan tanto cobertura marginal como condicional al 90\% de confianza,
-        ya que el error está uniformemente distribuido entre grupos y regiones del espacio. 
+        Conjuntos de predicción bajo distintas nociones de cobertura: sin cobertura garantizada, con 
+        cobertura marginal y con cobertura condicional. Recuperado de \cite{angelopoulos2021}.
+        %
+        En la parte inferior de la figura se muestra la amplitud de los intervalos de predicción (en línea 
+        amarilla) generados en un problema de regresión. En la parte superior, las instancias se dividen en 
+        dos grupos; los valores reales contenidos en los intervalos se representan en verde, mientras que los 
+        no contenidos aparecen en rojo.
+        %
+        La primera columna ilustra un caso con intervalos de predicción demasiado estrechos, lo que resulta 
+        en una baja cobertura: la mayoría de los valores reales quedan fuera del intervalo.
+        %
+        En la segunda columna, los intervalos son más amplios y permiten capturar una mayor proporción de los 
+        valores reales, alcanzando una cobertura marginal del 90\% en el conjunto total. Sin embargo, esta 
+        cobertura no se distribuye equitativamente: el error se concentra en una región específica dentro 
+        de uno de los grupos, lo que indica ausencia de cobertura condicional.
+        %
+        Finalmente, en la tercera columna, los intervalos se ajustan a la distribución de las predicciones,
+        logrando cobertura marginal como condicional del 90\%, con un error repartido de manera uniforme 
+        entre regiones y grupos, reflejando una calibración más precisa y equitativa del modelo.
     } 
     \label{fig:coverage}
 \end{figure}
@@ -1276,7 +1291,7 @@ Algunas características deseables en los métodos de CP son:
     \item \textbf{Ser eficiente computacionalmente}: es preferible que tanto la calibración como la inferencia 
     no sean computacionalmente muy costosas. 
     
-    \item \textbf{Robustez frente a datos ruidosos y detección de datos \textit{out-of-distribution}}
+    \item \textbf{Robustez frente a datos ruidosos y detección de datos \textit{out-of-distribution}}%
     \footnote{
         Los datos \textit{out-of-distribution} son datos que no provienen de la misma distribución que los 
         datos con los que se entrenó el modelo.
@@ -1297,16 +1312,16 @@ ajustados e informativos.
 
 \subsection{Algoritmo conformal}
 
-Existe multitud de métodos de CP. Generalmente, estas dependen del tipo de problema a resolver, es decir, 
-existen métodos para problemas de regresión \cite{papadopoulos2002, romano2019, bethell2024} y otras para 
-problemas de clasificación \cite{sadinle2019, romano2020, angelopoulos2020}. También hay líneas de 
-investigación para problemas de series temporales \cite{xu2021, zaffran2022, stankeviciute2021}
+Existen multitud de métodos de CP. Generalmente, estas dependen del tipo de problema a resolver: 
+regresión \cite{papadopoulos2002, romano2019, bethell2024}, clasificación 
+\cite{sadinle2019, romano2020, angelopoulos2020}, series temporales \cite{xu2021, zaffran2022, 
+stankeviciute2021}%
 \footnote{
     El marco de CP clásico asume que los datos son intercambiables, una propiedad que no se cumple en las 
     series temporales debido a la dependencia secuencial entre observaciones. A pesar de ello, se han 
     desarrollado diversas extensiones del enfoque conformal para adaptarse a estos datos.
-}, 
-detección de anomalías \cite{laxhammar2015}, entre otros. 
+},
+o detección de anomalías \cite{laxhammar2015}, entre otros. 
 
 A pesar de su diversidad, todos los algoritmos conformales comparten un elemento clave: la definición de una 
 \textbf{función de no conformidad}, una heurística que mide la incertidumbre asociada a cada predicción. 
@@ -1314,20 +1329,21 @@ Intuitivamente, esta función actúa como una medida de discrepancia entre el va
 observado, y permite determinar cuán ``extraña'' o ``no conforme'' es una nueva observación respecto al 
 comportamiento esperado del modelo.
 
-La predicción conformal consta de los siguientes pasos: 
+La implementación de la predicción conformal consta de los siguientes pasos:
 
 \begin{enumerate}
 
     \item Se divide el conjunto de datos disponible en dos subconjuntos: un conjunto de entrenamiento, 
-    utilizado para ajustar el modelo predictivo, y un conjunto de calibración, que se reserva exclusivamente 
-    para estimar la incertidumbre mediante el cálculo de las puntuaciones de no conformidad. Esta separación 
-    permite que la estimación del intervalo de predicción sea independiente del proceso de entrenamiento, lo 
-    cual es crucial para garantizar la validez estadística del método.
+    utilizado para ajustar el modelo predictivo (es decir, para entrenar el modelo), y un conjunto de 
+    calibración, que se reserva exclusivamente para estimar la incertidumbre mediante el cálculo de las 
+    puntuaciones de no conformidad. Esta separación permite que la estimación del intervalo de predicción 
+    sea independiente del proceso de entrenamiento, lo cual es crucial para garantizar la validez 
+    estadística del método.
 
     \item Se entrena el modelo predictivo utilizando únicamente el conjunto de entrenamiento. 
 
     \item \textbf{Calibración conformal}: Este proceso se da tras el entrenamiento del modelo. En este, se 
-    calculan las \textbf{puntuaciones de no conformidad (\textit{nonconformity scores}) $R$}
+    calculan las \textbf{puntuaciones de no conformidad (\textit{nonconformity scores}) $R$}%
     \footnote{
         En la literatura, a este vector de puntuaciones se le suele denotar como $R$ por \textit{`residual'}
         o $E$ por \textit{`error'}, aunque no tiene por qué corresponderse con estas variables. 
@@ -1341,26 +1357,27 @@ La predicción conformal consta de los siguientes pasos:
 
     Estas puntuaciones se derivan a partir de una heurística que combina al menos el valor real y el predicho 
     del problema con otras posibles fuentes de información, como las entradas o incluso representaciones 
-    internas del modelo
+    internas del modelo%
     \footnote{
         Cabe señalar que un método será independiente del modelo y del dominio cuando solo tenga en cuenta
         las salidas del modelo y los valores reales del problema para realizar la CP.
     }. 
     Bajo las garantías estadísticas que ofrece el marco teórico de la CP, esta flexibilidad muestra un gran 
-    potencial para ser integrada con otros métodos de cuantificación de incertidumbre (UQ), ampliando así sus 
+    potencial para ser integrada con otros métodos de UQ, ampliando así sus 
     aplicaciones y mejorando la robustez de las estimaciones de incertidumbre.
 
     Independientemente del diseño específico de la función de no conformidad, esta debe cumplir una condición
-    esencial: las puntuaciones deben ser intercambiables entre el conjunto de calibración y las nuevas instancias.
-    En otras palabras, deben estar distribuidas de manera similar bajo el supuesto de que los datos son 
-    independientes e idénticamente distribuidos. Esta propiedad es crucial para que CP garantice 
-    cobertura marginal válida a un nivel de confianza determinado.
+    esencial: las puntuaciones deben ser intercambiables entre el conjunto de calibración y las nuevas 
+    instancias.
+    En otras palabras, deben ser idénticamente distribuidos. 
+    Esta propiedad es crucial para que CP garantice cobertura marginal válida a un nivel de confianza 
+    determinado.
     Por tanto, aunque existe flexibilidad en el diseño de la función de no conformidad, su elección debe 
     considerar tanto la capacidad para capturar incertidumbre útil como el cumplimiento del supuesto de 
     intercambiabilidad. 
 
     A continuación, se calcula el \textbf{umbral de no conformidad}.
-    Para un nivel de significancia $\alpha$, se selecciona el $(1 - \alpha)(1 + 1/n)$-ésimo cuantil
+    Para un nivel de significancia $\alpha$, se selecciona el $(1 - \alpha)(1 + 1/n)$-ésimo cuantil%
     \footnote{
         La corrección $(1 + 1/n)$ asegura validez estadística para conjuntos de tamaño finito.
     } 
@@ -1370,7 +1387,7 @@ La predicción conformal consta de los siguientes pasos:
     \begin{figure}[h]
         \centering
 
-        \begin{subfigure}[b]{0.47\textwidth}
+        \begin{subfigure}[b]{0.48\textwidth}
             \centering
             \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/nonconformity_quantile_threshold_simetric.png}
             \caption{Determinación del umbral de no conformidad para intervalos simétricos.}
@@ -1388,11 +1405,10 @@ La predicción conformal consta de los siguientes pasos:
             Determinación del umbral de no conformidad para intervalos simétricos y asimétricos.
         ]{
             Determinación del umbral de no conformidad para intervalos simétricos y asimétricos. 
-            Elaboración propia.
             En (\ref{sub@fig:nonconformity_quantile_threshold_simetric}), el error es absoluto, y el umbral
             se calcula como se ha especificado anteriormente. 
-            En (\ref{sub@fig:nonconformity_quantile_threshold_simetric}), el error tiene signo, y hay dos
-            umbrales de incertidumbre, uno por cada cola, calculado como el cuantil con significancia 
+            En (\ref{sub@fig:nonconformity_quantile_threshold_asimetric}), el error tiene signo, y hay dos
+            umbrales de incertidumbre, uno por cada cola, calculado como el cuantil con significación
             $\alpha/2$ de los errores negativos y de los errores positivos, respectivamente para el umbral
             inferior y el umbral superior. 
         }
@@ -1412,10 +1428,16 @@ La predicción conformal consta de los siguientes pasos:
 
     La forma de construir $\Gamma(x_{n+1})$ depende de cómo se haya definido la función de no conformidad 
     durante la fase de calibración.
-    Por ejemplo: en el método \textit{Inductive Conformal Prediction} para problemas de regresión, ---que 
-    describiremos en mayor profundidad en el Capítulo 4---, se utiliza el error absoluto como función de no 
-    conformidad. De esta forma, el umbral de no conformidad $\hat{q}_{1-\alpha}$ se considera el quantil 
-    $1-\alpha$ del error que arroja el modelo. Y, en la inferencia, se toma como intervalo de predicción:
+    Por ejemplo, en el método \textit{Inductive Conformal Prediction} \cite{papadopoulos2002} para problemas 
+    de regresión, ---que describiremos en mayor profundidad en el Capítulo 4---, se utiliza el error absoluto 
+    como función de no conformidad. De esta forma, el umbral de no conformidad $\hat{q}_{1-\alpha}$ se 
+    considera el quantil $1-\alpha$ del error que arroja el modelo. Y, en la inferencia, se toma como 
+    intervalo de predicción:
+
+    \todo{Pablo: Enriquece esta explicación teórica con un ejemplo aplicado de juguete, en donde tienes un 
+    modelo caja negra que realiza la predicción. Muestra cómo calculas q\_{1-alpha} en base a un conjunto de 
+    calibración con 10 valores reales. Yo creo que quedaría todo mucho más claro. Y luego genera el intervalo 
+    de predicción para una estimación concreta.}
 
     $$
     \Gamma_\alpha(x_{n+1})=
