@@ -18,9 +18,6 @@ if not torch.cuda.is_available():
     )
 device = 'cuda'
 
-import traceback
-import time
-
 #-------------------------------------------------------------------------------------------------------------
 
 import os
@@ -33,28 +30,30 @@ data_dir = working_dir + '/data/AE_maxillofacial/preprocessed/'
 import sys
 import argparse
 
-# Control de advertencias
+# Control de errores y advertencias
+import traceback
 import warnings
+
+# Medición de tiempo y pausas
+import time
+
+# Operaciones aleatorias
+import random
 
 # Manipulación de datos
 import numpy as np
 import pandas as pd
-import polars as pl 
 
 # Manejo y edición de imágenes
 from PIL import Image
 
 # Visualización de datos
 import matplotlib.pyplot as plt
-import seaborn as sns
-
-# Operaciones aleatorias
-import random
 
 # Evaluación y partición de modelos
 from sklearn.model_selection import train_test_split
 
-# Modelos y funciones de pérdida personalizados 
+# Modelos, funciones de pérdida y métricas personalizados 
 from conformal_regression_models import *
 from cp_metrics import *
 
@@ -685,9 +684,8 @@ if args.test:
     
     if args.save_test_results is not None:
         
-        #
         n = len(test_pred_point_values)
-        new_df = pl.DataFrame({
+        new_df = pd.DataFrame({
             "pred_model_type": [pred_model_type] * n,
             "confidence": np.array([confidence] * n, dtype=np.float32),
             "iteration": [args.test_iteration] * n,
@@ -696,36 +694,35 @@ if args.test:
             "pred_upper_bound": np.array(test_pred_upper_bound, dtype=np.float32),
             "true_value": np.array(test_true_values, dtype=np.float32),
         })
-        
+
         # Si el archivo ya existe, cargarlo y filtrar duplicados
         if os.path.exists(args.save_test_results):
-            existing_df = pl.read_csv(args.save_test_results)
-            
-            # Forzar el esquema correcto para que coincida con new_df
-            existing_df = existing_df.cast({
-                "pred_model_type": pl.Utf8,
-                "confidence": pl.Float32,
-                "iteration": pl.Int64,
-                "pred_point_value": pl.Float32,
-                "pred_lower_bound": pl.Float32,
-                "pred_upper_bound": pl.Float32,
-                "true_value": pl.Float32
+            existing_df = pd.read_csv(args.save_test_results, dtype={
+                "pred_model_type": str,
+                "confidence": np.float32,
+                "iteration": np.int64,
+                "pred_point_value": np.float32,
+                "pred_lower_bound": np.float32,
+                "pred_upper_bound": np.float32,
+                "true_value": np.float32
             })
 
             # Filtrar todas las filas que NO tienen el mismo conjunto clave
-            mask = ~((existing_df["pred_model_type"] == pred_model_type) &
-                    (existing_df["confidence"] == confidence) &
-                    (existing_df["iteration"] == args.test_iteration))
+            mask = ~(
+                (existing_df["pred_model_type"] == pred_model_type) &
+                (existing_df["confidence"] == confidence) &
+                (existing_df["iteration"] == args.test_iteration)
+            )
 
-            filtered_df = existing_df.filter(mask)
+            filtered_df = existing_df[mask]
 
             # Concatenar el nuevo dataframe
-            final_df = pl.concat([filtered_df, new_df])
+            final_df = pd.concat([filtered_df, new_df], ignore_index=True)
         else:
             final_df = new_df
 
         # Guardar sobrescribiendo el archivo
-        final_df.write_csv(args.save_test_results, separator=",", include_header=True)
+        final_df.to_csv(args.save_test_results, index=False)
 
 #-------------------------------------------------------------------------------------------------------------
 

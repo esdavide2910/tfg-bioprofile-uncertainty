@@ -10,7 +10,6 @@ import torch
 # 
 from torch.utils.data import Dataset, DataLoader, Subset
 from torchvision import transforms
-import torch.nn as nn
 
 #
 if not torch.cuda.is_available():
@@ -18,9 +17,6 @@ if not torch.cuda.is_available():
         "CUDA no está disponible. PyTorch no reconoce la GPU."
     )
 device = 'cuda'
-
-import traceback
-import time
 
 #-------------------------------------------------------------------------------------------------------------
 
@@ -34,30 +30,31 @@ data_dir = working_dir + '/data/AE_maxillofacial/preprocessed/'
 import sys
 import argparse
 
-# Control de advertencias
+# Control de errores y advertencias
+import traceback
 import warnings
+
+# Medición de tiempo y pausas
+import time
+
+# Operaciones aleatorias
+import random
 
 # Manipulación de datos
 import numpy as np
 import pandas as pd
-import polars as pl 
 
 # Manejo y edición de imágenes
 from PIL import Image
 
 # Visualización de datos
 import matplotlib.pyplot as plt
-import seaborn as sns
-
-# Operaciones aleatorias
-import random
 
 # Evaluación y partición de modelos
 from sklearn.model_selection import train_test_split
 
-# Modelos y funciones de pérdida personalizados 
+# Modelos, funciones de pérdida y métricas personalizados 
 from conformal_classification_models import *
-from classification_metrics import * 
 from cp_metrics import *
 
 #-------------------------------------------------------------------------------------------------------------
@@ -352,7 +349,6 @@ def create_loader(dataset, indices=None, shuffle=False, num_workers=1):
         worker_init_fn=seed_worker,
         generator=g
     )
-
 
 #
 num_classes = max(trainset.num_classes, validset.num_classes, testset.num_classes)
@@ -651,7 +647,7 @@ if args.test:
     test_pred_classes, test_pred_sets, test_true_classes = model.inference(test_loader)
 
     # Calcula y muestra la exactitud
-    accry = accuracy(test_pred_classes, test_true_classes)
+    accry = (test_pred_classes == test_true_classes).sum() / test_true_classes.size(0)
     print(f"Accuracy: {accry*100:>4.2f} %")
     
     # Calcula y muestra la cobertura empírica 
@@ -672,9 +668,8 @@ if args.test:
     
     if args.save_test_results:
         
-        #
         n = len(test_pred_classes)
-        new_df = pl.DataFrame({
+        new_df = pd.DataFrame({
             "pred_model_type": [pred_model_type] * n,
             "confidence": np.array([confidence] * n, dtype=np.float32),
             "iteration": [args.test_iteration] * n,
@@ -689,50 +684,48 @@ if args.test:
             "pred_set_21": np.array(test_pred_sets[:, 7], dtype=np.uint8),
             "pred_set_22": np.array(test_pred_sets[:, 8], dtype=np.uint8),
             "pred_set_23": np.array(test_pred_sets[:, 9], dtype=np.uint8),
-            "pred_set_24": np.array(test_pred_sets[:, 10], dtype=np.uint8),
-            "pred_set_25": np.array(test_pred_sets[:, 11], dtype=np.uint8),
-            "pred_set_26": np.array(test_pred_sets[:, 12], dtype=np.uint8),
+            "pred_set_24": np.array(test_pred_sets[:,10], dtype=np.uint8),
+            "pred_set_25": np.array(test_pred_sets[:,11], dtype=np.uint8),
+            "pred_set_26": np.array(test_pred_sets[:,12], dtype=np.uint8),
             "true_class": np.array(test_true_classes, dtype=np.uint8)
         })
-        
+
         # Si el archivo ya existe, cargarlo y filtrar duplicados
         if os.path.exists(args.save_test_results):
-            existing_df = pl.read_csv(args.save_test_results)
-            
-            # Forzar el esquema correcto para que coincida con new_df
-            existing_df = existing_df.cast({
-                "pred_model_type": pl.Utf8,
-                "confidence": pl.Float32,
-                "iteration": pl.Int64,
-                "pred_class": pl.UInt8,
-                "pred_set_14": pl.UInt8,
-                "pred_set_15": pl.UInt8,
-                "pred_set_16": pl.UInt8,
-                "pred_set_17": pl.UInt8,
-                "pred_set_18": pl.UInt8,
-                "pred_set_19": pl.UInt8,
-                "pred_set_20": pl.UInt8,
-                "pred_set_21": pl.UInt8,
-                "pred_set_22": pl.UInt8,
-                "pred_set_23": pl.UInt8,
-                "pred_set_24": pl.UInt8,
-                "pred_set_25": pl.UInt8,
-                "pred_set_26": pl.UInt8,
-                "true_class": pl.UInt8
-                
+            existing_df = pd.read_csv(args.save_test_results, dtype={
+                "pred_model_type": str,
+                "confidence": np.float32,
+                "iteration": np.int64,
+                "pred_class": np.uint8,
+                "pred_set_14": np.uint8,
+                "pred_set_15": np.uint8,
+                "pred_set_16": np.uint8,
+                "pred_set_17": np.uint8,
+                "pred_set_18": np.uint8,
+                "pred_set_19": np.uint8,
+                "pred_set_20": np.uint8,
+                "pred_set_21": np.uint8,
+                "pred_set_22": np.uint8,
+                "pred_set_23": np.uint8,
+                "pred_set_24": np.uint8,
+                "pred_set_25": np.uint8,
+                "pred_set_26": np.uint8,
+                "true_class": np.uint8
             })
 
             # Filtrar todas las filas que NO tienen el mismo conjunto clave
-            mask = ~((existing_df["pred_model_type"] == pred_model_type) &
-                    (existing_df["confidence"] == confidence) &
-                    (existing_df["iteration"] == args.test_iteration))
+            mask = ~(
+                (existing_df["pred_model_type"] == pred_model_type) &
+                (existing_df["confidence"] == confidence) &
+                (existing_df["iteration"] == args.test_iteration)
+            )
 
-            filtered_df = existing_df.filter(mask)
+            filtered_df = existing_df[mask]
 
             # Concatenar el nuevo dataframe
-            final_df = pl.concat([filtered_df, new_df])
+            final_df = pd.concat([filtered_df, new_df], ignore_index=True)
         else:
             final_df = new_df
 
         # Guardar sobrescribiendo el archivo
-        final_df.write_csv(args.save_test_results, separator=",", include_header=True)
+        final_df.to_csv(args.save_test_results, index=False)

@@ -164,6 +164,7 @@ def mean_set_size_by_class(
 def indeterminancy_rate(
     pred_sets: torch.Tensor
 ) -> float:
+    
     # Suma valores por fila => tamaño del conjunto para cada ejemplo
     set_sizes = pred_sets.sum(dim=1)
     # Calcula el porcentaje de instancias con más de una clase predicha
