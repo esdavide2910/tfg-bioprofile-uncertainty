@@ -120,7 +120,7 @@ def empirical_coverage_by_class(
 
 def mean_set_size(
     pred_sets: torch.Tensor
-) -> int:
+) -> float:
     """
     Calcula el tamaño promedio de los conjuntos de predicción.
 
@@ -138,9 +138,28 @@ def mean_set_size(
 
 # ------------------------------------------------------------------------------------------------------------
 
+# def mean_set_score(
+#     pred_sets: torch.Tensor,
+#     true_labels: torch.Tensor,
+#     alpha: float
+# ) -> float:
+#     """
+#     Calcula ...
+#     """
+#     # Obtener índice de fila y clase verdadera
+#     row_indices = torch.arange(true_labels.shape[0])
+#     # Verifica si la etiqueta verdadera está presente en el conjunto predicho
+#     covered = pred_sets[row_indices, true_labels]
+    
+#     MSS = pred_sets.sum(dim=1) + 1/alpha * (~covered)
+    
+#     # Calcular la media de los tamaños
+#     return MSS.float().mean().item()
+
+# ------------------------------------------------------------------------------------------------------------
+
 def mean_set_size_by_class(
-    pred_sets: torch.Tensor,
-    num_classes: int
+    pred_sets: torch.Tensor
 ) -> torch.Tensor:
     """
     Calcula el tamaño promedio del conjunto de predicción para cada clase.

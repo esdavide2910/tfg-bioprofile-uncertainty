@@ -7,6 +7,7 @@ import torchvision
 import math
 from cp_metrics import mean_set_size
 from typing import Tuple
+from scipy.optimize import minimize_scalar
 
 #-------------------------------------------------------------------------------------------------------------
 
@@ -555,7 +556,7 @@ class ResNeXtClassifier_APS(ResNeXtClassifier):
     
     PRED_MODEL_TYPE = 'APS'
     
-    def __init__(self, num_classes, confidence=0.9):
+    def __init__(self, num_classes, confidence=0.9, random=False):
         
         # Inicializa la clase padre con los parámetros base
         super().__init__(num_classes)
@@ -563,6 +564,8 @@ class ResNeXtClassifier_APS(ResNeXtClassifier):
         # Parámetros para la conformal prediction
         self.alpha = 1-confidence
         self.q_hat = None 
+        
+        self.random = random
     
     
     def save_checkpoint(self, save_model_path):
@@ -572,7 +575,8 @@ class ResNeXtClassifier_APS(ResNeXtClassifier):
             'num_classes': self.num_classes,
             'torch_state_dict': self.state_dict(),
             'alpha': self.alpha,
-            'q_hat': self.q_hat
+            'q_hat': self.q_hat,
+            'random': self.random,
         }
         torch.save(checkpoint, save_model_path)
     
@@ -599,7 +603,10 @@ class ResNeXtClassifier_APS(ResNeXtClassifier):
             self.q_hat = checkpoint['q_hat']
     
     
-    def calibrate(self, calib_loader):
+    def calibrate(self, calib_loader, random=None):
+        
+        #
+        random = self.random if random is None else random
         
         # Obtiene las clases predichas y verdaderas para el conjunto de calibración
         pred_scores, true_labels  = self._inference(calib_loader, return_probs=True)
@@ -607,62 +614,111 @@ class ResNeXtClassifier_APS(ResNeXtClassifier):
         # Obtiene el número de instancias del conjunto
         n = len(true_labels)
         
-        # Ordena los scores de mayor a menor y calcula la suma acumulada
-        sorted_scores, sorted_class_indices = torch.sort(pred_scores, dim=1, descending=True)
-        cumulative_scores = torch.cumsum(sorted_scores, dim=1)
+        # Ordena el ranking de scores con los índices permutados de clases y calcula la suma acumulada
+        sorted_scores, sorted_class_perm_index = torch.sort(pred_scores, dim=1, descending=True)
+        cum_sorted_scores = torch.cumsum(sorted_scores)
         
-        # Encuentra la posición de la clase verdadera en los índices ordenados
-        true_class_ranks = (sorted_class_indices == true_labels.unsqueeze(1)).float().argmax(dim=1)
+        # Obtiene el índice de la etiqueta verdadera en en el ranking de cada instancia
+        matches = (sorted_class_perm_index == true_labels.unsqueeze(1))
+        true_class_rank = matches.float().argmax(dim=1)
         
-        # Obtiene las puntuaciones  de no conformidad
-        nonconformity_scores = cumulative_scores[torch.arange(n), true_class_ranks]
+        # Recolecta los scores y suma acumulada en la posición del índice verdadero
+        true_score = sorted_scores[torch.arange(n), true_class_rank]
+        true_cumscore = cum_sorted_scores[torch.arange(n), true_class_rank]
+        
+        #
+        if random:
+            # Genera un vector de valores aleatorios entre 0 y 1, uno por instancia 
+            U = torch.rand(n)
+            
+            # Calcula V
+            V = (true_cumscore - (1-self.alpha)) / true_score
+            
+            # Calcula nonconformity_scores con indexado condicional
+            # Si U > V → usar cumulative_scores en true_class_rank
+            # Si U <= V → usar cumulative_scores en true_class_rank - 1
+            
+            # Evita valores negativos en el índice
+            adjusted_rank = torch.clamp(true_class_rank - 1, min=0)
+            
+            # Selección de valores según condición
+            nonconformity_scores = torch.where(
+                U <= V,
+                cum_sorted_scores[torch.arange(n), adjusted_rank],
+                true_cumscore
+            )
+        
+        else:
+            
+            #
+            nonconformity_scores = true_cumscore
         
         # Calcula el nivel de cuantificación ajustado basado en el tamaño del conjunto de calibración y alpha
         q_level = math.ceil((1.0 - self.alpha) * (n + 1.0)) / n
         
-        # Calcula el umbral de no conformidad como el percentil q_level de los valores de conformidad usando 
-        # cuantiles
+        # Calcula el umbral de no conformidad como el percentil q_level de las puntuaciones de no conformidad
         self.q_hat = torch.quantile(nonconformity_scores, q_level, interpolation='higher').item()
     
     
-    def inference(self, dataloader):
+    def inference(self, dataloader, random=None):
         
         # Lanza un error si el modelo no está calibrado (q_hat no está determinado)
         if self.q_hat is None:
             raise ValueError("Modelo no calibrado")
         
+        #
+        random = self.random if random is None else random
+        
         # Obtiene las predicciones y las clases verdaderas para el conjunto de evaluación
         pred_scores, true_labels = self._inference(dataloader, return_probs=True)
         
-        # Obtiene el número de instancias del conjunto
-        n = len(true_labels)
+        # Obtiene el número de instancias del conjunto y el número de clases
+        n, num_classes = pred_scores.shape
         
         # Determina la clase predicha como la clase con mayor puntuación
-        _, pred_labels = torch.max(pred_scores, dim=1) # Obtiene el índice de la score más alta para cada instancia
+        _, pred_labels = torch.max(pred_scores, dim=1) 
         
         # Ordena los scores de mayor a menor y calcula la suma acumulada
-        sorted_scores, sorted_class_indices = torch.sort(pred_scores, dim=1, descending=True)
-        cumulative_scores = torch.cumsum(sorted_scores, dim=1)
+        sorted_scores, sorted_class_perm_index = torch.sort(pred_scores, dim=1, descending=True)
+        cum_sorted_scores = torch.cumsum(sorted_scores, dim=1)
         
-        # Construye conjunto predictivo: incluye clases con suma acumulada <= q_hat
-        inclusion_mask = cumulative_scores <= self.q_hat # máscara booleana (n, num_classes)
+        # Obtiene el índice (0-indexed) de la última clase en el ranking que no supera el umbral de no conformidad
+        matches = cum_sorted_scores <= self.q_hat
+        has_match = matches.any(dim=1)
+        last_class_ranks = torch.where(
+            has_match, 
+            matches.int().sum(dim=1)-1,
+            torch.ones(n, dtype=torch.uint8)
+        )
         
-        # Para evitar conjuntos vacíos, primero verifica si hay filas con todo False
-        empty_rows = (~inclusion_mask.any(dim=1))  # (n,), True donde conjunto vacío
-
-        # En esas filas vacías, incluye la primera clase (de mayor score)                                     # O debería aquí incluir todas las clases?
-        inclusion_mask[empty_rows, 0] = True
+        if random:
+            # Genera un vector de valores aleatorios entre 0 y 1, uno por instancia 
+            U = torch.rand(n)
+            
+            #
+            last_score = sorted_scores[torch.arange(n), last_class_ranks]
+            last_cum_scores = cum_sorted_scores[torch.arange(n), last_class_ranks]
+            
+            #
+            V = (last_cum_scores - self.q_hat) / last_score
+            
+            #
+            last_class_ranks = torch.where(
+                (U <= V) & (last_class_ranks>=1),
+                last_class_ranks-1,
+                last_class_ranks
+            )
         
-        # Ahora construye la matriz de predicción (n, num_classes) en orden original 
-        pred_sets = torch.zeros_like(pred_scores, dtype=torch.uint8) 
+        #
+        idx = torch.arange(num_classes)
+        inclusion_mask = idx < last_class_ranks.unsqueeze(1)
         
-        for i in range(n):
-            # Para cada instancia, obtiene las clases incluidas según la máscara
-            included_classes = sorted_class_indices[i][inclusion_mask[i]]
-            # Marca esas clases en la fila i de pred_sets
-            pred_sets[i, included_classes] = 1
-
+        #
+        pred_sets = torch.zeros_like(pred_scores, dtype=torch.uint8)
+        pred_sets.scatter_(1, sorted_class_perm_index, inclusion_mask.to(torch.uint8))
+        
         return pred_labels, pred_sets, true_labels
+
 
 #-------------------------------------------------------------------------------------------------------------
 
@@ -670,7 +726,7 @@ class ResNeXtClassifier_RAPS(ResNeXtClassifier):
     
     PRED_MODEL_TYPE = 'RAPS'
     
-    def __init__(self, num_classes, confidence=0.9, lambda_reg=0.0, k_reg=0):
+    def __init__(self, num_classes, confidence=0.9, lambda_reg=0.0, k_reg=0, random=False):
         
         # Inicializa la clase padre con los parámetros base
         super().__init__(num_classes)
@@ -680,6 +736,8 @@ class ResNeXtClassifier_RAPS(ResNeXtClassifier):
         self.q_hat = None
         self.lambda_reg = lambda_reg
         self.k_reg = k_reg
+        
+        self.random = random
     
     
     def save_checkpoint(self, save_model_path):
@@ -691,7 +749,8 @@ class ResNeXtClassifier_RAPS(ResNeXtClassifier):
             'alpha': self.alpha,
             'q_hat': self.q_hat,
             'lambda_reg': self.lambda_reg,
-            'k_reg': self.k_reg
+            'k_reg': self.k_reg,
+            'random': self.random
         }
         torch.save(checkpoint, save_model_path)
     
@@ -728,56 +787,61 @@ class ResNeXtClassifier_RAPS(ResNeXtClassifier):
         true_labels: torch.Tensor,
         lmbda: float,
         k_reg: int,
-        alpha: float
+        alpha: float,
+        random: bool = False
     ) -> float:
+        
+        # Usa el valor por defecto de `self.random` si no se especifica explícitamente
+        random = random if random is not None else self.random
         
         # Obtiene el número de instancias del conjunto y el número de clases
         n, num_classes = pred_scores.shape
         
-        # Ordena los scores de mayor a menor y calcula la suma acumulada
-        sorted_scores, sorted_class_index = torch.sort(pred_scores, dim=1, descending=True)
-        cumulative_scores = torch.cumsum(sorted_scores, dim=1)
+        # Ordena los scores de cada instancia de mayor a menor y guarda los índices de ordenamiento
+        sorted_scores, sorted_class_perm_index = torch.sort(pred_scores, dim=1, descending=True)
+        # Calcula la suma acumulada de los scores ordenados
+        cum_sorted_scores = torch.cumsum(sorted_scores, dim=1)
         
-        # Crea un vector de penalización acumulada para cada posición 
-        # (a partir de la posición k_reg en adleante añade penalización cte. de lambda_reg)
+        # Crea un vector de penalización: sin penalización hasta k_reg, luego aplica penalización constante λ
         penalties = torch.zeros((1, num_classes))
         penalties[0, k_reg:] += lmbda
+        # Calcula la penalización acumulada
         cumulative_penalties = torch.cumsum(penalties, dim=1)
         
-        # Encuentra, para cada instancia, la posición (0-indexed) de la clase verdadera en el ranking
-        idx = (sorted_class_index == true_labels.unsqueeze(1)).nonzero(as_tuple=False)[:,1] 
+        # Encuentra, para cada instancia, la posición (0-indexed) de la clase verdadera en el ranking ordenado 
+        matches = (sorted_class_perm_index==true_labels.unsqueeze(1))
+        true_class_rank = matches.int().argmax(dim=1)
         
-        # Genera un vector de valores aleatorios entre 0 y 1, uno por instancia 
-        U = torch.rand(n)
+        # Obtiene el score de la clase verdadera para cada instancia y la suma acumulada
+        true_score = sorted_scores[torch.arange(n), true_class_rank]
+        true_cum_score = cum_sorted_scores[torch.arange(n), true_class_rank]
         
-        #
-        nonconformity_scores = torch.empty_like(idx, dtype=sorted_scores.dtype)  # preasignar
-
-        # Máscara: idx == 0
-        mask_0 = idx == 0
-        mask_not0 = ~mask_0
-
-        # Caso idx > 0
-        # Calcula las puntuaciones de no conformidad para cada instancia:
-        # - Suma acumulada de scores hasta la clase verdadera
-        # - Menos una fracción aleatoria del score de la clase verdadera (para romper empates)
-        # - Más la penalización acumulada por incluir esa cantidad de clases
-        nonconformity_scores[mask_not0] = (
-            cumulative_scores[mask_not0, idx[mask_not0]] -
-            U[mask_not0] * sorted_scores[mask_not0, idx[mask_not0]] +
-            cumulative_penalties[0, idx[mask_not0]]
-        )
-
-        # Caso idx == 0 → sin permitir conjuntos vacíos → usar score directamente (sin acumulado)
-        nonconformity_scores[mask_0] = (
-            sorted_scores[mask_0, 0] + cumulative_penalties[0, 0]
-        )
+        # Obtiene la penalización para la clase verdadera y la suma acumulada
+        true_penalty = penalties[0, true_class_rank]
+        true_cum_penalty = cumulative_penalties[0, true_class_rank]
+        
+        if random:
+        
+            # Genera un vector de valores aleatorios entre 0 y 1, uno por instancia 
+            U = torch.rand(n)
+            
+            # Calcula los nonconformity scores ajustando con ruido aleatorio (si la clase verdadera no está al principio)
+            nonconformity_scores = torch.where(
+                true_class_rank >= 1,
+                true_cum_score + true_cum_penalty - U * true_score,
+                true_cum_score + true_cum_penalty
+            )
+        
+        else:
+            
+            # Nonconformity scores sin aleatoriedad
+            nonconformity_scores = true_cum_score + true_cum_penalty
+        
         
         # Calcula el nivel de cuantificación ajustado basado en el tamaño del conjunto de calibración y alpha
         q_level = math.ceil((1.0 - alpha) * (n + 1.0)) / n
         
-        # Calcula el umbral de no conformidad como el percentil q_level de los valores de conformidad usando 
-        # cuantiles
+        # Calcula el umbral de no conformidad como el percentil q_level de las puntuaciones de no conformidad
         q_hat = torch.quantile(nonconformity_scores, q_level, interpolation='higher').item()
         
         return q_hat
@@ -788,80 +852,81 @@ class ResNeXtClassifier_RAPS(ResNeXtClassifier):
         pred_scores : torch.Tensor, 
         q_hat : float, 
         lmbda : float, 
-        k_reg : int 
+        k_reg : int,
+        random : bool = False
     ) -> torch.Tensor:
         
         # Obtiene el número de instancias del conjunto y el número de clases
         n, num_classes = pred_scores.shape
         
         # Ordena los scores de mayor a menor y calcula la suma acumulada
-        sorted_scores, sorted_class_index = torch.sort(pred_scores, dim=1, descending=True)
-        cumulative_scores = torch.cumsum(sorted_scores, dim=1)
+        sorted_scores, sorted_class_perm_index = torch.sort(pred_scores, dim=1, descending=True)
+        cum_sorted_scores = torch.cumsum(sorted_scores, dim=1)
         
         # Crea un vector de penalización acumulada para cada posición 
         penalties = torch.zeros((1, num_classes))
         penalties[0, k_reg:] += lmbda
         cumulative_penalties = torch.cumsum(penalties, dim=1)
         
-        # Suma total acumulada: suma de scores más penalización para cada etiqueta adicional ordenada
-        total_scores = cumulative_scores + cumulative_penalties
+        #
+        matches = cum_sorted_scores <= q_hat
+        has_match = matches.any(dim=1)
+        last_class_ranks = torch.where(
+            has_match,
+            matches.int().sum(dim=1)-1,
+            torch.ones(n, dtype=torch.uint8)
+        )
         
-        # Tamaño base del conjunto predictivo: incluye clases mientras total ≤ q_hat
-        sizes_base = (total_scores <= q_hat).sum(dim=1) + 1
-        sizes_base = torch.clamp(sizes_base, max=num_classes)
-        
-        # Caso especial: si q_hat = 1.0 (nivel de confianza = 0), se incluyen todas las clases
-        if q_hat == 1.0:
-            sizes = torch.full((n,), num_classes, dtype=torch.long)
-        
-        else:
-            
-            # V es un vector de 0 o 1 que decide si se incluye una clase extra o no (con probabilidad adaptativa)
-            V = torch.zeros(n, dtype=torch.long)
-            
-            # Se genera una variable aleatoria uniforme U[0,1]
+        #
+        if random:
+            # Genera un vector de valores aleatorios entre 0 y 1, uno por instancia 
             U = torch.rand(n)
             
-            for i in range(n):
-                
-                # Índice de la última clase incluida según sizes_base
-                last_idx = sizes_base[i]-1
-                
-                # 
-                score_last = sorted_scores[i, last_idx]
-                cumsum_scores_last = cumulative_scores[i, last_idx]
-                cumsum_penalty_last = cumulative_penalties[0, last_idx]
-                
-                #
-                # threshold = (1 / score_last) * (q_hat - (cumsum_scores_last-score_last) - cumsum_penalty_last)
-                threshold = (1 / score_last) * (cumsum_scores_last + cumsum_penalty_last - q_hat)
-                
-                #
-                V[i] = (threshold >= U[i]).long()
+            #
+            last_score = sorted_scores[torch.arange(n), last_class_ranks]
+            last_cum_scores = cum_sorted_scores[torch.arange(n), last_class_ranks]
             
-            # Ajusta los tamaños finales restando V, asegurando que haya al menos una clase
-            sizes = torch.clamp(sizes_base - V, min=1)
+            #
+            last_penalty = penalties[0, last_class_ranks]
+            last_cum_penalty = cumulative_penalties[0, last_class_ranks]
+            
+            #
+            V = (last_cum_scores + last_cum_penalty - q_hat) / (last_score + last_penalty)
+            
+            #
+            last_class_ranks = torch.where(
+                (U <= V) & (last_class_ranks>=1),
+                last_class_ranks-1,
+                last_class_ranks
+            )
+
+        #
+        idx = torch.arange(num_classes)
+        inclusion_mask = idx <= last_class_ranks.unsqueeze(1)
         
-        # Inicializa la matriz binaria de conjuntos de predicción (0 = no incluido, 1 = incluido)
+        # 
         pred_sets = torch.zeros_like(pred_scores, dtype=torch.uint8)
-        
-        # Asigna 1 a las clases seleccionadas (según los índices ordenados)
-        for i in range(n):
-            pred_sets[i, sorted_class_index[i, :sizes[i]]] = 1
+        pred_sets.scatter_(1, sorted_class_perm_index, inclusion_mask.to(torch.uint8))
         
         return pred_sets
     
     
-    def calibrate(self, calib_loader):
+    def calibrate(self, calib_loader, random=None):
+        
+        # Usa el valor por defecto de `self.random` si no se especifica explícitamente
+        random = random if random is not None else self.random
         
         # Obtiene las clases predichas y verdaderas para el conjunto de calibración
         pred_scores, true_labels  = self._inference(calib_loader, return_probs=True)
         
         #
-        self.q_hat = self._calibrate_RAPS(pred_scores, true_labels, self.lambda_reg, self.k_reg, self.alpha)
+        self.q_hat = self._calibrate_RAPS(pred_scores, true_labels, self.lambda_reg, self.k_reg, self.alpha, random)
     
     
-    def inference(self, dataloader):
+    def inference(self, dataloader, random=None):
+        
+        # Usa el valor por defecto de `self.random` si no se especifica explícitamente
+        random = random if random is not None else self.random
         
         # Lanza un error si el modelo no está calibrado (q_hat no está determinado)
         if self.q_hat is None:
@@ -874,7 +939,7 @@ class ResNeXtClassifier_RAPS(ResNeXtClassifier):
         _, pred_labels = torch.max(pred_scores, dim=1) 
         
         #
-        pred_sets = self._inference_RAPS(pred_scores, self.q_hat, self.lambda_reg, self.k_reg)
+        pred_sets = self._inference_RAPS(pred_scores, self.q_hat, self.lambda_reg, self.k_reg, random)
         
         return pred_labels, pred_sets, true_labels
     
@@ -899,41 +964,27 @@ class ResNeXtClassifier_RAPS(ResNeXtClassifier):
         return int(khat)
     
     
-    def _get_lambda(self, pred_scores, true_labels, k_reg):
+    def _get_lambda(self, pred_scores, true_labels, k_reg, random=None):
         """
         Busca el valor de lambda que minimiza el tamaño medio del conjunto predictivo,
         manteniendo cobertura conforme a RAPS.
         """
-        # Lista de valores de lambda a evaluar
-        lambdas = [0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0]
+        
+        # Usa el valor por defecto de `self.random` si no se especifica explícitamente
+        random = random if random is not None else self.random
         
         #
-        n = len(true_labels)
+        def objetive_log(log_lmbda):
+            lmbda = 10 ** log_lmbda
+            q_hat = self._calibrate_RAPS(pred_scores, true_labels, lmbda, k_reg, self.alpha, random)
+            pred_sets = self._inference_RAPS(pred_scores, q_hat, lmbda, k_reg, random)
+            return mean_set_size(pred_sets)
         
-        # Variables para almacenar el tamaño medio mínimo y lambda
-        min_mean_size = pred_scores.shape[1] 
-        best_lambda = lambdas[0]
+        #
+        result = minimize_scalar(objetive_log, bounds=(-3,2), method='bounded', options={'maxiter': 1000})
         
-        # Itera sobre cada valor de lambda para encontrar el óptimo
-        for lmbda in lambdas:
-            
-            # 
-            q_hat = self._calibrate_RAPS(pred_scores, true_labels, lmbda, k_reg, self.alpha)
-            
-            # Genera los conjuntos de predicción usando el método RAPS
-            pred_sets = self._inference_RAPS(pred_scores, q_hat, lmbda, k_reg)
-            
-            # Calcula el tamaño medio de los conjuntos de predicción
-            mean_size = mean_set_size(pred_sets)
-            
-            print("Mean size: ", mean_size)
-            # Actualiza el lambda óptimo si se encuentra un tamaño medio menor
-            if mean_size < min_mean_size:
-                best_lambda = lmbda
-                min_mean_size = mean_size
-        
-        # Devuelve el lambda que minimiza el tamaño medio de los conjuntos de predicción
-        return best_lambda
+        # Devuelve el valor óptimo en escala lineal
+        return (10** result.x)
     
     
     def auto_configure(self, dataloader):
@@ -946,5 +997,203 @@ class ResNeXtClassifier_RAPS(ResNeXtClassifier):
         print("k_reg: ", self.k_reg)
         self.lambda_reg = self._get_lambda(pred_scores, true_labels, self.k_reg)
         print("lambda: ", self.lambda_reg)
+
+
+#-------------------------------------------------------------------------------------------------------------
+
+class ResNeXtClassifier_SAPS(ResNeXtClassifier):
+    
+    PRED_MODEL_TYPE = 'SAPS'
+    
+    def __init__(self, num_classes, confidence=0.9):
+        
+        # Inicializa la clase padre con los parámetros base
+        super().__init__(num_classes)
+        
+        # Parámetros para la conformal prediction
+        self.alpha = 1 - confidence
+        self.lambda_reg = None
+        self.q_hat = None
+    
+    
+    def save_checkpoint(self, save_model_path):
+        """Guarda el estado del modelo en un archivo checkpoint"""
+        
+        checkpoint = {
+            'pred_model_type': self.PRED_MODEL_TYPE,
+            'num_classes': self.num_classes,
+            'torch_state_dict': self.state_dict(),
+            'alpha': self.alpha,
+            'lambda_reg': self.lambda_reg,
+            'q_hat': self.q_hat,
+        }
+        torch.save(checkpoint, save_model_path)
+    
+    
+    def load_checkpoint(self, checkpoint):
+        """Carga el estado del modelo desde un checkpoint"""
+        
+        # Extrae el número de salidas del modelo guardado
+        weight_key = 'classifier.fc2.2.weight'
+        bias_key = 'classifier.fc2.2.bias'
+        
+        if weight_key in checkpoint['torch_state_dict']:
+            out_features = checkpoint['torch_state_dict'][weight_key].shape[0]
+            
+            if out_features != self.output_size:
+                print("Out features: ", out_features)
+                print("Output size: ", self.output_size)
+                checkpoint['torch_state_dict'].pop(weight_key, None)
+                checkpoint['torch_state_dict'].pop(bias_key, None)
+        
+        self.load_state_dict(checkpoint['torch_state_dict'], strict=False)
+        
+        if (checkpoint['pred_model_type'] == self.PRED_MODEL_TYPE and 
+            checkpoint['alpha'] == self.alpha and 
+            'q_hat' in checkpoint
+        ):
+            self.q_hat = checkpoint.get('q_hat', None)
+            self.lambda_reg = checkpoint.get('lambda_reg', None)
+    
+    
+    @staticmethod
+    def _calibrate_SAPS(
+        pred_scores: torch.Tensor,
+        true_labels: torch.Tensor,
+        lmbda: float,
+        alpha: float
+    ) -> float:
+        
+        # Obtiene el número de instancias del conjunto y el número de clases
+        n, num_classes = pred_scores.shape
+        
+        # Ordena los scores de cada instancia de mayor a menor y guarda los índices de ordenamiento
+        sorted_scores, sorted_class_perm_index = torch.sort(pred_scores, dim=1, descending=True)
+        
+        # Encuentra, para cada instancia, la posición (0-indexed) de la clase verdadera en el ranking ordenado 
+        matches = (sorted_class_perm_index==true_labels.unsqueeze(1))
+        true_class_rank = matches.int().argmax(dim=1)
+        
+        #
+        max_score = sorted_scores[torch.arange(n), 0]
+        
+        # Genera un vector de valores aleatorios entre 0 y 1, uno por instancia 
+        U = torch.rand(n)
+        
+        # Calcula los nonconformity scores ajustando con ruido aleatorio (si la clase verdadera no está al principio)
+        nonconformity_scores = torch.where(
+            true_class_rank >= 1,
+            max_score + (true_class_rank-1+U)*lmbda, 
+            max_score * U
+        )
+        
+        # Calcula el nivel de cuantificación ajustado basado en el tamaño del conjunto de calibración y alpha
+        q_level = math.ceil((1.0 - alpha) * (n + 1.0)) / n
+        
+        # Calcula el umbral de no conformidad como el percentil q_level de las puntuaciones de no conformidad
+        q_hat = torch.quantile(nonconformity_scores, q_level, interpolation='higher').item()
+        
+        return q_hat
+    
+    
+    @staticmethod
+    def _inference_SAPS(
+        pred_scores : torch.Tensor, 
+        q_hat : float, 
+        lmbda : float
+    ) -> torch.Tensor:
+        
+        # Obtiene el número de instancias del conjunto y el número de clases
+        n, num_classes = pred_scores.shape
+        
+        # Ordena los scores de mayor a menor ...
+        sorted_scores, sorted_class_perm_index = torch.sort(pred_scores, dim=1, descending=True)
+        
+        # Obtiene el máximo score de predicción para cada instancia
+        max_score = sorted_scores[torch.arange(n), 0]
+        
+        # Crea una matriz con índices de clase (0 a num_classes-1) para cada instancia
+        pos_matrix = torch.arange(num_classes).expand(n, num_classes)
+
+        # Genera una matriz de valores aleatorios entre 0 y 1 para cada instancia y clase
+        U_matrix = torch.rand(n).unsqueeze(1).expand(-1, num_classes)
+
+        # Calcula los scores de no conformidad para cada clase de cada instancia
+        nonconformity_scores = torch.where(
+            pos_matrix == 0,
+            max_score.unsqueeze(1) * U_matrix, 
+            max_score.unsqueeze(1) + ((pos_matrix - 1 + U_matrix) * lmbda)
+        )
+        
+        # Crea una máscara indicando qué clases deben incluirse en el conjunto de predicción de cada instancia
+        inclusion_mask = nonconformity_scores <= q_hat
+        
+        # Convierte la máscara de inclusión a un formato one-hot
+        pred_sets = torch.zeros_like(pred_scores, dtype=torch.uint8)
+        pred_sets.scatter_(1, sorted_class_perm_index, inclusion_mask.to(torch.uint8))
+        
+        return pred_sets
+    
+    
+    def calibrate(self, calib_loader, random=None):
+        
+        # Usa el valor por defecto de `self.random` si no se especifica explícitamente
+        random = random if random is not None else self.random
+        
+        # Obtiene las clases predichas y verdaderas para el conjunto de calibración
+        pred_scores, true_labels  = self._inference(calib_loader, return_probs=True)
+        
+        # Obtiene el umbral de no conformidad 
+        self.q_hat = self._calibrate_SAPS(pred_scores, true_labels, self.lambda_reg, self.alpha)
+    
+    
+    def inference(self, dataloader, random=None):
+        
+        # Usa el valor por defecto de `self.random` si no se especifica explícitamente
+        random = random if random is not None else self.random
+        
+        # Lanza un error si el modelo no está calibrado (q_hat no está determinado)
+        if self.q_hat is None:
+            raise ValueError("Modelo no calibrado")
+        
+        # Obtiene las predicciones y las clases verdaderas para el conjunto de evaluación
+        pred_scores, true_labels = self._inference(dataloader, return_probs=True)
+        
+        # Determina la clase predicha como la clase con mayor score
+        _, pred_labels = torch.max(pred_scores, dim=1) 
+        
+        # Infiere los conjuntos de predicción conformal 
+        pred_sets = self._inference_SAPS(pred_scores, self.q_hat, self.lambda_reg)
+        
+        return pred_labels, pred_sets, true_labels
+    
+    
+    def _get_lambda(self, pred_scores, true_labels):
+        """
+        Busca el valor de lambda que minimiza el tamaño medio del conjunto predictivo.
+        """
+        
+        def objective_log(log_lmbda):
+            lmbda = 10 ** log_lmbda  # transformar a escala lineal
+            q_hat = self._calibrate_SAPS(pred_scores, true_labels, lmbda, self.alpha)
+            pred_sets = self._inference_SAPS(pred_scores, q_hat, lmbda)
+            return mean_set_size(pred_sets)
+        
+        # Optimiza lambda en escala logarítmica para cubrir un rango amplio
+        result = minimize_scalar(objective_log, bounds=(-3, 2), method='bounded', options={'maxiter': 1000})
+        
+        # Devuelve el valor óptimo en escala lineal
+        return (10** result.x)
+    
+    
+    def auto_configure(self, dataloader):
+        
+        # Pasa por el modelo y obtiene scores y etiquetas verdaderas
+        pred_scores, true_labels = self._inference(dataloader, return_probs=True)
+        
+        # Encuentra el valor óptimo de lambda
+        self.lambda_reg = self._get_lambda(pred_scores, true_labels, self.k_reg)
+        print("lambda: ", self.lambda_reg)
+
 
 #-------------------------------------------------------------------------------------------------------------

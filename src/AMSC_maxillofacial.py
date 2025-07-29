@@ -79,7 +79,7 @@ def validate_file_extension(filename, extensions, arg_name):
     return filename
 
 #
-PRED_MODEL_TYPES = ['base', 'LAC', 'MCM', 'APS', 'RAPS']
+PRED_MODEL_TYPES = ['base', 'LAC', 'MCM', 'APS', 'RAPS', 'SAPS']
 
 # Agregado de argumentos 
 def add_model_args(parser):
@@ -248,7 +248,7 @@ test_transform = transforms.Compose(
     [transforms.Resize((448, 224)),
      transforms.ToTensor(),
      transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))]
-) 
+)
 
 # Define la clase MaxillofacialXRayDataset, que se utiliza para cargar imágenes de rayos X maxilofaciales 
 # junto con su edad correspondiente desde un fichero de metadatos. 
@@ -406,7 +406,8 @@ MODEL_CLASSES = {
     'LAC': ResNeXtClassifier_LAC,
     'MCM': ResNeXtClassifier_MCM,
     'APS': ResNeXtClassifier_APS,
-    'RAPS': ResNeXtClassifier_RAPS
+    'RAPS': ResNeXtClassifier_RAPS,
+    'SAPS': ResNeXtClassifier_SAPS
 }
 
 # Obtiene los argumentos de tipo de modelo y nivel de confianza desde la línea de comandos
