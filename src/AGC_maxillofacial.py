@@ -79,7 +79,7 @@ def validate_file_extension(filename, extensions, arg_name):
     return filename
 
 #
-PRED_MODEL_TYPES = ['base', 'LAC', 'MCM', 'APS', 'RAPS']
+PRED_MODEL_TYPES = ['base', 'LAC', 'MCM', 'APS', 'RAPS', 'SAPS']
 
 # Agregado de argumentos 
 def add_model_args(parser):
@@ -352,8 +352,6 @@ def create_loader(dataset, indices=None, shuffle=False, num_workers=1):
 
 #
 num_classes = max(trainset.num_classes, validset.num_classes, testset.num_classes)
-print("Num_classes: ", trainset.num_classes)
-
 
 # Obtiene las edades del trainset por tramos de 0.5 años
 halfAges = (np.floor(trainset.ages.numpy() * 2) / 2).astype(np.float32)
@@ -415,7 +413,8 @@ MODEL_CLASSES = {
     'LAC': ResNeXtClassifier_LAC,
     'MCM': ResNeXtClassifier_MCM,
     'APS': ResNeXtClassifier_APS,
-    'RAPS': ResNeXtClassifier_RAPS
+    'RAPS': ResNeXtClassifier_RAPS,
+    'SAPS': ResNeXtClassifier_SAPS
 }
 
 # Obtiene los argumentos de tipo de modelo y nivel de confianza desde la línea de comandos
@@ -424,13 +423,13 @@ confidence = args.confidence
 
 # Verifica que el tipo de modelo esté entre los tipos permitidos
 if pred_model_type not in PRED_MODEL_TYPES:
-    raise ValueError(f"Tipo de predicción desconocida: {pred_model_type}")     
+    raise ValueError(f"Tipo de predicción desconocida: {pred_model_type}")
 
 # Obtiene la clase del modelo correspondiente al tipo especificado
 model_class = MODEL_CLASSES.get(pred_model_type)
 
 # Instancia el modelo con el nivel de confianza especificado y lo envía a la GPU
-model = model_class(num_classes=num_classes, confidence=confidence).to(device)
+model = model_class(num_classes=num_classes, confidence=confidence, random=True).to(device)
 
 # Si se especificó una ruta para cargar un modelo previamente entrenado
 if args.load_model_path:
@@ -626,7 +625,7 @@ if args.calibrate:
     model.set_temperature(valid_loader)
 
     #
-    if pred_model_type == 'RAPS':
+    if pred_model_type in ['RAPS','SAPS']:
         model.auto_configure(valid_loader)
     
     #
@@ -644,23 +643,24 @@ if args.calibrate:
 if args.test:
 
     #
-    test_pred_classes, test_pred_sets, test_true_classes = model.inference(test_loader)
+    test_pred_classes, test_pred_sets, test_true_labels = model.inference(test_loader)
 
     # Calcula y muestra la exactitud
-    accry = (test_pred_classes == test_true_classes).sum() / test_true_classes.size(0)
+    accry = (test_pred_classes == test_true_labels).sum() / test_true_labels.size(0)
     print(f"Accuracy: {accry*100:>4.2f} %")
     
     # Calcula y muestra la cobertura empírica 
-    ec = empirical_coverage_classification(test_pred_sets, test_true_classes)
+    ec = empirical_coverage_classification(test_pred_sets, test_true_labels)
     print(f"Cobertura empírica: {ec*100:>4.2f} %")
     
     # Calcula y muestra el tamaño medio del conjunto
     mss = mean_set_size(test_pred_sets)
     print(f"Tamaño medio de conjunto: {mss:>4.2f}")
     
-    # Calcula y muestra el ratio de indeterminación
-    ir = indeterminancy_rate(test_pred_sets)
-    print(f"Ratio de indeterminación: {ir*100:>4.2f} %")
+    #
+    num_labels, num_instances, coverage = each_size_coverage(test_pred_sets, test_true_labels)
+    for l, i, c in zip(num_labels, num_instances, coverage):
+        print(f"Número de etiquetas: {l}, Instancias: {i}, Cobertura: {(c*100):.2f}%")
 
     print("✅ Testeo de la red completado\n")
     
@@ -687,7 +687,7 @@ if args.test:
             "pred_set_24": np.array(test_pred_sets[:,10], dtype=np.uint8),
             "pred_set_25": np.array(test_pred_sets[:,11], dtype=np.uint8),
             "pred_set_26": np.array(test_pred_sets[:,12], dtype=np.uint8),
-            "true_class": np.array(test_true_classes, dtype=np.uint8)
+            "true_class": np.array(test_true_labels, dtype=np.uint8)
         })
 
         # Si el archivo ya existe, cargarlo y filtrar duplicados

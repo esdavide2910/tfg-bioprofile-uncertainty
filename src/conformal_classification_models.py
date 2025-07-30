@@ -377,7 +377,7 @@ class ResNeXtClassifier_LAC(ResNeXtClassifier):
     
     PRED_MODEL_TYPE = 'LAC'
     
-    def __init__(self, num_classes, confidence=0.9):
+    def __init__(self, num_classes, confidence=0.9, **kwargs):
         
         # Inicializa la clase padre con los parámetros base
         super().__init__(num_classes)
@@ -460,7 +460,7 @@ class ResNeXtClassifier_MCM(ResNeXtClassifier):
     
     PRED_MODEL_TYPE = 'MCM'
     
-    def __init__(self, num_classes, confidence=0.9):
+    def __init__(self, num_classes, confidence=0.9, **kwargs):
         
         # Inicializa la clase padre con los parámetros base
         super().__init__(num_classes)
@@ -556,7 +556,7 @@ class ResNeXtClassifier_APS(ResNeXtClassifier):
     
     PRED_MODEL_TYPE = 'APS'
     
-    def __init__(self, num_classes, confidence=0.9, random=False):
+    def __init__(self, num_classes, confidence=0.9, random=False, **kwargs):
         
         # Inicializa la clase padre con los parámetros base
         super().__init__(num_classes)
@@ -616,7 +616,7 @@ class ResNeXtClassifier_APS(ResNeXtClassifier):
         
         # Ordena el ranking de scores con los índices permutados de clases y calcula la suma acumulada
         sorted_scores, sorted_class_perm_index = torch.sort(pred_scores, dim=1, descending=True)
-        cum_sorted_scores = torch.cumsum(sorted_scores)
+        cum_sorted_scores = torch.cumsum(sorted_scores, dim=1)
         
         # Obtiene el índice de la etiqueta verdadera en en el ranking de cada instancia
         matches = (sorted_class_perm_index == true_labels.unsqueeze(1))
@@ -711,11 +711,15 @@ class ResNeXtClassifier_APS(ResNeXtClassifier):
         
         #
         idx = torch.arange(num_classes)
-        inclusion_mask = idx < last_class_ranks.unsqueeze(1)
+        inclusion_mask = idx <= last_class_ranks.unsqueeze(1)
         
         #
         pred_sets = torch.zeros_like(pred_scores, dtype=torch.uint8)
         pred_sets.scatter_(1, sorted_class_perm_index, inclusion_mask.to(torch.uint8))
+        
+        # Asegura que siempre haya al menos una clase en el conjunto predicho
+        empty_sets = inclusion_mask.sum(dim=1) == 0
+        pred_sets[empty_sets] = 1  # selecciona todas las clases en esos casos
         
         return pred_labels, pred_sets, true_labels
 
@@ -726,7 +730,7 @@ class ResNeXtClassifier_RAPS(ResNeXtClassifier):
     
     PRED_MODEL_TYPE = 'RAPS'
     
-    def __init__(self, num_classes, confidence=0.9, lambda_reg=0.0, k_reg=0, random=False):
+    def __init__(self, num_classes, confidence=0.9, lambda_reg=0.0, k_reg=0, random=False, **kwargs):
         
         # Inicializa la clase padre con los parámetros base
         super().__init__(num_classes)
@@ -981,7 +985,7 @@ class ResNeXtClassifier_RAPS(ResNeXtClassifier):
             return mean_set_size(pred_sets)
         
         #
-        result = minimize_scalar(objetive_log, bounds=(-3,2), method='bounded', options={'maxiter': 1000})
+        result = minimize_scalar(objetive_log, bounds=(-3,0), method='bounded', options={'maxiter': 1000})
         
         # Devuelve el valor óptimo en escala lineal
         return (10** result.x)
@@ -1005,7 +1009,7 @@ class ResNeXtClassifier_SAPS(ResNeXtClassifier):
     
     PRED_MODEL_TYPE = 'SAPS'
     
-    def __init__(self, num_classes, confidence=0.9):
+    def __init__(self, num_classes, confidence=0.9, **kwargs):
         
         # Inicializa la clase padre con los parámetros base
         super().__init__(num_classes)
@@ -1082,9 +1086,9 @@ class ResNeXtClassifier_SAPS(ResNeXtClassifier):
         
         # Calcula los nonconformity scores ajustando con ruido aleatorio (si la clase verdadera no está al principio)
         nonconformity_scores = torch.where(
-            true_class_rank >= 1,
-            max_score + (true_class_rank-1+U)*lmbda, 
-            max_score * U
+            true_class_rank == 0,
+            max_score * U,
+            max_score + (true_class_rank-1+U)*lmbda,
         )
         
         # Calcula el nivel de cuantificación ajustado basado en el tamaño del conjunto de calibración y alpha
@@ -1121,7 +1125,7 @@ class ResNeXtClassifier_SAPS(ResNeXtClassifier):
         # Calcula los scores de no conformidad para cada clase de cada instancia
         nonconformity_scores = torch.where(
             pos_matrix == 0,
-            max_score.unsqueeze(1) * U_matrix, 
+            max_score.unsqueeze(1) * U_matrix,
             max_score.unsqueeze(1) + ((pos_matrix - 1 + U_matrix) * lmbda)
         )
         
@@ -1135,10 +1139,7 @@ class ResNeXtClassifier_SAPS(ResNeXtClassifier):
         return pred_sets
     
     
-    def calibrate(self, calib_loader, random=None):
-        
-        # Usa el valor por defecto de `self.random` si no se especifica explícitamente
-        random = random if random is not None else self.random
+    def calibrate(self, calib_loader):
         
         # Obtiene las clases predichas y verdaderas para el conjunto de calibración
         pred_scores, true_labels  = self._inference(calib_loader, return_probs=True)
@@ -1147,10 +1148,7 @@ class ResNeXtClassifier_SAPS(ResNeXtClassifier):
         self.q_hat = self._calibrate_SAPS(pred_scores, true_labels, self.lambda_reg, self.alpha)
     
     
-    def inference(self, dataloader, random=None):
-        
-        # Usa el valor por defecto de `self.random` si no se especifica explícitamente
-        random = random if random is not None else self.random
+    def inference(self, dataloader):
         
         # Lanza un error si el modelo no está calibrado (q_hat no está determinado)
         if self.q_hat is None:
@@ -1192,7 +1190,7 @@ class ResNeXtClassifier_SAPS(ResNeXtClassifier):
         pred_scores, true_labels = self._inference(dataloader, return_probs=True)
         
         # Encuentra el valor óptimo de lambda
-        self.lambda_reg = self._get_lambda(pred_scores, true_labels, self.k_reg)
+        self.lambda_reg = self._get_lambda(pred_scores, true_labels)
         print("lambda: ", self.lambda_reg)
 
 

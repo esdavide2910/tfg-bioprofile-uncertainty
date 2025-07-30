@@ -138,23 +138,74 @@ def mean_set_size(
 
 # ------------------------------------------------------------------------------------------------------------
 
-# def mean_set_score(
-#     pred_sets: torch.Tensor,
-#     true_labels: torch.Tensor,
-#     alpha: float
-# ) -> float:
-#     """
-#     Calcula ...
-#     """
-#     # Obtener índice de fila y clase verdadera
-#     row_indices = torch.arange(true_labels.shape[0])
-#     # Verifica si la etiqueta verdadera está presente en el conjunto predicho
-#     covered = pred_sets[row_indices, true_labels]
+def each_size_coverage(
+    pred_sets: torch.Tensor,
+    true_labels: torch.Tensor
+) -> tuple[list[int], list[int], list[float]]:
     
-#     MSS = pred_sets.sum(dim=1) + 1/alpha * (~covered)
-    
-#     # Calcular la media de los tamaños
-#     return MSS.float().mean().item()
+    sizes = pred_sets.sum(dim=1)  # número de etiquetas predichas por instancia
+    is_covered = pred_sets[torch.arange(pred_sets.size(0)), true_labels] == 1
+
+    num_labels = []
+    num_instances = []
+    coverage = []
+
+    for size in torch.unique(sizes):
+        mask = sizes == size
+        total = mask.sum().item()
+        covered = is_covered[mask].sum().item()
+        cov = covered / total if total > 0 else 0.0
+
+        num_labels.append(int(size.item()))
+        num_instances.append(total)
+        coverage.append(cov)
+
+    return num_labels, num_instances, coverage
+
+# ------------------------------------------------------------------------------------------------------------
+
+def each_size_coverage_violation(
+    pred_sets: torch.Tensor, 
+    true_labels: torch.Tensor, 
+    alpha: float
+) -> tuple:
+
+    sizes = pred_sets.sum(dim=1)
+    is_covered = pred_sets[torch.arange(pred_sets.size(0)), true_labels] == 1
+
+    violations = []
+    for size in torch.unique(sizes):
+        mask = sizes == size
+        total = mask.sum().item()
+        covered = is_covered[mask].sum().item()
+        rate = covered / total if total > 0 else 0.0
+        violation = 1 - alpha - rate
+        violations.append((violation, size.item()))
+
+    if not violations:
+        return 0.0, None
+
+    max_violation, max_size = max(violations, key=lambda x: x[0])
+    return max_violation, max_size
+
+# ------------------------------------------------------------------------------------------------------------
+
+def mean_set_score(
+    pred_sets: torch.Tensor,
+    true_labels: torch.Tensor,
+    alpha: float
+) -> float:
+    """
+    Calcula ...
+    """
+    # Obtener índice de fila y clase verdadera
+    row_indices = torch.arange(true_labels.shape[0])
+    # Verifica si la etiqueta verdadera está presente en el conjunto predicho
+    covered = pred_sets[row_indices, true_labels]
+    #
+    set_scores = pred_sets.sum(dim=1) + 1/alpha * (~covered)
+    # Calcular la media de set_scores
+    return set_scores.float().mean().item()
 
 # ------------------------------------------------------------------------------------------------------------
 
