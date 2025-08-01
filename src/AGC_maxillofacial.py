@@ -429,7 +429,7 @@ if pred_model_type not in PRED_MODEL_TYPES:
 model_class = MODEL_CLASSES.get(pred_model_type)
 
 # Instancia el modelo con el nivel de confianza especificado y lo envía a la GPU
-model = model_class(num_classes=num_classes, confidence=confidence, random=True).to(device)
+model = model_class(num_classes=num_classes, confidence=confidence, random=False).to(device)
 
 # Si se especificó una ruta para cargar un modelo previamente entrenado
 if args.load_model_path:
@@ -643,10 +643,10 @@ if args.calibrate:
 if args.test:
 
     #
-    test_pred_classes, test_pred_sets, test_true_labels = model.inference(test_loader)
+    test_pred_labels, test_pred_sets, test_true_labels = model.inference(test_loader)
 
     # Calcula y muestra la exactitud
-    accry = (test_pred_classes == test_true_labels).sum() / test_true_labels.size(0)
+    accry = (test_pred_labels == test_true_labels).sum() / test_true_labels.size(0)
     print(f"Accuracy: {accry*100:>4.2f} %")
     
     # Calcula y muestra la cobertura empírica 
@@ -668,12 +668,12 @@ if args.test:
     
     if args.save_test_results:
         
-        n = len(test_pred_classes)
+        n = len(test_pred_labels)
         new_df = pd.DataFrame({
             "pred_model_type": [pred_model_type] * n,
             "confidence": np.array([confidence] * n, dtype=np.float32),
             "iteration": [args.test_iteration] * n,
-            "pred_class": np.array(test_pred_classes, dtype=np.uint8),
+            "pred_class": np.array(test_pred_labels, dtype=np.uint8),
             "pred_set_14": np.array(test_pred_sets[:, 0], dtype=np.uint8),
             "pred_set_15": np.array(test_pred_sets[:, 1], dtype=np.uint8),
             "pred_set_16": np.array(test_pred_sets[:, 2], dtype=np.uint8),

@@ -1,0 +1,307 @@
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:  0.219 | Validation Loss:  0.298 | Time: 2m 5s
+Epoch  2 | Train Loss:  0.178 | Validation Loss:  0.316 | Time: 2m 4s
+Epoch  3 | Train Loss:  0.180 | Validation Loss:  0.305 | Time: 2m 4s
+Epoch  4 | Train Loss:  0.190 | Validation Loss:  0.275 | Time: 2m 4s
+Epoch  5 | Train Loss:  0.196 | Validation Loss:  0.324 | Time: 2m 5s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 86.94 %
+Cobertura empírica: 88.38 %
+Tamaño medio de conjunto: 1.04
+Ratio de indeterminación: 3.86 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:  0.218 | Validation Loss:  0.313 | Time: 2m 4s
+Epoch  2 | Train Loss:  0.172 | Validation Loss:  0.303 | Time: 2m 4s
+Epoch  3 | Train Loss:  0.180 | Validation Loss:  0.373 | Time: 2m 4s
+Epoch  4 | Train Loss:  0.181 | Validation Loss:  0.285 | Time: 2m 4s
+Epoch  5 | Train Loss:  0.188 | Validation Loss:  0.314 | Time: 2m 5s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 86.62 %
+Cobertura empírica: 89.64 %
+Tamaño medio de conjunto: 1.06
+Ratio de indeterminación: 5.72 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:  0.220 | Validation Loss:  0.303 | Time: 2m 4s
+Epoch  2 | Train Loss:  0.175 | Validation Loss:  0.313 | Time: 2m 4s
+Epoch  3 | Train Loss:  0.181 | Validation Loss:  0.332 | Time: 2m 5s
+Epoch  4 | Train Loss:  0.200 | Validation Loss:  0.290 | Time: 2m 4s
+Epoch  5 | Train Loss:  0.190 | Validation Loss:  0.305 | Time: 2m 4s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 86.90 %
+Cobertura empírica: 89.73 %
+Tamaño medio de conjunto: 1.05
+Ratio de indeterminación: 4.93 %
+✅ Testeo de la red completado
+
+#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:  0.325 | Validation Loss:  0.285 | Time: 2m 8s
+Epoch  2 | Train Loss:  0.177 | Validation Loss:  0.302 | Time: 2m 7s
+Epoch  3 | Train Loss:  0.190 | Validation Loss:  0.332 | Time: 2m 8s
+Epoch  4 | Train Loss:  0.175 | Validation Loss:  0.298 | Time: 2m 7s
+Epoch  5 | Train Loss:  0.184 | Validation Loss:  0.297 | Time: 2m 7s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 86.99 %
+Cobertura empírica: 94.80 %
+Tamaño medio de conjunto: 1.20
+Ratio de indeterminación: 20.49 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:  0.324 | Validation Loss:  0.286 | Time: 2m 13s
+Epoch  2 | Train Loss:  0.173 | Validation Loss:  0.306 | Time: 2m 13s
+Epoch  3 | Train Loss:  0.181 | Validation Loss:  0.311 | Time: 2m 13s
+Epoch  4 | Train Loss:  0.171 | Validation Loss:  0.317 | Time: 2m 14s
+Epoch  5 | Train Loss:  0.185 | Validation Loss:  0.308 | Time: 2m 13s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 87.36 %
+Cobertura empírica: 95.07 %
+Tamaño medio de conjunto: 1.20
+Ratio de indeterminación: 20.40 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:  0.333 | Validation Loss:  0.290 | Time: 2m 12s
+Epoch  2 | Train Loss:  0.174 | Validation Loss:  0.309 | Time: 2m 12s
+Epoch  3 | Train Loss:  0.182 | Validation Loss:  0.349 | Time: 2m 12s
+Epoch  4 | Train Loss:  0.189 | Validation Loss:  0.295 | Time: 2m 11s
+Epoch  5 | Train Loss:  0.195 | Validation Loss:  0.317 | Time: 2m 12s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 86.52 %
+Cobertura empírica: 95.12 %
+Tamaño medio de conjunto: 1.23
+Ratio de indeterminación: 22.77 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:  0.334 | Validation Loss:  0.293 | Time: 2m 14s
+Epoch  2 | Train Loss:  0.174 | Validation Loss:  0.312 | Time: 2m 13s
+Epoch  3 | Train Loss:  0.187 | Validation Loss:  0.312 | Time: 2m 13s
+Epoch  4 | Train Loss:  0.177 | Validation Loss:  0.291 | Time: 2m 22s
+Epoch  5 | Train Loss:  0.197 | Validation Loss:  0.345 | Time: 2m 21s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 87.50 %
+Cobertura empírica: 93.96 %
+Tamaño medio de conjunto: 1.19
+Ratio de indeterminación: 19.10 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:  0.326 | Validation Loss:  0.303 | Time: 2m 13s
+Epoch  2 | Train Loss:  0.174 | Validation Loss:  0.313 | Time: 2m 12s
+Epoch  3 | Train Loss:  0.190 | Validation Loss:  0.335 | Time: 2m 13s
+Epoch  4 | Train Loss:  0.185 | Validation Loss:  0.294 | Time: 2m 12s
+Epoch  5 | Train Loss:  0.191 | Validation Loss:  0.308 | Time: 2m 12s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 87.13 %
+Cobertura empírica: 94.05 %
+Tamaño medio de conjunto: 1.18
+Ratio de indeterminación: 18.36 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:  0.331 | Validation Loss:  0.295 | Time: 2m 11s
+Epoch  2 | Train Loss:  0.179 | Validation Loss:  0.316 | Time: 2m 11s
+Epoch  3 | Train Loss:  0.196 | Validation Loss:  0.367 | Time: 2m 12s
+Epoch  4 | Train Loss:  0.188 | Validation Loss:  0.290 | Time: 2m 13s
+Epoch  5 | Train Loss:  0.199 | Validation Loss:  0.329 | Time: 2m 13s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 87.17 %
+Cobertura empírica: 94.10 %
+Tamaño medio de conjunto: 1.18
+Ratio de indeterminación: 17.75 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:  0.322 | Validation Loss:  0.289 | Time: 2m 15s
+Epoch  2 | Train Loss:  0.174 | Validation Loss:  0.298 | Time: 2m 15s
+Epoch  3 | Train Loss:  0.179 | Validation Loss:  0.322 | Time: 2m 16s
+Epoch  4 | Train Loss:  0.183 | Validation Loss:  0.278 | Time: 2m 14s
+Epoch  5 | Train Loss:  0.191 | Validation Loss:  0.307 | Time: 2m 14s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 86.71 %
+Cobertura empírica: 93.96 %
+Tamaño medio de conjunto: 1.18
+Ratio de indeterminación: 17.57 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:  0.334 | Validation Loss:  0.298 | Time: 2m 12s
+Epoch  2 | Train Loss:  0.178 | Validation Loss:  0.330 | Time: 2m 11s
+Epoch  3 | Train Loss:  0.186 | Validation Loss:  0.320 | Time: 2m 20s
+Epoch  4 | Train Loss:  0.181 | Validation Loss:  0.299 | Time: 2m 12s
+Epoch  5 | Train Loss:  0.187 | Validation Loss:  0.313 | Time: 2m 12s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 87.13 %
+Cobertura empírica: 94.10 %
+Tamaño medio de conjunto: 1.19
+Ratio de indeterminación: 18.68 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:  0.327 | Validation Loss:  0.277 | Time: 2m 15s
+Epoch  2 | Train Loss:  0.172 | Validation Loss:  0.294 | Time: 2m 15s
+Epoch  3 | Train Loss:  0.184 | Validation Loss:  0.304 | Time: 2m 13s
+Epoch  4 | Train Loss:  0.181 | Validation Loss:  0.276 | Time: 2m 14s
+Epoch  5 | Train Loss:  0.190 | Validation Loss:  0.292 | Time: 2m 13s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 86.20 %
+Cobertura empírica: 94.89 %
+Tamaño medio de conjunto: 1.21
+Ratio de indeterminación: 20.59 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:  0.317 | Validation Loss:  0.285 | Time: 2m 13s
+Epoch  2 | Train Loss:  0.175 | Validation Loss:  0.308 | Time: 2m 13s
+Epoch  3 | Train Loss:  0.181 | Validation Loss:  0.338 | Time: 2m 12s
+Epoch  4 | Train Loss:  0.184 | Validation Loss:  0.304 | Time: 2m 12s
+Epoch  5 | Train Loss:  0.189 | Validation Loss:  0.311 | Time: 2m 12s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 87.04 %
+Cobertura empírica: 94.84 %
+Tamaño medio de conjunto: 1.21
+Ratio de indeterminación: 21.00 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:  0.326 | Validation Loss:  0.275 | Time: 2m 12s
+Epoch  2 | Train Loss:  0.174 | Validation Loss:  0.292 | Time: 2m 12s
+Epoch  3 | Train Loss:  0.181 | Validation Loss:  0.300 | Time: 2m 13s
+Epoch  4 | Train Loss:  0.179 | Validation Loss:  0.273 | Time: 2m 11s
+Epoch  5 | Train Loss:  0.188 | Validation Loss:  0.322 | Time: 2m 12s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 87.41 %
+Cobertura empírica: 94.47 %
+Tamaño medio de conjunto: 1.19
+Ratio de indeterminación: 18.54 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:  0.327 | Validation Loss:  0.282 | Time: 2m 13s
+Epoch  2 | Train Loss:  0.170 | Validation Loss:  0.312 | Time: 2m 15s
+Epoch  3 | Train Loss:  0.185 | Validation Loss:  0.321 | Time: 2m 14s
+Epoch  4 | Train Loss:  0.178 | Validation Loss:  0.290 | Time: 2m 14s
+Epoch  5 | Train Loss:  0.184 | Validation Loss:  0.306 | Time: 2m 13s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 86.99 %
+Cobertura empírica: 94.52 %
+Tamaño medio de conjunto: 1.19
+Ratio de indeterminación: 19.10 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:  0.324 | Validation Loss:  0.286 | Time: 2m 16s
+Epoch  2 | Train Loss:  0.170 | Validation Loss:  0.311 | Time: 2m 14s
+Epoch  3 | Train Loss:  0.186 | Validation Loss:  0.335 | Time: 2m 13s
+Epoch  4 | Train Loss:  0.178 | Validation Loss:  0.288 | Time: 2m 12s
+Epoch  5 | Train Loss:  0.187 | Validation Loss:  0.332 | Time: 2m 13s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 86.76 %
+Cobertura empírica: 94.98 %
+Tamaño medio de conjunto: 1.20
+Ratio de indeterminación: 20.49 %
+✅ Testeo de la red completado
+

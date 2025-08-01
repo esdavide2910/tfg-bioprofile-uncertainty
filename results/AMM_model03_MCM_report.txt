@@ -1,0 +1,195 @@
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 12.96 %
+Cobertura empírica: 89.50 %
+Tamaño medio de conjunto: 1.89
+Ratio de indeterminación: 89.41 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 87.17 %
+Cobertura empírica: 88.34 %
+Tamaño medio de conjunto: 1.04
+Ratio de indeterminación: 3.72 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 87.13 %
+Cobertura empírica: 89.13 %
+Tamaño medio de conjunto: 1.06
+Ratio de indeterminación: 6.27 %
+✅ Testeo de la red completado
+
+#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 86.99 %
+Cobertura empírica: 93.91 %
+Tamaño medio de conjunto: 1.19
+Ratio de indeterminación: 18.82 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 87.36 %
+Cobertura empírica: 94.38 %
+Tamaño medio de conjunto: 1.21
+Ratio de indeterminación: 20.77 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 86.52 %
+Cobertura empírica: 94.24 %
+Tamaño medio de conjunto: 1.23
+Ratio de indeterminación: 22.72 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 87.50 %
+Cobertura empírica: 94.42 %
+Tamaño medio de conjunto: 1.21
+Ratio de indeterminación: 21.00 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 87.13 %
+Cobertura empírica: 93.54 %
+Tamaño medio de conjunto: 1.19
+Ratio de indeterminación: 18.77 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 87.17 %
+Cobertura empírica: 94.14 %
+Tamaño medio de conjunto: 1.19
+Ratio de indeterminación: 19.19 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 86.71 %
+Cobertura empírica: 93.63 %
+Tamaño medio de conjunto: 1.20
+Ratio de indeterminación: 19.80 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 87.13 %
+Cobertura empírica: 93.87 %
+Tamaño medio de conjunto: 1.20
+Ratio de indeterminación: 19.52 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 86.20 %
+Cobertura empírica: 94.84 %
+Tamaño medio de conjunto: 1.22
+Ratio de indeterminación: 22.44 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 87.04 %
+Cobertura empírica: 94.28 %
+Tamaño medio de conjunto: 1.21
+Ratio de indeterminación: 20.72 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 87.41 %
+Cobertura empírica: 94.47 %
+Tamaño medio de conjunto: 1.20
+Ratio de indeterminación: 19.75 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 86.99 %
+Cobertura empírica: 93.87 %
+Tamaño medio de conjunto: 1.19
+Ratio de indeterminación: 19.14 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 86.76 %
+Cobertura empírica: 94.14 %
+Tamaño medio de conjunto: 1.19
+Ratio de indeterminación: 19.47 %
+✅ Testeo de la red completado
+

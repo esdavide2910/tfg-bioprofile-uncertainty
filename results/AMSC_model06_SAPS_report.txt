@@ -1,0 +1,167 @@
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+lambda:  0.3687731305021215
+✅ Calibración completada
+
+Accuracy: 76.12 %
+Cobertura empírica: 95.63 %
+Tamaño medio de conjunto: 2.12
+Número de etiquetas: 1, Instancias: 307, Cobertura: 92.51%
+Número de etiquetas: 2, Instancias: 1288, Cobertura: 96.35%
+Número de etiquetas: 3, Instancias: 542, Cobertura: 95.57%
+Número de etiquetas: 4, Instancias: 15, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+lambda:  0.3687731305021215
+✅ Calibración completada
+
+Accuracy: 76.12 %
+Cobertura empírica: 95.63 %
+Tamaño medio de conjunto: 2.12
+Número de etiquetas: 1, Instancias: 307, Cobertura: 92.51%
+Número de etiquetas: 2, Instancias: 1288, Cobertura: 96.35%
+Número de etiquetas: 3, Instancias: 542, Cobertura: 95.57%
+Número de etiquetas: 4, Instancias: 15, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+lambda:  1.249723031945777
+✅ Calibración completada
+
+Accuracy: 76.02 %
+Cobertura empírica: 96.14 %
+Tamaño medio de conjunto: 2.20
+Número de etiquetas: 2, Instancias: 1726, Cobertura: 95.77%
+Número de etiquetas: 3, Instancias: 426, Cobertura: 97.65%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+lambda:  0.2984206783228927
+✅ Calibración completada
+
+Accuracy: 73.05 %
+Cobertura empírica: 94.80 %
+Tamaño medio de conjunto: 2.21
+Número de etiquetas: 1, Instancias: 318, Cobertura: 94.03%
+Número de etiquetas: 2, Instancias: 1124, Cobertura: 94.31%
+Número de etiquetas: 3, Instancias: 642, Cobertura: 95.48%
+Número de etiquetas: 4, Instancias: 68, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+lambda:  1.8741898706226654
+✅ Calibración completada
+
+Accuracy: 72.40 %
+Cobertura empírica: 94.38 %
+Tamaño medio de conjunto: 2.20
+Número de etiquetas: 2, Instancias: 1711, Cobertura: 93.69%
+Número de etiquetas: 3, Instancias: 441, Cobertura: 97.05%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+lambda:  0.915117056854859
+✅ Calibración completada
+
+Accuracy: 75.65 %
+Cobertura empírica: 94.61 %
+Tamaño medio de conjunto: 2.12
+Número de etiquetas: 1, Instancias: 51, Cobertura: 96.08%
+Número de etiquetas: 2, Instancias: 1790, Cobertura: 94.64%
+Número de etiquetas: 3, Instancias: 311, Cobertura: 94.21%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+lambda:  0.2984206783228927
+✅ Calibración completada
+
+Accuracy: 73.05 %
+Cobertura empírica: 94.80 %
+Tamaño medio de conjunto: 2.21
+Número de etiquetas: 1, Instancias: 318, Cobertura: 94.03%
+Número de etiquetas: 2, Instancias: 1124, Cobertura: 94.31%
+Número de etiquetas: 3, Instancias: 642, Cobertura: 95.48%
+Número de etiquetas: 4, Instancias: 68, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+lambda:  0.8373985957903397
+✅ Calibración completada
+
+Accuracy: 75.14 %
+Cobertura empírica: 94.05 %
+Tamaño medio de conjunto: 2.12
+Número de etiquetas: 1, Instancias: 82, Cobertura: 89.02%
+Número de etiquetas: 2, Instancias: 1723, Cobertura: 94.14%
+Número de etiquetas: 3, Instancias: 347, Cobertura: 94.81%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+lambda:  1.2724646284641126
+✅ Calibración completada
+
+Accuracy: 75.79 %
+Cobertura empírica: 94.56 %
+Tamaño medio de conjunto: 2.14
+Número de etiquetas: 1, Instancias: 5, Cobertura: 100.00%
+Número de etiquetas: 2, Instancias: 1850, Cobertura: 94.16%
+Número de etiquetas: 3, Instancias: 297, Cobertura: 96.97%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+lambda:  1.2724646284641126
+✅ Calibración completada
+
+Accuracy: 75.79 %
+Cobertura empírica: 94.56 %
+Tamaño medio de conjunto: 2.14
+Número de etiquetas: 1, Instancias: 5, Cobertura: 100.00%
+Número de etiquetas: 2, Instancias: 1850, Cobertura: 94.16%
+Número de etiquetas: 3, Instancias: 297, Cobertura: 96.97%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+lambda:  1.2307502814202222
+✅ Calibración completada
+
+Accuracy: 73.84 %
+Cobertura empírica: 94.56 %
+Tamaño medio de conjunto: 2.06
+Número de etiquetas: 1, Instancias: 62, Cobertura: 91.94%
+Número de etiquetas: 2, Instancias: 1895, Cobertura: 94.78%
+Número de etiquetas: 3, Instancias: 195, Cobertura: 93.33%
+✅ Testeo de la red completado
+

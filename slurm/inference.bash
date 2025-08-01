@@ -2,7 +2,6 @@
 
 #SBATCH --job-name train_models
 #SBATCH --partition dios
-##SBATCH --nodelist=
 #SBATCH --exclude=titan,zeus
 #SBATCH --mem=20G
 #SBATCH --cpus-per-task 1
@@ -19,5 +18,7 @@ export PATH="/mnt/homeGPU/dgonzalez/conda_envs/pytorch_env2/bin:$PATH"
 eval "$(conda shell.bash hook)"
 conda activate /mnt/homeGPU/dgonzalez/conda_envs/envs/pytorch_env2
 
-# Ejecución del script Python
-python src/model1.py > results/AE_maxillofacial/report_train_model1.txt 2>&1
+# Ejecución de los scripts Python
+
+python src/AE_inference.py -m models/AE_model04_CQR_90%.pth -i data/AE_maxillofacial/preprocessed/new \
+    -o results/AE_maxillofacial/report_inference_AE.txt --ignore_warnings

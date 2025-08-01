@@ -618,7 +618,7 @@ if args.calibrate:
     model.set_temperature(valid_loader)
 
     #
-    if pred_model_type == 'RAPS':
+    if pred_model_type in ['RAPS','SAPS']:
         model.auto_configure(valid_loader) # valid_loader
     
     #
@@ -636,23 +636,24 @@ if args.calibrate:
 if args.test:
 
     #
-    test_pred_classes, test_pred_sets, test_true_classes = model.inference(test_loader)
+    test_pred_labels, test_pred_sets, test_true_labels = model.inference(test_loader)
 
     # Calcula y muestra la exactitud
-    accry = (test_pred_classes == test_true_classes).sum() / test_true_classes.size(0)
+    accry = (test_pred_labels == test_true_labels).sum() / test_true_labels.size(0)
     print(f"Accuracy: {accry*100:>4.2f} %")
     
     # Calcula y muestra la cobertura empírica 
-    ec = empirical_coverage_classification(test_pred_sets, test_true_classes)
+    ec = empirical_coverage_classification(test_pred_sets, test_true_labels)
     print(f"Cobertura empírica: {ec*100:>4.2f} %")
     
     # Calcula y muestra el tamaño medio del conjunto
     mss = mean_set_size(test_pred_sets)
     print(f"Tamaño medio de conjunto: {mss:>4.2f}")
     
-    # Calcula y muestra el ratio de indeterminación
-    ir = indeterminancy_rate(test_pred_sets)
-    print(f"Ratio de indeterminación: {ir*100:>4.2f} %")
+    #
+    num_labels, num_instances, coverage = each_size_coverage(test_pred_sets, test_true_labels)
+    for l, i, c in zip(num_labels, num_instances, coverage):
+        print(f"Número de etiquetas: {l}, Instancias: {i}, Cobertura: {(c*100):.2f}%")
 
     print("✅ Testeo de la red completado\n")
     
@@ -660,17 +661,17 @@ if args.test:
     
     if args.save_test_results:
         
-        n = len(test_pred_classes)
+        n = len(test_pred_labels)
         new_df = pd.DataFrame({
             "pred_model_type": [pred_model_type] * n,
             "confidence": np.array([confidence] * n, dtype=np.float32),
             "iteration": [args.test_iteration] * n,
-            "pred_class": np.array(test_pred_classes, dtype=np.uint8),
+            "pred_class": np.array(test_pred_labels, dtype=np.uint8),
             "pred_set_male_under_18": np.array(test_pred_sets[:, 0], dtype=np.uint8),
             "pred_set_male_over_18":  np.array(test_pred_sets[:, 1], dtype=np.uint8),
             "pred_set_female_under_18": np.array(test_pred_sets[:, 2], dtype=np.uint8),
             "pred_set_female_over_18":  np.array(test_pred_sets[:, 3], dtype=np.uint8),
-            "true_class": np.array(test_true_classes, dtype=np.uint8)
+            "true_class": np.array(test_true_labels, dtype=np.uint8)
         })
 
         # Si el archivo ya existe, cargarlo y filtrar duplicados

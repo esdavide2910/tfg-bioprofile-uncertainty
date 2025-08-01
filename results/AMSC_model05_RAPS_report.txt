@@ -1,0 +1,613 @@
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 73.23 %
+Cobertura empírica: 93.63 %
+Tamaño medio de conjunto: 2.51
+Ratio de indeterminación: 83.78 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 73.23 %
+Cobertura empírica: 91.08 %
+Tamaño medio de conjunto: 1.91
+Ratio de indeterminación: 91.26 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 75.65 %
+Cobertura empírica: 92.33 %
+Tamaño medio de conjunto: 1.84
+Ratio de indeterminación: 84.06 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 75.88 %
+Cobertura empírica: 91.68 %
+Tamaño medio de conjunto: 1.76
+Ratio de indeterminación: 75.51 %
+✅ Testeo de la red completado
+
+#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+Mean size:  2.773653507232666
+Mean size:  2.7605531215667725
+Mean size:  2.6877729892730713
+Mean size:  2.6761281490325928
+Mean size:  2.660844326019287
+Mean size:  2.617176055908203
+Mean size:  2.6288208961486816
+Mean size:  2.6280932426452637
+Mean size:  2.610625982284546
+Mean size:  2.6018922328948975
+Mean size:  2.615720510482788
+Mean size:  2.631732225418091
+lambda:  0.6
+✅ Calibración completada
+
+Accuracy: 76.12 %
+Cobertura empírica: 97.58 %
+Tamaño medio de conjunto: 2.49
+Ratio de indeterminación: 91.08 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+Mean size:  2.6026201248168945
+Mean size:  2.617176055908203
+Mean size:  2.5851528644561768
+Mean size:  2.542940378189087
+Mean size:  2.525473117828369
+Mean size:  2.4927220344543457
+Mean size:  2.451237201690674
+Mean size:  2.455604076385498
+Mean size:  2.4672489166259766
+Mean size:  2.473071336746216
+Mean size:  2.458515167236328
+Mean size:  2.4854440689086914
+lambda:  0.1
+✅ Calibración completada
+
+Accuracy: 76.02 %
+Cobertura empírica: 97.68 %
+Tamaño medio de conjunto: 2.45
+Ratio de indeterminación: 92.61 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+Mean size:  2.7678310871124268
+Mean size:  2.7627365589141846
+Mean size:  2.679039239883423
+Mean size:  2.6746726036071777
+Mean size:  2.6266374588012695
+Mean size:  2.592430830001831
+Mean size:  2.5778748989105225
+Mean size:  2.5604076385498047
+Mean size:  2.572780132293701
+Mean size:  2.549490451812744
+Mean size:  2.566230058670044
+Mean size:  2.5735080242156982
+lambda:  0.6
+✅ Calibración completada
+
+Accuracy: 73.84 %
+Cobertura empírica: 96.61 %
+Tamaño medio de conjunto: 2.52
+Ratio de indeterminación: 92.19 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+Mean size:  2.6484715938568115
+Mean size:  2.6251819133758545
+Mean size:  2.614992618560791
+Mean size:  2.5807859897613525
+Mean size:  2.562591075897217
+Mean size:  2.5138282775878906
+Mean size:  2.5174672603607178
+Mean size:  2.503638982772827
+Mean size:  2.5363900661468506
+Mean size:  2.5058224201202393
+Mean size:  2.5356624126434326
+Mean size:  2.548762798309326
+lambda:  0.2
+✅ Calibración completada
+
+Accuracy: 72.40 %
+Cobertura empírica: 96.84 %
+Tamaño medio de conjunto: 2.48
+Ratio de indeterminación: 92.38 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+Mean size:  2.6717612743377686
+Mean size:  2.678311586380005
+Mean size:  2.6288208961486816
+Mean size:  2.592430830001831
+Mean size:  2.567685604095459
+Mean size:  2.541484832763672
+Mean size:  2.548762798309326
+Mean size:  2.5305676460266113
+Mean size:  2.544395923614502
+Mean size:  2.540756940841675
+Mean size:  2.545123815536499
+Mean size:  2.5516738891601562
+lambda:  0.2
+✅ Calibración completada
+
+Accuracy: 75.65 %
+Cobertura empírica: 97.44 %
+Tamaño medio de conjunto: 2.55
+Ratio de indeterminación: 94.10 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+Mean size:  2.6644833087921143
+Mean size:  2.6768558025360107
+Mean size:  2.6448326110839844
+Mean size:  2.609898090362549
+Mean size:  2.590975284576416
+Mean size:  2.524745225906372
+Mean size:  2.5116448402404785
+Mean size:  2.4868996143341064
+Mean size:  2.50291109085083
+Mean size:  2.5
+Mean size:  2.497816562652588
+Mean size:  2.5167393684387207
+lambda:  0.2
+✅ Calibración completada
+
+Accuracy: 73.05 %
+Cobertura empírica: 96.75 %
+Tamaño medio de conjunto: 2.52
+Ratio de indeterminación: 93.54 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+Mean size:  2.769286870956421
+Mean size:  2.7569141387939453
+Mean size:  2.6965065002441406
+Mean size:  2.683406114578247
+Mean size:  2.630276679992676
+Mean size:  2.585880756378174
+Mean size:  2.566957712173462
+Mean size:  2.564046621322632
+Mean size:  2.5553128719329834
+Mean size:  2.5596797466278076
+Mean size:  2.570596694946289
+Mean size:  2.5749635696411133
+lambda:  0.4
+✅ Calibración completada
+
+Accuracy: 75.56 %
+Cobertura empírica: 97.17 %
+Tamaño medio de conjunto: 2.52
+Ratio de indeterminación: 92.89 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+Mean size:  2.769286870956421
+Mean size:  2.7896652221679688
+Mean size:  2.705967903137207
+Mean size:  2.703056812286377
+Mean size:  2.638282299041748
+Mean size:  2.5989811420440674
+Mean size:  2.5611352920532227
+Mean size:  2.564046621322632
+Mean size:  2.5509462356567383
+Mean size:  2.562591075897217
+Mean size:  2.570596694946289
+Mean size:  2.5815138816833496
+lambda:  0.4
+✅ Calibración completada
+
+Accuracy: 75.14 %
+Cobertura empírica: 97.26 %
+Tamaño medio de conjunto: 2.57
+Ratio de indeterminación: 93.08 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+Mean size:  2.69941782951355
+Mean size:  2.704512357711792
+Mean size:  2.5982532501220703
+Mean size:  2.638282299041748
+Mean size:  2.6026201248168945
+Mean size:  2.5611352920532227
+Mean size:  2.5567686557769775
+Mean size:  2.5582242012023926
+Mean size:  2.5604076385498047
+Mean size:  2.5553128719329834
+Mean size:  2.548762798309326
+Mean size:  2.5545852184295654
+lambda:  0.8
+✅ Calibración completada
+
+Accuracy: 75.79 %
+Cobertura empírica: 97.35 %
+Tamaño medio de conjunto: 2.51
+Ratio de indeterminación: 93.12 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+Mean size:  2.704512357711792
+Mean size:  2.6943230628967285
+Mean size:  2.660844326019287
+Mean size:  2.6222708225250244
+Mean size:  2.610625982284546
+Mean size:  2.566957712173462
+Mean size:  2.5589518547058105
+Mean size:  2.572052478790283
+Mean size:  2.566957712173462
+Mean size:  2.5618631839752197
+Mean size:  2.587336301803589
+Mean size:  2.5851528644561768
+lambda:  0.1
+✅ Calibración completada
+
+Accuracy: 76.86 %
+Cobertura empírica: 97.82 %
+Tamaño medio de conjunto: 2.55
+Ratio de indeterminación: 92.61 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+Mean size:  2.684861660003662
+Mean size:  2.656477451324463
+Mean size:  2.6506550312042236
+Mean size:  2.612081527709961
+Mean size:  2.588791847229004
+Mean size:  2.5378456115722656
+Mean size:  2.545123815536499
+Mean size:  2.520378351211548
+Mean size:  2.5393013954162598
+Mean size:  2.5298399925231934
+Mean size:  2.5334789752960205
+Mean size:  2.523289680480957
+lambda:  0.2
+✅ Calibración completada
+
+Accuracy: 73.37 %
+Cobertura empírica: 96.89 %
+Tamaño medio de conjunto: 2.52
+Ratio de indeterminación: 93.54 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+Mean size:  2.8071324825286865
+Mean size:  2.8056769371032715
+Mean size:  2.7336244583129883
+Mean size:  2.708879232406616
+Mean size:  2.663755416870117
+Mean size:  2.616448402404785
+Mean size:  2.588791847229004
+Mean size:  2.5851528644561768
+Mean size:  2.5735080242156982
+Mean size:  2.5836973190307617
+Mean size:  2.586608409881592
+Mean size:  2.5778748989105225
+lambda:  0.4
+✅ Calibración completada
+
+Accuracy: 76.30 %
+Cobertura empírica: 97.58 %
+Tamaño medio de conjunto: 2.58
+Ratio de indeterminación: 93.82 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+Mean size:  2.7161571979522705
+Mean size:  2.7401747703552246
+Mean size:  2.679039239883423
+Mean size:  2.655749559402466
+Mean size:  2.6470160484313965
+Mean size:  2.585880756378174
+Mean size:  2.5793304443359375
+Mean size:  2.565502166748047
+Mean size:  2.5800583362579346
+Mean size:  2.5778748989105225
+Mean size:  2.5836973190307617
+Mean size:  2.596069812774658
+lambda:  0.2
+✅ Calibración completada
+
+Accuracy: 74.95 %
+Cobertura empírica: 97.77 %
+Tamaño medio de conjunto: 2.53
+Ratio de indeterminación: 93.59 %
+✅ Testeo de la red completado
+
+Traceback (most recent call last):
+  File "/mnt/homeGPU/dgonzalez/tfg-bioprofile-uncertainty/src/AMSC_maxillofacial.py", line 677, in <module>
+    existing_df = pd.read_csv(args.save_test_results, dtype={
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/homeGPU/dgonzalez/conda_envs/envs/pytorch_env/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/homeGPU/dgonzalez/conda_envs/envs/pytorch_env/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/mnt/homeGPU/dgonzalez/conda_envs/envs/pytorch_env/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/homeGPU/dgonzalez/conda_envs/envs/pytorch_env/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 921, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 1066, in pandas._libs.parsers.TextReader._convert_column_data
+  File "parsers.pyx", line 1105, in pandas._libs.parsers.TextReader._convert_tokens
+  File "parsers.pyx", line 1226, in pandas._libs.parsers.TextReader._convert_with_dtype
+ValueError: Integer column has NA values in column 9
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+Mean size:  2.681222677230835
+Mean size:  2.686317205429077
+Mean size:  2.654294013977051
+Mean size:  2.6426491737365723
+Mean size:  2.591702938079834
+Mean size:  2.5531294345855713
+Mean size:  2.541484832763672
+Mean size:  2.5363900661468506
+Mean size:  2.5298399925231934
+Mean size:  2.5385735034942627
+Mean size:  2.521834135055542
+Mean size:  2.5538573265075684
+lambda:  0.8
+✅ Calibración completada
+
+Accuracy: 75.79 %
+Cobertura empírica: 96.98 %
+Tamaño medio de conjunto: 2.55
+Ratio de indeterminación: 93.49 %
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+lambda:  0.9999919474192875
+✅ Calibración completada
+
+Accuracy: 76.12 %
+Cobertura empírica: 95.72 %
+Tamaño medio de conjunto: 2.34
+Número de etiquetas: 1, Instancias: 341, Cobertura: 86.80%
+Número de etiquetas: 2, Instancias: 748, Cobertura: 97.86%
+Número de etiquetas: 3, Instancias: 1063, Cobertura: 97.08%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+lambda:  0.9999919474192875
+✅ Calibración completada
+
+Accuracy: 76.12 %
+Cobertura empírica: 95.72 %
+Tamaño medio de conjunto: 2.34
+Número de etiquetas: 1, Instancias: 341, Cobertura: 86.80%
+Número de etiquetas: 2, Instancias: 748, Cobertura: 97.86%
+Número de etiquetas: 3, Instancias: 1063, Cobertura: 97.08%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+lambda:  0.9999919474192875
+✅ Calibración completada
+
+Accuracy: 76.02 %
+Cobertura empírica: 95.45 %
+Tamaño medio de conjunto: 2.29
+Número de etiquetas: 1, Instancias: 320, Cobertura: 85.62%
+Número de etiquetas: 2, Instancias: 893, Cobertura: 97.09%
+Número de etiquetas: 3, Instancias: 939, Cobertura: 97.23%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+lambda:  0.9999919474192875
+✅ Calibración completada
+
+Accuracy: 73.05 %
+Cobertura empírica: 94.47 %
+Tamaño medio de conjunto: 2.35
+Número de etiquetas: 1, Instancias: 352, Cobertura: 85.80%
+Número de etiquetas: 2, Instancias: 702, Cobertura: 96.72%
+Número de etiquetas: 3, Instancias: 1098, Cobertura: 95.81%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+lambda:  0.9999919474192875
+✅ Calibración completada
+
+Accuracy: 72.40 %
+Cobertura empírica: 94.70 %
+Tamaño medio de conjunto: 2.35
+Número de etiquetas: 1, Instancias: 319, Cobertura: 83.70%
+Número de etiquetas: 2, Instancias: 765, Cobertura: 97.52%
+Número de etiquetas: 3, Instancias: 1068, Cobertura: 95.97%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+lambda:  0.9999919474192875
+✅ Calibración completada
+
+Accuracy: 75.65 %
+Cobertura empírica: 95.59 %
+Tamaño medio de conjunto: 2.33
+Número de etiquetas: 1, Instancias: 320, Cobertura: 88.75%
+Número de etiquetas: 2, Instancias: 795, Cobertura: 97.48%
+Número de etiquetas: 3, Instancias: 1037, Cobertura: 96.24%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+lambda:  0.9999919474192875
+✅ Calibración completada
+
+Accuracy: 73.05 %
+Cobertura empírica: 94.47 %
+Tamaño medio de conjunto: 2.35
+Número de etiquetas: 1, Instancias: 352, Cobertura: 85.80%
+Número de etiquetas: 2, Instancias: 702, Cobertura: 96.72%
+Número de etiquetas: 3, Instancias: 1098, Cobertura: 95.81%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+lambda:  0.9999919474192875
+✅ Calibración completada
+
+Accuracy: 75.14 %
+Cobertura empírica: 95.49 %
+Tamaño medio de conjunto: 2.41
+Número de etiquetas: 1, Instancias: 289, Cobertura: 89.27%
+Número de etiquetas: 2, Instancias: 699, Cobertura: 97.42%
+Número de etiquetas: 3, Instancias: 1164, Cobertura: 95.88%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+lambda:  0.9999919474192875
+✅ Calibración completada
+
+Accuracy: 75.79 %
+Cobertura empírica: 95.54 %
+Tamaño medio de conjunto: 2.31
+Número de etiquetas: 1, Instancias: 345, Cobertura: 88.41%
+Número de etiquetas: 2, Instancias: 785, Cobertura: 97.83%
+Número de etiquetas: 3, Instancias: 1022, Cobertura: 96.18%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+lambda:  0.9999919474192875
+✅ Calibración completada
+
+Accuracy: 75.79 %
+Cobertura empírica: 95.54 %
+Tamaño medio de conjunto: 2.31
+Número de etiquetas: 1, Instancias: 345, Cobertura: 88.41%
+Número de etiquetas: 2, Instancias: 785, Cobertura: 97.83%
+Número de etiquetas: 3, Instancias: 1022, Cobertura: 96.18%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  3
+lambda:  0.9999919474192875
+✅ Calibración completada
+
+Accuracy: 73.84 %
+Cobertura empírica: 94.66 %
+Tamaño medio de conjunto: 2.34
+Número de etiquetas: 1, Instancias: 346, Cobertura: 84.68%
+Número de etiquetas: 2, Instancias: 732, Cobertura: 96.72%
+Número de etiquetas: 3, Instancias: 1074, Cobertura: 96.46%
+✅ Testeo de la red completado
+

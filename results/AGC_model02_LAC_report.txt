@@ -1,0 +1,222 @@
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 25.60 %
+Cobertura empírica: 94.89 %
+Tamaño medio de conjunto: 5.93
+Número de etiquetas: 2, Instancias: 9, Cobertura: 100.00%
+Número de etiquetas: 3, Instancias: 188, Cobertura: 94.68%
+Número de etiquetas: 4, Instancias: 397, Cobertura: 90.18% <--
+Número de etiquetas: 5, Instancias: 190, Cobertura: 95.26%
+Número de etiquetas: 6, Instancias: 344, Cobertura: 94.77%
+Número de etiquetas: 7, Instancias: 707, Cobertura: 95.90%
+Número de etiquetas: 8, Instancias: 255, Cobertura: 98.43%
+Número de etiquetas: 9, Instancias: 44, Cobertura: 97.73%
+Número de etiquetas: 10, Instancias: 9, Cobertura: 100.00%
+Número de etiquetas: 11, Instancias: 3, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 3, Cobertura: 100.00%
+Número de etiquetas: 13, Instancias: 3, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+#--------------------------------------------------------------------------
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 25.60 %
+Cobertura empírica: 94.89 %
+Tamaño medio de conjunto: 5.93
+Número de etiquetas: 2, Instancias: 9, Cobertura: 100.00%
+Número de etiquetas: 3, Instancias: 188, Cobertura: 94.68%
+Número de etiquetas: 4, Instancias: 397, Cobertura: 90.18%
+Número de etiquetas: 5, Instancias: 190, Cobertura: 95.26%
+Número de etiquetas: 6, Instancias: 344, Cobertura: 94.77%
+Número de etiquetas: 7, Instancias: 707, Cobertura: 95.90%
+Número de etiquetas: 8, Instancias: 255, Cobertura: 98.43%
+Número de etiquetas: 9, Instancias: 44, Cobertura: 97.73%
+Número de etiquetas: 10, Instancias: 9, Cobertura: 100.00%
+Número de etiquetas: 11, Instancias: 3, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 3, Cobertura: 100.00%
+Número de etiquetas: 13, Instancias: 3, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.739 | Validation Loss:   1.929 | Time: 2m 8s
+Epoch  2 | Train Loss:   1.633 | Validation Loss:   1.986 | Time: 2m 7s
+Epoch  3 | Train Loss:   1.640 | Validation Loss:   1.949 | Time: 2m 8s
+Epoch  4 | Train Loss:   1.655 | Validation Loss:   1.962 | Time: 2m 7s
+Epoch  5 | Train Loss:   1.628 | Validation Loss:   2.099 | Time: 2m 7s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 27.65 %
+Cobertura empírica: 94.61 %
+Tamaño medio de conjunto: 5.92
+Número de etiquetas: 2, Instancias: 9, Cobertura: 88.89%
+Número de etiquetas: 3, Instancias: 155, Cobertura: 93.55%
+Número de etiquetas: 4, Instancias: 251, Cobertura: 93.63%
+Número de etiquetas: 5, Instancias: 377, Cobertura: 94.96%
+Número de etiquetas: 6, Instancias: 410, Cobertura: 92.93%
+Número de etiquetas: 7, Instancias: 759, Cobertura: 95.78%
+Número de etiquetas: 8, Instancias: 144, Cobertura: 96.53%
+Número de etiquetas: 9, Instancias: 33, Cobertura: 87.88%
+Número de etiquetas: 10, Instancias: 10, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 4, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.745 | Validation Loss:   1.980 | Time: 2m 6s
+Epoch  2 | Train Loss:   1.630 | Validation Loss:   2.019 | Time: 2m 6s
+Epoch  3 | Train Loss:   1.608 | Validation Loss:   1.924 | Time: 2m 6s
+Epoch  4 | Train Loss:   1.664 | Validation Loss:   1.963 | Time: 2m 5s
+Epoch  5 | Train Loss:   1.627 | Validation Loss:   2.081 | Time: 2m 5s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 28.58 %
+Cobertura empírica: 95.40 %
+Tamaño medio de conjunto: 5.92
+Número de etiquetas: 2, Instancias: 23, Cobertura: 95.65%
+Número de etiquetas: 3, Instancias: 98, Cobertura: 91.84%
+Número de etiquetas: 4, Instancias: 207, Cobertura: 96.14%
+Número de etiquetas: 5, Instancias: 384, Cobertura: 92.71%
+Número de etiquetas: 6, Instancias: 694, Cobertura: 96.40%
+Número de etiquetas: 7, Instancias: 546, Cobertura: 95.79%
+Número de etiquetas: 8, Instancias: 163, Cobertura: 98.16%
+Número de etiquetas: 9, Instancias: 21, Cobertura: 95.24%
+Número de etiquetas: 10, Instancias: 7, Cobertura: 85.71%
+Número de etiquetas: 11, Instancias: 4, Cobertura: 75.00%
+Número de etiquetas: 12, Instancias: 5, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.746 | Validation Loss:   1.889 | Time: 2m 18s
+Epoch  2 | Train Loss:   1.632 | Validation Loss:   1.929 | Time: 2m 16s
+Epoch  3 | Train Loss:   1.644 | Validation Loss:   1.891 | Time: 2m 16s
+Epoch  4 | Train Loss:   1.701 | Validation Loss:   1.916 | Time: 2m 17s
+Epoch  5 | Train Loss:   1.653 | Validation Loss:   2.090 | Time: 2m 15s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 27.97 %
+Cobertura empírica: 94.19 %
+Tamaño medio de conjunto: 5.72
+Número de etiquetas: 2, Instancias: 8, Cobertura: 87.50%
+Número de etiquetas: 3, Instancias: 143, Cobertura: 95.10%
+Número de etiquetas: 4, Instancias: 302, Cobertura: 92.38%
+Número de etiquetas: 5, Instancias: 429, Cobertura: 94.41%
+Número de etiquetas: 6, Instancias: 573, Cobertura: 92.84%
+Número de etiquetas: 7, Instancias: 567, Cobertura: 95.94%
+Número de etiquetas: 8, Instancias: 93, Cobertura: 94.62%
+Número de etiquetas: 9, Instancias: 25, Cobertura: 100.00%
+Número de etiquetas: 10, Instancias: 5, Cobertura: 80.00%
+Número de etiquetas: 11, Instancias: 4, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 2, Cobertura: 100.00%
+Número de etiquetas: 13, Instancias: 1, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.736 | Validation Loss:   1.935 | Time: 2m 14s
+Epoch  2 | Train Loss:   1.620 | Validation Loss:   1.994 | Time: 2m 15s
+Epoch  3 | Train Loss:   1.624 | Validation Loss:   1.911 | Time: 2m 15s
+Epoch  4 | Train Loss:   1.676 | Validation Loss:   1.977 | Time: 2m 15s
+Epoch  5 | Train Loss:   1.620 | Validation Loss:   2.106 | Time: 2m 14s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 28.44 %
+Cobertura empírica: 95.03 %
+Tamaño medio de conjunto: 5.87
+Número de etiquetas: 2, Instancias: 88, Cobertura: 90.91%
+Número de etiquetas: 3, Instancias: 92, Cobertura: 93.48%
+Número de etiquetas: 4, Instancias: 214, Cobertura: 95.33%
+Número de etiquetas: 5, Instancias: 449, Cobertura: 93.76%
+Número de etiquetas: 6, Instancias: 447, Cobertura: 94.41%
+Número de etiquetas: 7, Instancias: 572, Cobertura: 97.03%
+Número de etiquetas: 8, Instancias: 234, Cobertura: 95.30%
+Número de etiquetas: 9, Instancias: 38, Cobertura: 94.74%
+Número de etiquetas: 10, Instancias: 13, Cobertura: 100.00%
+Número de etiquetas: 11, Instancias: 3, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 2, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.755 | Validation Loss:   1.908 | Time: 2m 14s
+Epoch  2 | Train Loss:   1.646 | Validation Loss:   1.972 | Time: 2m 15s
+Epoch  3 | Train Loss:   1.623 | Validation Loss:   1.949 | Time: 2m 18s
+Epoch  4 | Train Loss:   1.676 | Validation Loss:   2.028 | Time: 2m 13s
+Epoch  5 | Train Loss:   1.647 | Validation Loss:   2.152 | Time: 2m 14s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 25.79 %
+Cobertura empírica: 94.14 %
+Tamaño medio de conjunto: 5.81
+Número de etiquetas: 2, Instancias: 7, Cobertura: 100.00%
+Número de etiquetas: 3, Instancias: 153, Cobertura: 93.46%
+Número de etiquetas: 4, Instancias: 283, Cobertura: 94.35%
+Número de etiquetas: 5, Instancias: 334, Cobertura: 93.41%
+Número de etiquetas: 6, Instancias: 618, Cobertura: 92.72%
+Número de etiquetas: 7, Instancias: 591, Cobertura: 94.92%
+Número de etiquetas: 8, Instancias: 124, Cobertura: 97.58%
+Número de etiquetas: 9, Instancias: 36, Cobertura: 100.00%
+Número de etiquetas: 10, Instancias: 4, Cobertura: 100.00%
+Número de etiquetas: 11, Instancias: 1, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 1, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.739 | Validation Loss:   1.981 | Time: 2m 14s
+Epoch  2 | Train Loss:   1.639 | Validation Loss:   1.952 | Time: 2m 13s
+Epoch  3 | Train Loss:   1.609 | Validation Loss:   1.963 | Time: 2m 14s
+Epoch  4 | Train Loss:   1.665 | Validation Loss:   1.961 | Time: 2m 13s
+Epoch  5 | Train Loss:   1.632 | Validation Loss:   2.166 | Time: 2m 16s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 27.28 %
+Cobertura empírica: 95.26 %
+Tamaño medio de conjunto: 6.01
+Número de etiquetas: 2, Instancias: 108, Cobertura: 87.04%
+Número de etiquetas: 3, Instancias: 104, Cobertura: 94.23%
+Número de etiquetas: 4, Instancias: 150, Cobertura: 94.67%
+Número de etiquetas: 5, Instancias: 232, Cobertura: 93.10%
+Número de etiquetas: 6, Instancias: 592, Cobertura: 95.27%
+Número de etiquetas: 7, Instancias: 750, Cobertura: 96.53%
+Número de etiquetas: 8, Instancias: 156, Cobertura: 98.08%
+Número de etiquetas: 9, Instancias: 33, Cobertura: 96.97%
+Número de etiquetas: 10, Instancias: 9, Cobertura: 100.00%
+Número de etiquetas: 11, Instancias: 7, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 11, Cobertura: 100.00%
+✅ Testeo de la red completado
+

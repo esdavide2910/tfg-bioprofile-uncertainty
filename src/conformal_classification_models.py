@@ -820,8 +820,7 @@ class ResNeXtClassifier_RAPS(ResNeXtClassifier):
         true_score = sorted_scores[torch.arange(n), true_class_rank]
         true_cum_score = cum_sorted_scores[torch.arange(n), true_class_rank]
         
-        # Obtiene la penalización para la clase verdadera y la suma acumulada
-        true_penalty = penalties[0, true_class_rank]
+        # Obtiene la suma acumulada de las penalizaciones en la posición del índice verdadero
         true_cum_penalty = cumulative_penalties[0, true_class_rank]
         
         if random:
@@ -833,7 +832,7 @@ class ResNeXtClassifier_RAPS(ResNeXtClassifier):
             nonconformity_scores = torch.where(
                 true_class_rank >= 1,
                 true_cum_score + true_cum_penalty - U * true_score,
-                true_cum_score + true_cum_penalty
+                true_score 
             )
         
         else:
@@ -873,7 +872,7 @@ class ResNeXtClassifier_RAPS(ResNeXtClassifier):
         cumulative_penalties = torch.cumsum(penalties, dim=1)
         
         #
-        matches = cum_sorted_scores <= q_hat
+        matches = (cum_sorted_scores + cumulative_penalties) <= q_hat
         has_match = matches.any(dim=1)
         last_class_ranks = torch.where(
             has_match,
@@ -1136,6 +1135,10 @@ class ResNeXtClassifier_SAPS(ResNeXtClassifier):
         pred_sets = torch.zeros_like(pred_scores, dtype=torch.uint8)
         pred_sets.scatter_(1, sorted_class_perm_index, inclusion_mask.to(torch.uint8))
         
+        # Asegura que siempre haya al menos una clase en el conjunto predicho
+        empty_sets = inclusion_mask.sum(dim=1) == 0
+        pred_sets[empty_sets] = 1  # selecciona todas las clases en esos casos
+        
         return pred_sets
     
     
@@ -1178,7 +1181,7 @@ class ResNeXtClassifier_SAPS(ResNeXtClassifier):
             return mean_set_size(pred_sets)
         
         # Optimiza lambda en escala logarítmica para cubrir un rango amplio
-        result = minimize_scalar(objective_log, bounds=(-3, 2), method='bounded', options={'maxiter': 1000})
+        result = minimize_scalar(objective_log, bounds=(-4, 1), method='bounded', options={'maxiter': 400})
         
         # Devuelve el valor óptimo en escala lineal
         return (10** result.x)
