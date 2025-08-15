@@ -647,7 +647,7 @@ tiene un beneficio adicional: ayuda a prevenir el sobreajuste, ya que al limitar
 el modelo evita memorizar ruido o detalles irrelevantes de los datos de entrenamiento, favoreciendo así el 
 aprendizaje de patrones generalizables.
 
-Hay diversos métodos de \textit{pooling}, entre los que destacan:
+Hay diversas operaciones de \textit{pooling}, entre los que destacan:
 
 \begin{itemize}
 
@@ -1006,7 +1006,7 @@ Existe una gran variedad de técnicas de UQ. Estas técnicas pueden clasificarse
     \item Algunas técnicas suponen que los datos siguen ciertas distribuciones estadísticas explícitas, 
     mientras que otras operan sin realizar tales suposiciones.
 
-    \item También existen métodos que asumen intercambiabilidad entre observaciones, frente a aquellos que 
+    \item También existen técnicas que asumen intercambiabilidad entre observaciones, frente a aquellos que 
     no lo hacen y requieren estructuras de dependencia más complejas. 
 
 \end{itemize} 
@@ -1024,7 +1024,7 @@ Existe una gran variedad de técnicas de UQ. Estas técnicas pueden clasificarse
 
 \end{itemize}
 
-\todo{Pablo: De hecho, aquí repites cosas... Tal y como dices, se ve que está por completar... Aún así, como consejo para todo lo que falta por completar: no te rayes ni líes mucho. Ya llevas 131 páginas y, bajo ningún concepto, queremos superar por mucho este valor (150 páginas podría estar bien, pero mucho más de eso... me parecería excesivo). Da pinceladas que demuestren que entiendes de lo que hablas, pero sin entrar en demasiado detalle. Si alguien quiere saber más: que se lea las referencias que incluyas y/o que te pregunte durante la defensa.}
+% \todo{Pablo: De hecho, aquí repites cosas... Tal y como dices, se ve que está por completar... Aún así, como consejo para todo lo que falta por completar: no te rayes ni líes mucho. Ya llevas 131 páginas y, bajo ningún concepto, queremos superar por mucho este valor (150 páginas podría estar bien, pero mucho más de eso... me parecería excesivo). Da pinceladas que demuestren que entiendes de lo que hablas, pero sin entrar en demasiado detalle. Si alguien quiere saber más: que se lea las referencias que incluyas y/o que te pregunte durante la defensa.}
 
 
 % ¿Qué es la cuantificación de incertidumbre?
@@ -1192,15 +1192,7 @@ etiqueta o valor $y$ esté contenida en $\hat{C}(x)$ (véanse los ejemplos de la
 \end{figure}
 
 
-Para construir los conjuntos de predicción conformal, se requiere dividir el conjunto de datos disponible en 
-al menos dos partes: un conjunto de entrenamiento, usado para ajustar el modelo base, y un \textbf{conjunto de 
-calibración}, usado para calibrar la predicción conformal, tal y como veremos en los siguiente apartados.
-Con esto también se busca reducir la variabilidad de las predicciones puntuales, que pueden ser sensibles a 
-pequeños cambios en los datos de entrada, como el ejemplo de la Figura \ref{fig:adversarial_example}.
-Estas garantías son válidas bajo el supuesto mínimo de intercambiabilidad de los datos, sin requerir 
-hipótesis sobre la distribución subyacente de los mismos. La intercambiabilidad de los datos 
-se refiere a que el orden de las observaciones no aporta información adicional, es decir, la distribución
-conjunta es invariante ante cualquier permutación de los índices. 
+Para construir los conjuntos de predicción conformal, se requiere dividir el conjunto de datos disponible en al menos dos partes: un conjunto de entrenamiento, usado para ajustar el modelo base, y un \textbf{conjunto de calibración}, usado para calibrar la predicción conformal, tal y como veremos en los siguiente apartados.Con esto también se busca reducir la variabilidad de las predicciones puntuales, que pueden ser sensibles a pequeños cambios en los datos de entrada, como el ejemplo de la Figura \ref{fig:adversarial_example}. Estas garantías son válidas bajo el supuesto mínimo de intercambiabilidad de los datos, sin requerir hipótesis sobre la distribución subyacente de los mismos. La intercambiabilidad de los datos se refiere a que el orden de las observaciones no aporta información adicional, es decir, la distribución conjunta es invariante ante cualquier permutación de los índices. 
 
 \begin{figure}[h]
     \centering
@@ -1210,11 +1202,12 @@ conjunta es invariante ante cualquier permutación de los índices.
         Adaptado de la Figura 2 de \cite{hullermeier2021}, original de \cite{sato2018}.
     ]{
         Ejemplo adversario mal clasificado por un modelo de ML entrenado con datos textuales.
+        %
         Adaptado de la Figura 2 de \cite{hullermeier2021}, original de \cite{sato2018}.
-        Se observa que el cambio de una sola palabra ---y aparentemente sin mucha relevancia--- (destacada en 
-        negrita) basta para cambiar la predicción de ``sentimiento negativo'' a ``sentimiento positivo''.
-        Con la CP se busca que predicciones no solo proporcionen una etiqueta puntual, sino un conjunto de 
-        posibles etiquetas que capture de manera robusta la incertidumbre asociada al ejemplo de entrada.
+        %
+        Se observa que el cambio de una sola palabra ---y aparentemente sin mucha relevancia--- (destacada en negrita) basta para cambiar la predicción de ``sentimiento negativo'' a ``sentimiento positivo''.
+        %
+        Con la CP se busca que predicciones no solo proporcionen una etiqueta puntual, sino un conjunto de posibles etiquetas que capture de manera robusta la incertidumbre asociada al ejemplo de entrada.
     } 
     \label{fig:adversarial_example}
 \end{figure}
@@ -1223,166 +1216,117 @@ conjunta es invariante ante cualquier permutación de los índices.
 
 \subsection{Propiedades de la predicción conformal}
 
-La CP garantiza que las predicciones contengan el valor verdadero con al menor una probabilidad $1-\alpha$, 
-donde $\alpha$ es el nivel de significación:
+La CP garantiza que las predicciones contengan el valor verdadero con al menor una probabilidad $1-\alpha$, donde $\alpha$ es el nivel de significación:
 
 $$
 P(Y_{n+1} \in \hat{C_\alpha}(X_{n+1})) \ge 1 - \alpha
 $$
 
-Esta propiedad se denomina \textbf{cobertura marginal válida} \cite{prinster2024}, y se cumple para todas las 
-entrada $X$, siempre y cuando los datos sean intercambiables (\textit{interexchangeable}). 
-Esta intercambiabilidad en imágenes implicaría que todas fueran tomadas en condiciones similares: mismo 
-dominio, distribución de valores de salida, iluminación, resolución, estilo, etc.
-Sin embargo, la CP no asegura \textbf{cobertura condicional válida} \cite{foygel2021}; es decir, no es posible 
-garantizar cobertura para todos los subgrupos de datos sin hacer suposiciones fuertes o sacrificar utilidad 
-práctica, en concordancia con el conocido \textit{No Free Lunch Theorem} \cite{wolpert1997}. En la Figura
-\ref{fig:coverage} se presenta una noción de la diferencia entre cobertura marginal y condicional. 
+Esta propiedad se denomina \textbf{cobertura marginal válida} \cite{prinster2024}, y se cumple para todas las entrada $X$, siempre y cuando los datos sean intercambiables (\textit{interexchangeable}). Esta intercambiabilidad en imágenes implicaría que todas fueran tomadas en condiciones similares: mismo dominio, distribución de valores de salida, iluminación, resolución, estilo, etc. Sin embargo, la CP \textbf{no asegura cobertura condicional válida} \cite{foygel2021}; es decir, no es posible garantizar cobertura para todos los subgrupos de datos sin hacer suposiciones fuertes o sacrificar utilidad práctica, en concordancia con el conocido \textit{No Free Lunch Theorem} \cite{wolpert1997}. En la Figura \ref{fig:coverage} se presenta una noción de la diferencia entre cobertura marginal y condicional. 
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/coverage_types.png}
     \caption[
-        Conjuntos de predicción bajo distintas nociones de cobertura: sin cobertura garantizada, con 
-        cobertura marginal y con cobertura condicional. Recuperado de \cite{angelopoulos2021}.
+        Conjuntos de predicción bajo distintas nociones de cobertura: sin cobertura garantizada, con cobertura marginal y con cobertura condicional. Recuperado de \cite{angelopoulos2021}.
     ]{
-        Conjuntos de predicción bajo distintas nociones de cobertura: sin cobertura garantizada, con 
-        cobertura marginal y con cobertura condicional. Recuperado de \cite{angelopoulos2021}.
+        Conjuntos de predicción bajo distintas nociones de cobertura: sin cobertura garantizada, con cobertura marginal y con cobertura condicional. Recuperado de \cite{angelopoulos2021}.
         %
-        En la parte inferior de la figura se muestra la amplitud de los intervalos de predicción (en línea 
-        amarilla) generados en un problema de regresión. En la parte superior, las instancias se dividen en 
-        dos grupos; los valores reales contenidos en los intervalos se representan en verde, mientras que los 
-        no contenidos aparecen en rojo.
+        En la parte inferior de la figura se muestra la amplitud de los intervalos de predicción (en línea amarilla) generados en un problema de regresión. En la parte superior, las instancias se dividen en dos grupos; los valores reales contenidos en los intervalos se representan en verde, mientras que los no contenidos aparecen en rojo.
         %
-        La primera columna ilustra un caso con intervalos de predicción demasiado estrechos, lo que resulta 
-        en una baja cobertura: la mayoría de los valores reales quedan fuera del intervalo.
+        La primera columna ilustra un caso con intervalos de predicción demasiado estrechos, lo que resulta en una baja cobertura: la mayoría de los valores reales quedan fuera del intervalo.
         %
-        En la segunda columna, los intervalos son más amplios y permiten capturar una mayor proporción de los 
-        valores reales, alcanzando una cobertura marginal del 90\% en el conjunto total. Sin embargo, esta 
-        cobertura no se distribuye equitativamente: el error se concentra en una región específica dentro 
-        de uno de los grupos, lo que indica ausencia de cobertura condicional.
+        En la segunda columna, los intervalos son más amplios y permiten capturar una mayor proporción de los valores reales, alcanzando una cobertura marginal del 90\% en el conjunto total. Sin embargo, esta cobertura no se distribuye equitativamente: el error se concentra en una región específica dentro de uno de los grupos, lo que indica ausencia de cobertura condicional.
         %
-        Finalmente, en la tercera columna, los intervalos se ajustan a la distribución de las predicciones,
-        logrando cobertura marginal como condicional del 90\%, con un error repartido de manera uniforme 
-        entre regiones y grupos, reflejando una calibración más precisa y equitativa del modelo.
+        Finalmente, en la tercera columna, los intervalos se ajustan a la distribución de las predicciones, logrando cobertura marginal como condicional del 90\%, con un error repartido de manera uniforme entre regiones y grupos, reflejando una calibración más precisa y equitativa del modelo.
     } 
     \label{fig:coverage}
 \end{figure}
 
-Además, el conjunto de calibración debe ser estadísticamente representativo de la distribución completa de los 
-datos. Esto crea un compromiso fundamental: asignar más muestras a la calibración mejora la precisión de los 
-intervalos predictivos, pero a costa de reducir el tamaño del conjunto de entrenamiento, lo que potencialmente 
-puede empeorar el rendimiento del modelo base.
 
-Algunas características deseables en los métodos de CP son:
+Además, el conjunto de calibración debe ser estadísticamente representativo de la distribución completa de los datos. Esto crea un compromiso fundamental: asignar más ejemplos a la calibración mejora la precisión de los intervalos predictivos, pero a costa de reducir el tamaño del conjunto de entrenamiento, lo que potencialmente puede empeorar el rendimiento del modelo base.
+
+Algunas características deseables en las técnicas de CP son:
 
 \begin{itemize}
-    \item \textbf{Independencia del modelo (\textit{model-agnostic})}: que no requiera reentrenar el modelo ni 
-    modificar su arquitectura, permitiendo su aplicación \textit{post-hoc} a modelos preentrenados.
+    \item \textbf{Independencia del modelo (\textit{model-agnostic})}: que no requiera reentrenar el modelo ni modificar su arquitectura, permitiendo su aplicación \textit{post-hoc} a modelos preentrenados.
 
-    \item \textbf{Independencia del dominio (\textit{domain-agnostic})}: que pueda manejar entradas de 
-    cualquier tipo sin restricciones. 
+    \item \textbf{Independencia del dominio (\textit{domain-agnostic})}: que pueda manejar entradas de cualquier tipo sin restricciones, tantos datos estructurado como no estructurados.
      
-    \item \textbf{Predicción adaptativa (\textit{adaptive prediction})}: 
-    se refiere a que el intervalo o conjunto de valores varía su tamaño (o forma) en función de la 
-    incertidumbre asociada a cada predicción individual. En general, cuanto más rica y específica sea la 
-    información que el método utiliza sobre las predicciones y su incertidumbre, más adaptativo será.
-
-    \item \textbf{Ser eficiente computacionalmente}: es preferible que tanto la calibración como la inferencia 
-    no sean computacionalmente muy costosas. 
+    \item \textbf{Predicción adaptativa (\textit{adaptive prediction})}: se refiere a que el intervalo o conjunto de predicción varía su tamaño en función de la incertidumbre asociada a cada predicción individual. En general, cuanto más rica y específica sea la información que la técnica utiliza sobre las predicciones y su incertidumbre, más adaptativa será la predicción conformal. 
     
-    \item \textbf{Robustez frente a datos ruidosos y detección de datos \textit{out-of-distribution}}%
+    Que la predicción sea adaptativa es una condición necesaria pero no suficiente para garantizar la cobertura condicional válida. 
+
+    \item \textbf{Ser eficiente computacionalmente}: es deseable que tanto la fase de calibración como la inferencia sean rápidas y no introduzcan una sobrecarga significativa en comparación con la predicción puntual.
+    
+    Aunque la mayoría de los métodos de predicción conformal presentan una sobrecarga computacional moderada, esta puede variar dependiendo del enfoque utilizado. Por ejemplo, las técnicas basadas en \textit{split conformal} ---las únicas que exploraremos en este trabajo--- suelen ser más eficientes que aquellas que requieren reentrenamiento múltiple, como en algunos métodos \textit{Cross conformal prediction} o \textit{Jackknife+}%
     \footnote{
-        Los datos \textit{out-of-distribution} son datos que no provienen de la misma distribución que los 
-        datos con los que se entrenó el modelo.
-    }:
-    que los intervalos reflejen adecuadamente la incertidumbre ante datos corruptos o fuera del dominio de 
-    entrenamiento, ya sea detectando de que el dato es anómalo o dando un intervalo/conjunto de predicción
-    muy amplio. 
+        \textit{Cross conformal prediction} \cite{vovk2015} y \textit{Jacknife+} \cite{barber2021} son métodos de CP que mejoran las garantías de cobertura de técnicas de CP mediante el uso más eficiente de los datos disponibles para calibración y entrenamiento, de forma análoga a la validación cruzada (\textit{cross-validation}) o el \textit{leave-one-out}, respectivamente.
+    }.
+    
+    % \item \textbf{Robustez frente a datos ruidosos y detección de datos \textit{out-of-distribution}}%
+    % \footnote{
+    %     Los datos \textit{out-of-distribution} son datos que no provienen de la misma distribución que los datos con los que se entrenó el modelo.
+    % }:
+    % que los intervalos reflejen adecuadamente la incertidumbre ante datos corruptos o fuera del dominio de entrenamiento, ya sea detectando de que el dato es anómalo o dando un intervalo/conjunto de predicción muy amplio. 
 
 \end{itemize}
 
-En general, existe un \textit{trade-off} entre flexibilidad y precisión: los métodos dependientes del modelo,
-del dominio o incluso del propio problema (incluyendo información experta), que asumen ciertas distribuciones 
-de los datos, pueden cuantificar mejor la incertidumbre aleatoria y epistémica, y producir intervalos más 
-ajustados e informativos. 
+% En general, existe un \textit{trade-off} entre flexibilidad y precisión: las técnicas dependientes del modelo, del dominio o incluso del propio problema (p.ej., incluyendo información experta), que asumen ciertas distribuciones de los datos, pueden cuantificar mejor la incertidumbre aleatoria y epistémica, y producir intervalos más ajustados e informativos. 
+
+% \todo{Este último párrafo es una valoración que yo he realizado muy priori}
 
 
 % ------------------------------------------------------------------------------------------------------------
 
 \subsection{Algoritmo conformal}
 
-Existen multitud de métodos de CP. Generalmente, estas dependen del tipo de problema a resolver: 
-regresión \cite{papadopoulos2002, romano2019, bethell2024}, clasificación 
-\cite{sadinle2019, romano2020, angelopoulos2020}, series temporales \cite{xu2021, zaffran2022, 
-stankeviciute2021}%
+Existen multitud de técnicas de CP. Generalmente, estas dependen del tipo de problema a resolver: regresión \cite{papadopoulos2002, romano2019, bethell2024}, clasificación \cite{sadinle2019, romano2020, angelopoulos2020}, series temporales \cite{xu2021, zaffran2022, stankeviciute2021}%
 \footnote{
-    El marco de CP clásico asume que los datos son intercambiables, una propiedad que no se cumple en las 
-    series temporales debido a la dependencia secuencial entre observaciones. A pesar de ello, se han 
-    desarrollado diversas extensiones del enfoque conformal para adaptarse a estos datos.
+    El marco de CP clásico asume que los datos son intercambiables, una propiedad que no se cumple en las series temporales debido a la dependencia secuencial entre observaciones. A pesar de ello, se han desarrollado diversas extensiones del enfoque conformal para adaptarse a estos datos.
 },
 o detección de anomalías \cite{laxhammar2015}, entre otros. 
 
 A pesar de su diversidad, todos los algoritmos conformales comparten un elemento clave: la definición de una 
-\textbf{función de no conformidad}, una heurística que mide la incertidumbre asociada a cada predicción. 
-Intuitivamente, esta función actúa como una medida de discrepancia entre el valor predicho y el valor 
-observado, y permite determinar cuán ``extraña'' o ``no conforme'' es una nueva observación respecto al 
-comportamiento esperado del modelo.
+\textbf{función de no conformidad} $A(x_i,y_i)$, una heurística que mide la incertidumbre asociada a cada predicción. Intuitivamente, esta función actúa como una medida de discrepancia entre el valor predicho y el valor observado, y permite determinar cuán ``extraña'' o ``no conforme'' es una nueva observación respecto al comportamiento esperado del modelo.
 
 La implementación de la predicción conformal consta de los siguientes pasos:
 
 \begin{enumerate}
 
-    \item Se divide el conjunto de datos disponible en dos subconjuntos: un conjunto de entrenamiento, 
-    utilizado para ajustar el modelo predictivo (es decir, para entrenar el modelo), y un conjunto de 
-    calibración, que se reserva exclusivamente para estimar la incertidumbre mediante el cálculo de las 
-    puntuaciones de no conformidad. Esta separación permite que la estimación del intervalo de predicción 
-    sea independiente del proceso de entrenamiento, lo cual es crucial para garantizar la validez 
-    estadística del método.
+    \item Se divide el conjunto de datos disponible en dos subconjuntos: un conjunto de entrenamiento, utilizado para ajustar el modelo predictivo ---es decir, para entrenar el modelo de forma habitual---, y un conjunto de calibración, que se reserva exclusivamente para estimar la incertidumbre mediante el cálculo de las puntuaciones de no conformidad. Esta separación permite que la estimación del intervalo de predicción sea independiente del proceso de entrenamiento, lo cual es crucial para garantizar la validez estadística del método.
 
-    \item Se entrena el modelo predictivo utilizando únicamente el conjunto de entrenamiento. 
+    \item Se entrena el modelo predictivo con los ejemplos del conjunto de entrenamiento. 
 
-    \item \textbf{Calibración conformal}: Este proceso se da tras el entrenamiento del modelo. En este, se 
-    calculan las \textbf{puntuaciones de no conformidad (\textit{nonconformity scores}) $R$}%
+    \item \textbf{Calibración conformal}: En este, se calculan las \textbf{puntuaciones de no conformidad (\textit{nonconformity scores}) $R$}%
     \footnote{
         En la literatura, a este vector de puntuaciones se le suele denotar como $R$ por \textit{`residual'}
-        o $E$ por \textit{`error'}, aunque no tiene por qué corresponderse con estas variables. 
-    }.
+        o $E$ por \textit{`error'}. 
+    }:
 
     $$
-    R = \left\{ R_1, R_2, ..., R_{n} \right\}
+    R = \left\{ A(x_i,y_i) \right\}_{i=1}^n
     $$
 
     donde $n$ es el número de ejemplos del conjunto de calibración.
 
-    Estas puntuaciones se derivan a partir de una heurística que combina al menos el valor real y el predicho 
-    del problema con otras posibles fuentes de información, como las entradas o incluso representaciones 
-    internas del modelo%
+    Estas puntuaciones se derivan a partir de una heurística que combina al menos el valor real y el predicho del problema con otras posibles fuentes de información, como las propias entradas o incluso representaciones internas del modelo%
     \footnote{
-        Cabe señalar que un método será independiente del modelo y del dominio cuando solo tenga en cuenta
-        las salidas del modelo y los valores reales del problema para realizar la CP.
+        Cabe señalar que una técnica será independiente del modelo y del dominio cuando solo tenga en cuenta las salidas del modelo y los valores reales del problema para realizar la CP.
     }. 
-    Bajo las garantías estadísticas que ofrece el marco teórico de la CP, esta flexibilidad muestra un gran 
-    potencial para ser integrada con otros métodos de UQ, ampliando así sus 
-    aplicaciones y mejorando la robustez de las estimaciones de incertidumbre.
+    Bajo las garantías estadísticas que ofrece el marco teórico de la CP, esta flexibilidad muestra un gran potencial para ser integrada con otras técnicas de UQ, ampliando así sus aplicaciones y mejorando la robustez de las estimaciones de incertidumbre.
 
-    Independientemente del diseño específico de la función de no conformidad, esta debe cumplir una condición
-    esencial: las puntuaciones deben ser intercambiables entre el conjunto de calibración y las nuevas 
-    instancias.
-    En otras palabras, deben ser idénticamente distribuidos. 
-    Esta propiedad es crucial para que CP garantice cobertura marginal válida a un nivel de confianza 
-    determinado.
-    Por tanto, aunque existe flexibilidad en el diseño de la función de no conformidad, su elección debe 
-    considerar tanto la capacidad para capturar incertidumbre útil como el cumplimiento del supuesto de 
-    intercambiabilidad. 
+    Independientemente del diseño específico de la función de no conformidad, esta debe cumplir una condición esencial: las puntuaciones deben ser intercambiables entre el conjunto de calibración y las nuevas instancias. En otras palabras, deben ser idénticamente distribuidas. Esta propiedad es crucial para que CP garantice cobertura marginal válida a un nivel de confianza determinado. Por tanto, aunque existe flexibilidad en el diseño de la función de no conformidad, su elección debe considerar tanto la capacidad para capturar incertidumbre útil como el cumplimiento del supuesto de intercambiabilidad. 
 
-    A continuación, se calcula el \textbf{umbral de no conformidad}.
-    Para un nivel de significancia $\alpha$, se selecciona el $(1 - \alpha)(1 + 1/n)$-ésimo cuantil%
+    A continuación, se calcula el \textbf{umbral de no conformidad}. Para un nivel de significación$\alpha$, se selecciona el $(1 - \alpha)(1 + 1/n)$-ésimo cuantil%
     \footnote{
         La corrección $(1 + 1/n)$ asegura validez estadística para conjuntos de tamaño finito.
     } 
-    de las puntuaciones de no conformidad obtenidas en el conjunto de calibración 
-    (véase la Figura \ref{fig:nonconformity_quantile_comparison}).
+    de las puntuaciones de no conformidad obtenidas en el conjunto de calibración (véase la Figura \ref{fig:nonconformity_quantile_comparison}).
+
+    $$
+    \delta_\alpha = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( \left\{ A(x_i,y_i) \right\}_{i=1}^n )
+    $$
 
     \begin{figure}[h]
         \centering
@@ -1428,41 +1372,47 @@ La implementación de la predicción conformal consta de los siguientes pasos:
 
     La forma de construir $\Gamma(x_{n+1})$ depende de cómo se haya definido la función de no conformidad 
     durante la fase de calibración.
-    Por ejemplo, en el método \textit{Inductive Conformal Prediction} \cite{papadopoulos2002} para problemas 
-    de regresión, ---que describiremos en mayor profundidad en el Capítulo 4---, se utiliza el error absoluto 
-    como función de no conformidad. De esta forma, el umbral de no conformidad $\hat{q}_{1-\alpha}$ se 
-    considera el quantil $1-\alpha$ del error que arroja el modelo. Y, en la inferencia, se toma como 
-    intervalo de predicción:
-
-    \todo{Pablo: Enriquece esta explicación teórica con un ejemplo aplicado de juguete, en donde tienes un 
-    modelo caja negra que realiza la predicción. Muestra cómo calculas q\_{1-alpha} en base a un conjunto de 
-    calibración con 10 valores reales. Yo creo que quedaría todo mucho más claro. Y luego genera el intervalo 
-    de predicción para una estimación concreta.}
-
-    $$
-    \Gamma_\alpha(x_{n+1})=
-        \left[ 
-            \hat{y}_{n+1} - q_{1-\alpha}, 
-            \hat{y}_{n+1} + q_{1-\alpha} 
-        \right]
-    $$
-
-    La construcción del intervalo de predicción surge directamente de despejar el valor real $y_{n+1}$ en la
-    expresión que iguala la función de no conformidad, evaluada sobre la nueva instancia, con el umbral de 
-    no conformidad.
-    En este caso en el que se emplea el error absoluto, es decir:
-    $$
-    R(y_i, \hat{y_i}) = | y_i - \hat{y_i} |
-    $$
-    entonces al imponer la condición $R(y_{n+1}, \hat{y}_{n+1}) \le q_{1-\alpha}$, se obtiene: 
-    $$
-    |y_{n+1}-\hat{y}_{n+1}| \le q_{1-\alpha}
-    $$
-    Despejando $y_{n+1}$, se obtiene el intervalo:
-    $$
-    y_{n+1} = \hat{y}_{n+1} \pm q_{1-\alpha}
-    $$
-    Esta expresión determina los límites inferior y superior del intervalo de predicción conformal para dicha
-    instancia.
 
 \end{enumerate}
+
+
+
+
+Por ejemplo, en la técnica \textit{Inductive Conformal Prediction} \cite{papadopoulos2002} para problemas de regresión, ---que describiremos en mayor profundidad en el Capítulo 4---, se utiliza el error absoluto como función de no conformidad:
+
+$$
+A(x_i, y_i) = | y_i - \hat{f}(x_i) |
+$$
+
+El umbral de no conformidad se obtiene como el $(1 - \alpha)(1 + 1/n)$-ésimo cuantil de las puntuacionesde no conformidad (véase la Figura \ref{fig:nonconformity_quantile_threshold_simetric}):
+
+$$
+\delta_\alpha = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( \left\{ A(x_i,y_i) \right\}_{i=1}^n )
+$$
+
+La construcción del intervalo de predicción surge directamente de despejar el valor real $y_{n+1}$ en la expresión que iguala la función de no conformidad, evaluada sobre la nueva instancia, con el umbral de no conformidad. En este caso en el que se emplea el error absoluto, es decir:
+
+$$
+A(x_i, y_i) = | y_i - \hat{f}(x_i) |
+$$
+
+entonces al imponer la condición $A(x_{n+1}, y_{n+1}) \le \delta_\alpha$, se obtiene: 
+
+$$
+|y_{n+1}-\hat{f}(x_{n+1})| \le \delta_\alpha
+$$
+
+Despejando $y_{n+1}$, se obtiene:
+
+$$
+\hat{f}(x_{n+1}) - \delta_\alpha \le y_{n+1} \le \hat{f}(x_{n+1}) + \delta_\alpha 
+$$
+
+Por tanto, el intervalo de predicción conformal está dado por:
+
+$$
+y_{n+1} \in \left[ \hat{f}(x_{n+1})-\delta_\alpha , \hat{f}(x_{n+1})+\delta_\alpha  \right] 
+$$
+
+Esta expresión determina los límites inferior y superior del intervalo de predicción conformal para dicha
+instancia.

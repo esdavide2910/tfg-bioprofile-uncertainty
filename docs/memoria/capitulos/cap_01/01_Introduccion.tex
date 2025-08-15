@@ -155,7 +155,7 @@ Este Trabajo de Fin de Grado tiene un doble objetivo:
 
 \begin{itemize}
 
-    \item desde un prisma teórico, defender la cuantificación de incertidumbre como herramienta esencial en ML, ofrecer un panorama de métodos destacados, analizando sus ventajas y limitaciones, y centrarnos en la predicción conformal y sus variantes más populares.
+    \item desde un prisma teórico, defender la cuantificación de incertidumbre como herramienta esencial en ML, ofrecer un panorama de métodos destacados, analizando sus ventajas y limitaciones, y centrarnos en la predicción conformal y sus técnicas más populares.
 
     \item aplicar la predicción conformal a un contexto práctico como es el problema de estimación del PB, centrándose en la estimación de edad y de sexo a partir de datos biológicos e imágenes médicas.
 
@@ -177,15 +177,28 @@ Por tanto, podemos desgranar los objetivos en:
 
     \item Comparar los intervalos y conjuntos de predicciones generados para evaluar su calibración empírica, robustez ante datos ambiguos y utilidad forense, contrastándolos con métodos tradicionales (p.ej., intervalos de confianza clásicos).  
 
-    \item Realiza una primera aproximación a un marco interpretable y con garantías estadísticas para la estimación del perfil biológico, donde la incertidumbre cuantificada pueda integrarse en informes periciales bajo estándares jurídicos.
+    \item Realiza una primera aproximación a un marco interpretable y con garantías estadísticas para la estimación del perfil biológico (véase un ejemplo práctico en la Figura \ref{fig:example_intervalic_estimation}), donde la incertidumbre cuantificada pueda integrarse en informes periciales bajo estándares jurídicos.
 
 \end{itemize}
 
-\todo{
-    Pablo: Algo que yo creo que podría ser de utilidad al lector es mostrar un esquema genérico visual de lo que piensas hacer a nivel práctico, por ejemplo, a la hora de estimar la edad empleando una red neuronal. Yo incluiría un esquema de aprendizaje automático, como la Fig. 3 de https://link.springer.com/article/10.1007/s00521-022-07981-0, pero añadiendo elementos visuales que indiquen y subrayen la idea de que se emplean intervalos de predicción (con un conjunto de calibración, por ejemplo) para cuantificar la incertidumbre en las predicciones proporcionadas.
+% \todo{
+%     Pablo: Algo que yo creo que podría ser de utilidad al lector es mostrar un esquema genérico visual de lo que piensas hacer a nivel práctico, por ejemplo, a la hora de estimar la edad empleando una red neuronal. Yo incluiría un esquema de aprendizaje automático, como la Fig. 3 de https://link.springer.com/article/10.1007/s00521-022-07981-0, pero añadiendo elementos visuales que indiquen y subrayen la idea de que se emplean intervalos de predicción (con un conjunto de calibración, por ejemplo) para cuantificar la incertidumbre en las predicciones proporcionadas.
     
-    Dicho de otro modo: queremos una figura que, de un vistazo, permita entender cómo vas a combinar estimación de la edad (por ejemplo) e intervalos de predicción (y estos últimos de dónde salen). Aunque luego los detalles se presenten más adelante, un diagrama en la introducción creo que ayudaría a aterrizar las ideas principales.
-}
+%     Dicho de otro modo: queremos una figura que, de un vistazo, permita entender cómo vas a combinar estimación de la edad (por ejemplo) e intervalos de predicción (y estos últimos de dónde salen). Aunque luego los detalles se presenten más adelante, un diagrama en la introducción creo que ayudaría a aterrizar las ideas principales.
+% }
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{capitulos/cap_01/imagenes/example_intervalic_estimation.png}
+    \caption[
+        Diagrama de modelo de regresión que usa predicción conformal, el cual, además de proporcionar una estimación puntual del valor esperado, entrega un intervalo de predicción con un nivel de confianza del 95\%.
+    ]{ 
+        Diagrama de modelo de regresión que usa predicción conformal, el cual, además de proporcionar una estimación puntual del valor esperado, entrega un intervalo de predicción con un nivel de confianza del 95\%.
+        Esta salida se lee de la siguiente manera: ``la edad esperada del individuo es de 16.1 años y, con una confianza del 95\%, la edad real del individuo está entre los 14.3 y los 17.6 años''.
+    } 
+    \label{fig:example_intervalic_estimation}
+\end{figure}
+
 
 En resumen, este trabajo pretende explorar la integración de marcos probabilísticos en la práctica forense que capturen la incertidumbre de los problemas, y facilitar el uso de la inferencia conformal en ellos. Este enfoque proporciona estimaciones calibradas de incertidumbre, con garantías estadísticas de contener el valor real en un conjunto o intervalo de predicción, útiles para la toma de decisiones fundamentadas en contextos prácticos donde la interpretabilidad y robustez son críticas.
 
