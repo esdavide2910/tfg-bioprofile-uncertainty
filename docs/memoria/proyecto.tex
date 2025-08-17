@@ -79,6 +79,51 @@
 
 \usepackage{float}
 
+\usepackage{eurosym}
+
+\usepackage{pgfgantt}
+%Let's define some awesome new ganttchart elements:
+\newganttchartelement{orangebar}{
+    orangebar/.style={
+        inner sep=0pt,
+        draw=red!66!black,
+        very thick,
+        top color=white,
+        bottom color=orange!80
+    },
+    orangebar label font=\slshape,
+    orangebar left shift=.1,
+    orangebar right shift=-.1
+}
+
+\newganttchartelement{bluebar}{
+    bluebar/.style={
+        inner sep=0pt,
+        draw=purple!44!black,
+        very thick,
+        top color=white,
+        bottom color=blue!80
+    },
+    bluebar label font=\slshape,
+    bluebar left shift=.1,
+    bluebar right shift=-.1
+}
+
+\newganttchartelement{greenbar}{
+    greenbar/.style={
+        inner sep=0pt,
+        draw=green!50!black,
+        very thick,
+        top color=white,
+        bottom color=green!80
+    },
+    greenbar label font=\slshape,
+    greenbar left shift=.1,
+    greenbar right shift=-.1
+}
+
+% \usepackage{minted}
+
 % ********************************************************************
 % Re-usable information
 % ********************************************************************
@@ -175,7 +220,6 @@
      numberfirstline = false,
      breaklines=true,
    }
- 
 % minimizar fragmentado de listados
 \lstnewenvironment{listing}[1][]
    {\lstset{#1}\pagebreak[0]}{\pagebreak[0]}
@@ -249,15 +293,15 @@
    \clearpage
    \pagenumbering{arabic}
    \setcounter{page}{1}
-   %\input{capitulos/cap_01/01_Introduccion}
+   \input{capitulos/cap_01/01_Introduccion}
    %
    %\input{capitulos/cap_02/02_Fundamentos_teoricos}
    %
    %\input{capitulos/cap_03/03_Estado_del_arte}
    %
-   \input{capitulos/cap_04/04_Materiales_y_métodos}
+   %\input{capitulos/cap_04/04_Materiales_y_métodos}
    %
-   \input{capitulos/cap_05/05_Experimentación}
+   %\input{capitulos/cap_05/05_Experimentación}
    %
    %\input{capitulos/cap_06/06_Conclusiones}
    %

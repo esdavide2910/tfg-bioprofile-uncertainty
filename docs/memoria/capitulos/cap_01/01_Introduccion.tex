@@ -165,13 +165,13 @@ De esta forma, podremos incorporar la incertidumbre propia del problema a resolv
 
 Por tanto, podemos desgranar los objetivos en:
 
-\todo{Pablo: Esto no creo que quede muy claro. Generalmente, se proponen uno o dos objetivos principales, y luego se presentan una serie de objetivos parciales, cuya consecución asegura el cumplimiento de los objetivos principales. Pero aquí no me queda claro si estos son los objetivos parciales... entiendo que sí. De ser así, no dudes en indicarlo con claridad, diciendo sin ambages que estos son objetivos parciales.}
+% \todo{Pablo: Esto no creo que quede muy claro. Generalmente, se proponen uno o dos objetivos principales, y luego se presentan una serie de objetivos parciales, cuya consecución asegura el cumplimiento de los objetivos principales. Pero aquí no me queda claro si estos son los objetivos parciales... entiendo que sí. De ser así, no dudes en indicarlo con claridad, diciendo sin ambages que estos son objetivos parciales.}
 
 \begin{itemize}
 
     \item Estudiar de forma exhaustiva la bibliografía sobre predicción conformal y sus diversas variantes, así como de la estimación de sexo y edad, centrando nuestra atención en el estado del arte.
 
-    \todo{David: Entonces falta apartado para la estimación de sexo en el estado del arte}
+    % \todo{David: Entonces falta apartado para la estimación de sexo en el estado del arte}
 
     \item Implementar, entrenar y validar modelos de regresión ---en problemas de estimación de edad--- y clasificación ---tanto en problema de estimación de sexo como edad legal--- a los que aplicar la inferencia conformal.
 
@@ -182,8 +182,7 @@ Por tanto, podemos desgranar los objetivos en:
 \end{itemize}
 
 % \todo{
-%     Pablo: Algo que yo creo que podría ser de utilidad al lector es mostrar un esquema genérico visual de lo que piensas hacer a nivel práctico, por ejemplo, a la hora de estimar la edad empleando una red neuronal. Yo incluiría un esquema de aprendizaje automático, como la Fig. 3 de https://link.springer.com/article/10.1007/s00521-022-07981-0, pero añadiendo elementos visuales que indiquen y subrayen la idea de que se emplean intervalos de predicción (con un conjunto de calibración, por ejemplo) para cuantificar la incertidumbre en las predicciones proporcionadas.
-    
+%     Pablo: Algo que yo creo que podría ser de utilidad al lector es mostrar un esquema genérico visual de lo que piensas hacer a nivel práctico, por ejemplo, a la hora de estimar la edad empleando una red neuronal. Yo incluiría un esquema de aprendizaje automático, como la Fig. 3 de https://link.springer.com/article/10.1007/s00521-022-07981-0, pero añadiendo elementos visuales que indiquen y subrayen la idea de que se emplean intervalos de predicción (con un conjunto de calibración, por ejemplo) para cuantificar la incertidumbre en las predicciones proporcionadas.    
 %     Dicho de otro modo: queremos una figura que, de un vistazo, permita entender cómo vas a combinar estimación de la edad (por ejemplo) e intervalos de predicción (y estos últimos de dónde salen). Aunque luego los detalles se presenten más adelante, un diagrama en la introducción creo que ayudaría a aterrizar las ideas principales.
 % }
 
@@ -206,37 +205,208 @@ En resumen, este trabajo pretende explorar la integración de marcos probabilís
 
 \section{Planificación temporal del proyecto}
 
-\todo{Por completar (AGOSTO) con el histórico de GitHub}
+Partimos de que el Proyecto de Fin de Grado tiene asignado 12 créditos ECTS, lo que equivale a 300 horas de trabajo. Estas 300 horas se distribuyen a lo largo del segundo cuatrimestre del curso 2024/2025, constando de 66 días lectivos, lo que resulta en una carga de trabajo de aproximadamente 4.54 horas al día. La planificación inicial del proyecto se presenta en el diagrama de Gantt de la Figura \ref{fig:inicial_gantt}.
+
+\begin{sidewaysfigure}
+    \centering
+    \begin{ganttchart}[
+        expand chart=\textwidth,
+        hgrid,
+        x unit=1.15mm,
+        y unit chart=7mm,
+        y unit title=12mm,
+        time slot format=isodate,
+        %
+        bar/.append style={draw=black!50, fill=black!20},
+        bar label font=\small,
+        bar top shift = 0.2,
+        bar height = 0.6,
+        %
+        group/.append style={draw=black, fill=green!50},
+        %
+        milestone/.append style={fill=orange, rounded corners=3pt},
+        % group label font=\small\bfseries,    % texto de grupos más pequeño y en negrita
+        % milestone label font=\footnotesize
+    ]{2025-02-17}{2025-06-30}
+        \gantttitlecalendar{year, month=shortname}\\
+        \ganttbar{Definición de propuesta y objetivos}{2025-02-17}{2025-02-19} \\
+        \ganttbar{Implementación del núcleo}{2025-02-20}{2025-03-09} \\
+        \ganttbar{Implementación de algoritmos de CP}{2025-03-10}{2025-04-13} \\
+        \ganttbar{Experimentación}{2025-04-14}{2025-06-08} \\
+        \ganttbar{Análisis de resultados}{2025-06-09}{2025-06-22} \\
+        \ganttbar{Redacción de la memoria}{2025-02-20}{2025-06-22}\\
+        \ganttbar{Contingencia}{2025-06-23}{2025-06-30}
+    \end{ganttchart}
+    \caption{Diagrama de Gantt inicial del proyecto}
+    \label{fig:inicial_gantt}
+\end{sidewaysfigure}
+
+
+No obstante, debido a ajustes en la orientación conceptual del trabajo, modificaciones en el enfoque metodológico y determinadas circunstancias personales de salud, fue necesario realizar cambios sobre la planificación inicial, posponiéndose finalmente la entrega del TFG al mes de septiembre.
+
+\begin{sidewaysfigure}
+    \centering
+    \begin{ganttchart}[
+        expand chart=\textwidth,
+        hgrid,
+        x unit=1.15mm,
+        y unit chart=7mm,
+        y unit title=12mm,
+        time slot format=isodate,
+        %
+        bar/.append style={draw=black!50, fill=black!20},
+        bar label font=\small,      % texto de tareas más pequeño
+        bar top shift = 0.2,
+        bar height = 0.6,
+        %
+        group/.append style={draw=black, fill=black!100},
+        % group label font=\small\bfseries,    % texto de grupos más pequeño y en negrita
+        %
+        % milestone label font=\footnotesize
+        milestone/.append style={draw=black, fill=black},
+        milestone left shift =-1,
+        milestone right shift =2,
+        milestone inline label node/.append style={left=1ex,text opacity=1},
+        flip/.style={milestone inline label node/.append style={right=2ex}},
+    ]{2025-02-17}{2025-08-31}
+        \gantttitlecalendar{year, month=shortname}\\
+        \ganttbar{Definición de propuesta y objetivos}{2025-02-24}{2025-02-26} \\
+        %
+        \ganttbar{Implementación del núcleo}{2025-03-15}{2025-05-16}
+        \ganttbar[inline]{Revisión}{2025-06-19}{2025-06-28} \\
+        %
+        \ganttbar{Implementación de técnicas de CP}{2025-02-27}{2025-03-14}
+        \ganttbar[inline]{Regres.}{2025-05-28}{2025-07-06} 
+        \ganttbar[inline]{Clasif.}{2025-07-07}{2025-08-01} \\
+        %
+        \ganttbar{Experimentación}{2025-07-14}{2025-08-03}
+        \ganttbar[inline]{}{2025-06-15}{2025-07-06} \\
+        %
+        \ganttbar{Análisis de resultados}{2025-07-18}{2025-08-15}\\
+        %
+        \ganttbar{Redacción de la memoria}{2025-02-27}{2025-08-22} 
+        \ganttmilestone[inline]{Cap.1}{2025-05-02} 
+        \ganttmilestone[inline]{Cap.2}{2025-06-03} 
+        \ganttmilestone[inline]{Cap.3-4}{2025-07-06}
+        \ganttmilestone[inline]{Cap.5-6}{2025-08-22}
+    \end{ganttchart}
+    \caption{Diagrama de Gantt final del proyecto}
+    \label{fig:final_gantt}
+\end{sidewaysfigure}
+
+La organización temporal del trabajo se desarrolló finalmente de la siguiente manera (véase la Figura \ref{fig:final_gantt}): 
+
+\begin{itemize}
+
+    \item Febrero: se redactó la propuesta del Trabajo de Fin de Grado, la cual fue aceptada en el plazo de una semana.
+    
+    \item Marzo: la primera parte del mes se destinó a la implementación de algunas técnicas de CP en clasificación(LAC, APS y RAPS) sobre el conjunto de datos CIFAR-10. A mediados de mes se concedió acceso al clúster SLURM, lo que permitió comenzar la organización del proyecto, la implementación del núcleo del código y la configuración del entorno de trabajo mediante un proceso iterativo de prueba y error orientado a obtener una solución más cómoda y flexible.
+    
+    \item Abril: se llevó a cabo la búsqueda, revisión, organización y análisis de bibliografía, con especial atención a la literatura en AF. A mediados de mes se obtuvo acceso al conjunto de datos definitivo que sería utilizado en el proyecto. Fue necesario adaptar el núcleo de código previamente desarrollado, dedicándose varias semanas a la experimentación y mejora del modelo de red neuronal convolucional (CNN). Se aprovechó para organizar el código y subirlo a un repositorio. 
+
+    \item Mayo: a principios de mes se completó una primera versión del capítulo inicial (\textit{Introducción}). Durante la primera mitad del mes se continuó con la optimización del entrenamiento e inferencia del modelo, en paralelo con la redacción del capítulo de Fundamentos teóricos.
+
+    \item Junio: a comienzos de mes se obtuvo la primera versión completa del capítulo segundo (\textit{Fundamentos teóricos}). En este momento se decidió centrar los esfuerzos en la parte de regresión, lo que condujo a la implementación de las técnicas de CP aplicadas a este contexto. Durante el proceso se identificó la necesidad de reformar nuevamente el núcleo del código, con el fin de reducir repeticiones y dotarlo de mayor flexibilidad, permitiendo mediante argumentos entrenar toda la red o únicamente la cabeza, seleccionar la técnica de CP, realizar inferencia, entre otras opciones. De forma paralela, se avanzó en la redacción del capítulo tercero (\textit{Estado del arte}) y del capítulo cuarto (\textit{Materiales y métodos}).
+
+    \item Julio: a principios de mes se dispuso de una versión preliminar de la memoria que incluía la parte de regresión hasta la presentación de resultados, aunque sin discusión. Tras esto, el trabajo se orientó hacia la implementación de técnicas de CP para clasificación, en problemas derivados del enfoque de regresión. Asimismo, se desarrolló un sistema de almacenamiento más organizado de los resultados, de manera que pudieran ser cargados posteriormente en un cuaderno Jupyter para su análisis.
+
+    \item Agosto: se discutieron los resultados obtenidos tanto en regresión como en clasificación, se completaron apartados pendientes de la memoria y se llevaron a cabo ajustes finales. Finalmente, se redactó la conclusión y el \textit{abstract}.
+    
+\end{itemize}
+
+Finalmente, el trabajo se desarrolló entre el 24 de febrero y el 22 de agosto, considerando únicamente los días laborables, con excepción de los periodos del 4 al 8 de junio y del 3 al 10 de agosto, debido a vacaciones. Durante los días laborables se dedicó una media de 6 horas diarias, mientras que los sábados se trabajó aproximadamente 3 horas diarias.\footnote{Estimación realizada de manera aproximada.}
+
+Teniendo en cuenta esta distribución, se puede estimar el total de horas trabajadas de la siguiente manera:
+
+\begin{itemize}
+    \item Días laborables efectivos: $122\textnormal{ días} \times 6\textnormal{h/día} = 732\textnormal{h}$
+    \item Sábados: $23\textnormal{ días} \times 3\textnormal{h/día} = 69\textnormal{h}$
+\end{itemize}
+
+Por tanto, el total aproximado de horas dedicadas al proyecto asciende a 801 horas, lo que supera por mucho la cifra teórica de 300 horas. Este tiempo de más se puede atribuir a varias causas principales: 
+
+\begin{itemize}
+
+    \item Complejidad del proyecto: Nunca antes me había enfrentado a un trabajo de esta complejidad, por lo que la planificación inicial no podía anticipar todas las dificultades técnicas y conceptuales.
+    
+    \item Adaptación y organización del código: La necesidad de modificar constantemente el núcleo del código para hacerlo más modular y flexible ha supuesto tiempo adicional no contemplado en la estimación inicial.
+    
+    \item Iteraciones y mejoras del modelo: Se llevaron a cabo múltiples iteraciones de entrenamiento y ajuste de hiperparámetros de los modelos CNN, así como experimentos para mejorar la eficiencia y la estabilidad de las predicciones, lo que incrementó considerablemente la carga de trabajo.
+    
+    \item Búsqueda, análisis y revisión bibliográfica: La investigación en literatura especializada, especialmente en antropología forense, materia en la que soy nuevo, requirió un tiempo prolongado de lectura, análisis y síntesis para incorporarlo a la memoria.
+    
+    \item Circunstancias externas y aprendizaje: Ajustes en la planificación por cuestiones de salud, aprendizaje de nuevas herramientas (PyTorch, SLURM, Jupyter), problemas con el software (drivers de CUDA) y adaptaciones metodológicas también contribuyeron a la ampliación del tiempo dedicado.
+
+\end{itemize}
 
 % ------------------------------------------------------------------------------------------------------------
 
-\section{Planificación económica del proyecto}
+\section{Presupuesto del proyecto}
+
+En este apartado hacemos un ejercicio de cuándo hubiese costado desarrollar este trabajo 
+
+Se ha dispuesto de todos los materiales necesarios para la realización del proyecto de manera gratis. Aún así, en este apartado se hace una estimación del coste de desarrollar el trabajo ... 
+
 
 Este trabajo ha sido realizado con dos equipos independientes: 
 
 \begin{itemize}
+    \item \textbf{Ordenador portátil personal}: Asus Zephyrus G14, modelo GA401 de 2021, empleado principalmente para la redacción y compilación de este documento en \LaTeX, así como el anális exploratorio de datos y el tratamiento de resultados. El sistema operativo empleado es Linux Mint (versión 22.1).
+    El portátil fue adquirido por 1100\euro{} en marzo de 2022. Para la estimación de la amortización se ha considerado una vida útil de 4 años, criterio habitual en contabilidad empresarial y acorde con la obsolescencia tecnológica de este tipo de dispositivos:
 
-    \item Un ordenador portátil personal, empleado principalmente para la redacción y compilación de este documento en \LaTeX.
-        
-    \item Un clúster de computación proporcionado por el Instituto de Ciencia de Datos e Inteligencia Artificial (DaSCI), de la Universidad de Granada, al que se accedió mediante conexión SSH. Para el desarrollo de los distintos modelos y variantes de predicción conformal, se utilizó el entorno de desarrollo Visual Studio Code de Microsoft.
+    \begin{align*}
+    \text{Coste imputado} 
+    &= \frac{\text{Precio de adquisición}}{\text{Vida útil}} \times 
+    \begin{array}{c}
+        \text{Tiempo de uso} \\ 
+        \text{en el proyecto}
+    \end{array} \\[1ex]
+    &= \frac{1100 \text{ \euro}}{48 \text{ meses}} \times 6 \text{ meses} = 137.5 \text{ \euro}
+    \end{align*}
 
+    \item \textbf{Clúster de computación DaSCI}: proporcionado por el Instituto de Ciencia de Datos e Inteligencia Artificial de la Universidad de Granada, al que se accede mediante conexión SSH. 
+    
+    El clúster cuenta con nodos diversos: con y sin GPU, con entre 40 y 60 CPUs y aproximadamente 122 GB de memoria RAM cada uno. Los nodos con GPU presentan diferentes modelos de gráfica: NVIDIA TITAN XP y NVIDIA Titan RTX, con CUDA 11.7 o superior. Todos los nodos cuentan con sistemas Linux compatibles con Pytorch.
+    La implementación del código será adaptada para ejecutarse en cualquiera de los nodos con GPU. 
+
+    El desarrollo del trabajo ---tanto experimentación como puesta en marcha--- se ha cobrado un total de 682.72 horas de GPU para el entrenamiento e inferencia de los modelos ML%
+    \footnote{
+        Estas cifras de tiempo han sido obtenidas del clúster Slurm, donde se han registrado todas las horas consumidas por cada trabajo. 
+    }.  
+    \todo{Aquí me estoy adelantando en el trabajo, ya que las horas totales las he obtenido tras terminar el trabajo, pero no sé de qué manera podría haberla estimados antes de comenzado un trabajo que es de investigación y donde se pierde más tiempo probando y errando que ejecutando el código definitivo.}
+
+%     \begin{lstlisting}[language=bash]
+% $ sacct -S 2024-02-01 -E now --name=train_models --format=JobName,ElapsedRaw -P -X > tiempos.csv
+% $ awk -F'|' 'NR>1 {sum[$1]+=$2} END {for (n in sum) printf "%s: %.2f horas\n", n, sum[n]/3600}' tiempos.csv
+%     \end{lstlisting}
+    
+    Para simplificar la estimación del coste, se considera un único nodo con la GPU más económica, NVIDIA Titan XP, ya que los requisitos computacionales del proyecto no justificaban el uso de hardware más potente.  
+    La estimación del coste de uso de la GPU se basa en precios de referencia de servicios \textit{cloud} equivalentes. La NVIDIA Titan XP no es una GPU de centro de datos, pero se aproxima ---en rendimiento para operaciones F32 y memoria--- a una NVIDIA Tesla P100, con un precio de referencia entre 1.2-1.5 \euro por hora. Asumiendo un valor medio de 1.35 \euro/h, el coste total imputado del uso de la GPU en el proyecto sería:
+
+    \begin{align*}
+        \textnormal{Coste GPU} &= \textnormal{Tiempo GPU} \times \textnormal{Precio por tiempo} \\[1ex]
+        &= 682.72\text{ h} \times 1.35 \text{ \euro/h} = 921.7 \text{ \euro}
+    \end{align*}
 \end{itemize}
 
-\todo{
-    Pablo:La idea principal en este punto es que, al tratarse de un proyecto de ingeniería, se suele incluir una sección dedicada a la planificación. 
+En cuanto al software, se ha recurrido exclusivamente a herramientas de código abierto y libre distribución:
 
-    Hay dos motivos para hacerlo: por un lado, es una buena práctica en sí misma (es decir, un proyecto debe ser planificado); por otro lado, satisfará (al menos parcialmente) a los miembros del tribunal más ligados a ingeniería del software. 
+\begin{itemize}
+    \item \textbf{Linux Mint}: es el sistema operativo del ordenador personal. 
+    \item \textbf{Visual Studio Code}: empleado como entorno de desarrollo integrado (IDE) y como interfaz de conexión al clúster mediante SSH.
+    \item \textbf{TeX Live}: distribución de \LaTeX, utilizada para la redacción, compilación y maquetación del documento.
+    \item \textbf{Python}: lenguaje de programación utilizado para la implementación de los algoritmos.
+    \item \textbf{Jupyter Notebook}: para experimentación interactiva y análisis exploratorio de datos y resultados.
+    \item \textbf{PyTorch}: framework de referencia en el desarrollo de modelos de aprendizaje profundo.
+    \item \textbf{Matplotlib y Seaborn}: bibliotecas de visualización para la representación gráfica de resultados, métricas y distribuciones.
+\end{itemize}
 
-    Una vez dicho esto, debemos tener claro que la planificación tiene dos caras: una temporal (representada por los dos diagramas de Gantt: inicial y final, en el caso de un TFG/TFM) y una económica (qué recursos se necesitan para llevar a cabo el proyecto en cuestión; incluyendo los recursos humanos). 
+Finalmente, en cuanto a recursos humanos, el coste asociado a la mano de obra se divide en dos categorías: investigación (desarrollo del trabajo) y mantenimiento del clúster.
 
-    En relación a esta última parte, la planificación económica, lo que se suele hacer es incluir el coste por hora del trabajador, y dejarlo ahí. Eso suele ser criticado, con razón, por los tribunales de TFG/TFM, dado que parece lógico también presupuestar el material requerido para la realización del trabajo (licencias software, equipos hardware, etc.). En el otro extremo hay gente que presupuesta hasta los lápices... eso no se debe hacer porque suena a puteo hacia el tribunal. Pero sí es una buena práctica presupuestar los equipos que se van usar (y otros elementos de cierta enjundia que puedan ser necesarios). Por ejemplo, si tú para tus experimentos necesitas un servidor de GPU, valorado en 50K euros, debes ponerlo. Pero, ojo, no tiene sentido que digas que, para hacer tu TFG, necesitas 50K euros. Ese es el coste de todo el servidor durante toda su vida útil. Tú basta con que presupuestes un porcentaje del mismo, de modo aproximado, y correspondiente al uso que le vas a dar. Piensa, por ejemplo, en un coche. Te compras un Dacia Duster por 14K euros y a los 5 años decides venderlo. El coche ya no vale 14K euros. Lo has utilizado, se ha gastado, y ahora vale menos. Eso es a lo que se refiere con amortización. Si lo vendo por 5K euros. Se puede decir que el coste del coche para mi proyecto fue de 9K euros. 
+En cuanto a la investigación, aunque el trabajo ha sido realizado por el autor, se puede estimar un coste hipotético basado en horas dedicadas. ...
+\todo{Qué número de horas y precio debería considerar? El número de horas teóricas (300 horas) o reales (801)?}
 
-    Comento todo esto por si te sirve de ayuda a la hora de redactar esta sección.
-}
+Respecto al mantenimiento del clúster, al tratarse de un recurso institucional y dado que su coste operativo ya estaría incluido en servicios comerciales equivalentes, no se imputa adicionalmente al proyecto.
 
-% Gasto hardware
-
-En cuanto al software, todo el empleado es gratuito y de código abierto. 
-
-\todo{Por completar (AGOSTO)}
-
+El coste total estimado, considerando ..., asciende a ...
+\todo{Completar}

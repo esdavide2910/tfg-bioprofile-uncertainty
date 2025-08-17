@@ -393,14 +393,32 @@ En la Tabla \ref{tab:comparativa_cp} observamos un cuadro comparativo de los dis
 
 \subsection{Calibración de probabilidades en clasificación}
 
-\todo{Hacer este apartado. No debería ser muy largo. Presentar solo el método de Platt Scaling.}
+Los modelos de clasificación producen puntuaciones discriminativas, como logits o distancias a un hiperplano, pero no siempre reflejan probabilidades reales para la predicción. La \textbf{calibración de probabilidad} en problemas de clasificación en ML se refiere al ajuste de estas puntuaciones de salida para que reflejen más fielmente probabilidades de predicción. 
+
+La calibración de probabilidades busca que cuando un modelo diga ``X\% de probabilidad'', eso corresponda de verdad a la frecuencia observada en los datos. Por ejemplo, si un modelo asigna una probabilidad del 70\% a un conjunto de instancias, aproximadamente 7 de cada 10 deberían pertenecer a la clase positiva si el modelo está bien calibrado.
+
+Existen distintas técnicas de post-procesamiento para mejorar la calibración. En este trabajo se empleará \textbf{Temperature Scaling} \cite{guo2017}, algoritmo usado principalmente en redes neuronales profundas. Este ajusta los \textit{logits} dividiéndolos por un parámetro de temperatura $T>0$, de manera que:
+\begin{itemize}
+    \item Si $T>1$, las puntuaciones se suavizan, disminuyendo la confianza excesiva del modelo.
+    \item Si $T<1$, las puntuaciones se vuelven más extremas, aumentando la confianza.
+\end{itemize}
+El parámetro $T$ se aprende sobre un conjunto de validación independiente, optimizando la entropía cruzada de las predicciones ajustadas con respecto a las etiquetas reales. De esta manera, se mejora la calibración sin afectar la discriminación del modelo, es decir, las clases más probables siguen siendo las mismas.
+
+Entre sus ventajas destacan:
+\begin{itemize}
+    \item Muy simple: un solo parámetro.
+    \item Mantiene la discriminación de las clases.
+    \item Efectivo para corregir sobreconfianza típica en redes profundas.
+\end{itemize}
+
+Se ha escogido este algoritmo ya que es el utilizado en trabajos recientes sobre técnicas de Conformal Prediction para clasificación \cite{angelopoulos2020, huang2023conformal}.
 
 % ------------------------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
 
 \subsection{Métodos de predicción conformal para clasificación}
 
-\subsubsection{\textit{Least-Ambiguous set-valued Classifiers} (LAC)}
+\subsubsection{Least-Ambiguous set-valued Classifiers (LAC)}
 
 LAC \cite{sadinle2019} es el primer método propuesto de predicción conformal para problemas de clasificación. Propone un enfoque de clasificación de conjuntos de valores (\textit{set-valued classification}) en el que, en lugar de asignar una única etiqueta a cada instancia, se selecciona un conjunto de etiquetas que garanticen un nivel de confianza predeterminada por el usuario.
 
@@ -499,9 +517,20 @@ $$
 k = min\left\{ j: \sum_{i=1}^{j} \hat{\pi}_{(i)}(x_{n+1}) \ge \delta_\alpha \right\} 
 $$
 
+Una extensión útil de APS consiste en introducir una \textbf{componente aleatoria} durante la fase de calibración para compensar la tendencia del método a la \textit{sobrecobertura}. En este ajuste, cuando se calcula la puntuación de no conformidad para una instancia de calibración, se decide excluir la contribución de la última clase incluida (aquella correspondiente a la etiqueta verdadera $y_i$) con una probabilidad proporcional al exceso de cobertura ---respecto al nivel de confianza $1-\alpha$--- que dicha clase genera.
+
+Formalmente, sea:
+$$
+V_i = \frac{A(x_i, y_i) - (1-\alpha)}{\hat{\pi}_{(k)}(x_i)} \quad \text{con} \quad (k) = y_i
+$$
+donde $A$ es la puntuación de no conformidad estándar de APS y $\hat{\pi}_{(k)}$ la probabilidad de la última clase incluida.  
+Se genera un valor aleatorio $u_i \sim \mathcal{U}(0,1)$ y, si $u_i > V_i$ y la clase verdadera no está en primera posición ($k \ge 2$), se elimina completamente la contribución de dicha clase de la suma acumulada. En caso contrario, se mantiene la puntuación original.
+
+De este modo, las instancias en las que la última clase aporta un exceso notable de cobertura tienen mayor probabilidad de ser recortadas, reduciendo así el umbral de no conformidad $\delta_\alpha$ y produciendo conjuntos de predicción más pequeños, sin comprometer significativamente la cobertura global. En la fase de inferencia, el procedimiento de construcción de $\Gamma_\alpha(x_{n+1})$ se mantiene idéntico, pero el umbral reducido provoca que se necesiten menos clases para alcanzar el criterio, generando así \textbf{conjuntos de predicción más pequeños} en promedio, y que siguen garantizando estadísticamente la cobertura marginal.
+
 Este algoritmo, al igual que LAC, solo garantiza cobertura marginal, pero genera \textbf{conjuntos de predicción más adaptativos} respecto a la incertidumbre inherente a la predicción de cada instancia. A diferencia de métodos con umbrales fijos, ajusta dinámicamente el tamaño de los conjuntos según la confianza del modelo en regiones específicas del espacio de características.
 
-Sin embargo, en la práctica se ha observado que esta adaptabilidad conlleva \textbf{conjuntos de predicción más grandes en promedio} \cite{romano2020, angelopoulos2020}. Este fenómeno es un \textit{trade-off} inherente al intentar \textbf{aproximar la cobertura condicional} sin asumir distribuciones subyacente, que analizaremos en profundidad con nuestros datos en la experimentación. 
+Sin embargo, en la práctica se ha observado que esta adaptabilidad conlleva \textbf{conjuntos de predicción más grandes en promedio} \cite{romano2020, angelopoulos2020}. Este fenómeno es un \textit{trade-off} inherente al intentar \textbf{aproximar la cobertura condicional} sin asumir distribuciones subyacente, que analizaremos en profundidad con nuestros datos en la experimentación.
 
 % ------------------------------------------------------------------------------------------------------------
 
@@ -539,11 +568,14 @@ $$
 
 Y el conjunto de predicción para una nueva instancia $x_{n+1}$ se construye como
 
-$$
-\Gamma_\alpha(x_{n+1})= \left\{ (1), ..., (k) \right\} \textnormal{ donde } k = min\left\{ j: \sum_{i=1}^{j} \pi_{(i)}(x_{n+1}) + \lambda (k-k_{reg})^+  \ge \delta_\alpha \right\}
-$$
+\begin{align*} 
+\Gamma_\alpha(x_{n+1})= &\left\{ (1), ..., (k) \right\} \textnormal{ donde }\\
+& k = \min \left\{ j: \sum_{i=1}^{j} \pi_{(i)}(x_{n+1}) + \lambda (k-k_{reg})^+  \ge \delta_\alpha \right\}
+\end{align*}
 
 Gracias a la regularización, RAPS tiende a generar conjuntos de predicción más pequeños que APS, especialmente cuando la clase verdadera se encuentra entre las más probables (y por tanto el hiperparámetro $k_{reg}$ tiene un valor bajo).
+
+Al igual que APS, también admite una \textbf{componente aleatoria}, que funciona de igual manera: durante la fase de calibración, se calcula para cada instancia la probabilidad de excluir la contribución de la última clase incluida ---aquella correspondiente a la etiqueta verdadera--- considerando también el término de regularización, en función del exceso de cobertura que produce respecto al nivel nominal $1-\alpha$.
 
 % ------------------------------------------------------------------------------------------------------------
 
@@ -557,21 +589,37 @@ SAPS argumenta que muchas de estas probabilidades de baja magnitud representan i
     \item el orden de clasificación de las clases según el modelo.
 \end{itemize}
 
-A partir de esta representación reducida, SAPS ordena las clases por probabilidad decreciente y aplica un esquema adaptativo de umbral basado en la posición en el ranking, en lugar de en el valor absoluto de la probabilidad. De esta forma, se evita el efecto negativo de las colas largas y se prioriza la inclusión de clases con mayor relevancia relativa según el modelo.
+A partir de esta representación reducida, las clases se ordenan por probabilidad decreciente y se define una función de no conformidad que combina la probabilidad máxima con la posición $k$ de la clase verdadera en el ranking. El objetivo es que la inclusión de una clase dependa más de su relevancia relativa que de su probabilidad absoluta, evitando el efecto adverso de las colas largas.
 
+A diferencia de los anteriores métodos adaptativos, este método incluye la \textbf{componente aleatoria} desde su planteamiento inicial. La función de no conformidad propuesta es:
 
+$$
+A(x_i, y_i) = \hat{\pi}_{max}(x_i) + \lambda \,(k - 2 + u_i)
+$$
 
+donde:  
+\begin{itemize}
+    \item $\hat{\pi}_{\max}(x_i)$ corresponde a la probabilidad más alta predicha por el modelo,  
+    \item $\lambda$ es un parámetro de regularización que incrementa la penalización a medida que la clase verdadera se aleja de las primeras posiciones del ranking,  
+    \item $k$ indica la posición de $y_i$ en el ranking de salida (con $k=1$ para la clase más probable, $k=2$ para la segunda, y así sucesivamente),  
+    \item $u_i \sim \mathcal{U}(0,1)$ introduce un componente aleatorio continuo que suaviza la penalización y evita empates exactos.
+\end{itemize}
 
-\todo{Por completar (JULIO)}
+Obsérvese que la penalización efectiva se aplica sobre el término $k - 2 + u_i$: no se penaliza la clase en primera posición ($k=1$), mientras que para las siguientes posiciones la penalización crece de forma lineal. La inclusión de $u_i$ hace que la penalización de la última clase considerada se distribuya de manera uniforme en el intervalo $(k-1, k)$, lo que garantiza aleatoriedad controlada y una calibración más estable.
 
-Al enfocarse en esta información comprimida y más representativa, SAPS logra generar conjuntos más compactos, sin comprometer la garantía de cobertura estadística que exige el marco de predicción conforme.
+El umbral de no conformidad $\delta_\alpha$ se calcula a partir de las puntuaciones $A(x_i, y_i)$ en el conjunto de calibración, de forma análoga a APS y RAPS:
+$$
+\delta_\alpha = Quantile_{\lceil (1-\alpha)(1+1/n) \rceil} \left( \left\{ A(x_i, y_i) \right\}_{i=1}^n \right)
+$$
 
+En la fase de inferencia, el conjunto de predicción para una nueva instancia $x_{n+1}$ se construye añadiendo las clases en orden decreciente de probabilidad, calculando para cada una la puntuación de no conformidad y deteniéndose cuando esta supera el umbral $\delta_\alpha$:
 
+\begin{align*}
+\Gamma_\alpha(x_{n+1}) = &\left\{ (1), \dots, (k) \right\} \ \textnormal{donde} \\
+& k = \min \left\{ j : \hat{\pi}_{max}(x_{n+1}) + \lambda (j - 1) \ge \delta_\alpha \right\}
+\end{align*}
 
-
-
-Primero, en su planteamiento, y a diferencia de los métodos anteriores, no define una métrica de no conformidad, sino más bien una métrica de confianza, 
-
+Gracias a esta estrategia basada en orden y probabilidad máxima, SAPS genera conjuntos de predicción más compactos que APS y RAPS en escenarios con distribuciones de salida muy sesgadas, manteniendo la cobertura marginal deseada y reduciendo la inclusión de clases irrelevantes.
 
 
 % ------------------------------------------------------------------------------------------------------------
@@ -768,14 +816,12 @@ Por otro lado, para la clasificación multietiqueta emplearemos:
 \end{itemize}
 
 
-Y, finalmente, también usaremos elementos visuales para valorar el desempeño de las predicciones interválicas:
+Y, finalmente, también usaremos elementos visuales para valorar el desempeño de las predicciones interválicas, como pueden ser:
 
 \begin{itemize}
 
     \item \textbf{Gráfica de dispersión de Cobertura Empírica - Tamaño Medio del Conjunto de Predicción}: Este gráfico permite visualizar el compromiso entre cobertura lograda y tamaño del intervalo. Un buen modelo debería situarse cerca del nivel de confianza objetivo con intervalos lo más cortos posible. 
 
-    \item \textbf{Histograma de tamaños de conjuntos de predicción}: 
-
-    \item  \textbf{Gráfica de barras de cobertura en base al tamaño del conjunto}. Esta gráfica muestra la cobertura empírica lograda para cada tamaño del conjunto de predicción. Esto permite visualizar en qué tamaños de conjunto el modelo tiende a infracubir o sobrecubrir más en cuanto a cobertura.
-
+    \item \textbf{Histograma de tamaños de conjuntos de predicción}: De similar forma a como se plantean los histogramas de amplitudes de intervalos para regresión, se puede plantear histograma donde cada tamaño es el número de clases del conjunto predicho. Este nos permite ver la distribución de tamaños de conjuntos de predicción. Aquellos con pocas clases serán más informativos, mientras que tamaños más grnades pueden revelar una incertidumbre elevada.
+    
 \end{itemize}

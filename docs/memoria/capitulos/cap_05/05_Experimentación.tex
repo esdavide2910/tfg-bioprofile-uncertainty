@@ -158,7 +158,7 @@ En este caso, también se han obtenido 10 modelos independientes para cada méto
 % }
 
 
-Para el problema de clasificación de edad, se ha empleado la técnica de calibración de probabilidades \textit{Platt Scaling} para ajustar las salidas del modelo de clasificación multiclase, con el objetivo de mejorar la calidad de las probabilidades utilizadas durante la fase de inferencia conformal. Esta calibración probabilística se realiza antes del \textit{softmax}. Se ha optado por utilizar el conjunto de validación para llevar a cabo dicha calibración de probabilidades, dado que, aunque no es el enfoque más riguroso ---ya que lo ideal sería dividir el conjunto de calibración en dos subconjuntos independientes, uno para la calibración de probabilidades y otro para la calibración conformal--- esta estrategia mostró buenos resultados en la práctica. Esto se debe a que el conjunto de validación empleado era suficientemente representativo y permitió obtener probabilidades calibradas de manera adecuada. Esta calibración probabilística no afecta a la variabilidad entre modelos con los mismos parámetros, dado que el algoritmo es determinista y produce resultados consistentes para un mismo conjunto de datos y parámetros. 
+Para el problema de clasificación de edad, se ha empleado la técnica de calibración de probabilidades \textit{Temperature Scaling} para ajustar las salidas del modelo de clasificación multiclase, con el objetivo de mejorar la calidad de las probabilidades utilizadas durante la fase de inferencia conformal. Esta calibración probabilística se realiza antes del \textit{softmax}. Se ha optado por utilizar el conjunto de validación para llevar a cabo dicha calibración de probabilidades, dado que, aunque no es el enfoque más riguroso ---ya que lo ideal sería dividir el conjunto de calibración en dos subconjuntos independientes, uno para la calibración de probabilidades y otro para la calibración conformal--- esta estrategia mostró buenos resultados en la práctica. Esto se debe a que el conjunto de validación empleado era suficientemente representativo y permitió obtener probabilidades calibradas de manera adecuada. Esta calibración probabilística no afecta a la variabilidad entre modelos con los mismos parámetros, dado que el algoritmo es determinista y produce resultados consistentes para un mismo conjunto de datos y parámetros. 
 
 Los métodos propuestos para este problema son:
 
@@ -170,9 +170,9 @@ Los métodos propuestos para este problema son:
 
     \item \textbf{Método `MCM'}: Implementa la técnica MCM para CP. El modelo será exactamente el mismo que el de LAC para este mismo problema. 
 
-    \item \textbf{Método `APS'}: Implementa la técnica APS para CP. El modelo será exactamente el mismo que el de LAC para este mismo problema.
+    \item \textbf{Método `APS'}: Implementa la técnica APS para CP, con componente aleatoria para tamaños de conjunto de predicción más ajustados. El modelo será exactamente el mismo que el de LAC para este mismo problema.
 
-    \item \textbf{Método `RAPS'}: Implementa la técnica RAPS para CP. El modelo será exactamente el mismo que el de LAC para este mismo problema. 
+    \item \textbf{Método `RAPS'}: Implementa la técnica RAPS para CP, también con componente aleatoria. El modelo será exactamente el mismo que el de LAC para este mismo problema. 
     
     \item \textbf{Método `SAPS'}: Implementa la técnica SAPS para CP. Usará el mismo modelo que LAC. 
 
@@ -184,7 +184,7 @@ Los métodos propuestos para este problema son:
     \caption[
         Esquema de experimentación para la clasificación de edad. 
     ]{
-        Esquema de experimentación para la clasificación de edad. Se recuerda que LAC, MCM, APS, RAPS y SAPS refieren a los métodos de CP para clasificación presentados en el anterior capítulo. 
+        Esquema de experimentación para la clasificación de edad. Se recuerda que LAC, MCM, APS, RAPS y SAPS refieren a los métodos de CP para clasificación presentados en el anterior capítulo; y \textit{Temp. Scaling} hace referencia a \textit{Temperature Scaling}.
     } 
     \label{fig:AGC_experimental_pipeline}
 \end{figure}
