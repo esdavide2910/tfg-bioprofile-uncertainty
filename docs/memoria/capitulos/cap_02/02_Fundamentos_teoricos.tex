@@ -806,19 +806,19 @@ el sobreajuste. Veamos algunas de las técnicas empleadas en CNNs:
 \end{itemize}
 
 
-\subsubsection{Conexiones residuales}
+% \subsubsection{Conexiones residuales}
 
-Uno de los principales problemas que no permite aumentar mucho la profundidasd de las redes convolucionales 
-es el desvanecimiento de gradiente (\textit{vanishing gradient problem}), que consiste en la disminución 
-exponencial de los gradientes durante el proceso de \textit{backpropagation} a medida que se retrocede hacia 
-las capas iniciales de la red. Algunas de las soluciones a este problema han sido: utilizar funciones de 
-activación ReLU, ya que evita gradientes pequeños para valores positivos; inicializar adecuadamente los pesos
-de la red; o \textit{batch normalization}, que estabiliza la distribución de las activaciones. Sin embargo,
-las conexiones residuales han sido la contribución más significativa para resolver este problema.
+% Uno de los principales problemas que no permite aumentar mucho la profundidasd de las redes convolucionales 
+% es el desvanecimiento de gradiente (\textit{vanishing gradient problem}), que consiste en la disminución 
+% exponencial de los gradientes durante el proceso de \textit{backpropagation} a medida que se retrocede hacia 
+% las capas iniciales de la red. Algunas de las soluciones a este problema han sido: utilizar funciones de 
+% activación ReLU, ya que evita gradientes pequeños para valores positivos; inicializar adecuadamente los pesos
+% de la red; o \textit{batch normalization}, que estabiliza la distribución de las activaciones. Sin embargo,
+% las conexiones residuales han sido la contribución más significativa para resolver este problema.
 
-Las \textbf{redes residuales (\textit{residual nets}, ResNet)} 
+% Las \textbf{redes residuales (\textit{residual nets}, ResNet)} 
 
-\todo{Por completar (AGOSTO)}
+% \todo{Por completar (AGOSTO)}
 
 %https://www.jeremyjordan.me/nn-learning-rate/
 
@@ -1012,18 +1012,23 @@ Existe una gran variedad de técnicas de UQ. Estas técnicas pueden clasificarse
 \end{itemize} 
 
 
+Algunas técnicas específicas de UQ en modelos ML se dividen en cuatro grupos:
+
 \begin{itemize}
+
     \item \textbf{Procesos de regresión gausiana (\textit{gaussian process regression}, GPR)}: 
-    
-    \item \textbf{Técnicas bayesianas}: Monte Carlo Dropout,
-    redes neuronales bayesianas (\textit{bayesian neural networks}, BNNs)
+    Modelos no paramétricos que proporcionan una distribución completa sobre funciones posibles, permitiendo obtener predicciones con intervalos de confianza naturales. Son especialmente útiles en problemas de regresión con pocos datos y cuando la estimación de incertidumbre es crítica \cite{rasmussen2003}.
 
-    \item \textbf{Técnicas \textit{ensemble}}:  
-    
-    \item Métodos deterministas: 
+    \item \textbf{Redes neuronales bayesianas}: \textit{Markov Chain Monte Carlo} \cite{neal2012}, \textit{Variational Inference} \cite{blundell2015} y \textit{Monte Carlo Dropout} \cite{gal2016} incorporan incertidumbre de manera explícita en los parámetros del modelo o en la estructura de la red, generando distribuciones sobre las predicciones en lugar de valores puntuales.
 
+    \item \textbf{Técnicas \textit{ensemble}}: Agrupan múltiples modelos independientes o variantes del mismo modelo para mejorar la robustez de las predicciones. La variabilidad entre los miembros del \textit{ensemble} se utiliza como medida de incertidumbre. Ejemplos incluyen \textit{bagging}, \textit{boosting} y \textit{deep ensembles} \cite{opitz1999}.
+
+    \item \textbf{Métodos deterministas}: Aproximaciones que estiman la incertidumbre sin recurrir a técnicas probabilísticas, generalmente mediante reformulaciones del modelo que generan límites superiores e inferiores sobre las predicciones, como los métodos basados en \textit{predicción conformal} \cite{papadopoulos2002, sadinle2019, angelopoulos2021}.
+    
 \end{itemize}
 
+En este trabajo exploraremos la predicción el método determinista de predicción conformal, de los métodos más flexibles que hay: mayormente \textit{model-agnostic} y aplicable sobre cualquier distribución de datos, si bien sí asume intercambiabilidad entre observaciones. Esta es una técnica fácil de implementar y proporciona intervalos de predicción válidos para un nivel de confianza, permitiendo cuantificar la incertidumbre de manera robusta con conjuntos de datos limitados. 
+ 
 % \todo{Pablo: De hecho, aquí repites cosas... Tal y como dices, se ve que está por completar... Aún así, como consejo para todo lo que falta por completar: no te rayes ni líes mucho. Ya llevas 131 páginas y, bajo ningún concepto, queremos superar por mucho este valor (150 páginas podría estar bien, pero mucho más de eso... me parecería excesivo). Da pinceladas que demuestren que entiendes de lo que hablas, pero sin entrar en demasiado detalle. Si alguien quiere saber más: que se lea las referencias que incluyas y/o que te pregunte durante la defensa.}
 
 
@@ -1142,25 +1147,6 @@ Existe una gran variedad de técnicas de UQ. Estas técnicas pueden clasificarse
 % \end{itemize}
 
 
-% Otra técnica que no ...
-
-
-% \todo{Introducir la predicción conformal}
-
-
-
-% \subsubsection{Cuantificación de la incertidumbre en problemas de clasificación}
-
-% Por otro lado, en el caso de los problemas de clasificación, el concepto equivalente
-% al de intervalo de predicción se denomina \textbf{conjunto de predicción (\textit{prediction set})}, 
-% que puede construirse mediante técnicas como estimaciones de probabilidad calibrada o predicción conformal. 
-
-
-
-% \todo{¿Introducir la calibración de modelos y centrarse en el Platt Scaling y Temperature Scaling?}
-
-
-% \todo{Introducir la predicción conformal}
 
 
 

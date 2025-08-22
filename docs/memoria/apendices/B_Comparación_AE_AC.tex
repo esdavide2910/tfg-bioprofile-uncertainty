@@ -1,0 +1,38 @@
+\chapter{Comparación de resultados de estimación de edad y clasificación de edad}
+
+Es interesante comparar los resultados obtenidos en los problemas de estimación de edad y clasificación de edad, ya que existe una correspondencia directa entre ambos enfoques, si bien es necesario salvar ciertas distancias conceptuales y asumir limitaciones metodológicas. Esto se debe a que, mientras el primero trata valores como 17.1 y 17.9 como datos numéricamente diferenciados ---aunque relativamente próximos---, el segundo los interpreta dentro de una misma categoría, es decir, 17 años, sin capturar la variación interna que existe dentro de la clase. A pesar de ello, dado que existe un número relativamente alto de edades posibles y la variabilidad inherente a la predicción suele estar bastante dispersa en el dominio de predicción, se puede establecer una relación entre ambas tareas.
+
+En la Tabla \ref{tab:AE_AC_comparative} se muestran los resultados de los mejores algoritmos en cada modalidad según dos métricas clave: la cobertura empírica y el tamaño medio del conjunto (en clasificación) o la amplitud media del intervalo (en regresión). Se observa que ningún método domina claramente sobre ningún otro; es decir, no existe un algoritmo que consiga simultáneamente una mayor cobertura y un menor tamaño/amplitud media del intervalo predictivo. Esto nos lleva a pensar que los tres algoritmos están sobre una frontera de compromiso de valor similar.
+
+Tendríamos que valorarlo por otras aspectos como adaptatividad en base a tamaño o edad cronológica
+
+\renewcommand{\arraystretch}{1.4}
+\begin{table}[htbp]
+    \small 
+    \centering
+    \begin{tabular}{ccccccccc}
+    \toprule
+    \multirow{2}{*}{\textbf{Ejecución}} &  & \multicolumn{3}{c}{\textbf{\begin{tabular}[c]{@{}c@{}}Cobertura \\[-0.8ex] Empírica (\%)\end{tabular}}} &  & \multicolumn{3}{c}{\textbf{\begin{tabular}[c]{@{}c@{}}Tamaño Medio \\[-0.8ex] del Conjunto\end{tabular}}} \\ \cline{3-5} \cline{7-9} 
+ &  & \textbf{CQR} & \textbf{LAC} & \textbf{SAPS} &  & \textbf{CQR} & \textbf{LAC} & \textbf{SAPS} \\ \cline{1-1} \cline{3-5} \cline{7-9} 
+    Ejecución 1 &  & 95.31 & 94.66 & 94.98 &  & 6.23 & 5.79 & 6.05 \\
+    Ejecución 2 &  & 94.80 & 94.24 & 95.12 &  & 6.11 & 5.76 & 6.03 \\
+    Ejecución 3 &  & 95.45 & 95.21 & 95.26 &  & 6.02 & 6.04 & 6.17 \\
+    Ejecución 4 &  & 94.61 & 94.89 & 94.80 &  & 5.90 & 5.86 & 5.98 \\
+    Ejecución 5 &  & 94.93 & 95.17 & 95.21 &  & 5.92 & 5.77 & 6.16 \\
+    Ejecución 6 &  & 94.33 & 94.80 & 95.45 &  & 5.94 & 5.80 & 6.08 \\
+    Ejecución 7 &  & 95.26 & 93.91 & 94.56 &  & 6.00 & 5.69 & 6.07 \\
+    Ejecución 8 &  & 95.12 & 95.59 & 95.86 &  & 6.08 & 6.03 & 6.28 \\
+    Ejecución 9 &  & 94.93 & 94.70 & 95.59 &  & 6.06 & 5.86 & 6.15 \\
+    Ejecución 10 &  & 94.56 & 94.14 & 94.80 &  & 5.96 & 5.88 & 6.36 \\ \cline{1-1} \cline{3-5} \cline{7-9} 
+    Media &  & \textbf{94.93} & \textbf{95.45} & \textbf{95.16} &  & \textbf{6.02} & \textbf{5.85} & \textbf{6.13} \\ 
+    \bottomrule
+    \end{tabular}
+    \caption[
+        Cobertura empírica y 
+    ]{   
+        Cobertura empírica y 
+    }
+    \label{tab:AE_AC_comparative}
+\end{table}
+
+

@@ -4,9 +4,26 @@
 
 \section{Estimación de la edad en antropología forense}
 
-\todo{Incluir gráfica con el número de publicaciones para estimación de la edad en antropología forense}
+En ausencia de documentación escrita confiable y cuando otros métodos como los genéticos o dactilares no son viables, los métodos más precisos para estimar la edad se basan en el análisis del estado de los huesos del cuerpo humano. El número de publicaciones que usan técnicas de antropología para la estimación de edad ha aumentado continuamente en las últimas décadas (véase la Figura \ref{fig:num_papers_1}%
+\footnote{
+    La \textit{query} usada ha sido:
+    
+    TITLE-ABS-KEY ( ( age AND (estimation OR assessment) AND ( bone OR anthropology OR skeleton ) ) ) 
+}%
+), lo que indica un interés creciente en la antropología forense por métodos más precisos y confiables de estimación de edad.
+Los huesos experimentan cambios continuos a lo largo de la vida, y estas transformaciones progresivas permiten determinar la \textit{edad biológica} de un individuo. Esta edad refleja la etapa de desarrollo en la que se encuentra el esqueleto dentro del proceso de cambios que ocurren desde el nacimiento hasta la vejez \cite{byers2023}. Cabe destacar que la edad biológica no siempre coincide con la edad cronológica ---el tiempo transcurrido desde el nacimiento---, pero ambas guardan una correlación significativa, lo que permite aproximaciones razonables en contextos forenses, antropológicos o médicos.
 
-En ausencia de documentación escrita confiable y cuando otros métodos como los genéticos o dactilares no son viables, los métodos más precisos para estimar la edad se basan en el análisis del estado de los huesos del cuerpo humano. Los huesos experimentan cambios continuos a lo largo de la vida, y estas transformaciones progresivas permiten determinar la \textit{edad biológica} de un individuo. Esta edad refleja la etapa de desarrollo en la que se encuentra el esqueleto dentro del proceso de cambios que ocurren desde el nacimiento hasta la vejez \cite{byers2023}. Cabe destacar que la edad biológica no siempre coincide con la edad cronológica ---el tiempo transcurrido desde el nacimiento---, pero ambas guardan una correlación significativa, lo que permite aproximaciones razonables en contextos forenses, antropológicos o médicos.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{capitulos/cap_03/imagenes/num_papers_1.png}
+    \caption[
+        Evolución de las publicaciones que usan técnicas de antropología para la estimación de edad. 
+    ]{
+        Evolución de las publicaciones que usan técnicas de antropología para la estimación de edad. 
+        Información recuperada de Scopus.
+    }
+    \label{fig:num_papers_1}
+\end{figure}
 
 Las técnicas de estimación de edad presentan diferencias significativas en individuos maduros e inmaduros \cite{ubelaker2019}. La diferencia radica en el grado de desarrollo esquelético y dental: en inmaduros, el esqueleto y la dentición no están completamente formados, por lo que los métodos se basan en patrones de crecimiento y osificación; en contraste, en maduros (con desarrollo completo), las técnicas se enfocan en cambios degenerativos, como el deterioro articular o la pérdida ósea.
 
@@ -32,7 +49,7 @@ Sin embargo, cuando la estimación de edad se realiza en personas vivas, no se t
 } 
 ha publicado recomendaciones estandarizadas sobre cómo llevar a cabo evaluaciones de edad en personas vivas. En estas incluyen estudios como \cite{schmeling2016}: historial clínico, examen físico, radiografía de una mano, radiografía panorámica maxilofacial y si está indicado, una tomografía computerizado de cortes finos de la epífisis mediales de las clavículas. Se suelen combinar múltiples métodos para una mayor exactitud en la predicción. Dependiendo de los asuntos legales, se requerirá la estimación de la edad mínima del individuo o su edad más probable \cite{schmeling2016} (véase un ejemplo en la Figura \ref{fig:x_ray_images}). 
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{capitulos/cap_03/imagenes/X_ray_images.png}
     \caption[
@@ -50,7 +67,24 @@ ha publicado recomendaciones estandarizadas sobre cómo llevar a cabo evaluacion
 
 \section{Estimación de la edad en antropología forense usando \textit{machine learning}}
 
-\todo{Incluir gráfica con el número de publicaciones para estimación de la edad en antropología forense usando ML}
+En la última década, ha aumentado el uso de técnicas de antropología forense combinadas con métodos de ML para la estimación de la edad, como se ilustra en la Figura \ref{fig:num_papers_2}%
+\footnote{
+    La \textit{query} usada ha sido:
+    
+    TITLE-ABS-KEY ( ( age AND estimation AND ( bone OR anthropology OR skeleton ) ) AND ( ( deep AND learning ) OR ( artificial AND intelligence ) ) )
+}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{capitulos/cap_03/imagenes/num_papers_2.png}
+    \caption[
+        Evolución de las publicaciones que usan técnicas de antropología y métodos ML para la estimación de edad. 
+    ]{
+        Evolución de las publicaciones que usan técnicas de antropología y métodos ML para la estimación de edad. 
+        Información recuperada de Scopus.
+    }
+    \label{fig:num_papers_2}
+\end{figure}
 
 Los métodos manuales de estimación del PB se basan en la evaluación visual y en el análisis morfométrico de rasgos esqueléticos. Sin embargo, su aplicación demanda conocimiento especializado, pueden presentar ambigüedades en su formulación que den lugar a interpretaciones variables \cite{berst2001}, y están sujetos a posibles errores de medición \cite{langley2018}, sesgando el proceso y reduciendo su fiabilidad. Estas limitaciones han motivado el desarrollo de métodos automatizados basados en ML, que siguen dos enfoques principales. 
 
@@ -66,7 +100,7 @@ El primero consiste en tomar un método clásico de AF y automatizar sus etapas 
 
 La Figura \ref{fig:MRI_pipeline} ilustra un ejemplo de este enfoque. Entre las propuestas destacadas podemos mencionar BoneXpert \cite{thodberg2008}, que empleaba técnicas clásicas de ML y demostró robustez en poblaciones diversas, tanto en origen geográfico como en condiciones clínicas de adquisición de imágenes \cite{van2009, martin2010, thodberg2010}. 
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{capitulos/cap_01/imagenes/MRI_pipeline.png}
     \caption[
@@ -80,7 +114,7 @@ La Figura \ref{fig:MRI_pipeline} ilustra un ejemplo de este enfoque. Entre las p
 
 En cambio, el auge del \textit{deep learning}, impulsó el aprendizaje extremo a extremo (\textit{end-to-end learning}), donde un único modelo aprende de manera automática tanto la extracción de características como la clasificación/regresión a partir de los datos en bruto. Las redes neuronales convolucionales consiguen eliminar la dependencia de criterios antropológicos preestablecidos, y permiten al modelo extraer por sí mismo las características más relevantes para la tarea en que se entrenan. 
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{capitulos/cap_03/imagenes/end-to-end_learning.png}
     \caption[
@@ -171,7 +205,7 @@ y un modelo con mal desempeño en la población general, puede arrojar buenos re
 
 % ------------------------------------------------------------------------------------------------------------
 
-\section{Estimación del sexo en antropología forense}
+% \section{Estimación del sexo en antropología forense}
 
 
 

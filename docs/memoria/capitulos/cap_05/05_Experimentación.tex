@@ -542,42 +542,28 @@ En el peor de los escenarios, los intervalos más estrechos tenderían a infracu
     \label{fig:AE_EC_by_PIW}
 \end{figure}
 
-En la Figura \ref{fig:AE_EC_by_PIW} se presentan los histogramas de la amplitud de los intervalos de predicción para dos modelos representativos, uno QR y otro CQR. En cada caso, se diferencia visualmente la cantidad de instancias cuya predicción cubre el valor real de aquellas en las que no lo hace. Es notable en ambas figuras la presencia de dos grupos principales de instancias: uno más reducido, asociado a intervalos más estrechos, y otro más numeroso, correspondiente a intervalos de mayor amplitud. Respecto a la cobertura, el modelo QR presenta valores inferiores, lo cual es consistente con su cobertura marginal, que ya se encontraba por debajo del 89\%. En cuanto al ratio entre cobertura e incobertura, este parece mantenerse relativamente estable a lo largo de los distintos rangos de amplitud del intervalo. Sin embargo, para un análisis más detallado y específico sobre cómo varía la cobertura en función del tamaño del intervalo, observemos la información desglosada en la Tabla \ref{tab:AE_EC_by_PIW}.
+En la Figura \ref{fig:AE_EC_by_PIW} se presentan los histogramas de la amplitud de los intervalos de predicción para dos modelos representativos, uno QR y otro CQR. En cada caso, se diferencia visualmente la cantidad de instancias cuya predicción cubre el valor real de aquellas en las que no lo hace. Es notable en ambas figuras la presencia de dos grupos principales de instancias: uno más reducido, asociado a intervalos más estrechos, y otro más numeroso, correspondiente a intervalos de mayor amplitud. Respecto a la cobertura, el modelo QR presenta valores inferiores, lo cual es consistente con su cobertura marginal, que ya se encontraba por debajo del 89\%. En cuanto al ratio entre cobertura e incobertura, este parece mantenerse relativamente estable a lo largo de los distintos rangos de amplitud del intervalo. Sin embargo, para un análisis más detallado y específico sobre cómo varía la cobertura en función del tamaño del intervalo, observemos la información desglosada en la Figura \ref{fig:AE_coverage_by_interval_width}.
 
-En la Tabla \ref{tab:AE_EC_by_PIW} se ofrece información detallada sobre la cobertura empírica alcanzada por cada método de predicción (en todas sus ejecuciones) en función de diferentes rangos de amplitud del intervalo de predicción. Esta desagregación permite analizar si existe una relación entre el tamaño del intervalo y la capacidad del modelo para cubrir el valor real. 
+En esta figura se ofrece información detallada sobre la cobertura empírica alcanzada por cada método de predicción (en todas sus ejecuciones) en función de diferentes rangos de amplitud del intervalo de predicción. Esta desagregación permite analizar si existe una relación entre el tamaño del intervalo y la capacidad del modelo para cubrir el valor real. 
 
 Como era de esperar, los modelos basados en regresión cuantílica (QR y CQR) presentan una mayor diversidad en la amplitud de sus intervalos, dado que generan límites adaptativos y específicos para cada instancia, a diferencia de los métodos conformales de tamaño más constante.
 
-Llama la atención que se logra sobrecobertura tanto en los intervalos más estrechos como en los más amplios, a costa de una infracobertura en los intervalos de amplitud intermedia, concretamente entre 5.5 y 6.5 años, siendo especialmente más bajas en el último medio tramo, donde la cobertura alcanza un 93.24\%.
+Llama la atención que se logra sobrecobertura tanto en los intervalos más estrechos como en los más amplios, a costa de una infracobertura en los intervalos de amplitud intermedia, concretamente entre 5.5 y 6.5 años, siendo especialmente más bajas en el último medio tramo, donde la cobertura alcanza un 93.14\%.
 
-\todo{No estoy entrando a hacer valoraciones de lo grave o leve que sea que la cobertura se reduzca de un 95 a un 93.4, porque entiendo que aquí entraría mi subjetividad, y esa debe ir más en las conclusiones que aquí, ¿correcto?}
-
-\renewcommand{\arraystretch}{1.4}
-\begin{table}[htbp]
+\begin{figure}[htbp]
     \centering
-    \begin{tabular}{cccccc}
-    \toprule
-    \multirow{2}{*}{\textbf{\begin{tabular}[c]{@{}c@{}}Amplitud del \\[-0.8ex] intervalo\end{tabular}}} &  & \multicolumn{4}{c}{\textbf{Cobertura Empírica (\%)}} \\ \cline{3-6} 
-    &  & \textbf{base} & \textbf{ICP} & \textbf{QR} & \textbf{CQR} \\ \hline
-    $[3.0 , 3.5)$ &  & --    & --    & 91.97 & -- \\
-    $[3.5 , 4.0)$ &  & --    & --    & 92.89 & -- \\
-    $[4.0 , 4.5)$ &  & --    & --    & 88.18 & 100 \\
-    $[4.5 , 5.0)$ &  & 87.99 & --    & 85.59 & 96.72 \\
-    $[5.0 , 5.5)$ &  & --    & --    & 89.44 & 96.39 \\
-    $[5.5 , 6.0)$ &  & --    & --    & 97.12 & 94.56 \\
-    $[6.0 , 6.5)$ &  & --    & 94.84 & --    & 93.14 \\
-    $[6.5 , 7.0)$ &  & --    & --    & --    & 96.20 \\
-    $[7.0 , 7.5)$ &  & --    & --    & --    & 97.85 \\
-    $[7.5 , 8.0)$ &  & --    & --    & --    & 100 \\ 
-    \bottomrule
-    \end{tabular}
+    \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AE_coverage_by_interval_width.png}
     \caption[
-        Cobertura empírica del intervalo de predicción obtenida por cada método de predicción para distintas franjas de amplitud de intervalos.
+        Mapa de calor de cobertura empírica en base a la amplitud del intervalo de predicción por cada método de predicción a lo largo de las distintas ejecuciones. 
     ]{
-        Cobertura empírica del intervalo de predicción obtenida por cada método de predicción para distintas franjas de amplitud de intervalos. Nota: Estos cálculos se han realizado sobre todas las instancias predichas para cada método en las 10 ejecuciones o entrenamientos realizados. Cabe recordar que la cobertura objetivo es del 95\%. 
+        Mapa de calor de cobertura empírica en base a la amplitud del intervalo de predicción por cada método de predicción a lo largo de las distintas ejecuciones.
+        Se especifica entre paréntesis el número de instancias clasificadas en cada franja de amplitud de intervalo.
+        La escala de colores está centrada en la cobertura nominal ($0.95$): los valores por debajo de este umbral se representan en tonos rojos, los superiores en tonos azules, y el blanco indica una cobertura empírica equivalente a la nominal.
     }
-    \label{tab:AE_EC_by_PIW}
-\end{table}
+    \label{fig:AE_coverage_by_interval_width}
+\end{figure}
+
+
 
 % ------------------------------------------------------------------------------------------------------------
 
@@ -586,7 +572,7 @@ Llama la atención que se logra sobrecobertura tanto en los intervalos más estr
 Por último, se ha analizado la cobertura en base a la edad real de los individuos, ya que resulta crucial identificar posibles sesgos en el desempeño del modelo a lo largo de esta variable. 
 La Figura \ref{fig:AE_EC_MPIW_by_true_age} muestra la evolución de la cobertura empírica y el ancho medio de los intervalos de predicción en función de la edad cronológica%
 \footnote{
-    Parte entera (suelo) de la edad real.
+    Parte entera o suelo de la edad real.
 }.
 
 Se observa que todos los métodos tienden a reducir su cobertura conforme aumenta la edad cronológica de los individuos. Esta disminución es especialmente notable a partir de los 22 años, afectando incluso al método CQR, el método hasta ahora con la cobertura más robusta.
@@ -595,9 +581,9 @@ En particular, CQR logra mantener una cobertura cercana al 95\% para individuos 
 
 \begin{itemize}
 
-    \item Escasez de ejemplos en edades avanzadas: El conjunto de datos presenta una disminución en el número de muestras a partir de los 23 años, lo que coincide con la reducción en la cobertura predictiva. 
+    \item Escasez de ejemplos en edades avanzadas: El conjunto de datos presenta una disminución en el número de muestras a partir de los 23 años, lo que coincide con la reducción en la cobertura predictiva. Esto causaría incertidumbre epistémica.
     
-    \item Mayor variabilidad fisiológica en adultos jóvenes: A medida que aumenta la edad, los individuos suelen presentar una mayor diversidad en sus características biológicas debido a la acumulación de factores ambientales y estilos de vida \cite{ubelaker2018, scheuer2004}.
+    \item Mayor variabilidad fisiológica en adultos jóvenes: A medida que aumenta la edad, los individuos suelen presentar una mayor diversidad en sus características biológicas debido a la acumulación de factores ambientales y estilos de vida \cite{ubelaker2018, scheuer2004}. En este caso, esta incertidumbre sería estocástica, ya que es inherente al sistema. 
 
 \end{itemize}
 
@@ -665,6 +651,14 @@ En particular, CQR logra mantener una cobertura cercana al 95\% para individuos 
     }
     \label{fig:AE_EC_MPIW_by_true_age}
 \end{figure}
+
+% ------------------------------------------------------------------------------------------------------------
+
+\subsubsection{Discusión de resultados}
+
+El método CQR se posiciona como el claro ganador en todos los apartados analizados. Este resultado era previsible, ya que se trata del único método conformal y adaptativo considerado en el estudio.
+
+Destaca por presentar la menor amplitud media de los intervalos, manteniendo al mismo tiempo una cobertura muy próxima a la nominal. Además, al ser el único método conformal adaptativo de la lista, ofrece una ventaja estructural frente a los demás. Sus tasas de cobertura empírica son consistentes para diferentes amplitudes de intervalo, y sobresale especialmente en los casos con pocas instancias de edades cronológicas avanzadas, donde logra adaptarse a la mayor incertidumbre ampliando de forma adecuada el intervalo de predicción.
 
 \FloatBarrier
 
@@ -759,7 +753,7 @@ La Tabla \ref{tab:AMM_EC_MPSS_comparative} presenta las métricas sobre los conj
     Ejecución 9 &  & 87.13 & 94.52 & 93.87 &  & 1 & 1.19 & 1.19 \\
     Ejecución 10 &  & 87.78 & 94.47 & 94.47 &  & 1 & 1.19 & 1.20 \\ 
     \cline{1-1} \cline{3-5} \cline{7-9} 
-    Media &  & 87.63 & 94.60 & 94.17 &  & 1 & 1.20 & 1.20 \\
+    Media &  & 87.63 & \textbf{94.60} & \textbf{94.17} &  & 1 & \textbf{1.20} & \textbf{1.20} \\
     \bottomrule
     \end{tabular}
     \caption[
@@ -822,7 +816,7 @@ Respecto al método `base', cabe señalar que la cobertura para cada clase coinc
 
 Resulta llamativo que el método LAC muestre infracobertura en las instancias de menores de 18 años y sobrecobertura en aquellas de 18 años o más, mientras que en el caso del método MCM ocurre lo contrario, lo que querría indicar que LAC es más fiable para estimaciones en población adulta, mientras que MCM ofrecería mejores resultados en población menor de edad. 
 
-Si la prioridad en la predicción fuera maximizar la cobertura de los menores, para proteger sus derechos y minimizar el riesgo de exclusión o clasificación errónea en decisiones sensibles, entonces el método MCM sería el más adecuado, ya que ofrece una mayor proporción de aciertos en este grupo etario, incluso a costa de una ligera sobrecobertura en el resto de la población.
+
 
 
 \begin{figure}[htbp]
@@ -880,6 +874,14 @@ Si la prioridad en la predicción fuera maximizar la cobertura de los menores, p
     \label{fig:conf2matrix}
 \end{figure}
 
+% ------------------------------------------------------------------------------------------------------------
+
+\subsubsection{Discusión de resultados}
+
+Basándonos únicamente en el criterio de cobertura/tamaño medio del conjunto, el método LAC presenta clara ventaja, ya que ofrece una mayor cobertura al mismo tamaño medio del conjunto que MCM.
+
+Sin embargo, si la prioridad en la predicción conformal fuera maximizar la cobertura en los casos de menores, para proteger sus derechos y minimizar el riesgo de exclusión o clasificación errónea en decisiones sensibles, entonces el método MCM sería el más adecuado, ya que ofrece una mayor proporción de aciertos en este grupo etario, incluso a costa de una ligera infracobertura en el resto de la población.
+
 
 \FloatBarrier
 % ------------------------------------------------------------------------------------------------------------
@@ -889,7 +891,7 @@ Si la prioridad en la predicción fuera maximizar la cobertura de los menores, p
 % ------------------------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
 
-\section{Experimentación para la estimación de edad como problema de clasificación}
+\section{Experimentación para la clasificación de edad}
 
 % ------------------------------------------------------------------------------------------------------------
 
@@ -1079,7 +1081,8 @@ La Figura \ref{fig:AGC_coverage_by_PSS} presenta un mapa de calor que resume, pa
         Mapa de calor de cobertura empírica en base al tamaño del conjunto por cada método de predicción a lo largo de las distintas ejecuciones.
     ]{
         Mapa de calor de cobertura empírica en base al tamaño del conjunto por cada método de predicción a lo largo de las distintas ejecuciones. 
-        La escala de colores está centrada en la cobertura nominal ($0.95$): los valores por debajo de este umbral se representan en tonos azules, los superiores en tonos rojos, y el blanco indica una cobertura empírica equivalente a la nominal.
+        Se especifica entre paréntesis el número de instancias clasificadas en cada franja de amplitud de intervalo.
+        La escala de colores está centrada en la cobertura nominal ($0.95$): los valores por debajo de este umbral se representan en tonos rojos, los superiores en tonos azules, y el blanco indica una cobertura empírica equivalente a la nominal.
     }
     \label{fig:AGC_coverage_by_PSS}
 \end{figure}
@@ -1162,17 +1165,29 @@ Entre los métodos, se identifican algunos patrones destacables:
 
 \begin{itemize}
 
-    \item MCM presenta una alta variabilidad, con infracobertura y sobrecobertura distribuidas de manera irregular a lo largo de las edades, probablemente debido a la limitada representatividad de las puntuaciones de no conformidad en cada clase.
+    \item \textbf{MCM} presenta una alta variabilidad, con infracobertura y sobrecobertura distribuidas de manera irregular a lo largo de las edades, probablemente debido a la limitada representatividad de las puntuaciones de no conformidad en cada clase.
     
     % \item RAPS y SAPS son los más afectados en términos de cobertura para edades avanzadas.
     
-    \item SAPS, de manera consistente con lo observado en el apartado anterior, mantiene una mayor estabilidad en el tamaño medio de los conjuntos. Además, es el método que mejor cobertura logra para edades jóvenes menores de 23.
+    \item \textbf{SAPS}, de manera consistente con lo observado en el apartado anterior, mantiene una mayor estabilidad en el tamaño medio de los conjuntos. Además, es el método que mejor cobertura logra para edades jóvenes menores de 23, alcanzando coberturas muy cercanas al 95\%, y en la mayoría de casos superándolo. 
+    
+    El resto de métodos adaptativos y el método LAC presentan tamaño medio de conjunto muy variables para las distintas edades cronológicas, Su cobertura fluctúa alrededor de SAPS, si bien para la mayoría de edades ligeramente por debajo.
     
 \end{itemize}
 
+% ------------------------------------------------------------------------------------------------------------
+
+\subsubsection{Discusión de resultados}
+
 % Dado que se mantiene las proporciones de instancias de cada edad cronológica entre el conjunto de entrenamiento y el de test, es difícil sacar conclusiones de en cómo afecta la cobertura para edades avanzadas. 
 
-% En definitiva, 
+En definitiva, para este problema, LAC y SAPS se perfilan como los métodos más equilibrados, ya que ambos se aproximan a la cobertura nominal y mantienen una adecuada relación entre cobertura y tamaño medio de los conjuntos.
+
+LAC sobresale por su sencillez de implementación y por generar conjuntos de tamaño moderado, que si bien alcanzan una cobertura ligeramente inferior a la nominal, resultan muy eficientes en términos prácticos.
+
+SAPS, por su parte, se caracteriza por producir conjuntos de predicción con tamaños poco variables, ofreciendo una mayor consistencia. Además, presenta una mayor adaptatividad respecto al tamaño, con tasas de cobertura más estables a lo largo de los diferentes tamaños del conjunto. 
+
+En cualquier caso, todos los métodos analizados muestran tasas de cobertura muy bajas en instancias correspondientes a edades avanzadas, lo cual puede atribuirse a la escasez de ejemplos en este rango o a la variabilidad fisiológica inherente en edades avanzadas. Sería, por tanto, recomendable disponer de más datos en estas edades para mejorar la capacidad predictiva y la robustez de los modelos, lo que llevaría a una mejor cobertura.
 
 % ------------------------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------

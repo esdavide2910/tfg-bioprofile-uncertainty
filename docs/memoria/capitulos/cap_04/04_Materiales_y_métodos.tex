@@ -311,7 +311,7 @@ Sin embargo, también presenta importantes limitaciones:
     
     \item \textbf{Intervalo simétrico y no adaptativo}: El intervalo es simétrico, además de tener siempre el mismo ancho ($2q_{1-\alpha}$), no permitiendo adaptarse a la incertidumbre específica de cada predicción. 
 
-    \item \textbf{Sensibilidad a datos ruidosos o OOD}: Si el conjunto de calibración contiene \textit{outliers} o viola el supuesto de intercambiabilidad, el umbral \(q_{1-\alpha}\) puede inflarse, generando intervalos excesivamente conservadores. Tampoco detecta heterocedasticidad automáticamente.
+    \item \textbf{Sensibilidad a datos ruidosos o \textit{Out-of-Distribution} (OOD)}: Si el conjunto de calibración contiene \textit{outliers} o viola el supuesto de intercambiabilidad, el umbral \(q_{1-\alpha}\) puede inflarse, generando intervalos excesivamente conservadores. Tampoco detecta heterocedasticidad automáticamente.
 
 \end{itemize}
 
