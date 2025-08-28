@@ -9,61 +9,29 @@ utilizados en el trabajo, además de justificar su importtancia para abordar los
 
 \section{Machine Learning}
 
-Frente a la idea de intentar crear un programa que simulara directamente el comportamiento inteligente de una 
-``mente adulta'', Alan Turing ya vaticinó un enfoque alternativo \cite{turing1950}: que las máquinas pudieran 
-aprender como lo hace un niño, mediante un ``proceso educativo'' con el cual se logra alcanzar progresivamente 
-una ``mente adulta'', obteniendo así comportamientos inteligentes complejos.
+Frente a la idea de intentar crear un programa que simulara directamente el comportamiento inteligente de una ``mente adulta'', Alan Turing ya vaticinó un enfoque alternativo \cite{turing1950}: que las máquinas pudieran aprender como lo hace un niño, mediante un ``proceso educativo'' con el cual se logra alcanzar progresivamente una ``mente adulta'', obteniendo así comportamientos inteligentes complejos.
 
-En los años 50, surgió el concepto de \textit{machine learning} (ML) ---o aprendizaje automático en
-español---, popularizado por Arthur L. Samuel \cite{samuel1959}, para designar una rama marginal de la IA, 
-centrada en el desarrollo de modelos y algoritmos que permitiesen a las 
-computadoras imitar la forma en la que los humanos aprenden, realizar tareas autónomas y mejorar su 
-rendimiento a través de la experiencia y exposición a más datos. De esta forma, estos modelos podrían realizar 
-predicciones o tomar decisiones sin ser programados para cada caso.
+En los años 50, surgió el concepto de \textit{machine learning} (\acrshort{ML}) ---o aprendizaje automático en español---, popularizado por Arthur L. Samuel \cite{samuel1959}, para designar una rama marginal de la \acrshort{IA}, centrada en el desarrollo de modelos y algoritmos que permitiesen a las computadoras imitar la forma en la que los humanos aprenden, realizar tareas autónomas y mejorar su rendimiento a través de la experiencia y exposición a más datos. De esta forma, estos modelos podrían realizar predicciones o tomar decisiones sin ser programados para cada caso.
 
-En las décadas de 1960, 1970 y 1980, surgieron algoritmos fundamentales como el perceptrón 
-\cite{mcculloch1943,rosenblatt1958} o los árboles de decisión \cite{quinlan1986}, 
-que sentaron los cimientos teóricos para el desarrollo posterior de técnicas más complejas.  
-Sin embargo, el progreso fue lento debido a las limitaciones computacionales y el gran escepticismo académico. 
+En las décadas de 1960, 1970 y 1980, surgieron algoritmos fundamentales como el perceptrón \cite{mcculloch1943,rosenblatt1958} o los árboles de decisión \cite{quinlan1986}, que sentaron los cimientos teóricos para el desarrollo posterior de técnicas más complejas. Sin embargo, el progreso fue lento debido a las limitaciones computacionales y el gran escepticismo académico. 
 
-Los años 90 y 2000 marcaron un punto de inflexión para el ML, gracias a los avances teóricos, el mayor poder 
-computacional y la disponibilidad de grandes volúmenes de datos. De 2010 en adelante, la evolución del ML ha 
-sido exponencial, marcada por la consolidación del \textit{deep learning}, la escalabilidad masiva y su 
-integración en numerosas aplicaciones: de visión por computador, reconocimiento de lenguaje natural, robótica, 
-diagnóstico médico y forense, finanzas o recomendación de contenidos, entre otros. De esta forma, el ML se ha 
-convertido en un campo tan amplio y exitoso que ahora ``eclipsa'' al resto de campos de la IA 
-\cite{domingos2015}.
+Los años 90 y 2000 marcaron un punto de inflexión para el \acrshort{ML}, gracias a los avances teóricos, el mayor poder computacional y la disponibilidad de grandes volúmenes de datos. De 2010 en adelante, la evolución del \acrshort{ML} ha sido exponencial, marcada por la consolidación del \textit{deep learning}, la escalabilidad masiva y su integración en numerosas aplicaciones: de visión por computador, reconocimiento de lenguaje natural, robótica, diagnóstico médico y forense, finanzas o recomendación de contenidos, entre otros. De esta forma, el \acrshort{ML} se ha convertido en un campo tan amplio y exitoso que ahora ``eclipsa'' al resto de campos de la \acrshort{IA} \cite{domingos2015}.
 
-El ML diferencia tres tipos de aprendizaje en base a tres tipos de retroalimentación \cite{rusell2021}: 
+El \acrshort{ML} diferencia tres tipos de aprendizaje en base a tres tipos de retroalimentación \cite{rusell2021}: 
 
 \begin{itemize}
     
-    \item \textbf{Aprendizaje supervisado}, en el que el agente (refiriéndose con este al modelo de ML y su 
-    algoritmo de aprendizaje) observa ejemplos de pares entrada-salida y aprende la función que mejor mapea 
-    las entradas (inputs) a las salidas (outputs) correspondientes. El objetivo es generalizar este 
-    aprendizaje para hacer predicciones precisas sobre datos nuevos y no vistos \cite{bishop2006}.
+    \item \textbf{Aprendizaje supervisado}, en el que el agente (refiriéndose con este al modelo de \acrshort{ML} y su algoritmo de aprendizaje) observa ejemplos de pares entrada-salida y aprende la función que mejor mapea las entradas (\textit{inputs}) a las salidas (\textit{outputs}) correspondientes. El objetivo es generalizar este aprendizaje para hacer predicciones precisas sobre datos nuevos y no vistos \cite{bishop2006}.
 
-    \item \textbf{Aprendizaje por refuerzo}, en el que los datos de entrenamiento no contienen salida 
-    objetivo, sino que contiene posibles resultados junto con medidas de calidad de dicho resultado, es decir, 
-    una función de evaluación del estado. En este tipo de aprendizaje, el agente toma decisiones en un entorno 
-    y recibe recompensas o penalizaciones por las acciones que realiza, ajustando su comportamiento mediante 
-    prueba y error, maximizando la recompensa acumulada en el tiempo \cite{alpaydin2010}.
+    \item \textbf{Aprendizaje por refuerzo}, en el que los datos de entrenamiento no contienen salida objetivo, sino que contiene posibles resultados junto con medidas de calidad de dicho resultado, es decir, una función de evaluación del estado. En este tipo de aprendizaje, el agente toma decisiones en un entorno y recibe recompensas o penalizaciones por las acciones que realiza, ajustando su comportamiento mediante prueba y error, maximizando la recompensa acumulada en el tiempo \cite{alpaydin2010}.
 
-    \item \textbf{Aprendizaje no supervisado}, en el que el agente tampoco dispone de valores de salida, solo 
-    de entrada \cite{bishop2006}, y los objetivos pueden ser muy variados, centrándose en descubrir patrones, 
-    estructuras o relaciones ocultas en los datos. A diferencia de los otros enfoques, aquí no hay una 
-    ``respuesta correcta'' predefinida, sino que el modelo debe inferir conocimiento directamente desde la 
-    distribución de los datos.
+    \item \textbf{Aprendizaje no supervisado}, en el que el agente tampoco dispone de valores de salida, solo de entrada \cite{bishop2006}, y los objetivos pueden ser muy variados, centrándose en descubrir patrones, estructuras o relaciones ocultas en los datos. A diferencia de los otros enfoques, aquí no hay una ``respuesta correcta'' predefinida, sino que el modelo debe inferir conocimiento directamente desde la distribución de los datos.
 
 \end{itemize}
 
-Este trabajo se centrará en el aprendizaje supervisado, pues es este tipo de aprendizaje el empleado en los 
-problemas de clasificación y regresión que aplicaremos en el ámbito de la antropología forense.
+Este trabajo se centrará en el aprendizaje supervisado, pues es este tipo de aprendizaje el empleado en los problemas de clasificación y regresión que aplicaremos en el ámbito de la antropología forense.
 
-El objetivo en el aprendizaje supervisado es establecer una hipótesis que se ajuste de forma óptima a los
-ejemplos futuros. Para ello, se presupone que los ejemplos futuros mostrarán un comportamiento similar a los
-pasados. Bajo este supuesto, el ajuste óptimo de un modelo es, por tanto, la hipótesis que minimiza la tasa
-de error del problema \cite{rusell2021}.
+El objetivo en el aprendizaje supervisado es establecer una hipótesis que se ajuste de forma óptima a los ejemplos futuros. Para ello, se presupone que los ejemplos futuros mostrarán un comportamiento similar a los pasados. Bajo este supuesto, el ajuste óptimo de un modelo es, por tanto, la hipótesis que minimiza la tasa de error del problema \cite{rusell2021}.
 
 
 % Retos en el aprendizaje supervisado
@@ -144,14 +112,9 @@ de error del problema \cite{rusell2021}.
 
 \subsection{Problemas de regresión}
 
-Como se ha mencionado antes, la regresión es un tipo de problema clásico en el aprendizaje supervisado, y 
-consiste en predecir el valor de una o más \textbf{variables continuas} objetivo a partir de unos datos de 
-entrada \cite{bishop2006}, utilizando un modelo entrenado con ejemplos ya con valores conocidos.
+Como se ha mencionado antes, la regresión es un tipo de problema clásico en el aprendizaje supervisado, y consiste en predecir el valor de una o más \textbf{variables continuas} objetivo a partir de unos datos de entrada \cite{bishop2006}, utilizando un modelo entrenado con ejemplos ya con valores conocidos.
 
-Matemáticamente, este proceso implica modelar la relación entre la variable dependiente $Y$ y las variables
-independientes $X$, de modo que se pueda predecir o explicar el comportamiento de $Y$ en función de los 
-valores de $X$. El modelo aprende una función de predicción $f$ que, dado un nuevo ejemplo $i$ con 
-características $X_i$, genera una estimación $\hat{Y_i}$:
+Matemáticamente, este proceso implica modelar la relación entre la variable dependiente $Y$ y las variables independientes $X$, de modo que se pueda predecir o explicar el comportamiento de $Y$ en función de los valores de $X$. El modelo aprende una función de predicción $f$ que, dado un nuevo ejemplo $i$ con características $X_i$, genera una estimación $\hat{Y_i}$:
 
 $$
 f(X_i) = f(X_{i0}, X_{i1}, \dots, X_{in}) = \hat{Y_i} = Y_i + \varepsilon_i
@@ -179,44 +142,28 @@ modelo y optimizar su capacidad predictiva mediante técnicas de ajuste y valida
 
 \subsection{Problemas de clasificación}
 
-En cambio, en los problemas de clasificación, los valores de salida son categóricos, denominados más 
-comúnmente como \textbf{clases}, y a cada valor individual asignado a una instancia de datos se le conoce como 
-\textbf{etiqueta} (\textit{label} en inglés).
+En cambio, en los problemas de clasificación, los valores de salida son categóricos, denominados más comúnmente como \textbf{clases}, y a cada valor individual asignado a una instancia de datos se le conoce como \textbf{etiqueta} (\textit{label} en inglés).
 
 Existen multitud de variante de clasificación, que pueden diferenciarse según diversos criterios:
 
 \begin{itemize}
-    \item En base a la cardinalidad de las clases de salida: \textbf{clasificación binaria o multiclase}, 
-    según si existen dos clases posibles o más de dos, respectivamente.
+    \item En base a la cardinalidad de las clases de salida: \textbf{clasificación binaria o multiclase}, según si existen dos clases posibles o más de dos, respectivamente.
 
-    \item En base al número de etiquetas asignadas a cada instancia: \textbf{clasificación con etiqueta única 
-    o multietiqueta}, según si cada instancia pertenece a una sola clase o a varias de forma simultánea.
+    \item En base al número de etiquetas asignadas a cada instancia: \textbf{clasificación con etiqueta única o multietiqueta}, según si cada instancia pertenece a una sola clase o a varias de forma simultánea.
 
-    \item En base a la certeza de la asignación de clases: \textbf{clasificación con etiqueta precisa o 
-    difusa}, donde en el primer caso la asignación a una clase es determinista, y en el segundo caso se 
-    permite una pertenencia parcial a varias clases, con distinto grados de afinidad.
+    \item En base a la certeza de la asignación de clases: \textbf{clasificación con etiqueta precisa o difusa}, donde en el primer caso la asignación a una clase es determinista, y en el segundo caso se permite una pertenencia parcial a varias clases, con distinto grados de afinidad.
     
 \end{itemize}
 
-No obstante, la mayoría de los problemas estudiados en la literatura de ML, y concretamente en antropología 
-forense, corresponden a clasificación binaria o multiclase, con etiquetas únicas y asignación precisa 
-\cite{bishop2006}, que será el tipo de clasificación en el que nos centraremos. La cardinalidad de las 
-clases tiene implicanciones significativas en el diseño del modelo y la evaluación de su desempeño:
+No obstante, la mayoría de los problemas estudiados en la literatura de \acrshort{ML}, y concretamente en antropología forense, corresponden a clasificación binaria o multiclase, con etiquetas únicas y asignación precisa \cite{bishop2006}, que será el tipo de clasificación en el que nos centraremos. La cardinalidad de las clases tiene implicanciones significativas en el diseño del modelo y la evaluación de su desempeño:
 
 \begin{itemize}
 
-    \item \textbf{Clasificación binaria}, que es aquella en la que existen únicamente dos clases posibles para 
-    la variable objetivo, siendo común en problemas donde se desea discriminar entre dos estados mutuamente 
-    excluyentes (p.ej., ``positivo'' vs. ``negativo'', ``spam'' vs. ``no spam'', ``fraude'' vs. ``no 
-    fraude'').
+    \item \textbf{Clasificación binaria}, que es aquella en la que existen únicamente dos clases posibles para la variable objetivo, siendo común en problemas donde se desea discriminar entre dos estados mutuamente excluyentes (p.ej., ``positivo'' vs. ``negativo'', ``spam'' vs. ``no spam'', ``fraude'' vs. ``no fraude'').
     
-    Se suele denominar a una de las clases como ``positiva'' y a otra como ``negativa'' para facilitar la 
-    interpretación de métricas como la precisión, la sensibilidad o la especifidad, si bien no tiene por qué 
-    existir una connotación valorativa entre ambas clases.
+    Se suele denominar a una de las clases como ``positiva'' y a otra como ``negativa'' para facilitar la interpretación de métricas como la precisión, la sensibilidad o la especifidad, si bien no tiene por qué existir una connotación valorativa entre ambas clases.
     
-    \item \textbf{Clasificación multiclase}: en este caso, la variable objetivo puede tomar más de dos valores 
-    posibles, pertenecientes a un conjunto finito. Un ejemplo de problema clásico es el de clasificar dígitos
-    manuscritos (0-9).
+    \item \textbf{Clasificación multiclase}: en este caso, la variable objetivo puede tomar más de dos valores posibles, pertenecientes a un conjunto finito. Un ejemplo de problema clásico es el de clasificar dígitos manuscritos (0-9).
 
 \end{itemize}
 
@@ -255,20 +202,11 @@ En este tipo de problemas, el error ocurre cuando no se acierta al predecir la c
 
 \section{Deep Learning}
 
-El \textbf{aprendizaje profundo (\textit{deep learning}, DL)} es una familia de técnicas de ML que utilizan 
-múltiples capas de procesamiento para aprender representaciones de datos con varios niveles de abstracción
-\cite{lecun2015}. Las redes neuronales han demostrado ser especialmente eficaces para este propósito, al 
-permitir la composición jerárquica de características que capturan patrones cada vez más complejos en los 
-datos.
+El \textbf{aprendizaje profundo (\textit{deep learning}, \acrshort{DL})} es una familia de técnicas de \acrshort{ML} que utilizan múltiples capas de procesamiento para aprender representaciones de datos con varios niveles de abstracción \cite{lecun2015}. Las redes neuronales han demostrado ser especialmente eficaces para este propósito, al permitir la composición jerárquica de características que capturan patrones cada vez más complejos en los datos.
 
-Las redes neuronales tienen su origen en el intento de modelar las redes de neuronas del cerebro humano 
-\cite{mcculloch1943}. Se requirió de numerosas contribuciones teóricas ---como el perceptrón 
-\cite{rosenblatt1958} o el algoritmo de \textit{backpropagation} \cite{rumelhart1986,werbos1994}, entre 
-otras---, disponibilidad de datos estandarizados y un gran aumento en la capacidad computacional para poder 
-escalar estar redes y obtener resultados 
-sorprendentes en tareas complejas.
+Las redes neuronales tienen su origen en el intento de modelar las redes de neuronas del cerebro humano \cite{mcculloch1943}. Se requirió de numerosas contribuciones teóricas ---como el perceptrón \cite{rosenblatt1958} o el algoritmo de \textit{backpropagation} \cite{rumelhart1986,werbos1994}, entre otras---, disponibilidad de datos estandarizados y un gran aumento en la capacidad computacional para poder escalar estar redes y obtener resultados sorprendentes en tareas complejas.
 
-Las \textbf{redes neuronales profundas (\textit{deep neural networks}, DNNs)} destacan por su capacidad para 
+Las \textbf{redes neuronales profundas (\textit{deep neural networks}, \acrshort{DNN})} destacan por su capacidad para 
 aprender representaciones jerárquicas: cada capa extrae características progresivamente más abstractas 
 \cite{lecun2015}, desde líneas en imágenes hasta formas geométricas complejas, objetos completos e incluso 
 escenas compuestas.
@@ -282,7 +220,7 @@ ingeniería de características)%
     manera conjunta, optimizando todos los componentes del sistema en un mismo proceso \cite{rusell2021}.
 }
 \cite{rusell2021}. 
-Gracias a ello, las DNNs han alcanzado rendimientos sobresalientes en dominios como visión por computador 
+Gracias a ello, las \acrshort{DNN} han alcanzado rendimientos sobresalientes en dominios como visión por computador 
 (clasificación de imágenes, detección de objetos, segmentación) o procesamiento de lenguaje natural 
 (traducción, generación de texto) \cite{redhat2024DeepLearningDefinition}.
 No obstante, su eficacia depende críticamente de grandes volúmenes de datos y recursos computacionales, lo que 
@@ -291,18 +229,9 @@ ha impulsado técnicas como el \textit{transfer learning} y modelos eficientes p
 
 \subsection{El perceptrón multicapa}
 
-El \textbf{perceptrón multicapa (\textit{multilayer perceptron}, MLP)} forma la base del \textit{deep 
-learning}. Su diseño ---con capas ocultas, funciones de activación no lineales y entrenamiento  mediante 
-\textit{backpropagation}--- sentó las bases conceptuales para arquitecturas más complejas, como las redes 
-neuronales convolucionales o los \textit{transformers} \cite{murphy2022}. El MLP sigue siendo un referente 
-teórico y la expresión más simple de cómo el aprendizaje jerárquico puede capturar patrones en los datos. 
+El \textbf{perceptrón multicapa (\textit{multilayer perceptron}, MLP)} forma la base del \textit{deep learning}. Su diseño ---con capas ocultas, funciones de activación no lineales y entrenamiento  mediante \textit{backpropagation}--- sentó las bases conceptuales para arquitecturas más complejas, como las redes neuronales convolucionales o los \textit{transformers} \cite{murphy2022}. El \acrshort{MLP} sigue siendo un referente teórico y la expresión más simple de cómo el aprendizaje jerárquico puede capturar patrones en los datos. 
 
-Cada nodo en la red es denominado \textbf{unidad o neurona artifical}. Siguiendo el diseño propuesto en 
-\cite{mcculloch1943,rosenblatt1958}, cada unidad recibe señales de entrada ---que o bien son las 
-características de los datos o bien las salidas de las unidades de la anterior capa---, realiza una suma 
-ponderada de estas con los pesos entrenables de cada conexión ---más un término independiente o sesgo, también 
-entrenable---, aplica una función no lineal sobre esta para producir una salida que propaga a las unidades de 
-la siguiente capa (véase la Figura \ref{fig:neuron_MLP}).
+Cada nodo en la red es denominado \textbf{unidad o neurona artifical}. Siguiendo el diseño propuesto en \cite{mcculloch1943,rosenblatt1958}, cada unidad recibe señales de entrada ---que o bien son las características de los datos o bien las salidas de las unidades de la anterior capa---, realiza una suma ponderada de estas con los pesos entrenables de cada conexión ---más un término independiente o sesgo, también entrenable---, aplica una función no lineal sobre esta para producir una salida que propaga a las unidades de la siguiente capa (véase la Figura \ref{fig:neuron_MLP}).
 
 Matemáticamente, la operación de una unidad artifical se expresaría como:
 
@@ -312,12 +241,11 @@ $$
 
 donde $x_i$ son las entradas, $w_i$ son los pesos entrenables ($w_0$ el sesgo)%
 \footnote{
-    El sesgo se considera un peso, puesto que, en la implementación, son un peso más conectado a una unidad
-    de sesgo con valor constante unitario (1).
+    El sesgo se considera un peso, puesto que, en la implementación, son un peso más conectado a una unidad de sesgo con valor constante unitario (1).
 }
 , y $f$ es la función de activación.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/Neuron_perceptron.png}
     \caption{
@@ -338,11 +266,11 @@ Existe multitud de funciones de activación, como la sigmoide, la tangente hiper
 múltiples variantes---, cada una con sus ventajas y limitaciones%
 \footnote{
     Si bien, actualmente, ReLU y sus variantes (\textit{Leaky} ReLU, \textit{Parametric ReLU} o 
-    \textit{Swish}) se han convertido en el estándar \textit{de facto} para las capas ocultas en DNNs,
+    \textit{Swish}) se han convertido en el estándar \textit{de facto} para las capas ocultas en \acrshort{DNN},
     por su eficiencia computacional, y su eficacia empírica \cite{vargas2021}.
 }.
 
-La arquitectura de un MLP conecta estas unidades formando una red neuronal retroalimentada%
+La arquitectura de un \acrshort{MLP} conecta estas unidades formando una red neuronal retroalimentada%
 \footnote{
     Una red neuronal retroalimentada (\textit{feed-forward neural network}) es aquella en la que las 
     conexiones entre las unidades no forman un ciclo y, por tanto, la información solo se mueve en una 
@@ -352,13 +280,9 @@ que consta de tres partes (véase la Figura \ref{fig:neural_network}):
 
 \begin{itemize}
 
-    \item \textbf{Capa de entrada}, en las que el número de unidades debe coincidir con el formato de entrada 
-    de los datos, por ejemplo: en un problema con datos tabulares, debería haber una unidad por cada 
-    característica.
+    \item \textbf{Capa de entrada}, en las que el número de unidades debe coincidir con el formato de entrada de los datos, por ejemplo: en un problema con datos tabulares, debería haber una unidad por cada característica.
     
-    \item \textbf{Capas ocultas}, donde se realizan las transformaciones no lineales de los datos. Es en estas 
-    donde el diseño puede variar en número de unidades y tipo de capas según la complejidad del problema y los 
-    datos.
+    \item \textbf{Capas ocultas}, donde se realizan las transformaciones no lineales de los datos. Es en estas donde el diseño puede variar en número de unidades y tipo de capas según la complejidad del problema y los datos.
     
     \item \textbf{Capa de salida}, que proporciona el resultado del modelo. Su forma depende del problema a 
     resolver: 
@@ -382,7 +306,7 @@ que consta de tres partes (véase la Figura \ref{fig:neural_network}):
 
 \end{itemize}
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/ActivationFuncClassification.png}
     \caption{
@@ -394,7 +318,7 @@ que consta de tres partes (véase la Figura \ref{fig:neural_network}):
 
 %Quitar X y Out, y subir lo de abajo
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/neural_network.png}
     \caption{
@@ -535,30 +459,20 @@ eficacia:
 
 \subsection{Redes Neuronales Convolucionales}
 
-Como ya se venía anticipando, la arquitectura MLP es especialmente adecuada para trabajar con datos 
-estructurados o tabulares, donde la información se organiza en una matriz en la que cada columna representa 
-una característica concreta (como sexo, altura o peso). 
-Sin embargo, su diseño presenta limitaciones clave: al manejar vectores de entrada de tamaño fijo y carecer 
-de mecanismos para aprovechar relaciones espaciales o secuenciales, no es óptima para datos no estructurados, 
-como imágenes o texto, donde cada elemento individual (un píxel o una palabra) carece de significado por sí 
-mismo \cite{murphy2022}.
+Como ya se venía anticipando, la arquitectura \acrshort{MLP} es especialmente adecuada para trabajar con datos estructurados o tabulares, donde la información se organiza en una matriz en la que cada columna representa una característica concreta (como sexo, altura o peso). Sin embargo, su diseño presenta limitaciones clave: al manejar vectores de entrada de tamaño fijo y carecer de mecanismos para aprovechar relaciones espaciales o secuenciales, no es óptima para datos no estructurados, como imágenes o texto, donde cada elemento individual (un píxel o una palabra) carece de significado por sí mismo \cite{murphy2022}.
 
-Por ejemplo, los patrones aprendidos en una posición de una imagen podrían no ser reconocidos en otra 
-ubicación, ya que las entradas tienen un recorrido distinto dentro de la red. Por tanto, el modelo carecería       % DUDA: Esto de que las entradas tienen un recorrido distinto en la red se entiende?
+Por ejemplo, los patrones aprendidos en una posición de una imagen podrían no ser reconocidos en otra ubicación, ya que las entradas tienen un recorrido distinto dentro de la red. Por tanto, el modelo arecería       % DUDA: Esto de que las entradas tienen un recorrido distinto en la red se entiende?
 de \textbf{invarianza traslacional}, puesto que los pesos no se comparten entre distintas posiciones, a lo que 
 se suma una marcada ineficiencia por el elevado número de parámetros requeridos \cite{szeliski2010}.
 
 Precisamente para estos casos, otras arquitecturas profundas resultan más apropiadas.
-Las \textbf{redes neuronales convolucionales (\textit{Convolutional Neural Network}, CNNs)} son un 
-tipo de DNN que, aprovechando las ventajas de las operaciones convolucionales, explotan los principios de 
-localidad y correlación espacial. Esto les permite procesar imágenes (en 1D, 2D o 3D) de manera eficiente, 
-interpretando patrones visuales jerárquicos que un MLP no podría capturar, y con significativamente menos 
-parámetros.
+Las \textbf{redes neuronales convolucionales (\textit{Convolutional Neural Network}, \acrshort{CNN})} son un 
+tipo de \acrshort{DNN} que, aprovechando las ventajas de las operaciones convolucionales, explotan los principios de localidad y correlación espacial. Esto les permite procesar imágenes (en 1D, 2D o 3D) de manera eficiente, interpretando patrones visuales jerárquicos que un \acrshort{MLP} no podría capturar, y con significativamente menos parámetros.
 
 
 \subsubsection{Capas convolucionales}
 
-Como se ha introducido antes, el operador de \textbf{convolución} es la base de las CNNs. Este operador 
+Como se ha introducido antes, el operador de \textbf{convolución} es la base de las \acrshort{CNN}. Este operador 
 matemático aplica un \textbf{filtro} (también denominado \textit{kernel})%
 \footnote{
     Aunque, como veremos a continuación, filtro y \textit{kernel} a la hora de hablar de capas 
@@ -576,7 +490,7 @@ a regiones locales de una imagen de entrada, realizando un producto punto%
 entre los valores del filtro y los píxeles correspondientes de la imagen, y sustituyendo el valor del pixel 
 central por el resultado del producto (véase la Figura \ref{fig:conv_op}).
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/convolution_operation.jpg}
     \caption[Esquema gráfico de la aplicación de un filtro convolucional sobre una región de una imagen.]{
@@ -591,7 +505,7 @@ generando un \textbf{mapa de activación}, que permite destacar líneas, curvas 
 activación preserva la información de la localización de las características, si bien estas pueden ser 
 detectadas en cualquier parte de la imagen. Esta propiedad se conoce como \textbf{equivarianza}. 
 
-Las CNNs aprovechan la convolución mediante \textbf{capas convolucionales}. Cada capa convolucional está
+Las \acrshort{CNN} aprovechan la convolución mediante \textbf{capas convolucionales}. Cada capa convolucional está
 compuesta por un conjunto de filtros convolucionales, donde cada uno a su vez tiene tantos \textit{kernels} 
 como canales de entrada de la imagen haya en la capa (si es la primera capa convolucional, habrá 1 canal en 
 imágenes de escala de grises, o 3 en imágenes RGB). El número de filtros en cada capa, su tamaño y la forma
@@ -666,7 +580,7 @@ automáticamente su cobertura para producir una salida con dimensiones específi
 tamaño de la imagen de entrada. Esta funcionalidad es especialmente útil cuando se necesita adaptar los mapas
 de características para conectarlos a una capa \textit{fully-connected}. 
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.7\textwidth]{capitulos/cap_02/imagenes/max_pooling.png}
     \caption{
@@ -680,31 +594,19 @@ de características para conectarlos a una capa \textit{fully-connected}.
 
 \subsubsection{Capas \textit{Fully-Connected}}
 
-Como hemos visto hasta ahora, en las CNNs, las primeras capas están diseñadas para extraer características
-espaciales a través de filtros convolucionales y de \textit{pooling}. Sin embargo, una vez que se ha reducido 
-la dimensionalidad y se han obtenido representaciones abstractas de alto nivel, es necesario realizar una 
-predicción (en problemas de clasificación y regresión). 
-Aquí es donde las \textbf{capas completamente conectadas (\textit{fully-connected}, FC)} juegan un papel 
-crucial. Se utilizan en las últimas etapas de la red convolucional para combinar todas las características 
-extraídas y producir una predicción final. Es decir, actúan como el clasificador/regresor%
+Como hemos visto hasta ahora, en las \acrshort{CNN}, las primeras capas están diseñadas para extraer características espaciales a través de filtros convolucionales y de \textit{pooling}. Sin embargo, una vez que se ha reducido la dimensionalidad y se han obtenido representaciones abstractas de alto nivel, es necesario realizar una predicción (en problemas de clasificación y regresión). Aquí es donde las \textbf{capas completamente conectadas (\textit{fully-connected}, \acrshort{FC})} juegan un papel crucial. Se utilizan en las últimas etapas de la red convolucional para combinar todas las características extraídas y producir una predicción final. Es decir, actúan como el clasificador/regresor%
 \footnote{
     Si bien, independientemente de la tarea ---regresión o clasificación---, a esta parte de la red se le 
     denomina clasificador
 } 
-que toma todas las señales procesadas por las capas anteriores y predice la clase a la que pertenece la imagen 
-o el valor objetivo. 
+que toma todas las señales procesadas por las capas anteriores y predice la clase a la que pertenece la imagen o el valor objetivo. 
 
-La arquitectura de esta capa sigue la estructura del MLP, con neuronas organizadas en una o más capas densas, 
-donde cada neurona está conectada con todas las salidas de la capa anterior. Para que esto sea posible, 
-primero se aplica una operación de \textbf{\textit{flattening}} que transforma el mapa de características 
-multidimensional en un vector unidimensional. A partir de ahí, el procesamiento es equivalente al de una red 
-neuronal tradicional: cada neurona calcula una combinación lineal de sus entradas seguida de una función de 
-activación no lineal.
+La arquitectura de esta capa sigue la estructura del \acrshort{MLP}, con neuronas organizadas en una o más capas densas, donde cada neurona está conectada con todas las salidas de la capa anterior. Para que esto sea posible, primero se aplica una operación de \textbf{\textit{flattening}} que transforma el mapa de características multidimensional en un vector unidimensional. A partir de ahí, el procesamiento es equivalente al de una red neuronal tradicional: cada neurona calcula una combinación lineal de sus entradas seguida de una función de activación no lineal.
 
 
 \subsubsection{Diseño de la CNN para problemas de clasificación y regresión}
 
-Un patrón común de diseño de CNNs para la resolución de problemas de clasificación y regresión consta de dos
+Un patrón común de diseño de \acrshort{CNN} para la resolución de problemas de clasificación y regresión consta de dos
 componentes principales:
 
 \begin{itemize}
@@ -713,15 +615,15 @@ componentes principales:
     \textit{pooling}, cuya función es extraer representaciones jerárquicas y cada vez más abstractas de los 
     datos de entrada; y
 
-    \item el \textit{classifier}, generalmente implementado mediante una o más capas FC, 
+    \item el \textit{classifier}, generalmente implementado mediante una o más capas \acrshort{FC}, 
     toma estas representaciones para realizar la tarea específica de salida, ya sea clasificación o regresión.
 
 \end{itemize}
 
-En la Figura \ref{fig:CNN_complete} se puede observar un ejemplo de arquitectura CNN completa. 
+En la Figura \ref{fig:CNN_complete} se puede observar un ejemplo de arquitectura \acrshort{CNN} completa. 
 
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/CNN_complete.png}
     \caption[
@@ -732,9 +634,7 @@ En la Figura \ref{fig:CNN_complete} se puede observar un ejemplo de arquitectura
         Esquema gráfico de la arquitectura conocida como ``AlexNet'', diseñada para resolver un problema
         de clasificación con 1000 clases.
         Recuperado de la Figura 5.39 de \cite{szeliski2010}.
-        Esta arquitectura presenta una serie de capas convolucionales con funciones de activación no lineales 
-        ReLU y max pooling, que formarían el \textit{backbone} y una serie de capas FC (\textit{classifier}), 
-        con una capa final softmax, que aplimentad una función de pérdida de entropía cruzada multiclase.
+        Esta arquitectura presenta una serie de capas convolucionales con funciones de activación no lineales ReLU y \textit{max pooling}, que formarían el \textit{backbone} y una serie de capas \acrshort{FC} (\textit{classifier}), con una capa final \textit{softmax}, que aplimentad una función de pérdida de entropía cruzada multiclase.
     } 
     \label{fig:CNN_complete}
 \end{figure}
@@ -742,30 +642,19 @@ En la Figura \ref{fig:CNN_complete} se puede observar un ejemplo de arquitectura
 
 \subsubsection{Regularización y normalización}
 
-Como en otras arquitecturas de redes neuronales, existen numerosas técnicas de regularización para evitar
-el sobreajuste. Veamos algunas de las técnicas empleadas en CNNs:
+Como en otras arquitecturas de redes neuronales, existen numerosas técnicas de regularización para evitar el sobreajuste. Veamos algunas de las técnicas empleadas en \acrshort{CNN}:
 
 \begin{itemize}
 
-    \item \textbf{\textit{Data augmentation}} \cite{chen2019,zhang2021}: Consiste en añadir o modificar 
-    dinámicamente ejemplos a partir de los que se tienen originalmente, de forma que se entrene la red con 
-    un conjunto de datos más diverso y robusto, evitando el sobreajuste y mejorando la generalización.
+    \item \textbf{\textit{Data augmentation}} \cite{chen2019,zhang2021}: Consiste en añadir o modificar dinámicamente ejemplos a partir de los que se tienen originalmente, de forma que se entrene la red con un conjunto de datos más diverso y robusto, evitando el sobreajuste y mejorando la generalización.
     
-    Algunas alteraciones realizadas pueden ser cambios en el nivel de brillo y contraste, rotaciones, 
-    traslaciones, escalados o volteos de imágenes, entre otras. No existe configuración óptima, y su 
-    configuración depende mucho del problema y las imágenes disponibles.
+    Algunas alteraciones realizadas pueden ser cambios en el nivel de brillo y contraste, rotaciones, traslaciones, escalados o volteos de imágenes, entre otras. No existe configuración óptima, y su configuración depende mucho del problema y las imágenes disponibles.
 
-    Esta técnica sirve especialmente para problemas como clasificación o regresión, donde las clases o valores 
-    predichos no suelen variar bajo pequeñas perturbaciones locales. 
+    Esta técnica sirve especialmente para problemas como clasificación o regresión, donde las clases o valores predichos no suelen variar bajo pequeñas perturbaciones locales. 
     
-    \item \textbf{\textit{Dropout}} \cite{srivastava2014}: Técnica que, durante el entrenamiento, ``apaga'' 
-    (pone a cero) aleatoriamente un porcentaje de neuronas en cada iteración, evitando así que la red 
-    dependa demasiado de determinadas unidades individuales (véase la Figura \ref{fig:net_with_dropout}). 
-    En CNNs suele aplicarse a capas \textit{fully-connected}, 
-    aunque existen variantes como \textit{Spatial Dropout} \cite{tompson2015} que elimina canales completos 
-    en capas convolucionales, forzando una distribución más robusta de características.
+    \item \textbf{\textit{Dropout}} \cite{srivastava2014}: Técnica que, durante el entrenamiento, ``apaga'' (pone a cero) aleatoriamente un porcentaje de neuronas en cada iteración, evitando así que la red dependa demasiado de determinadas unidades individuales (véase la Figura \ref{fig:net_with_dropout}). En \acrshort{CNN} suele aplicarse a capas \acrshort{FC}, aunque existen variantes como \textit{Spatial Dropout} \cite{tompson2015} que elimina canales completos en capas convolucionales, forzando una distribución más robusta de características.
 
-    \begin{figure}[h]
+    \begin{figure}[htbp]
         \centering
 
         \begin{subfigure}[b]{0.45\textwidth}
@@ -835,20 +724,9 @@ En redes neuronales, el aprendizaje consiste en ajustar pesos, y en el caso del 
 estos pesos se inicializan con valores previamente optimizados para una tarea fuente, en lugar de comenzar con 
 valores aleatorios (véase la Figura \ref{fig:fine-tuning}).
 
-Se conoce como \textbf{fine-tuning} a la técnica de inicialización de los pesos de aquellas partes del modelo 
-(como capas convolucionales) con los pesos previamente aprendidos, y que continúa el entrenamiento con los 
-datos específicos de la nueva tarea. En este contexto, se denomina \textit{head} a las capas finales del 
-modelo que se sustituyen para adaptarse a la nueva tarea. 
-Por ejemplo, en \cite{venema2022} se utilizan dos modelos de CNN preentrenados en clasificación con ImageNet 
-(que contiene imágenes de 1000 clases): VGG16 y ResNet50. Estos modelos se ajustan (\textit{fine-tuning}) 
-para estimar el sexo de una persona a partir de radiografías de húmero. Aunque ambas tareas parecen muy 
-diferentes, las primeras capas de la red, especializadas en detectar características generales como bordes y 
-texturas, pueden ser útiles en los dos casos, lo que permite una transferencia efectiva del conocimiento.
-El \textit{fine-tuning} puede aplicarse de forma gradual: primero se entrena solo el \textit{head} 
-(manteniendo el resto del modelo congelado) y luego, si es necesario, se afinan también algunas capas 
-preentrenadas para mejorar el rendimiento en la tarea específica.
+Se conoce como \textbf{fine-tuning} a la técnica de inicialización de los pesos de aquellas partes del modelo (como capas convolucionales) con los pesos previamente aprendidos, y que continúa el entrenamiento con los datos específicos de la nueva tarea. En este contexto, se denomina \textit{head} a las capas finales del modelo que se sustituyen para adaptarse a la nueva tarea. Por ejemplo, en \cite{venema2022} se utilizan dos modelos de \acrshort{CNN} preentrenados en clasificación con ImageNet (que contiene imágenes de 1000 clases): VGG16 y ResNet50. Estos modelos se ajustan (\textit{fine-tuning}) para estimar el sexo de una persona a partir de radiografías de húmero. Aunque ambas tareas parecen muy diferentes, las primeras capas de la red, especializadas en detectar características generales como bordes y texturas, pueden ser útiles en los dos casos, lo que permite una transferencia efectiva del conocimiento. El \textit{fine-tuning} puede aplicarse de forma gradual: primero se entrena solo el \textit{head} (manteniendo el resto del modelo congelado) y luego, si es necesario, se afinan también algunas capas  preentrenadas para mejorar el rendimiento en la tarea específica.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/fine-tunning.png}
     \caption[
@@ -874,9 +752,7 @@ La metrología%%%
     Ciencia de las mediciones y sus aplicaciones \cite{jcgm200:2012}.
 },
 y la estadística comparten un papel fundamental en el análisis del error y la incertidumbre en campos como 
-el ML. Mientras la metrología establece los fundamentos conceptuales de error e incertidumbre, la estadística 
-proporciona métodos para cuantificar, modelar y reducir estos factores durante el desarrollo y validación de 
-modelos.
+el \acrshort{ML}. Mientras la metrología establece los fundamentos conceptuales de error e incertidumbre, la estadística proporciona métodos para cuantificar, modelar y reducir estos factores durante el desarrollo y validación de modelos.
 
 El Comité Conjunto de Guías en Metrología (\textit{Joint Committe for Guides in Metrology})%%
 \footnote{
@@ -886,43 +762,27 @@ El Comité Conjunto de Guías en Metrología (\textit{Joint Committe for Guides 
     Medición (\textit{Guide to the Expression of Uncertainty in Measurement}) \cite{jcgm100:2008} y el 
     Vocabulario Internacional de Metrología (\textit{Vocabulaire international de métrologie}) 
     \cite{jcgm200:2012}.
-}
-define el \textbf{error} como una ``medición imperfecta'' de la magnitud observada, que puede estar causada
-por efectos aleatorios (componente aleatoria del error) y por efectos sistemáticos (componente sistemática del 
-error, más conocida como \textbf{sesgo}).
-Por otro lado, define a la \textbf{incertidumbre} como ``parámetro, asociado con el resultado de una medición, 
-que caracteriza la dispersión de los valores que podrían atribuirse razonablemente al \textbf{mensurado}, que
-es como se denomina a la magnitud a ser medida. [...] El parámetro puede ser, por ejemplo, una desviación 
-estándar, o la amplitud de un intervalo con un nivel de confianza establecido'' \cite{jcgm100:2008}.
+} 
+define el \textbf{error} como una ``medición imperfecta'' de la magnitud observada, que puede estar causada por efectos aleatorios (componente aleatoria del error) y por efectos sistemáticos (componente sistemática del error, más conocida como \textbf{sesgo}). Por otro lado, define a la \textbf{incertidumbre} como ``parámetro, asociado con el resultado de una medición, que caracteriza la dispersión de los valores que podrían atribuirse razonablemente al \textbf{mensurado}, que es como se denomina a la magnitud a ser medida. [...] El parámetro puede ser, por ejemplo, una desviación estándar, o la amplitud de un intervalo con un nivel de confianza establecido'' \cite{jcgm100:2008}.
 
-Partiendo de estas definiciones generales, veamos las diferencias entre los dos enfoques principales en la 
-evaluación de mediciones: el enfoque basado en el error y el enfoque basado en la incertidumbre.
+Partiendo de estas definiciones generales, veamos las diferencias entre los dos enfoques principales en la evaluación de mediciones: el enfoque basado en el error y el enfoque basado en la incertidumbre.
 
-El \textbf{enfoque basado en el error} o enfoque tradicional parte de la premisa de que existe un valor 
-verdadero. En consecuencia, el propósito de la medición es aproximarse lo máximo posible a dicho valor, 
-minimizando las distintas componentes del error \cite{jcgm100:2008}:
+El \textbf{enfoque basado en el error} o enfoque tradicional parte de la premisa de que existe un valor verdadero. En consecuencia, el propósito de la medición es aproximarse lo máximo posible a dicho valor, minimizando las distintas componentes del error \cite{jcgm100:2008}:
 
 \begin{itemize}
 
-    \item para el error aleatorio, esto se logra aumentando el número de observaciones, ya que su distribución 
-    tiende a una media igual a cero; y
+    \item para el error aleatorio, esto se logra aumentando el número de observaciones, ya que su distribución tiende a una media igual a cero; y
 
-    \item para el error sistemático, es necesario identificarlo y cuantificar su magnitud, lo que permite 
-    aplicar factores de corrección que compensen su efecto.
+    \item para el error sistemático, es necesario identificarlo y cuantificar su magnitud, lo que permite aplicar factores de corrección que compensen su efecto.
 
 \end{itemize}
 
 % Se asume que el resultado de la medición ha sido corregido por todos los efectos sistemáticos identificados
 % como significativos, de modo que la esperanza matemática de esta componente sea igual a cero.
 
-Sin embargo, en la práctica no existen reglas claras para distinguir las componentes del error ni cómo estas 
-se combinan en el error total. En general, solo es posible estimar un límite superior del valor 
-absoluto del error total estimado, al que se denomina de forma inapropiada ``incertidumbre''. 
+Sin embargo, en la práctica no existen reglas claras para distinguir las componentes del error ni cómo estas se combinan en el error total. En general, solo es posible estimar un límite superior del valor absoluto del error total estimado, al que se denomina de forma inapropiada ``incertidumbre''. 
 
-Frente al enfoque anterior, se presenta el \textbf{enfoque basado en la incertidumbre} \cite{jcgm100:2008}, 
-cuyo propósito no es hallar el mejor valor posible, sino establecer un intervalo de valores razonables para el 
-mensurando, el cual puede refinarse con información adicional. Así, la medición misma se convierte en una 
-herramienta para determinar el error potencial del instrumento ---o modelo en ML---. 
+Frente al enfoque anterior, se presenta el \textbf{enfoque basado en la incertidumbre} \cite{jcgm100:2008}, cuyo propósito no es hallar el mejor valor posible, sino establecer un intervalo de valores razonables para el mensurando, el cual puede refinarse con información adicional. Así, la medición misma se convierte en una herramienta para determinar el error potencial del instrumento ---o modelo en \acrshort{ML}---. 
 
 % ------------------------------------------------------------------------------------------------------------
 
@@ -930,19 +790,12 @@ herramienta para determinar el error potencial del instrumento ---o modelo en ML
 
 Las fuentes de incertidumbre pueden ser muy variadas, y su identificación requiere en muchos casos de 
 conocimiento específico del problema. No obstante, en términos prácticos, suelen considerarse dos tipos de 
-incertidumbre en las predicciones realizadas en ML \cite{hullermeier2021, nemani2023}:
+incertidumbre en las predicciones realizadas en \acrshort{ML} \cite{hullermeier2021, nemani2023}:
 
 \begin{itemize}
     
     \item La \textbf{incertidumbre aleatoria o estocástica} procede de la variabilidad aleatoria de un 
-    fenómeno. 
-    Es irreducible por naturaleza, aunque se disponga de más datos. 
-    Un ejemplo típico es el resultado de lanzar una moneda al aire. Incluso el mejor modelo solo será capaz de 
-    dar probabilidades para las dos posibles salidas, sin una respuesta definitiva. 
-    En el contexto de la estimación de la edad forense, esta incertidumbre se manifiesta en las diferentes 
-    edades biológicas que pueden obtenerse para individuos de la misma edad cronológica.
-    Se sabe que existe una correlación entre edad biológica y la cronológica, pero esta no es perfecta, 
-    debido a que existe variabilidad inherente al problema.
+    fenómeno. Es irreducible por naturaleza, aunque se disponga de más datos. Un ejemplo típico es el resultado de lanzar una moneda al aire. Incluso el mejor modelo solo será capaz de dar probabilidades para las dos posibles salidas, sin una respuesta definitiva. En el contexto de la estimación de la edad forense, esta incertidumbre se manifiesta en las diferentes edades biológicas que pueden obtenerse para individuos de la misma edad cronológica. Se sabe que existe una correlación entre edad biológica y la cronológica, pero esta no es perfecta, debido a que existe variabilidad inherente al problema.
 
     % \begin{itemize}
     %     \item las entradas. Por ejemplo, 
@@ -956,46 +809,21 @@ incertidumbre en las predicciones realizadas en ML \cite{hullermeier2021, nemani
     % \end{itemize}
 
 
-    \item La \textbf{incertidumbre epistémica} es la causada por falta de conocimiento o precisión del modelo.
-    Se relaciona con aspectos como la escasez de datos, la calidad de la información disponible, las 
-    limitaciones teóricas y prácticas del modelo escogido, etc. 
-    A diferencia de la incertidumbre aleatoria, esta sí es reducible por naturaleza; puede reducirse con más
-    datos, mejores modelos o mayor comprensión del problema. 
+    \item La \textbf{incertidumbre epistémica} es la causada por falta de conocimiento o precisión del modelo.Se relaciona con aspectos como la escasez de datos, la calidad de la información disponible, las limitaciones teóricas y prácticas del modelo escogido, etc. A diferencia de la incertidumbre aleatoria, esta sí es reducible por naturaleza; puede reducirse con más datos, mejores modelos o mayor comprensión del problema. 
     
 \end{itemize}
 
-A estos, se les puede añadir un tercer tipo: el \textbf{\textit{drift}} \cite{gama2012, nemani2023}, que 
-procede de cambios en la distribución de los datos a lo largo del tiempo, ya sea en la distribución de las 
-variables de entrada, en la distribución de las variables de salida, o en la relación entre las dos previas. 
-Por ejemplo, una imagen de entrada a un modelo de clasificación que no corresponde a ninguna clase con la que 
-se haya entrenado anteriormente; un cambio en la población objetivo de una aplicación médica ---p.ej., debido 
-a un cambio demográfico o a la aparición de una nueva enfermedad---; o la toma de imágenes médicas con una 
-máquina distinta a la que se empleó para obtener las imágenes con las que se ha entrenado el modelo.
+A estos, se les puede añadir un tercer tipo: el \textbf{\textit{drift}} \cite{gama2012, nemani2023}, que procede de cambios en la distribución de los datos a lo largo del tiempo, ya sea en la distribución de las variables de entrada, en la distribución de las variables de salida, o en la relación entre las dos previas. Por ejemplo, una imagen de entrada a un modelo de clasificación que no corresponde a ninguna clase con la que se haya entrenado anteriormente; un cambio en la población objetivo de una aplicación médica ---p.ej., debido a un cambio demográfico o a la aparición de una nueva enfermedad---; o la toma de imágenes médicas con una máquina distinta a la que se empleó para obtener las imágenes con las que se ha entrenado el modelo.
 
 % ------------------------------------------------------------------------------------------------------------
 
 \subsection{Cuantificación de la incertidumbre en \textit{machine learning}} 
 
-El desarrollo de las técnicas modernas de ML 
-se asocia con un enfoque basado en el error, centrándose en la minimización y cuantificación del error en
-predicción. 
-Este enfoque ha permitido que el aprendizaje automático despliegue un 
-gran potencial en multitud de aplicaciones.
-Sin embargo, cuando se trata de aplicaciones críticas ---como la medicina, los sistemas financieros o el 
-control de infraestructuras--- surge una necesidad esencial: no solo importa cuán precisa es una predicción, 
-sino también cuán confiable es \cite{begoli2019}. 
-En respuesta a esta necesidad, durante la última década se ha producido un creciente interés y desarrollo de 
-técnicas orientadas a la explicabilidad e interpretabilidad de la IA 
-\cite{angelov2021, ali2023, miller2019, loh2022} y la cuantificación de la incertidumbre
-\cite{abdar2021, psaros2023, nemani2023}.
+El desarrollo de las técnicas modernas de \acrshort{ML} se asocia con un enfoque basado en el error, centrándose en la minimización y cuantificación del error en predicción. Este enfoque ha permitido que el aprendizaje automático despliegue un gran potencial en multitud de aplicaciones. Sin embargo, cuando se trata de aplicaciones críticas ---como la medicina, los sistemas financieros o el control de infraestructuras--- surge una necesidad esencial: no solo importa cuán precisa es una predicción, sino también cuán confiable es \cite{begoli2019}. En respuesta a esta necesidad, durante la última década se ha producido un creciente interés y desarrollo de técnicas orientadas a la explicabilidad e interpretabilidad de la \acrshort{IA} \cite{angelov2021, ali2023, miller2019, loh2022} y la cuantificación de la incertidumbre \cite{abdar2021, psaros2023, nemani2023}.
 
-Mientras la explicabilidad de la IA busca entender las razones detrás de cada predicción centrándose en el 
-estudio del modelo y arquitectura concretos \cite{salvi2025}, la 
-\textbf{cuantificación de la incertidumbre (\textit{uncertainty quantification}, UQ)} evalúa el grado de 
-confianza en las predicciones realizadas y se centra en caracterizar las fuentes de variabilidad y posible 
-error en los datos, el modelo y el entorno de aplicación \cite{nemani2023}.
+Mientras la explicabilidad de la \acrshort{IA} busca entender las razones detrás de cada predicción centrándose en el estudio del modelo y arquitectura concretos \cite{salvi2025}, la \textbf{cuantificación de la incertidumbre (\textit{uncertainty quantification}, \acrshort{UQ})} evalúa el grado de confianza en las predicciones realizadas y se centra en caracterizar las fuentes de variabilidad y posible error en los datos, el modelo y el entorno de aplicación \cite{nemani2023}.
 
-Existe una gran variedad de técnicas de UQ. Estas técnicas pueden clasificarse de distintas formas: 
+Existe una gran variedad de técnicas de \acrshort{UQ}. Estas técnicas pueden clasificarse de distintas formas: 
 
 \begin{itemize}
 
@@ -1012,11 +840,11 @@ Existe una gran variedad de técnicas de UQ. Estas técnicas pueden clasificarse
 \end{itemize} 
 
 
-Algunas técnicas específicas de UQ en modelos ML se dividen en cuatro grupos:
+Algunas técnicas específicas de \acrshort{UQ} en modelos \acrshort{ML} se dividen en cuatro grupos:
 
 \begin{itemize}
 
-    \item \textbf{Procesos de regresión gausiana (\textit{gaussian process regression}, GPR)}: 
+    \item \textbf{Procesos de regresión gausiana (\textit{gaussian process regression})}: 
     Modelos no paramétricos que proporcionan una distribución completa sobre funciones posibles, permitiendo obtener predicciones con intervalos de confianza naturales. Son especialmente útiles en problemas de regresión con pocos datos y cuando la estimación de incertidumbre es crítica \cite{rasmussen2003}.
 
     \item \textbf{Redes neuronales bayesianas}: \textit{Markov Chain Monte Carlo} \cite{neal2012}, \textit{Variational Inference} \cite{blundell2015} y \textit{Monte Carlo Dropout} \cite{gal2016} incorporan incertidumbre de manera explícita en los parámetros del modelo o en la estructura de la red, generando distribuciones sobre las predicciones en lugar de valores puntuales.
@@ -1101,7 +929,7 @@ En este trabajo exploraremos la predicción el método determinista de predicci�
 % Esto permite estimar no solo la tendencia central (como en la regresión tradicional), sino también la 
 % incertidumbre de las predicciones (véase la Figura \ref{fig:quantile_regression}).
 
-% \begin{figure}[h]
+% \begin{figure}[htbp]
 %     \centering
 %     \includegraphics[width=0.8\textwidth]{capitulos/cap_02/imagenes/quantile_regression.png}
 %     \caption[
@@ -1156,14 +984,10 @@ En este trabajo exploraremos la predicción el método determinista de predicci�
 
 \section{Predicción conformal}
 
-La \textbf{predicción conformal (\textit{conformal predition}, CP)} \cite{vovk2005, angelopoulos2021} es un 
-marco teórico para la UQ en modelos de ML, que proporciona intervalos o conjuntos de predicción con garantías 
-estadísticas de cobertura, esto es, para una entrada dada $x$, el marco de CP genera un conjunto de posibles 
-salidas $\hat{C}(x) \subseteq Y$ que garantiza, con una probabilidad predefinida $1-\alpha$, que la verdadera 
-etiqueta o valor $y$ esté contenida en $\hat{C}(x)$ (véanse los ejemplos de la Figura 
+La \textbf{predicción conformal (\textit{conformal predition}, \acrshort{CP})} \cite{vovk2005, angelopoulos2021} es un marco teórico para la \acrshort{UQ} en modelos de \acrshort{ML}, que proporciona intervalos o conjuntos de predicción con garantías estadísticas de cobertura, esto es, para una entrada dada $x$, el marco de \acrshort{CP} genera un conjunto de posibles salidas $\hat{C}(x) \subseteq Y$ que garantiza, con una probabilidad predefinida $1-\alpha$, que la verdadera etiqueta o valor $y$ esté contenida en $\hat{C}(x)$ (véanse los ejemplos de la Figura 
 \ref{fig:educational_visual}).
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/educational_visual.png}
     \caption[
@@ -1172,7 +996,7 @@ etiqueta o valor $y$ esté contenida en $\hat{C}(x)$ (véanse los ejemplos de la
     ]{
         Ejemplo de predicción conformal en problemas de regresión (arriba) y clasificación (abajo).
         Recuperado de \cite{mapie-docs2023}. MAPIE es una biblioteca de Python para para la cuantificación
-        de incertidumbre, principalmente con técnicas de CP. 
+        de incertidumbre, principalmente con técnicas de \acrshort{CP}. 
     } 
     \label{fig:educational_visual}
 \end{figure}
@@ -1180,20 +1004,20 @@ etiqueta o valor $y$ esté contenida en $\hat{C}(x)$ (véanse los ejemplos de la
 
 Para construir los conjuntos de predicción conformal, se requiere dividir el conjunto de datos disponible en al menos dos partes: un conjunto de entrenamiento, usado para ajustar el modelo base, y un \textbf{conjunto de calibración}, usado para calibrar la predicción conformal, tal y como veremos en los siguiente apartados.Con esto también se busca reducir la variabilidad de las predicciones puntuales, que pueden ser sensibles a pequeños cambios en los datos de entrada, como el ejemplo de la Figura \ref{fig:adversarial_example}. Estas garantías son válidas bajo el supuesto mínimo de intercambiabilidad de los datos, sin requerir hipótesis sobre la distribución subyacente de los mismos. La intercambiabilidad de los datos se refiere a que el orden de las observaciones no aporta información adicional, es decir, la distribución conjunta es invariante ante cualquier permutación de los índices. 
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/adversarial_example.png}
     \caption[
         Ejemplo adversario mal clasificado por un modelo de ML entrenado con datos textuales.
         Adaptado de la Figura 2 de \cite{hullermeier2021}, original de \cite{sato2018}.
     ]{
-        Ejemplo adversario mal clasificado por un modelo de ML entrenado con datos textuales.
+        Ejemplo adversario mal clasificado por un modelo de \acrshort{ML} entrenado con datos textuales.
         %
         Adaptado de la Figura 2 de \cite{hullermeier2021}, original de \cite{sato2018}.
         %
         Se observa que el cambio de una sola palabra ---y aparentemente sin mucha relevancia--- (destacada en negrita) basta para cambiar la predicción de ``sentimiento negativo'' a ``sentimiento positivo''.
         %
-        Con la CP se busca que predicciones no solo proporcionen una etiqueta puntual, sino un conjunto de posibles etiquetas que capture de manera robusta la incertidumbre asociada al ejemplo de entrada.
+        Con la \acrshort{CP} se busca que predicciones no solo proporcionen una etiqueta puntual, sino un conjunto de posibles etiquetas que capture de manera robusta la incertidumbre asociada al ejemplo de entrada.
     } 
     \label{fig:adversarial_example}
 \end{figure}
@@ -1202,13 +1026,13 @@ Para construir los conjuntos de predicción conformal, se requiere dividir el co
 
 \subsection{Propiedades de la predicción conformal}
 
-La CP garantiza que las predicciones contengan el valor verdadero con al menor una probabilidad $1-\alpha$, donde $\alpha$ es el nivel de significación:
+La \acrshort{CP} garantiza que las predicciones contengan el valor verdadero con al menor una probabilidad $1-\alpha$, donde $\alpha$ es el nivel de significación:
 
 $$
 P(Y_{n+1} \in \hat{C_\alpha}(X_{n+1})) \ge 1 - \alpha
 $$
 
-Esta propiedad se denomina \textbf{cobertura marginal válida} \cite{prinster2024}, y se cumple para todas las entrada $X$, siempre y cuando los datos sean intercambiables (\textit{interexchangeable}). Esta intercambiabilidad en imágenes implicaría que todas fueran tomadas en condiciones similares: mismo dominio, distribución de valores de salida, iluminación, resolución, estilo, etc. Sin embargo, la CP \textbf{no asegura cobertura condicional válida} \cite{foygel2021}; es decir, no es posible garantizar cobertura para todos los subgrupos de datos sin hacer suposiciones fuertes o sacrificar utilidad práctica, en concordancia con el conocido \textit{No Free Lunch Theorem} \cite{wolpert1997}. En la Figura \ref{fig:coverage} se presenta una noción de la diferencia entre cobertura marginal y condicional. 
+Esta propiedad se denomina \textbf{cobertura marginal válida} \cite{prinster2024}, y se cumple para todas las entrada $X$, siempre y cuando los datos sean intercambiables (\textit{interexchangeable}). Esta intercambiabilidad en imágenes implicaría que todas fueran tomadas en condiciones similares: mismo dominio, distribución de valores de salida, iluminación, resolución, estilo, etc. Sin embargo, la \acrshort{CP} \textbf{no asegura cobertura condicional válida} \cite{foygel2021}; es decir, no es posible garantizar cobertura para todos los subgrupos de datos sin hacer suposiciones fuertes o sacrificar utilidad práctica, en concordancia con el conocido \textit{No Free Lunch Theorem} \cite{wolpert1997}. En la Figura \ref{fig:coverage} se presenta una noción de la diferencia entre cobertura marginal y condicional. 
 
 \begin{figure}[htbp]
     \centering
@@ -1232,7 +1056,7 @@ Esta propiedad se denomina \textbf{cobertura marginal válida} \cite{prinster202
 
 Además, el conjunto de calibración debe ser estadísticamente representativo de la distribución completa de los datos. Esto crea un compromiso fundamental: asignar más ejemplos a la calibración mejora la precisión de los intervalos predictivos, pero a costa de reducir el tamaño del conjunto de entrenamiento, lo que potencialmente puede empeorar el rendimiento del modelo base.
 
-Algunas características deseables en las técnicas de CP son:
+Algunas características deseables en las técnicas de \acrshort{CP} son:
 
 \begin{itemize}
     \item \textbf{Independencia del modelo (\textit{model-agnostic})}: que no requiera reentrenar el modelo ni modificar su arquitectura, permitiendo su aplicación \textit{post-hoc} a modelos preentrenados.
@@ -1247,7 +1071,7 @@ Algunas características deseables en las técnicas de CP son:
     
     Aunque la mayoría de los métodos de predicción conformal presentan una sobrecarga computacional moderada, esta puede variar dependiendo del enfoque utilizado. Por ejemplo, las técnicas basadas en \textit{split conformal} ---las únicas que exploraremos en este trabajo--- suelen ser más eficientes que aquellas que requieren reentrenamiento múltiple, como en algunos métodos \textit{Cross conformal prediction} o \textit{Jackknife+}%
     \footnote{
-        \textit{Cross conformal prediction} \cite{vovk2015} y \textit{Jacknife+} \cite{barber2021} son métodos de CP que mejoran las garantías de cobertura de técnicas de CP mediante el uso más eficiente de los datos disponibles para calibración y entrenamiento, de forma análoga a la validación cruzada (\textit{cross-validation}) o el \textit{leave-one-out}, respectivamente.
+        \textit{Cross conformal prediction} \cite{vovk2015} y \textit{Jacknife+} \cite{barber2021} son métodos de \acrshort{CP} que mejoran las garantías de cobertura de técnicas de \acrshort{CP} mediante el uso más eficiente de los datos disponibles para calibración y entrenamiento, de forma análoga a la validación cruzada (\textit{cross-validation}) o el \textit{leave-one-out}, respectivamente.
     }.
     
     % \item \textbf{Robustez frente a datos ruidosos y detección de datos \textit{out-of-distribution}}%
@@ -1267,9 +1091,9 @@ Algunas características deseables en las técnicas de CP son:
 
 \subsection{Algoritmo conformal}
 
-Existen multitud de técnicas de CP. Generalmente, estas dependen del tipo de problema a resolver: regresión \cite{papadopoulos2002, romano2019, bethell2024}, clasificación \cite{sadinle2019, romano2020, angelopoulos2020}, series temporales \cite{xu2021, zaffran2022, stankeviciute2021}%
+Existen multitud de técnicas de \acrshort{CP}. Generalmente, estas dependen del tipo de problema a resolver: regresión \cite{papadopoulos2002, romano2019, bethell2024}, clasificación \cite{sadinle2019, romano2020, angelopoulos2020}, series temporales \cite{xu2021, zaffran2022, stankeviciute2021}%
 \footnote{
-    El marco de CP clásico asume que los datos son intercambiables, una propiedad que no se cumple en las series temporales debido a la dependencia secuencial entre observaciones. A pesar de ello, se han desarrollado diversas extensiones del enfoque conformal para adaptarse a estos datos.
+    El marco de \acrshort{CP} clásico asume que los datos son intercambiables, una propiedad que no se cumple en las series temporales debido a la dependencia secuencial entre observaciones. A pesar de ello, se han desarrollado diversas extensiones del enfoque conformal para adaptarse a estos datos.
 },
 o detección de anomalías \cite{laxhammar2015}, entre otros. 
 
@@ -1298,11 +1122,11 @@ La implementación de la predicción conformal consta de los siguientes pasos:
 
     Estas puntuaciones se derivan a partir de una heurística que combina al menos el valor real y el predicho del problema con otras posibles fuentes de información, como las propias entradas o incluso representaciones internas del modelo%
     \footnote{
-        Cabe señalar que una técnica será independiente del modelo y del dominio cuando solo tenga en cuenta las salidas del modelo y los valores reales del problema para realizar la CP.
+        Cabe señalar que una técnica será independiente del modelo y del dominio cuando solo tenga en cuenta las salidas del modelo y los valores reales del problema para realizar la \acrshort{CP}.
     }. 
-    Bajo las garantías estadísticas que ofrece el marco teórico de la CP, esta flexibilidad muestra un gran potencial para ser integrada con otras técnicas de UQ, ampliando así sus aplicaciones y mejorando la robustez de las estimaciones de incertidumbre.
+    Bajo las garantías estadísticas que ofrece el marco teórico de la \acrshort{CP}, esta flexibilidad muestra un gran potencial para ser integrada con otras técnicas de \acrshort{UQ}, ampliando así sus aplicaciones y mejorando la robustez de las estimaciones de incertidumbre.
 
-    Independientemente del diseño específico de la función de no conformidad, esta debe cumplir una condición esencial: las puntuaciones deben ser intercambiables entre el conjunto de calibración y las nuevas instancias. En otras palabras, deben ser idénticamente distribuidas. Esta propiedad es crucial para que CP garantice cobertura marginal válida a un nivel de confianza determinado. Por tanto, aunque existe flexibilidad en el diseño de la función de no conformidad, su elección debe considerar tanto la capacidad para capturar incertidumbre útil como el cumplimiento del supuesto de intercambiabilidad. 
+    Independientemente del diseño específico de la función de no conformidad, esta debe cumplir una condición esencial: las puntuaciones deben ser intercambiables entre el conjunto de calibración y las nuevas instancias. En otras palabras, deben ser idénticamente distribuidas. Esta propiedad es crucial para que \acrshort{CP} garantice cobertura marginal válida a un nivel de confianza determinado. Por tanto, aunque existe flexibilidad en el diseño de la función de no conformidad, su elección debe considerar tanto la capacidad para capturar incertidumbre útil como el cumplimiento del supuesto de intercambiabilidad. 
 
     A continuación, se calcula el \textbf{umbral de no conformidad}. Para un nivel de significación$\alpha$, se selecciona el $(1 - \alpha)(1 + 1/n)$-ésimo cuantil%
     \footnote{
@@ -1314,7 +1138,7 @@ La implementación de la predicción conformal consta de los siguientes pasos:
     \delta_\alpha = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( \left\{ A(x_i,y_i) \right\}_{i=1}^n )
     $$
 
-    \begin{figure}[h]
+    \begin{figure}[htbp]
         \centering
 
         \begin{subfigure}[b]{0.48\textwidth}
@@ -1402,3 +1226,5 @@ $$
 
 Esta expresión determina los límites inferior y superior del intervalo de predicción conformal para dicha
 instancia.
+
+\todo{Adaptarlo a un caso concreto de estimación de edad}

@@ -27,7 +27,11 @@
 
 \noindent\textbf{Resumen}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+La estimación del perfil biológico es una de las principales tareas de la Antropología Forense, empleada en procesos de identificación humana y en procesos legales en los que se requiere conocer la edad de personas vivas. Durante la última década, se han logrado avances significativos en la aplicación de técnicas de Machine Learning para este propósito, con el objetivo de reducir la subjetividad y posibilitar un estudio más riguroso y controlado de las capacidades de los métodos de estimación del perfil biológico, gracias a un entorno de variables más estandarizado y medible. Sin embargo, estos modelos suelen proporcionar únicamente una predicción puntual (como una edad concreta o una probabilidad de clase), obviando por completo la cuantificación de la incertidumbre inherente a la predicción. Esta limitación es crítica en un contexto forense, donde la fiabilidad de una estimación puede variar enormemente entre casos debido a factores como la calidad de la muestra, la variabilidad biológica intrínseca del individuo o las propias limitaciones del modelo entrenado.
+
+Este trabajo propone la integración de la predicción conformal en el flujo de trabajo de estimación del perfil biológico. Este marco no se plantea como un sustituto de la predicción puntual, sino como un complemento esencial que la enriquece, generando intervalos de predicción (para regresión) y conjuntos de predicción (para clasificación) con garantías estadísticas sólidas de cobertura, válidas para cualquier distribución de los datos. Así, en lugar de simplemente afirmar que cierto individuo tiene ``20 años'' de edad esperada (más técnicamente conocida como edad biológica), el modelo podría también indicar una edad en el intevalo $[18, 22]$ años con un 95\% de confianza, o en un problema de clasificación de sexo, devolver el conjunto $\left\{masculino, femenino\right\}$ en casos ambiguos, reflejando de manera transparente y rigurosa la incertidumbre del modelo.
+
+Para demostrar su utilidad ---y costes--- con una aplicación práctica, se emplea un conjunto de imágenes de radiografías maxilofaciales de individuos entre los 14 y los 25 años de 12 países distintos alrededor del globo. Se utiliza un modelo de red neuronal convolucional para resolver distintos problemas que predicen edades (en regresión y clasificación) y sexo (clasificación) de los individuos a partir de estas y se aplican técnicas de predicción conformal, generando intervalos de predicción calibrados para la edad y conjuntos de etiquetas para el sexo. Los resultados se evalúan empíricamente para verificar el cumplimiento de las garantías de cobertura marginal (por ejemplo, un 95\%), al tiempo que se analizan propiedades cruciales como el tamaño promedio de los intervalos o conjuntos, y la adaptatividad (la correlación entre el tamaño del conjunto/intervalo y la dificultad de la predicción en esa instancia). 
 
 %----------------------------------------------------------------------------------------------------------------------%
 % PÁGINA DE RESUMEN EN INGLÉS
@@ -50,7 +54,12 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 \noindent\textbf{Abstract}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Biological profile estimation is one of the main tasks of Forensic Anthropology, used in human identification processes and in legal proceedings where it is necessary to determine the age of living persons. Over the last decade, significant advances have been made in the application of Machine Learning techniques for this purpose, aiming to reduce subjectivity and enable a more rigorous and controlled study of the capabilities of biological profile estimation methods, thanks to a more standarized and measurable environment of variables. However, these models often provide only a point prediction (such as a specific age or a class probability), completely ignoring the quantification of the uncertainty inherent to the prediction.
+This limitation is critical in a forensic context, where the reliability of an estimate can vary enormously between cases due to factors such as sample quality, the intrinsic biological variability of the individual, or the inherent limitations of the trained model.
+
+This work proposes the integration of conformal prediction into the biological profile estimation workflow. This framework is not intended as a substitute for point prediction, but as an essential complement that enriches it, generating prediction intervals (for regression) and prediction sets (for classification) with strong statistical coverage guarantees, valid for any data distribution. Thus, instead of simply stating that a certain individual has an expected age of ``20 years'' (more technically known as biological age), the model could also indicate an age in the interval $[18, 22]$ years with 95\% confidence, or in a sex classification problem, return the set $\left\{male, female\right\}$ in ambiguous cases, transparently and rigorously reflecting the model's uncertainty.
+
+To demonstrate its usefulness ---and costs--- with a practical application, a dataset of maxillofacial radiographs from individuals between 14 and 25 years old from 12 different countries around the globe is used. A convolutional neural network model is used to solve different problems predicting age (in regression and classification) and sex (classification) of the individuals from these images, and conformal prediction techniques are applied, generating calibrated prediction intervals for age and label sets for sex. The results are empirically evaluated to verify compliance with marginal coverage guarantees (e.g., 95\%), while analyzing crucial properties such as the average size of the intervals or sets, and adaptivity (the correlation between the size of the set/interval and the difficulty of the prediction for that instance).
 
 
 %----------------------------------------------------------------------------------------------------------------------%
@@ -70,7 +79,7 @@ Yo, \textbf{David González Durán}, alumno de la doble titulación de Ingenier�
 \vspace{2cm}
 
 \begin{flushright}
-    Granada, a 22 de agosto de 2025.
+    Granada, a 1 de septiembre de 2025.
 \end{flushright}
 
 %----------------------------------------------------------------------------------------------------------------------%
@@ -93,13 +102,11 @@ D. \textbf{Javier Vénema Rodríguez}, Esdudiante de Doctorado del programa de d
 
 \vspace{0.5cm}
 
-Que el presente trabajo, titulado \textit{\textbf{Cuantificación de la incertidumbre de las predicciones de modelos de aprendizaje automático en problemas de estimación del perfil biológico}},
-ha sido realizado bajo su supervisión por \textbf{David González Durán}, y autorizamos la defensa de dicho trabajo ante el tribunal
-que corresponda.
+Que el presente trabajo, titulado \textit{\textbf{Cuantificación de la incertidumbre de las predicciones de modelos de aprendizaje automático en problemas de estimación del perfil biológico}}, ha sido realizado bajo su supervisión por \textbf{David González Durán}, y autorizamos la defensa de dicho trabajo ante el tribunal que corresponda.
 
 \vspace{0.5cm}
 
-Y para que conste, expiden y firman el presente informe en Granada a X de mes de 2025.
+Y para que conste, expiden y firman el presente informe en Granada a 1 de septiembre de 2025.
 
 \vspace{1cm}
 
@@ -113,19 +120,20 @@ Y para que conste, expiden y firman el presente informe en Granada a X de mes de
 % AGRADECIMIENTOS
 
 \cleardoublepage
-\chapter*{Agradecimientos}
+
+\chapter*{\vspace{-1cm}Agradecimientos}
 \thispagestyle{empty}
 
-\vspace{1cm}
+\vspace{0.1cm}
 
-En primer lugar, quiero agradecer a mis padre por todo el apoyo incondicional que me han brindado estos años, para facilitarme en la transición a la vida lejos de mi ciudad, por mantenerme económicamente, por motivarme con la carrera 
-Sin ellos, 
+A todo el sistema educativo y universitario público, que ha confiado en mí e invertido en mi futuro. Mi gratitud por proveer la infraestructura, el talento docente y los recursos indispensables que han cimentado mi preparación. 
 
-Quiero agradecer a mi novio Juan por apoyarme en el último tramo de mis estudios, 
+A mis padres, por todo el apoyo incondicional que me han brindado durante toda la vida, pero especialmente en este último tramo, con los esfuerzos que han supuesto mis estudios universitarios, lejos de mi ciudad.  Gracias por animarme a perseguir mis metas, por el gran sacrificio económico que han hecho y por socorrerme cada vez que lo he necesitado. 
 
-También a mis amigos más cercanos estos últimos años, María y Javier, 
+A mi compañera de piso y amiga durante los últimos cinco años, María. Por transformar nuestro apartamento en un verdadero hogar, un refugio lleno de calidez donde siempre me sentí cómodo y seguro. Por tu cuidado incondicional en los días buenos y, especialmente, en los menos buenos. Gracias por ser mi familia lejos de casa y por hacer que estos años hayan sido, sin duda, una de las mejores etapas de mi vida.
 
-También quiero dar las gracias a la Delegación de Estudiantes de Ingenierías Informática y Telecomunicaciones, que ...
+A mi novio, Juan, que me ha acompañado en mi último curso universitario. Su apoyo emocional fue crucial en los momentos más duros, y su ayuda fue invaluable: escuchó mis monólogos sobre el TFG con paciencia infinita, hizo preguntas que clarificaron mis ideas y me brindó una confianza inquebrantable. Su capacidad para escuchar y su constante aliento hicieron que todo fuera más llevadero. 
 
+A la Delegación de Estudiantes de Ingenierías Informática y de Telecomunicación, por ser el canal que me permitió conectar con la realidad de la escuela y participar activamente en su mejora. Gracias por mostrarme que la universidad no es solo un lugar de formación individual, sino una comunidad donde la colaboración y el apoyo mutuo son posibles. Con este agradecimiento, quiero poner en valor la representación estudiantil: humilde, crítica y ambiciosa, con la convicción de trabajar no en beneficio propio, sino pensando en quienes formarán parte de la universidad en el futuro.
 
-Y, por último, gracias a Pablo y Javier por la ...
+A mis tutores, Pablo y Javier, por la incuestionable ayuda que me han ofrecido en todo momento, por tener tanta paciencia con todos los problemas surgidos, por sus valiosas críticas y consejos que han elevado la calidad de este proyecto, y por transmitirme su pasión por la investigación. Ha sido un privilegio aprender a vuestro lado.

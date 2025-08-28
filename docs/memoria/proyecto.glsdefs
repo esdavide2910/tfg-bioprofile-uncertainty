@@ -1,0 +1,616 @@
+\glsdefs@newdocentry{AF}%
+{%
+name={\acronymfont {\glsentryshort {AF}}},%
+sort={AF},%
+type={acronym},%
+first={AF},%
+firstplural={AFs},%
+text={AF},%
+plural={AFs},%
+description={Antropología Forense},%
+descriptionplural={Antropología Forense},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Antropología Forense},%
+longplural={Antropología Forenses},%
+short={AF},%
+shortplural={AFs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{ID}%
+{%
+name={\acronymfont {\glsentryshort {ID}}},%
+sort={ID},%
+type={acronym},%
+first={ID},%
+firstplural={IDs},%
+text={ID},%
+plural={IDs},%
+description={Identificación Humana},%
+descriptionplural={Identificación Humana},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Identificación Humana},%
+longplural={Identificación Humanas},%
+short={ID},%
+shortplural={IDs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{PB}%
+{%
+name={\acronymfont {\glsentryshort {PB}}},%
+sort={PB},%
+type={acronym},%
+first={PB},%
+firstplural={PBs},%
+text={PB},%
+plural={PBs},%
+description={Perfil Biológico},%
+descriptionplural={Perfil Biológico},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Perfil Biológico},%
+longplural={Perfil Biológicos},%
+short={PB},%
+shortplural={PBs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{IA}%
+{%
+name={\acronymfont {\glsentryshort {IA}}},%
+sort={IA},%
+type={acronym},%
+first={IA},%
+firstplural={IAs},%
+text={IA},%
+plural={IAs},%
+description={Inteligencia Artificial},%
+descriptionplural={Inteligencia Artificial},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Inteligencia Artificial},%
+longplural={Inteligencia Artificials},%
+short={IA},%
+shortplural={IAs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{ML}%
+{%
+name={\acronymfont {\glsentryshort {ML}}},%
+sort={ML},%
+type={acronym},%
+first={ML},%
+firstplural={MLs},%
+text={ML},%
+plural={MLs},%
+description={Machine Learning},%
+descriptionplural={Machine Learning},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Machine Learning},%
+longplural={Machine Learnings},%
+short={ML},%
+shortplural={MLs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{CP}%
+{%
+name={\acronymfont {\glsentryshort {CP}}},%
+sort={CP},%
+type={acronym},%
+first={CP},%
+firstplural={CPs},%
+text={CP},%
+plural={CPs},%
+description={Conformal Prediction},%
+descriptionplural={Conformal Prediction},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Conformal Prediction},%
+longplural={Conformal Predictions},%
+short={CP},%
+shortplural={CPs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{CNN}%
+{%
+name={\acronymfont {\glsentryshort {CNN}}},%
+sort={CNN},%
+type={acronym},%
+first={CNN},%
+firstplural={CNNs},%
+text={CNN},%
+plural={CNNs},%
+description={Convolutional Neural Network},%
+descriptionplural={Convolutional Neural Network},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Convolutional Neural Network},%
+longplural={Convolutional Neural Networks},%
+short={CNN},%
+shortplural={CNNs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{SSH}%
+{%
+name={\acronymfont {\glsentryshort {SSH}}},%
+sort={SSH},%
+type={acronym},%
+first={SSH},%
+firstplural={SSHs},%
+text={SSH},%
+plural={SSHs},%
+description={Secure Shell},%
+descriptionplural={Secure Shell},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Secure Shell},%
+longplural={Secure Shells},%
+short={SSH},%
+shortplural={SSHs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{DL}%
+{%
+name={\acronymfont {\glsentryshort {DL}}},%
+sort={DL},%
+type={acronym},%
+first={DL},%
+firstplural={DLs},%
+text={DL},%
+plural={DLs},%
+description={Deep Learning},%
+descriptionplural={Deep Learning},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Deep Learning},%
+longplural={Deep Learnings},%
+short={DL},%
+shortplural={DLs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{DNN}%
+{%
+name={\acronymfont {\glsentryshort {DNN}}},%
+sort={DNN},%
+type={acronym},%
+first={DNN},%
+firstplural={DNNs},%
+text={DNN},%
+plural={DNNs},%
+description={Deep Neural Network},%
+descriptionplural={Deep Neural Network},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Deep Neural Network},%
+longplural={Deep Neural Networks},%
+short={DNN},%
+shortplural={DNNs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{FC}%
+{%
+name={\acronymfont {\glsentryshort {FC}}},%
+sort={FC},%
+type={acronym},%
+first={FC},%
+firstplural={FCs},%
+text={FC},%
+plural={FCs},%
+description={Fully Connected},%
+descriptionplural={Fully Connected},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Fully Connected},%
+longplural={Fully Connecteds},%
+short={FC},%
+shortplural={FCs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{MLP}%
+{%
+name={\acronymfont {\glsentryshort {MLP}}},%
+sort={MLP},%
+type={acronym},%
+first={MLP},%
+firstplural={MLPs},%
+text={MLP},%
+plural={MLPs},%
+description={Multilayer Perceptron},%
+descriptionplural={Multilayer Perceptron},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Multilayer Perceptron},%
+longplural={Multilayer Perceptrons},%
+short={MLP},%
+shortplural={MLPs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{UQ}%
+{%
+name={\acronymfont {\glsentryshort {UQ}}},%
+sort={UQ},%
+type={acronym},%
+first={UQ},%
+firstplural={UQs},%
+text={UQ},%
+plural={UQs},%
+description={Uncetainty Quantification},%
+descriptionplural={Uncetainty Quantification},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Uncetainty Quantification},%
+longplural={Uncetainty Quantifications},%
+short={UQ},%
+shortplural={UQs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{ICP}%
+{%
+name={\acronymfont {\glsentryshort {ICP}}},%
+sort={ICP},%
+type={acronym},%
+first={ICP},%
+firstplural={ICPs},%
+text={ICP},%
+plural={ICPs},%
+description={Inductive Conformal Prediction},%
+descriptionplural={Inductive Conformal Prediction},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Inductive Conformal Prediction},%
+longplural={Inductive Conformal Predictions},%
+short={ICP},%
+shortplural={ICPs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{QR}%
+{%
+name={\acronymfont {\glsentryshort {QR}}},%
+sort={QR},%
+type={acronym},%
+first={QR},%
+firstplural={QRs},%
+text={QR},%
+plural={QRs},%
+description={Ruantile Regression},%
+descriptionplural={Ruantile Regression},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Ruantile Regression},%
+longplural={Ruantile Regressions},%
+short={QR},%
+shortplural={QRs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{CQR}%
+{%
+name={\acronymfont {\glsentryshort {CQR}}},%
+sort={CQR},%
+type={acronym},%
+first={CQR},%
+firstplural={CQRs},%
+text={CQR},%
+plural={CQRs},%
+description={Conformalized Quantile Regression},%
+descriptionplural={Conformalized Quantile Regression},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Conformalized Quantile Regression},%
+longplural={Conformalized Quantile Regressions},%
+short={CQR},%
+shortplural={CQRs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{LAC}%
+{%
+name={\acronymfont {\glsentryshort {LAC}}},%
+sort={LAC},%
+type={acronym},%
+first={LAC},%
+firstplural={LACs},%
+text={LAC},%
+plural={LACs},%
+description={Least-Ambiguous set-valued Classifiers},%
+descriptionplural={Least-Ambiguous set-valued Classifiers},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Least-Ambiguous set-valued Classifiers},%
+longplural={Least-Ambiguous set-valued Classifierss},%
+short={LAC},%
+shortplural={LACs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{MCM}%
+{%
+name={\acronymfont {\glsentryshort {MCM}}},%
+sort={MCM},%
+type={acronym},%
+first={MCM},%
+firstplural={MCMs},%
+text={MCM},%
+plural={MCMs},%
+description={Mondrian Confidence Machine},%
+descriptionplural={Mondrian Confidence Machine},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Mondrian Confidence Machine},%
+longplural={Mondrian Confidence Machines},%
+short={MCM},%
+shortplural={MCMs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{APS}%
+{%
+name={\acronymfont {\glsentryshort {APS}}},%
+sort={APS},%
+type={acronym},%
+first={APS},%
+firstplural={APSs},%
+text={APS},%
+plural={APSs},%
+description={Adaptive Prediction Sets},%
+descriptionplural={Adaptive Prediction Sets},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Adaptive Prediction Sets},%
+longplural={Adaptive Prediction Setss},%
+short={APS},%
+shortplural={APSs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{RAPS}%
+{%
+name={\acronymfont {\glsentryshort {RAPS}}},%
+sort={RAPS},%
+type={acronym},%
+first={RAPS},%
+firstplural={RAPSs},%
+text={RAPS},%
+plural={RAPSs},%
+description={Regularized Adaptive Prediction Sets},%
+descriptionplural={Regularized Adaptive Prediction Sets},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Regularized Adaptive Prediction Sets},%
+longplural={Regularized Adaptive Prediction Setss},%
+short={RAPS},%
+shortplural={RAPSs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{SAPS}%
+{%
+name={\acronymfont {\glsentryshort {SAPS}}},%
+sort={SAPS},%
+type={acronym},%
+first={SAPS},%
+firstplural={SAPSs},%
+text={SAPS},%
+plural={SAPSs},%
+description={Sorted Adaptive Prediction Sets},%
+descriptionplural={Sorted Adaptive Prediction Sets},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Sorted Adaptive Prediction Sets},%
+longplural={Sorted Adaptive Prediction Setss},%
+short={SAPS},%
+shortplural={SAPSs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{OOD}%
+{%
+name={\acronymfont {\glsentryshort {OOD}}},%
+sort={OOD},%
+type={acronym},%
+first={OOD},%
+firstplural={OODs},%
+text={OOD},%
+plural={OODs},%
+description={Out-Of-Distribution},%
+descriptionplural={Out-Of-Distribution},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Out-Of-Distribution},%
+longplural={Out-Of-Distributions},%
+short={OOD},%
+shortplural={OODs},%
+counter={page},%
+parent={},%
+%
+}%
+

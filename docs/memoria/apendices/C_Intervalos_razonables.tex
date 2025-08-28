@@ -1,4 +1,5 @@
 \chapter{Intervalos de valores razonables}
+\label{chap:intervalos_valores_razonables}
 
 En este apartado diferenciaremos los tipos de intervalos de valores nos permiten cuantificar la variabilidad de los resultados y, por tanto, la incertidumbre de la medición realizada. 
 
@@ -6,8 +7,7 @@ En este apartado diferenciaremos los tipos de intervalos de valores nos permiten
 
     \item El \textbf{intervalo de confianza (IC)} es una herramienta común de la estadística frecuentista, que permite estimar un rango de valores tal que podamos confiar en que contiene al valor verdadero de un parámetro poblacional desconocido $\theta$ (p.ej., la media) \cite{berrendero2025}.
 
-    Los métodos del cálculo del IC dependen de la distribución del estimador (p.ej., la distribución de la
-    media muestral) y los parámetros conocidos. 
+    Los métodos del cálculo del intervalo de confianza dependen de la distribución del estimador (p.ej., la distribución de la media muestral) y los parámetros conocidos. 
 
     Es importante aclarar un malentendido común: un intervalo de confianza con nivel 95\% para un parámetro $\theta$ no significa que exista un 95\% de probabilidad de que $\theta$ esté dentro del intervalo calculado a partir de una muestra específica. En realidad, el 95\% se refiere a la frecuencia con la que, si muestreásemos muchas veces los datos, los intervalos construidos a partir de esas muestras incluirían al valor verdadero de $\theta$ en aproximadamente el 95\% \cite{murphy2022} (véase la Figura \ref{fig:confidence_interval}).
 
@@ -24,7 +24,7 @@ En este apartado diferenciaremos los tipos de intervalos de valores nos permiten
     \end{figure}
 
 
-    \item El \textbf{intervalo de credibilidad o región creíble (RC)} es, de hecho, la que determina que el parámetro $\theta$ está contenido en el rango de sus valores con una probabilidad determinada por el nivel de credibilidad. Este intervalo es la aproximación bayesiana equivalente al intervalo de confianza, y, como este, requiere conocer la distribución a priori de los datos.
+    \item El \textbf{intervalo de credibilidad o región creíble} es, de hecho, la que determina que el parámetro $\theta$ está contenido en el rango de sus valores con una probabilidad determinada por el nivel de credibilidad. Este intervalo es la aproximación bayesiana equivalente al intervalo de confianza, y, como este, requiere conocer la distribución a priori de los datos.
 
     La diferencia radica en que, a diferencia del intervalo de confianza, que parte de que $\theta$ es un parámetro fijo desconocido y los datos son tratados como aleatorios, el enfoque bayesiano fija los datos(ya que son conocidos) y el parámetro $\theta$ lo trata como aleatorio (ya que es desconocido) \cite{murphy2022}.
 

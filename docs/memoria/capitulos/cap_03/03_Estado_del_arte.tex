@@ -6,9 +6,9 @@
 
 En ausencia de documentación escrita confiable y cuando otros métodos como los genéticos o dactilares no son viables, los métodos más precisos para estimar la edad se basan en el análisis del estado de los huesos del cuerpo humano. El número de publicaciones que usan técnicas de antropología para la estimación de edad ha aumentado continuamente en las últimas décadas (véase la Figura \ref{fig:num_papers_1}%
 \footnote{
-    La \textit{query} usada ha sido:
-    
+    La \textit{query} usada ha sido
     TITLE-ABS-KEY ( ( age AND (estimation OR assessment) AND ( bone OR anthropology OR skeleton ) ) ) 
+    el día 21 de agosto de 2025.
 }%
 ), lo que indica un interés creciente en la antropología forense por métodos más precisos y confiables de estimación de edad.
 Los huesos experimentan cambios continuos a lo largo de la vida, y estas transformaciones progresivas permiten determinar la \textit{edad biológica} de un individuo. Esta edad refleja la etapa de desarrollo en la que se encuentra el esqueleto dentro del proceso de cambios que ocurren desde el nacimiento hasta la vejez \cite{byers2023}. Cabe destacar que la edad biológica no siempre coincide con la edad cronológica ---el tiempo transcurrido desde el nacimiento---, pero ambas guardan una correlación significativa, lo que permite aproximaciones razonables en contextos forenses, antropológicos o médicos.
@@ -67,11 +67,11 @@ ha publicado recomendaciones estandarizadas sobre cómo llevar a cabo evaluacion
 
 \section{Estimación de la edad en antropología forense usando \textit{machine learning}}
 
-En la última década, ha aumentado el uso de técnicas de antropología forense combinadas con métodos de ML para la estimación de la edad, como se ilustra en la Figura \ref{fig:num_papers_2}%
+En la última década, ha aumentado el uso de técnicas de antropología forense combinadas con métodos de \acrshort{ML} para la estimación de la edad, como se ilustra en la Figura \ref{fig:num_papers_2}%
 \footnote{
-    La \textit{query} usada ha sido:
-    
+    La \textit{query} usada ha sido
     TITLE-ABS-KEY ( ( age AND estimation AND ( bone OR anthropology OR skeleton ) ) AND ( ( deep AND learning ) OR ( artificial AND intelligence ) ) )
+    el día 21 de agosto de 2025.
 }.
 
 \begin{figure}[htbp]
@@ -86,9 +86,9 @@ En la última década, ha aumentado el uso de técnicas de antropología forense
     \label{fig:num_papers_2}
 \end{figure}
 
-Los métodos manuales de estimación del PB se basan en la evaluación visual y en el análisis morfométrico de rasgos esqueléticos. Sin embargo, su aplicación demanda conocimiento especializado, pueden presentar ambigüedades en su formulación que den lugar a interpretaciones variables \cite{berst2001}, y están sujetos a posibles errores de medición \cite{langley2018}, sesgando el proceso y reduciendo su fiabilidad. Estas limitaciones han motivado el desarrollo de métodos automatizados basados en ML, que siguen dos enfoques principales. 
+Los métodos manuales de estimación del \acrshort{PB} se basan en la evaluación visual y en el análisis morfométrico de rasgos esqueléticos. Sin embargo, su aplicación demanda conocimiento especializado, pueden presentar ambigüedades en su formulación que den lugar a interpretaciones variables \cite{berst2001}, y están sujetos a posibles errores de medición \cite{langley2018}, sesgando el proceso y reduciendo su fiabilidad. Estas limitaciones han motivado el desarrollo de métodos automatizados basados en \acrshort{ML}, que siguen dos enfoques principales. 
 
-El primero consiste en tomar un método clásico de AF y automatizar sus etapas mediante herramientas computacionales. Para ello, el método debe definir:
+El primero consiste en tomar un método clásico de \acrshort{AF} y automatizar sus etapas mediante herramientas computacionales. Para ello, el método debe definir:
 
 \begin{enumerate}
     
@@ -98,15 +98,15 @@ El primero consiste en tomar un método clásico de AF y automatizar sus etapas 
 
 \end{enumerate}
 
-La Figura \ref{fig:MRI_pipeline} ilustra un ejemplo de este enfoque. Entre las propuestas destacadas podemos mencionar BoneXpert \cite{thodberg2008}, que empleaba técnicas clásicas de ML y demostró robustez en poblaciones diversas, tanto en origen geográfico como en condiciones clínicas de adquisición de imágenes \cite{van2009, martin2010, thodberg2010}. 
+La Figura \ref{fig:MRI_pipeline} ilustra un ejemplo de este enfoque. Entre las propuestas destacadas podemos mencionar BoneXpert \cite{thodberg2008}, que empleaba técnicas clásicas de \acrshort{ML} y demostró robustez en poblaciones diversas, tanto en origen geográfico como en condiciones clínicas de adquisición de imágenes \cite{van2009, martin2010, thodberg2010}. 
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{capitulos/cap_01/imagenes/MRI_pipeline.png}
     \caption[
-        Procedimiento secuencial clásico de ML para el método propuesto en \cite{stern2014}.
+        Procedimiento secuencial clásico de \acrshort{ML} para el método propuesto en \cite{stern2014}.
     ]{
-        Procedimiento secuencial clásico de ML para el método propuesto en \cite{stern2014}. 
+        Procedimiento secuencial clásico de \acrshort{ML} para el método propuesto en \cite{stern2014}. 
         Las características se extraen manualmente o con herramientas independientes del modelo.
     }
     \label{fig:MRI_pipeline}
@@ -137,8 +137,6 @@ Además, los autores demostraron su adaptabilidad al procesar imágenes 2D de ra
 % ------------------------------------------------------------------------------------------------------------
 
 \section{Cuantificación de la incertidumbre para la estimación de la edad}
-
-\todo{Incluir gráfica con el número de publicaciones para cuantificación de la incertidumbre en estimación de la edad}
 
 La mayoría de trabajos académicos de AF no presentan un enfoque explícito en la cuantificación de incertidumbre de las predicciones, pero sí evalúan la confiabilidad de los métodos propuestos, a través del análisis del error. 
 

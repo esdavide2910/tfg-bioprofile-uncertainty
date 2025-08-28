@@ -46,13 +46,11 @@ Este \textit{dataset} incluye:
 
 \end{itemize}
 
-Se proporcionan los datos ya preprocesados, por lo que no es necesario realizar tareas adicionales de limpieza o transformación previa antes de su análisis.
-
-Se ha ignorado el campo ``sample'', dado que se trata de una asignación sesgada y no representa necesariamente una clasificación fiable del origen poblacional de los individuos. Por tanto, este campo no se emplea en el análisis ni en el entrenamiento de los modelos, centrándose exclusivamente en las variables de edad, sexo e imagen.
+Se proporcionan los datos ya preprocesados, por lo que no es necesario realizar tareas adicionales de limpieza o transformación previa antes de su análisis. Se ha ignorado el campo ``sample'', dado que se trata de una asignación sesgada y no representa necesariamente una clasificación fiable del origen poblacional de los individuos. Por tanto, este campo no se emplea en el análisis ni en el entrenamiento de los modelos, centrándose exclusivamente en las variables de edad, sexo e imagen.
 
 En el \textit{dataset} hay un total de 10 739 ejemplos, de los que 5756 son de individuos de sexo femenino y 4983 de sexo masculino. Las edades mínima y máxima son 14 y 26 años, respectivamente, y la media son 19.13 años. En la Figura \ref{fig:histogram_ages} se observa que el número de ejemplos por edad se mantiene relativamente constante desde los 14 hasta los 21 años, a partir de los cuales disminuye progresivamente, con una representación notablemente menor en los grupos de 24, 25 y 26 años.
  
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.7\textwidth]{capitulos/cap_04/imagenes/histogram_ages.png}
     \caption[
@@ -65,7 +63,7 @@ En el \textit{dataset} hay un total de 10 739 ejemplos, de los que 5756 son de i
 
 En la Figura \ref{fig:kde_and_boxplot_ages_sex} podemos comprobar cómo en términos relativos la distribución de edad por sexo es muy similar, compartiendo ambas prácticamente el mismo rango de edades y patrones de dispersión, sin observarse diferencias sustanciales en la mediana ni en la forma general de las distribuciones.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{capitulos/cap_04/imagenes/kdeplot_ages.png}
     \caption[
@@ -86,7 +84,7 @@ Se proporcionan los datos ya divididos en \textit{train} ---con un 80\% de los i
 % representatividad de la población original, favoreciendo una evaluación más realista del rendimiento de los 
 % modelos en datos no vistos.
 
-% \begin{figure}[h]
+% \begin{figure}[htbp]
 %     \centering
 
 %     \begin{subfigure}[b]{0.47\textwidth}
@@ -115,94 +113,22 @@ Se proporcionan los datos ya divididos en \textit{train} ---con un 80\% de los i
 % ------------------------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
 
-\section{Problemas propuestos}
-
-Como se ha mecionado anteriormente, y con el objetivo de validar los métodos de predicción conformal en diferentes tipos de problemas, este trabajo se centra en tres casuísticas que, si bien están relacionadas en el ámbito de la AF, se tratan de diferente forma en el campo del ML: 
-
-\begin{enumerate}
-
-    \item estimación de la edad legal resuelta como un problema de regresión; 
-    
-    \item estimación de la edad legal planteada como un problema de clasificación binaria (mayor o menor de 18 años); 
-    
-    \item estimación de la edad legal resuelta como un problema de clasificación multiclase; y
-    
-    \item estimación del sexo como problema de clasificación binario.
-    
-    % \item estimación simultánea de la edad legal y el sexo planteada como un problema de clasificación multiclase, combinando en cuatro clases sexo (masculino o femenino) y la edad (mayor o menor a 18 años).
-
-\end{enumerate}
-
-% ------------------------------------------------------------------------------------------------------------
-
-\subsection{Problema de estimación de edad}
-
-El problema de \textbf{estimación de edad (\textit{age estimation})} consiste en predecir la edad cronológica de un individuo en una escala continua, lo que lo define como un problema de regresión.
-
-Para ello, se ha escogido usar las imágenes de radiografías maxilofaciales como entrada del algoritmo (véase la Figura \ref{fig:regression_problems}). Inicialmente se consideró incluir el sexo como metadato adicional en el modelo; sin embargo, se descartó tras observar de manera preliminar que no tenía un impacto significativo en el rendimiento del modelo, además de que su exclusión simplifica la arquitectura. 
-
-\todo{Para agosto: Un anexo que demuestre esto, yo ya lo he comprobado empíricamente}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{capitulos/cap_04/imagenes/regression_problem.png}
-    \caption[
-        Esquema visual del modelos de regresión propuesto. 
-    ]{
-        Esquema visual del modelos de regresión propuesto. 
-        El modelo solo tiene radiografías maxilofaciales como entrada. 
-    } 
-    \label{fig:regression_problems}
-\end{figure}
-
-%ANEXO:Se espera que la información adicional del sexo, como mínimo mantenga el desempeño del modelo, y 
-%potencialmente lo mejores, dado que el crecimiento y desarrollo óseo varía entre hombres y mujeres
-%\cite{adserias2019, scheuer2000}, lo que sugiere que incluir el sexo como variable de entrada podría ayudar 
-%al modelo a ajustar sus predicciones de manera más precisa. 
-
-
-% ------------------------------------------------------------------------------------------------------------
-
-\subsection{Problema de estimación de mayoría de edad}
-
-Un problema inmediatamente derivado del anterior es la \textbf{clasificación de mayoría de edad (\textit{age majority classification})}, útil en contextos legales donde es necesario determinar si una persona ha alcanzado la mayoría de edad. Este se trata de un problema de clasificación binaria, en el que el objetivo es asignar a cada individuo una de dos clases: ``menor de edad'' o ``mayor de edad''.
-
-\todo{No sé muy bien qué titulo poner para el problema, estoy entre ``clasificación de mayoría de edad'' o ``estimación/valoración de mayoría de edad'' (age assessment). He dejado clasificación para dejar claro que es un problema de este tipo pero en AF se suele usar más bien el segundo término por lo que he podido ver.}
-
-
-% ------------------------------------------------------------------------------------------------------------
-
-\subsection{Problema de clasificación de edad}
-
-Se propone un problema de estimación de edad, pero planteado como problema de clasificación multiclase, donde cada edad ---como valor entero--- es una clase independiente. 
-El potencial para aunar el planteamiento de un problema de regresión con uno de clasificación viene de la mano de la CP, que, aplicada al problema de clasificación, permite generar conjuntos de etiquetas que toleran la cercanía entre clases, de forma que errores pequeños en el valor predicho (por ejemplo, predecir 19 en lugar de 20) no se consideren fallos completos.
-
-% ------------------------------------------------------------------------------------------------------------
-
-% \subsection{Clasificación combinada de mayoría de edad y sexo}
-
-% Finalmente, se propone ampliar el anterior problema a una \textbf{clasificación combinada de mayoría de edad y sexo (\textit{majority age and sex classification})}. Este se trata de un problema de clasificación multiclase, en el que se asigna a cada individuo a una de las posibles combinaciones entre el estatus de mayoría de edad (mayor o menor) y el sexo (masculino o femenino). En total, se consideran cuatro clases: ``menor masculino'', ``menor femenino'', ``mayor masculino'' y ``mayor femenino''.
-
-% Este problema busca evaluar si es posible estimar el sexo de una persona a partir de radiografías maxilofaciales. Para ello, se exploran características morfológicas relevantes, como la forma y tamaño de los caninos \cite{rao1989}, así como los contornos de la rama mandibular y el mentón \cite{indira2012}, cuya morfología presenta una fuerte correlación con el sexo biológico.
-
-% ------------------------------------------------------------------------------------------------------------
-% ------------------------------------------------------------------------------------------------------------
 
 \section{Métodos propuestos}
 
 \subsection{Arquitectura empleada}
 
-El primer problema propuesto es el de estimación de edad. Partiremos de un planteamiento muy simple: imágenes bidimensionales de las radiografías panóramicas maxilofaciales ---y sexo, opcionalmente--- como entrada, y estimación de edad a la salida.
+Se avanza que los problemas planteados en el siguiente capítulo partin de imágenes bidimensional de las radiografías panóramicas maxilofaciales como entrada, y estimación de edad o sexo a la salida.
 
-Como modelo, empleamos una CNN, dado su buen desempeño en tareas de visión por computador. Específicamente, utilizamos la arquitectura ResNeXt50 \cite{xie2017} preentrenada en Imagenet \cite{deng2009} como punto de partida. Aunque ResNeXt50 fue entrenado originalmente para una tarea de clasificación, se puede adaptar fácilmente a tareas de regresión ---como la estimación de edad--- reemplazando su capa final por una capa de salida adecuada. Por otro lado, a pesar de haber sido entrenado en un dominio diferente al de nuestro problema, el uso de pesos preentrenados ofrece una ventaja significativa: permite una inicialización más robusta que comenzar desde cero, ya que la arquitectura ya ha aprendido a extraer patrones visuales básicos, como bordes y texturas, mediante filtros genéricos.
+Como modelo, se ha decidido emplear una CNN, dado su buen desempeño en tareas de visión por computador. Específicamente, se ha optado por la arquitectura ResNeXt50 \cite{xie2017} preentrenada en Imagenet \cite{deng2009} como punto de partida. Aunque ResNeXt50 fue entrenado originalmente para una tarea de clasificación, se puede adaptar fácilmente a tareas de regresión ---como la estimación de edad--- reemplazando su capa final por una capa de salida adecuada. Por otro lado, a pesar de haber sido entrenado en un dominio diferente al de nuestro problema, el uso de pesos preentrenados ofrece una ventaja significativa: permite una inicialización más robusta que comenzar desde cero, ya que la arquitectura ya ha aprendido a extraer patrones visuales básicos, como bordes y texturas, mediante filtros genéricos.
 
 % ------------------------------------------------------------------------------------------------------------
 
 \subsection{Regresión cuantílica}
 
-La \textbf{regresión cuantílica (\textit{quantile regression}, QR)} es un tipo de regresión que, a diferencia de la regresión puntual, predice intervalos o cuantiles específicos de la distribución de la variable respuesta, en lugar de solo su media. Esta técnica parte de la noción de que la inferencia estadística no se limita a un valor único, sino que puede representarse mediante una distribución de valores probables, de la cual es posible estimar ciertos cuantiles para describir la variabilidad del comportamiento de la variable objetivo.
+La \textbf{regresión cuantílica (\textit{quantile regression}, \acrshort{QR})} es un tipo de regresión que, a diferencia de la regresión puntual, predice intervalos o cuantiles específicos de la distribución de la variable respuesta, en lugar de solo su media. Esta técnica parte de la noción de que la inferencia estadística no se limita a un valor único, sino que puede representarse mediante una distribución de valores probables, de la cual es posible estimar ciertos cuantiles para describir la variabilidad del comportamiento de la variable objetivo.
 
-En este sentido, la regresión cuantílica permite modelar límites inferiores y superiores (por ejemplo, el percentil 10\% y 90\%) para capturar la incertidumbre o heterocedasticidad en los datos. No debe confundirse con una técnica de UQ, ya que no modela explícitamente la incertidumbre epistémica ni proporciona garantías estadísticas de cobertura como lo hacen los métodos de predicción conformal. Sin embargo, puede utilizarse como parte de un enfoque para cuantificar la incertidumbre aleatoria o condicional al estimar intervalos de predicción directamente a partir de los datos.
+En este sentido, la regresión cuantílica permite modelar límites inferiores y superiores (por ejemplo, el percentil 10\% y 90\%) para capturar la incertidumbre o heterocedasticidad en los datos. No debe confundirse con una técnica de \acrshort{UQ}, ya que no modela explícitamente la incertidumbre epistémica ni proporciona garantías estadísticas de cobertura como lo hacen los métodos de predicción conformal. Sin embargo, puede utilizarse como parte de un enfoque para cuantificar la incertidumbre aleatoria o condicional al estimar intervalos de predicción directamente a partir de los datos.
 
 Esta técnica de regresión puede implementarse en modelos de redes neuronales y modelos tipo \textit{ensemble}, aunque su implementación difiere significativamente. 
 
@@ -236,7 +162,7 @@ En redes neuronales, esta regresión requiere de:
     
     A diferencia de con la función de pérdida \textit{L1}, que trata todos los errores como absolutos y busca ajustar la mediana (cuantil 0.5) de la distribución, la \textit{pinball loss} permite enfocar la salida del modelo en cualquier cuantil específico. Esto es especialmente útil para capturar diferentes percentiles de la variable de salida, y modelar la variabilidad en las predicciones de forma más detallada.
 
-    \begin{figure}[h]
+    \begin{figure}[htbp]
         \centering
         \includegraphics[width=0.5\textwidth]{capitulos/cap_04/imagenes/pinball_loss.png}
         \caption[
@@ -274,7 +200,7 @@ Todos los métodos propuestos en este trabajo son \textit{split calibration}, es
 
 \subsubsection{\textit{Inductive Conformal Prediction} (ICP)}
 
-La ICP \cite{papadopoulos2002} fue el primer método de predicción conformal desarrollada para problemas de regresión. Su planteamiento es muy simple: consiste en añadir un margen a las predicciones puntuales, calculado a partir de un cuantil del error absoluto observado en un conjunto de calibración independiente. Este margen permite construir intervalos de predicción que contienen el valor real con una probabilidad determinada previamente (por ejemplo, 90\% o 95\%). 
+La \acrshort{ICP} \cite{papadopoulos2002} fue el primer método de predicción conformal desarrollada para problemas de regresión. Su planteamiento es muy simple: consiste en añadir un margen a las predicciones puntuales, calculado a partir de un cuantil del error absoluto observado en un conjunto de calibración independiente. Este margen permite construir intervalos de predicción que contienen el valor real con una probabilidad determinada previamente (por ejemplo, 90\% o 95\%). 
 
 Por ello, la función de no conformidad es el error absoluto de la predicción respecto al valor real:
 
@@ -295,7 +221,7 @@ $$
 \hat{C_\alpha}(x_{n+1}) = \left[ \hat{f}(x_{n+1}) - \delta_\alpha, \hat{f}(x_{n+1}) + \delta_\alpha\right]
 $$
 
-Este método de CP presenta varias ventajas: 
+Este método de \acrshort{CP} presenta varias ventajas: 
 
 \begin{itemize}
 
@@ -311,7 +237,7 @@ Sin embargo, también presenta importantes limitaciones:
     
     \item \textbf{Intervalo simétrico y no adaptativo}: El intervalo es simétrico, además de tener siempre el mismo ancho ($2q_{1-\alpha}$), no permitiendo adaptarse a la incertidumbre específica de cada predicción. 
 
-    \item \textbf{Sensibilidad a datos ruidosos o \textit{Out-of-Distribution} (OOD)}: Si el conjunto de calibración contiene \textit{outliers} o viola el supuesto de intercambiabilidad, el umbral \(q_{1-\alpha}\) puede inflarse, generando intervalos excesivamente conservadores. Tampoco detecta heterocedasticidad automáticamente.
+    \item \textbf{Sensibilidad a datos ruidosos o \textit{Out-of-Distribution} (\acrshort{OOD})}: Si el conjunto de calibración contiene \textit{outliers} o viola el supuesto de intercambiabilidad, el umbral \(q_{1-\alpha}\) puede inflarse, generando intervalos excesivamente conservadores. Tampoco detecta heterocedasticidad automáticamente.
 
 \end{itemize}
 
@@ -319,7 +245,7 @@ Sin embargo, también presenta importantes limitaciones:
 
 \subsubsection{\textit{Conformalized Quantile Regression} (CQR)}
 
-Como su nombre indica, este método se realiza sobre la regresión cuantílica. La CQR \cite{romano2019} combina la flexibilidad de la regresión cuantílica para estimar directamente los cuantiles condicionales con la garantía de validez estadística proporcionada por la conformalización. Esto permite obtener intervalos de predicción que son asimétricos y adaptativos, ajustándose localmente a la variabilidad y distribución de los datos.
+Como su nombre indica, este método se realiza sobre la regresión cuantílica. La \acrshort{CQR} \cite{romano2019} combina la flexibilidad de la regresión cuantílica para estimar directamente los cuantiles condicionales con la garantía de validez estadística proporcionada por la conformalización. Esto permite obtener intervalos de predicción que son asimétricos y adaptativos, ajustándose localmente a la variabilidad y distribución de los datos.
 
 Se ha optado por implementar la segunda definición del intervalo de predicción, presentada en el segundo teorema de \cite{romano2019}, que incluye la calibración de ambas colas para obtener intervalos asimétricos \cite{linusson2014}. Según el artículo, esta opción mejora las garantías de cobertura, aunque puede implicar un aumento en el ancho del intervalo.
 
@@ -359,11 +285,11 @@ $$
         \right]
 $$
 
-CQR, al igual que ICP, es independiente del modelo y del dominio, ya que solo emplea las salidas y valores reales para realizar la calibración. También tiene el mismo orden de eficiencia computacional, puesto que realiza prácticamente las mismas operaciones que ICP, pero para cada límite del intervalo predicho, calibrando los cuantiles inferior y superior de manera independiente para mantener la cobertura deseada.
+\acrshort{CQR}, al igual que \acrshort{ICP}, es independiente del modelo y del dominio, ya que solo emplea las salidas y valores reales para realizar la calibración. También tiene el mismo orden de eficiencia computacional, puesto que realiza prácticamente las mismas operaciones que \acrshort{ICP}, pero para cada límite del intervalo predicho, calibrando los cuantiles inferior y superior de manera independiente para mantener la cobertura deseada.
 
-Sin embargo, CQR logra intervalos asimétricos y adaptativos, dado que la regresión cuantílica estima directamente los cuantiles condicionales de la distribución de la variable objetivo, permitiendo que los límites del intervalo se ajusten según la heterocedasticidad y la forma local de la distribución de los datos, en lugar de asumir una distribución simétrica o constante del error. 
+Sin embargo, \acrshort{CQR} logra intervalos asimétricos y adaptativos, dado que la regresión cuantílica estima directamente los cuantiles condicionales de la distribución de la variable objetivo, permitiendo que los límites del intervalo se ajusten según la heterocedasticidad y la forma local de la distribución de los datos, en lugar de asumir una distribución simétrica o constante del error. 
 
-En la Tabla \ref{tab:comparativa_cp} observamos un cuadro comparativo de los distintos métodos propuestos de CP. 
+En la Tabla \ref{tab:comparativa_cp} observamos un cuadro comparativo de los distintos métodos propuestos de \acrshort{CP}. 
 
 \renewcommand{\arraystretch}{1.5}
 \begin{sidewaystable}
@@ -381,9 +307,9 @@ En la Tabla \ref{tab:comparativa_cp} observamos un cuadro comparativo de los dis
     \begin{tabular}[c]{@{}l@{}}Coste inferencia \\ (por predicción)\end{tabular} & O(1)                  & O(1)           & O(1)                  & O(1)                                                                     \\ \hline
     \end{tabular}
     \caption[
-        Comparativa de métodos propuestos de CP para problemas de regresión.
+        Comparativa de métodos propuestos de \acrshort{CP} para problemas de regresión.
     ]{   
-        Comparativa de métodos propuestos de CP para problemas de regresión.
+        Comparativa de métodos propuestos de \acrshort{CP} para problemas de regresión.
     }
     \label{tab:comparativa_cp}
 \end{sidewaystable}
@@ -393,7 +319,7 @@ En la Tabla \ref{tab:comparativa_cp} observamos un cuadro comparativo de los dis
 
 \subsection{Calibración de probabilidades en clasificación}
 
-Los modelos de clasificación producen puntuaciones discriminativas, como logits o distancias a un hiperplano, pero no siempre reflejan probabilidades reales para la predicción. La \textbf{calibración de probabilidad} en problemas de clasificación en ML se refiere al ajuste de estas puntuaciones de salida para que reflejen más fielmente probabilidades de predicción. 
+Los modelos de clasificación producen puntuaciones discriminativas, como logits o distancias a un hiperplano, pero no siempre reflejan probabilidades reales para la predicción. La \textbf{calibración de probabilidad} en problemas de clasificación en \acrshort{ML} se refiere al ajuste de estas puntuaciones de salida para que reflejen más fielmente probabilidades de predicción. 
 
 La calibración de probabilidades busca que cuando un modelo diga ``X\% de probabilidad'', eso corresponda de verdad a la frecuencia observada en los datos. Por ejemplo, si un modelo asigna una probabilidad del 70\% a un conjunto de instancias, aproximadamente 7 de cada 10 deberían pertenecer a la clase positiva si el modelo está bien calibrado.
 
@@ -420,7 +346,7 @@ Se ha escogido este algoritmo ya que es el utilizado en trabajos recientes sobre
 
 \subsubsection{Least-Ambiguous set-valued Classifiers (LAC)}
 
-LAC \cite{sadinle2019} es el primer método propuesto de predicción conformal para problemas de clasificación. Propone un enfoque de clasificación de conjuntos de valores (\textit{set-valued classification}) en el que, en lugar de asignar una única etiqueta a cada instancia, se selecciona un conjunto de etiquetas que garanticen un nivel de confianza predeterminada por el usuario.
+\acrshort{LAC} \cite{sadinle2019} es el primer método propuesto de predicción conformal para problemas de clasificación. Propone un enfoque de clasificación de conjuntos de valores (\textit{set-valued classification}) en el que, en lugar de asignar una única etiqueta a cada instancia, se selecciona un conjunto de etiquetas que garanticen un nivel de confianza predeterminada por el usuario.
 
 La función de no conformidad es conocida como \textbf{probabilidad inversa o \textit{hinge loss}} \cite{johansson2017}, y se calcula como la unidad menos la probabilidad de la clase verdadera%
 \footnote{
@@ -470,17 +396,17 @@ Algunas propiedades de este método son:
 
 \subsubsection{Mondrian Confidence Machine (MCM)}
 
-(MCM) \cite{vovk2003} es un método estrechamente relacionado con LAC, ya que emplea el mismo esquema general de CP. Sin embargo, introduce una diferencia clave: en lugar de aplicar un único umbral global para todas las clases, MCM segmenta el conjunto de calibración por clase y calcula las puntuaciones de no conformidad y los umbrales de decisión de forma independiente para cada una.
+\acrshort{MCM} \cite{vovk2003} es un método estrechamente relacionado con \acrshort{LAC}, ya que emplea el mismo esquema general de \acrshort{CP}. Sin embargo, introduce una diferencia clave: en lugar de aplicar un único umbral global para todas las clases, \acrshort{MCM} segmenta el conjunto de calibración por clase y calcula las puntuaciones de no conformidad y los umbrales de decisión de forma independiente para cada una.
 
-A continuación, se detallan sus principales característica diferenciadas de LAC:
+A continuación, se detallan sus principales característica diferenciadas de \acrshort{LAC}:
 
 \begin{itemize}
 
-    \item \textbf{Garantiza cobertura condicional por clase}, lo cual es muy útil en conjuntos desbalanceados. A diferencia de LAC, que ofrece cobertura marginal sobre el conjunto total, MCM busca asegurar que cada clase individual cumpla el nivel de cobertura deseado, lo que favorece una distribución más equitativa del error.
+    \item \textbf{Garantiza cobertura condicional por clase}, lo cual es muy útil en conjuntos desbalanceados. A diferencia de \acrshort{APS}, que ofrece cobertura marginal sobre el conjunto total, MCM busca asegurar que cada clase individual cumpla el nivel de cobertura deseado, lo que favorece una distribución más equitativa del error.
     
     \item \textbf{Conjuntos de predicción parcialmente adaptativos}: Estos son adaptativos respecto a cada clase, aunque no por muestra, ya que emplea un umbral de no conformidad por cada clase, pero los aplica igual a todas las muestras.  
 
-    \item \textbf{Coste computacional ligeramente superior a LAC}: En la calibración, se requiere calcular las puntuaciones de no conformidad y el umbral de no conformidad para cada clase, lo cual puede aumentar los tiempos linealmente en base al número de clases. La inferencia sigue manteniendo la eficiencia. No obstante, sigue siendo un método eficiente y apto para entornos de predicción en tiempo real, siempre que el número de clases no sea excesivo.
+    \item \textbf{Coste computacional ligeramente superior a \acrshort{LAC}}: En la calibración, se requiere calcular las puntuaciones de no conformidad y el umbral de no conformidad para cada clase, lo cual puede aumentar los tiempos linealmente en base al número de clases. La inferencia sigue manteniendo la eficiencia. No obstante, sigue siendo un método eficiente y apto para entornos de predicción en tiempo real, siempre que el número de clases no sea excesivo.
 
 \end{itemize}
 
@@ -488,9 +414,9 @@ A continuación, se detallan sus principales característica diferenciadas de LA
 
 \subsubsection{Adaptive Prediction Sets (APS)}
 
-APS \cite{romano2020}, como sugiere su nombre, tiene como objetivo generar conjuntos de predicción adaptativos, cuyo tamaño se ajusta dinámicamente en función de la incertidumbre del modelo para cada muestra. De este modo, se busca que las predicciones sean más informativas y reflejen con mayor precisión la confianza del modelo.
+\acrshort{APS} \cite{romano2020}, como sugiere su nombre, tiene como objetivo generar conjuntos de predicción adaptativos, cuyo tamaño se ajusta dinámicamente en función de la incertidumbre del modelo para cada muestra. De este modo, se busca que las predicciones sean más informativas y reflejen con mayor precisión la confianza del modelo.
 
-La función de no conformidad utilizada en APS evalúa, para cada instancia, la probabilidad total acumulada en aquellas clases que el modelo considera al menos tan probables como la clase verdadera. En otras palabras, se calcula como la suma de las probabilidades predichas para todas las clases cuya probabilidad es mayor o igual a la asignada a la etiqueta correcta.
+La función de no conformidad utilizada en \acrshort{APS} evalúa, para cada instancia, la probabilidad total acumulada en aquellas clases que el modelo considera al menos tan probables como la clase verdadera. En otras palabras, se calcula como la suma de las probabilidades predichas para todas las clases cuya probabilidad es mayor o igual a la asignada a la etiqueta correcta.
 
 Sea el vector $\hat{\pi}$ ordenado en orden decreciente: 
 $$
@@ -502,7 +428,7 @@ A(x_i, y_i) = \sum_{j=1}^k \hat{\pi}_{(j)}(x_i) \textnormal{ donde } (k)=y_i
 % R = \left\{ \sum_{j=1}^k \hat{\pi}_{(j)}(x_i)  \right\}_{i=1,...,n} \textnormal{ donde } (k)=y_i
 $$
 
-Cabe destacar que, en el caso particular de clasificación binaria, esta medida de no conformidad coincide exactamente con la utilizada en el método LAC, ya que la acumulación se limita a una o dos clases. Por tanto, ambos métodos resultan equivalentes en este escenario. Sin embargo, divergen en problemas multiclase, donde las puntuaciones de no conformidad de APS son más permisivas que las de LAC, ya que reconocen que un modelo puede identificar características comunes entre varias clases y generar valores probabilísticos repartidos. No existe incertidumbre cuando la puntuación probabilística más alta corresponde a la clase verdadera. Por tanto, APS penaliza menos los casos en que la clase correcta está entre las más probables, aunque no necesariamente en primer lugar.
+Cabe destacar que, en el caso particular de clasificación binaria, esta medida de no conformidad coincide exactamente con la utilizada en el método \acrshort{LAC}, ya que la acumulación se limita a una o dos clases. Por tanto, ambos métodos resultan equivalentes en este escenario. Sin embargo, divergen en problemas multiclase, donde las puntuaciones de no conformidad de \acrshort{APS} son más permisivas que las de \acrshort{LAC}, ya que reconocen que un modelo puede identificar características comunes entre varias clases y generar valores probabilísticos repartidos. No existe incertidumbre cuando la puntuación probabilística más alta corresponde a la clase verdadera. Por tanto, \acrshort{APS} penaliza menos los casos en que la clase correcta está entre las más probables, aunque no necesariamente en primer lugar.
 
 A partir de las puntuaciones de no conformidad en el conjunto de calibración, se calcula el umbral de no conformidad de la manera habitual:
 
@@ -517,18 +443,17 @@ $$
 k = min\left\{ j: \sum_{i=1}^{j} \hat{\pi}_{(i)}(x_{n+1}) \ge \delta_\alpha \right\} 
 $$
 
-Una extensión útil de APS consiste en introducir una \textbf{componente aleatoria} durante la fase de calibración para compensar la tendencia del método a la \textit{sobrecobertura}. En este ajuste, cuando se calcula la puntuación de no conformidad para una instancia de calibración, se decide excluir la contribución de la última clase incluida (aquella correspondiente a la etiqueta verdadera $y_i$) con una probabilidad proporcional al exceso de cobertura ---respecto al nivel de confianza $1-\alpha$--- que dicha clase genera.
+Una extensión útil de \acrshort{APS} consiste en introducir una \textbf{componente aleatoria} durante la fase de calibración para compensar la tendencia del método a la \textit{sobrecobertura}. En este ajuste, cuando se calcula la puntuación de no conformidad para una instancia de calibración, se decide excluir la contribución de la última clase incluida (aquella correspondiente a la etiqueta verdadera $y_i$) con una probabilidad proporcional al exceso de cobertura ---respecto al nivel de confianza $1-\alpha$--- que dicha clase genera.
 
 Formalmente, sea:
 $$
 V_i = \frac{A(x_i, y_i) - (1-\alpha)}{\hat{\pi}_{(k)}(x_i)} \quad \text{con} \quad (k) = y_i
 $$
-donde $A$ es la puntuación de no conformidad estándar de APS y $\hat{\pi}_{(k)}$ la probabilidad de la última clase incluida.  
-Se genera un valor aleatorio $u_i \sim \mathcal{U}(0,1)$ y, si $u_i > V_i$ y la clase verdadera no está en primera posición ($k \ge 2$), se elimina completamente la contribución de dicha clase de la suma acumulada. En caso contrario, se mantiene la puntuación original.
+donde $A$ es la puntuación de no conformidad estándar de \acrshort{APS} y $\hat{\pi}_{(k)}$ la probabilidad de la última clase incluida. Se genera un valor aleatorio $u_i \sim \mathcal{U}(0,1)$ y, si $u_i > V_i$ y la clase verdadera no está en primera posición ($k \ge 2$), se elimina completamente la contribución de dicha clase de la suma acumulada. En caso contrario, se mantiene la puntuación original.
 
 De este modo, las instancias en las que la última clase aporta un exceso notable de cobertura tienen mayor probabilidad de ser recortadas, reduciendo así el umbral de no conformidad $\delta_\alpha$ y produciendo conjuntos de predicción más pequeños, sin comprometer significativamente la cobertura global. En la fase de inferencia, el procedimiento de construcción de $\Gamma_\alpha(x_{n+1})$ se mantiene idéntico, pero el umbral reducido provoca que se necesiten menos clases para alcanzar el criterio, generando así \textbf{conjuntos de predicción más pequeños} en promedio, y que siguen garantizando estadísticamente la cobertura marginal.
 
-Este algoritmo, al igual que LAC, solo garantiza cobertura marginal, pero genera \textbf{conjuntos de predicción más adaptativos} respecto a la incertidumbre inherente a la predicción de cada instancia. A diferencia de métodos con umbrales fijos, ajusta dinámicamente el tamaño de los conjuntos según la confianza del modelo en regiones específicas del espacio de características.
+Este algoritmo, al igual que \acrshort{LAC}, solo garantiza cobertura marginal, pero genera \textbf{conjuntos de predicción más adaptativos} respecto a la incertidumbre inherente a la predicción de cada instancia. A diferencia de métodos con umbrales fijos, ajusta dinámicamente el tamaño de los conjuntos según la confianza del modelo en regiones específicas del espacio de características.
 
 Sin embargo, en la práctica se ha observado que esta adaptabilidad conlleva \textbf{conjuntos de predicción más grandes en promedio} \cite{romano2020, angelopoulos2020}. Este fenómeno es un \textit{trade-off} inherente al intentar \textbf{aproximar la cobertura condicional} sin asumir distribuciones subyacente, que analizaremos en profundidad con nuestros datos en la experimentación.
 
@@ -536,9 +461,9 @@ Sin embargo, en la práctica se ha observado que esta adaptabilidad conlleva \te
 
 \subsubsection{Regularized Adaptive Prediction Sets (RAPS)}
 
-RAPS \cite{angelopoulos2020} es una variante del método APS, que introduce modificaciones clave para reducir el tamaño de los conjuntos de predicción, especialmente en escenarios con muchas clases, donde APS tiende a generar conjuntos excesivamente grandes. El objetivo principal de RAPS es mantener la propiedad de cobertura marginal deseada, al tiempo que se obtienen conjuntos de predicción más compactos y útiles en la práctica. 
+\acrshort{RAPS} \cite{angelopoulos2020} es una variante del método APS, que introduce modificaciones clave para reducir el tamaño de los conjuntos de predicción, especialmente en escenarios con muchas clases, donde \acrshort{APS} tiende a generar conjuntos excesivamente grandes. El objetivo principal de \acrshort{RAPS} es mantener la propiedad de cobertura marginal deseada, al tiempo que se obtienen conjuntos de predicción más compactos y útiles en la práctica. 
 
-RAPS extiende la función de no conformidad utilizada en APS mediante la incorporación de un término de regularización que penaliza explícitamente la inclusión de clases con baja probabilidad en conjuntos de predicciones de tamaño ya elevado. 
+\acrshort{RAPS} extiende la función de no conformidad utilizada en \acrshort{APS} mediante la incorporación de un término de regularización que penaliza explícitamente la inclusión de clases con baja probabilidad en conjuntos de predicciones de tamaño ya elevado. 
 
 Para ello, se introducen dos hiperparámetros en la función de no conformidad:
 
@@ -560,7 +485,7 @@ $$
 A(x_i, y_i) = \sum_{j=1}^k \hat{\pi}_{(j)}(x_i) + \lambda (k-k_{reg})^+ \textnormal{ donde } (k) = y_i
 $$
 
-El procedimiento de calibración y predicción en RAPS sigue la misma estructura general que APS, pero utiliza la función de no conformidad regularizada en lugar de la acumulación pura de probabilidades. Así, el umbral calibrado se calcula como:
+El procedimiento de calibración y predicción en \acrshort{RAPS} sigue la misma estructura general que \acrshort{APS}, pero utiliza la función de no conformidad regularizada en lugar de la acumulación pura de probabilidades. Así, el umbral calibrado se calcula como:
 
 $$
 \delta_\alpha = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } \left( \left\{ A(x_i,y_i) \right\}_{i=1}^n \right)
@@ -573,17 +498,17 @@ Y el conjunto de predicción para una nueva instancia $x_{n+1}$ se construye com
 & k = \min \left\{ j: \sum_{i=1}^{j} \pi_{(i)}(x_{n+1}) + \lambda (k-k_{reg})^+  \ge \delta_\alpha \right\}
 \end{align*}
 
-Gracias a la regularización, RAPS tiende a generar conjuntos de predicción más pequeños que APS, especialmente cuando la clase verdadera se encuentra entre las más probables (y por tanto el hiperparámetro $k_{reg}$ tiene un valor bajo).
+Gracias a la regularización, \acrshort{RAPS} tiende a generar conjuntos de predicción más pequeños que \acrshort{APS}, especialmente cuando la clase verdadera se encuentra entre las más probables (y por tanto el hiperparámetro $k_{reg}$ tiene un valor bajo).
 
-Al igual que APS, también admite una \textbf{componente aleatoria}, que funciona de igual manera: durante la fase de calibración, se calcula para cada instancia la probabilidad de excluir la contribución de la última clase incluida ---aquella correspondiente a la etiqueta verdadera--- considerando también el término de regularización, en función del exceso de cobertura que produce respecto al nivel nominal $1-\alpha$.
+Al igual que \acrshort{APS}, también admite una \textbf{componente aleatoria}, que funciona de igual manera: durante la fase de calibración, se calcula para cada instancia la probabilidad de excluir la contribución de la última clase incluida ---aquella correspondiente a la etiqueta verdadera--- considerando también el término de regularización, en función del exceso de cobertura que produce respecto al nivel nominal $1-\alpha$.
 
 % ------------------------------------------------------------------------------------------------------------
 
 \subsubsection{Sorted Adaptive Prediction Sets (SAPS)}
 
-SAPS \cite{huang2023conformal} propone un enfoque distinto a métodos previos como APS y RAPS. Los autores identifican una limitación importante en estos algoritmos: las probabilidades producidas por la capa \textit{softmax} suelen seguir una distribución con cola larga, lo que facilita la inclusión de clases poco probables en los conjuntos de predicción. Esto lleva a la generación de conjuntos innecesariamente grandes, que reducen la utilidad práctica del método.
+\acrshort{SAPS} \cite{huang2023conformal} propone un enfoque distinto a métodos previos como \acrshort{APS} y \acrshort{RAPS}. Los autores identifican una limitación importante en estos algoritmos: las probabilidades producidas por la capa \textit{softmax} suelen seguir una distribución con cola larga, lo que facilita la inclusión de clases poco probables en los conjuntos de predicción. Esto lleva a la generación de conjuntos innecesariamente grandes, que reducen la utilidad práctica del método.
 
-SAPS argumenta que muchas de estas probabilidades de baja magnitud representan información redundante o poco útil para la tarea de predicción conforme. En lugar de utilizar todo el vector de probabilidades, propone construir los conjuntos de predicción únicamente a partir de dos elementos clave: 
+\acrshort{SAPS} argumenta que muchas de estas probabilidades de baja magnitud representan información redundante o poco útil para la tarea de predicción conforme. En lugar de utilizar todo el vector de probabilidades, propone construir los conjuntos de predicción únicamente a partir de dos elementos clave: 
 \begin{itemize}
     \item la probabilidad más alta (asociada a la clase predicha como más probable), y
     \item el orden de clasificación de las clases según el modelo.
@@ -607,7 +532,7 @@ donde:
 
 Obsérvese que la penalización efectiva se aplica sobre el término $k - 2 + u_i$: no se penaliza la clase en primera posición ($k=1$), mientras que para las siguientes posiciones la penalización crece de forma lineal. La inclusión de $u_i$ hace que la penalización de la última clase considerada se distribuya de manera uniforme en el intervalo $(k-1, k)$, lo que garantiza aleatoriedad controlada y una calibración más estable.
 
-El umbral de no conformidad $\delta_\alpha$ se calcula a partir de las puntuaciones $A(x_i, y_i)$ en el conjunto de calibración, de forma análoga a APS y RAPS:
+El umbral de no conformidad $\delta_\alpha$ se calcula a partir de las puntuaciones $A(x_i, y_i)$ en el conjunto de calibración, de forma análoga a \acrshort{APS} y \acrshort{RAPS}:
 $$
 \delta_\alpha = Quantile_{\lceil (1-\alpha)(1+1/n) \rceil} \left( \left\{ A(x_i, y_i) \right\}_{i=1}^n \right)
 $$
@@ -619,209 +544,10 @@ En la fase de inferencia, el conjunto de predicción para una nueva instancia $x
 & k = \min \left\{ j : \hat{\pi}_{max}(x_{n+1}) + \lambda (j - 1) \ge \delta_\alpha \right\}
 \end{align*}
 
-Gracias a esta estrategia basada en orden y probabilidad máxima, SAPS genera conjuntos de predicción más compactos que APS y RAPS en escenarios con distribuciones de salida muy sesgadas, manteniendo la cobertura marginal deseada y reduciendo la inclusión de clases irrelevantes.
+Gracias a esta estrategia basada en orden y probabilidad máxima, \acrshort{SAPS} genera conjuntos de predicción más compactos que \acrshort{APS} y \acrshort{RAPS} en escenarios con distribuciones de salida muy sesgadas, manteniendo la cobertura marginal deseada y reduciendo la inclusión de clases irrelevantes.
 
 
 % ------------------------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
 
-\section{Métricas}
 
-
-\subsection{Métricas para regresión}
-
-En nuestro problema de regresión emplearemos dos tipos de métricas con el objetivo de evaluar aspectos distintos del desempeño del modelo.
-
-Por una parte, las métricas destinadas a las predicciones puntuales se basan fundamentalmente en medir el error entre el valor real ($y_i$) y el valor esperado predicho ($\hat{y_i}$). Estas métricas nos permiten cuantificar directamente la discrepancia entre las estimaciones del modelo (estimación central en modelos de predicción interválica) y la \textit{ground truth}. Las métricas que empleamos para estas predicciones son:
-
-\begin{itemize}
-    \item El \textbf{error absoluto medio (\textit{mean absolute error}, MAE)} mide el promedio de las diferencias absolutas entre los valores reales ($Y_i$) y los valores predichos ($\hat{Y_i}$) por el modelo.
-
-    $$
-    MAE = \frac{1}{n} \sum_{i=1}^n{|y_i - \hat{y_i}|} \in [0, \infty)
-    $$
-
-    donde $n$ es el número de ejemplos/instancias con las que se cuenta en los datos a evaluar.
-
-    La interpretación más inmediata de esta métrica es que representa cuánto se desvía en promedio la predicción del valor real sin considerar la dirección del error (positivo o negativo) y, por tanto, cuanto más se acerque a cero el valor, mejor es el ajuste del modelo.
-
-    \item El \textbf{error cuadrático medio (\textit{mean squared error}, MSE)} mide el promedio de los errores al cuadrado entre valores reales ($Y_i$) y los valores predichos ($\hat{Y_i}$) por el modelo.
-    
-    $$
-    MSE = \frac{1}{n} \sum_{i=1}^n{(y_i - \hat{y_i})^2} \in [0, \infty)
-    $$
-
-    Al igual que el MAE, cuantifica qué tan cerca están las predicciones de los valores reales, pero penaliza más los errores grandes, y es más sensible por tanto a valores atípicos.
-
-\end{itemize}
-
-
-Por otra parte, las métricas aplicadas a las predicciones interválicas examinan tanto la capacidad del modelo para abarcar el valor real dentro del intervalo predicho ---conocida como \textbf{cobertura (\textit{coverage})}--- como la \textbf{amplitud} del mismo, que es el ancho del rango de valores del intervalo de predicción. Generalmente, existe un compromiso entre ambos aspectos: al aumentar la amplitud, es más probable que el intervalo contenga el valor real, pero esto disminuye la precisión y utilidad práctica de la predicción. Veamos las métricas para este tipo de predicciones: 
-
-\begin{itemize}
-    \item La \textbf{cobertura empírica (\textit{empirical coverage})} cuantifica la proporción de valores reales dentro de los intervalos de predicción obtenidos. 
-    
-    $$
-    EC = \frac{1}{n} 
-        \sum_{i=1}^n{ \mathbb{I} \left[ l_i \le y_i \le u_i \right] } 
-            \in \left[0, 1\right]
-    $$
-
-    donde $l_i$ y $u_i$ son los límites inferior y superior, respectivamente, de los intervalos de predicción obtenidos mediante inferencia conformal.
-
-    Cuanto mayor sea el valor, mejor cobertura ofrece el modelo, si bien coberturas altas suelen conllevar intervalos excesivamente amplios, lo que reduce su utilidad práctica. Es por ello que, empleando métodos de CP, tiene más sentido que el objetivo sea acercarse lo máximo posible a la cobertura marginal nominal ($1-\alpha$), garantizando así intervalos de predicción que equilibren precisión y fiabilidad sin ser inneceseriamente conservadores. 
-    
-    \item El \textbf{tamaño medio de intevalo de predicción (\textit{mean prediction inteval width})} mide qué tan amplios son en promedio los intervalos predichos.
-    
-    $$
-    MPIW = \frac{1}{n} \sum_{i=1}^n{ \left( u_i - l_i \right) } \in (0, +\infty)
-    $$
-    
-    Se desea matener este valor lo más pequeño posible, dado un nivel de cobertura adecuado. Valores altos indican intervalos anchos y, por tanto, poco útiles para la toma de decisiones. 
-
-    \item La \textbf{\textit{mean interval score}} \cite{gneiting2007} trata de unificar en una sola métrica el \textit{trade-off} cobertura vs. amplitud del intervalo. Su expresión es la siguiente:
-
-    \begin{align*} 
-    MIS = \frac{1}{n} \sum_{i=1}^n
-    \biggl( (u_i-l_i) \biggr.&+ \frac{2}{\alpha} \left( l_i-y_i \right) \mathbb{I}\left[ y_i<l_i \right] \\
-    &+\left. \frac{2}{\alpha}  \left( y_i-u_i \right) \mathbb{I}\left[ y_i>u_i \right] \right)
-    \in \left( 0, +\infty \right)
-    \end{align*}
-
-    Al igual que con el \textit{mean interval width}, una puntuación más baja en el \textit{mean interval score} indica un mejor rendimiento del modelo. El primer término ($u_i-l_i$) representa directamente la amplitud de cada intervalo, mientras que el segundo y tercer términos:
-
-    \begin{itemize}
-        \item $\frac{2}{\alpha} \left( l_i-y_i \right) \mathbb{I}\left[ y_i<l_i \right]$ penaliza los casos en que el valor verdadero $y_i$ está por debajo del límite inferior $l_i$, proporcionalmente a la distancia del límite inferior al valor real ($l_i-y_i$).
-        \item $\frac{2}{\alpha}  \left( y_i-u_i \right) \mathbb{I}\left[ y_i>u_i \right]$ penaliza los casos en que el valor verdadero $y_i$ está por encima del límite superior $u_i$, proporcionalmente a la distancia del límite superior al valor real ($y_i-u_i$).
-    \end{itemize}
-
-    Estos dos últimos términos aplican una penalización crecientemente severa cuando las predicciones no cubren el valor verdadero ---y lo hacen multiplicando por $2/\alpha$, lo que enfatiza aún más los errores externos a medida que disminuye $\alpha$, es decir, cuando se busca mayor confianza.
-
-\end{itemize}
-
-Y, finalmente, también añadiremos elementos visuales para valorar el desempeño de las predicciones interválicas:
-
-\begin{itemize}
-
-    \item \textbf{Gráfica de dispersión de Cobertura Empírica - Amplitud Media del Intervalo de Predicción}: Este gráfico permite visualizar el compromiso entre cobertura lograda y tamaño del intervalo. Un buen modelo debería situarse cerca del nivel de confianza objetivo con intervalos lo más cortos posible. 
-
-    \item \textbf{Histograma de tamaños de intervalos}: Esto nos permitirá analizar la distribución de las longitudes de los intervalos predichos. Una concentración alrededor de valores bajos indica intervalos más informativos, mientras que una distribución amplia o con colas largas puede revelar incertidumbre elevada en ciertos casos. Esta visualización nos será útil para aquellas técnicas que ofrecen intervalos predictivos adaptativos. 
-    
-    Solo tiene sentido analizar el histograma para aquellos métodos que dan intervalos de predicción de tamaño variable, como es en nuestro caso QR y CQR. 
-
-\end{itemize}
-
-% ------------------------------------------------------------------------------------------------------------
-
-\subsection{Métricas para clasificación}
-
-Como con la regresión, diferenciaremos entre las métricas de clasificación de etiqueta única y las de múltiples etiquetas para valorar los conjuntos de predicciones obtenidos con las técnicas de CP.
-
-Para la clasificación de etiqueta única usaremos: 
-
-\begin{itemize}
-
-    \item La \textbf{matriz de confusión} es una herramienta fundamental que permite visualizar el rendimiento de modelos de clasificación, tanto binarios como multiclase. Esta muestra una tabla con tantas columnas y filas como clases haya. En un eje, se representan las clases reales (etiquetas verdaderas), y en el otro eje, las clases predichas por el modelo. Cada celda de la matriz indica la cantidad de ejemplos que pertenecen a una clase real específica y que han sido clasificados como una clase predicha específica (véase la Figura \ref{fig:conf_matrix_binary}). Idealmente, los valores se concentrarían en la diagonal principal, lo que indicaría que las predicciones coinciden con los valores reales. Prácticamente todas las métricas y visualizaciones parten de la información ofrecida en esta matriz. 
-
-    \begin{figure}[h]
-        \centering
-        \includegraphics[width=0.6\textwidth]{capitulos/cap_02/imagenes/confusion_matrix_binary.png}
-        \caption{
-            Matriz de confusión para la estimación de sexo según el modelo \textit{random forest} propuesto en \cite{bidmos2023}.
-        } 
-        \label{fig:conf_matrix_binary}
-    \end{figure}
-
-    \item La \textbf{exactitud (\textit{accuracy})} es la proporción de instancias totales bien clasificadas. 
-    
-    % \begin{figure}[h]
-    %     \centering
-    
-    %     \begin{subfigure}[b]{0.3\textwidth}
-    %         \centering
-    %         \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/confusion_matrix_binary_1.png}
-    %         \caption{Sin información de sexo}
-    %         \label{fig:conf_matrix_general}
-    %     \end{subfigure}
-    %     \hfill
-    %     \begin{subfigure}[b]{0.3\textwidth}
-    %         \centering
-    %         \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/confusion_matrix_binary_2.png}
-    %         \caption{Sexo femenino}
-    %         \label{fig:conf_matrix_female}
-    %     \end{subfigure}
-    %     \hfill
-    %     \begin{subfigure}[b]{0.3\textwidth}
-    %         \centering
-    %         \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/confusion_matrix_binary_3.png}
-    %         \caption{Sexo masculino}
-    %         \label{fig:conf_matrix_male}
-    %     \end{subfigure}
-    
-    %     \caption[
-    %         Matrices de confusión para la estimación de mayoría/minoría de edad según el modelo de 
-    %         \cite{porto2020}.
-    %     ]{
-    %         Matrices de confusión para la estimación de mayoría/minoría de edad según el modelo de 
-    %         \cite{porto2020}.
-    %         Se representan los valores de cada celda en términos porcentuales de los ejemplos reales que hay 
-    %         de cada clase ($< 18$ y $\ge 18$), lo que permite comparar la matriz de confusión general de todos 
-    %         los ejemplos (\ref{sub@fig:conf_matrix_general}) con la de ejemplos se sexo femenino 
-    %         (\ref{sub@fig:conf_matrix_female}) y sexo masculino (\ref{sub@fig:conf_matrix_male}), permitiendo 
-    %         identificar posibles sesgos en el modelo respecto al género, y así realizar una evaluación más 
-    %         precisa del rendimiento del modelo en diferentes subgrupos de la población.
-    %     }
-    %     \label{fig:conf_matrix_binary_relative}
-
-    % \end{figure}
-
-\end{itemize}
-
-
-Por otro lado, para la clasificación multietiqueta emplearemos:
-
-\begin{itemize}
-
-    \item La \textbf{cobertura empírica (\textit{empirical coverage})}, de forma análoga a la regresión, mide la proporción de veces que la etiqueta verdadera está contenida dentro del conjunto predicho.
-
-    $$
-    EC = \frac{1}{n} \sum_{i=1}^{n} \mathbb{I}(y_i \in \Gamma_\alpha(x_i))
-    $$
-
-    Esta variable se puede obtener o bien en todos los ejemplos del conjunto, o en subpoblaciones específicas de este.
-
-    \item Se denomina \textbf{violación de la cobertura empírica (\textit{empirical coverage violation})} a la magnitud en que la cobertura empírica no alcanza el nivel de cobertura teórico deseado $1 - \alpha$, definida como:
-
-    $$
-    ECV = max \left\{ 0,(1-\alpha)-EC \right\}
-    $$
-
-    Este valor cuantifica cuánto se desvía el método de la garantía nominal
-    \footnote{
-        Se denomina garantía de cobertura nominal al nivel de cobertura garantizado estadísticamente.
-    } 
-    cuando no se alcanza la cobertura esperada. Una violación igual a cero indica que el método cumple o supera el nivel de cobertura deseado.
-
-    Esta métrica se suele calcular sobre subconjuntos específicos del conjunto de instancias para evaluar la cobertura condicional, es decir, la calidad de la cobertura dentro de subpoblaciones del dominio.
-
-    \item El \textbf{tamaño medio de conjunto de predicción (\textit{mean prediction set size})} mide cuántas etiquetas, en promedio, incluyen los conjuntos de predicción conformales $\Gamma_\alpha(x)$.
-
-    $$
-    MSS = \frac{1}{n} \sum_{i=1}^n | \Gamma_\alpha(x_i) |
-    $$
-
-    % \item Gráfico de barras de violación de cobertura en base al tamaño del conjunto (inspirada en la métrica \textit{Each-Size Coverage Violation} propuesta en \cite{huang2023conformal}): En esta gráfica, para cada tamaño posible del conjunto de predicción, se calcula la violación de cobertura empírica correspondiente, es decir, cuánto se desvía la cobertura observada respecto al nivel nominal $(1 - \alpha)$. Esto permite visualizar en qué tamaños de conjunto el modelo tiende a fallar más en cuanto a cobertura, proporcionando una forma más detallada de analizar el comportamiento del método conforme más allá de la cobertura global.
-
-    
-\end{itemize}
-
-
-Y, finalmente, también usaremos elementos visuales para valorar el desempeño de las predicciones interválicas, como pueden ser:
-
-\begin{itemize}
-
-    \item \textbf{Gráfica de dispersión de Cobertura Empírica - Tamaño Medio del Conjunto de Predicción}: Este gráfico permite visualizar el compromiso entre cobertura lograda y tamaño del intervalo. Un buen modelo debería situarse cerca del nivel de confianza objetivo con intervalos lo más cortos posible. 
-
-    \item \textbf{Histograma de tamaños de conjuntos de predicción}: De similar forma a como se plantean los histogramas de amplitudes de intervalos para regresión, se puede plantear histograma donde cada tamaño es el número de clases del conjunto predicho. Este nos permite ver la distribución de tamaños de conjuntos de predicción. Aquellos con pocas clases serán más informativos, mientras que tamaños más grnades pueden revelar una incertidumbre elevada.
-    
-\end{itemize}
