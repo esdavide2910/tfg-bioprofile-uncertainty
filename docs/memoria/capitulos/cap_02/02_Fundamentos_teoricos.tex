@@ -202,9 +202,7 @@ En este tipo de problemas, el error ocurre cuando no se acierta al predecir la c
 
 \section{Deep Learning}
 
-El \textbf{aprendizaje profundo (\textit{deep learning}, \acrshort{DL})} es una familia de técnicas de \acrshort{ML} que utilizan múltiples capas de procesamiento para aprender representaciones de datos con varios niveles de abstracción \cite{lecun2015}. Las redes neuronales han demostrado ser especialmente eficaces para este propósito, al permitir la composición jerárquica de características que capturan patrones cada vez más complejos en los datos.
-
-Las redes neuronales tienen su origen en el intento de modelar las redes de neuronas del cerebro humano \cite{mcculloch1943}. Se requirió de numerosas contribuciones teóricas ---como el perceptrón \cite{rosenblatt1958} o el algoritmo de \textit{backpropagation} \cite{rumelhart1986,werbos1994}, entre otras---, disponibilidad de datos estandarizados y un gran aumento en la capacidad computacional para poder escalar estar redes y obtener resultados sorprendentes en tareas complejas.
+El \textbf{aprendizaje profundo (\textit{deep learning}, \acrshort{DL})} es una familia de técnicas de \acrshort{ML} que utilizan múltiples capas de procesamiento para aprender representaciones de datos con varios niveles de abstracción \cite{lecun2015}. Las redes neuronales han demostrado ser especialmente eficaces para este propósito, al permitir la composición jerárquica de características que capturan patrones cada vez más complejos en los datos. Estas tienen su origen en el intento de modelar las redes de neuronas del cerebro humano \cite{mcculloch1943}. Se requirió de numerosas contribuciones teóricas ---como el perceptrón \cite{rosenblatt1958} o el algoritmo de \textit{backpropagation} \cite{rumelhart1986,werbos1994}, entre otras---, disponibilidad de datos estandarizados y un gran aumento en la capacidad computacional para poder escalar estar redes y obtener resultados sorprendentes en tareas complejas.
 
 Las \textbf{redes neuronales profundas (\textit{deep neural networks}, \acrshort{DNN})} destacan por su capacidad para 
 aprender representaciones jerárquicas: cada capa extrae características progresivamente más abstractas 
@@ -229,7 +227,7 @@ ha impulsado técnicas como el \textit{transfer learning} y modelos eficientes p
 
 \subsection{El perceptrón multicapa}
 
-El \textbf{perceptrón multicapa (\textit{multilayer perceptron}, MLP)} forma la base del \textit{deep learning}. Su diseño ---con capas ocultas, funciones de activación no lineales y entrenamiento  mediante \textit{backpropagation}--- sentó las bases conceptuales para arquitecturas más complejas, como las redes neuronales convolucionales o los \textit{transformers} \cite{murphy2022}. El \acrshort{MLP} sigue siendo un referente teórico y la expresión más simple de cómo el aprendizaje jerárquico puede capturar patrones en los datos. 
+El \textbf{perceptrón multicapa (\textit{multilayer perceptron}, \acrshort{MLP})} forma la base del \textit{deep learning}. Su diseño ---con capas ocultas, funciones de activación no lineales y entrenamiento  mediante \textit{backpropagation}--- sentó las bases conceptuales para arquitecturas más complejas, como las redes neuronales convolucionales o los \textit{transformers} \cite{murphy2022}. El \acrshort{MLP} sigue siendo un referente teórico y la expresión más simple de cómo el aprendizaje jerárquico puede capturar patrones en los datos. 
 
 Cada nodo en la red es denominado \textbf{unidad o neurona artifical}. Siguiendo el diseño propuesto en \cite{mcculloch1943,rosenblatt1958}, cada unidad recibe señales de entrada ---que o bien son las características de los datos o bien las salidas de las unidades de la anterior capa---, realiza una suma ponderada de estas con los pesos entrenables de cada conexión ---más un término independiente o sesgo, también entrenable---, aplica una función no lineal sobre esta para producir una salida que propaga a las unidades de la siguiente capa (véase la Figura \ref{fig:neuron_MLP}).
 
@@ -539,19 +537,13 @@ el riesgo de sobreajuste del modelo (ya que un modelo con más parámetros puede
 datos de entrenamiento). Es por esto que, en aquellos problemas en los que no es necesario preservar la 
 información de localización de las características, ---como en los que nos enfocamos en este trabajo: 
 clasificación y regresión---, y, por tanto, el modelo sea invariante a la ubicación, se emplean técnicas de 
-submuestreo (\textit{downsampling}) \cite{murphy2022}, como usar \textit{stride} mayor de 1 en los filtros
-de las capas convolucionales o realizar \textit{pooling}%
-\footnote{
-    Nos centraremos en el último dado su amplio uso y fácil comprensión, además de su demostrada efectividad 
-    empírica.
-}.
+submuestreo (\textit{downsampling}) \cite{murphy2022}, como emplear usar capas de \textit{pooling} o usar \textit{stride} mayor de 1 en los filtros de las capas convolucionales.
+
+
 
 
 
 \subsubsection{Capas de pooling}
-
-\todo{Me he estado informando después y resulta que ResNeXt no utiliza pooling, sino stride aumentado, por lo 
-que debería eliminar este apartado y explicar cómo funciona el stride. (AGOSTO)}
 
 Las \textbf{capas de agrupación (\textit{pooling layers})} tienen como objetivo principal comprimir la 
 información de la imagen, reduciendo sus dimensiones (alto y ancho) mientras se preservan los datos más 
@@ -573,14 +565,7 @@ Hay diversas operaciones de \textit{pooling}, entre los que destacan:
 
 \end{itemize}
 
-La región de aplicación del \textit{pooling}, al igual que en la convolución, viene determinada por ciertos 
-parámetros, definidos por el diseñador, como el tamaño de filtro (que suele ser de 2x2), el \textit{stride} 
-y el \textit{padding}, si bien también existen variantes  adaptativas (\textit{adaptive}), que ajustan
-automáticamente su cobertura para producir una salida con dimensiones específicas, independientemente del 
-tamaño de la imagen de entrada. Esta funcionalidad es especialmente útil cuando se necesita adaptar los mapas
-de características para conectarlos a una capa \textit{fully-connected}. 
-
-\begin{figure}[htbp]
+\begin{figure}[h]
     \centering
     \includegraphics[width=0.7\textwidth]{capitulos/cap_02/imagenes/max_pooling.png}
     \caption{
@@ -589,6 +574,40 @@ de características para conectarlos a una capa \textit{fully-connected}.
     } 
     \label{fig:max_pooling}
 \end{figure}
+
+La región de aplicación del \textit{pooling}, al igual que en la convolución, viene determinada por ciertos 
+parámetros, definidos por el diseñador, como el tamaño de filtro (que suele ser de 2x2), el \textit{stride} 
+y el \textit{padding}, si bien también existen variantes  adaptativas (\textit{adaptive}), que ajustan
+automáticamente su cobertura para producir una salida con dimensiones específicas, independientemente del 
+tamaño de la imagen de entrada. Esta funcionalidad es especialmente útil cuando se necesita adaptar los mapas
+de características para conectarlos a una capa \textit{fully-connected}. 
+
+
+
+
+
+\subsubsection{Reducción de dimensionalidad mediante \textit{stride} aumentado}
+
+En una convolución estándar, un filtro se desliza sobre la imagen con un desplazamiento determinado. El \textit{stride} indica cuántos píxeles se mueve el filtro en cada paso:
+
+\begin{itemize}
+    \item \textit{Stride} de 1: El filtro se mueve un píxel a la vez. Esto mantiene la mayor parte de la información espacial.
+    \item \textit{Stride} de 2: El filtro se mueve dos píxeles a la vez, saltándose algunas posiciones. Esto reduce el tamaño de la salida (\textit{feature map}), lo que se conoce como submuestreo o \textit{downsampling}. Véase la Figura \ref{fig:stride_example}.
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{capitulos/cap_02/imagenes/Example-of-a-square-image-convolution-with-zero-padding-While-training-a-CNN-there-are.png}
+    \caption[
+        Esquema gráfico de filtro convolucional de 3x3 con \textit{zero-padding} de 1 y \textit{stride} de 2.
+        Recuperado de la Figura 3 de \cite{kiourt2020deep}.
+    ]{
+        Esquema gráfico de filtro convolucional de 3x3 con \textit{zero-padding} de 1 y \textit{stride} de 2.
+        Recuperado de la Figura 3 de \cite{kiourt2020deep}.El \textit{zero-padding} consiste en agregar filas y columnas de ceros alrededor de la imagen, de forma que los bordes puedan ser procesados por el filtro sin reducir excesivamente el tamaño del \textit{feature map} resultante. Esto permite que la convolución considere todas las regiones de la imagen, incluyendo los bordes, y facilita la preservación de la información espacial. Con un \textit{stride} de 2, el filtro se desplaza de dos en dos píxeles, realizando simultáneamente la extracción de características y el \textit{subsampling}, lo que genera una reducción controlada del tamaño de salida.
+    } 
+    \label{fig:stride_example}
+\end{figure}
+
 
 
 
@@ -1096,19 +1115,18 @@ Existen multitud de técnicas de \acrshort{CP}. Generalmente, estas dependen del
     El marco de \acrshort{CP} clásico asume que los datos son intercambiables, una propiedad que no se cumple en las series temporales debido a la dependencia secuencial entre observaciones. A pesar de ello, se han desarrollado diversas extensiones del enfoque conformal para adaptarse a estos datos.
 },
 o detección de anomalías \cite{laxhammar2015}, entre otros. 
-
 A pesar de su diversidad, todos los algoritmos conformales comparten un elemento clave: la definición de una 
-\textbf{función de no conformidad} $A(x_i,y_i)$, una heurística que mide la incertidumbre asociada a cada predicción. Intuitivamente, esta función actúa como una medida de discrepancia entre el valor predicho y el valor observado, y permite determinar cuán ``extraña'' o ``no conforme'' es una nueva observación respecto al comportamiento esperado del modelo.
+\textbf{función de no conformidad (\acrshort{NC})} $A(x_i,y_i)$, una heurística que mide la incertidumbre asociada a cada predicción. Intuitivamente, esta función actúa como una medida de discrepancia entre el valor predicho y el valor observado, y permite determinar cuán ``extraña'' o ``no conforme'' es una nueva observación respecto al comportamiento esperado del modelo.
 
 La implementación de la predicción conformal consta de los siguientes pasos:
 
 \begin{enumerate}
 
-    \item Se divide el conjunto de datos disponible en dos subconjuntos: un conjunto de entrenamiento, utilizado para ajustar el modelo predictivo ---es decir, para entrenar el modelo de forma habitual---, y un conjunto de calibración, que se reserva exclusivamente para estimar la incertidumbre mediante el cálculo de las puntuaciones de no conformidad. Esta separación permite que la estimación del intervalo de predicción sea independiente del proceso de entrenamiento, lo cual es crucial para garantizar la validez estadística del método.
+    \item Se divide el conjunto de datos disponible en dos subconjuntos: un conjunto de entrenamiento, utilizado para ajustar el modelo predictivo ---es decir, para entrenar el modelo de forma habitual---, y un conjunto de calibración, que se reserva exclusivamente para estimar la incertidumbre mediante el cálculo de las puntuaciones de NC. Esta separación permite que la estimación del intervalo de predicción sea independiente del proceso de entrenamiento, lo cual es crucial para garantizar la validez estadística del método.
 
     \item Se entrena el modelo predictivo con los ejemplos del conjunto de entrenamiento. 
 
-    \item \textbf{Calibración conformal}: En este, se calculan las \textbf{puntuaciones de no conformidad (\textit{nonconformity scores}) $R$}%
+    \item \textbf{Calibración conformal}: En este, se calculan las \textbf{puntuaciones de NC (\textit{nonconformity scores}) $R$}%
     \footnote{
         En la literatura, a este vector de puntuaciones se le suele denotar como $R$ por \textit{`residual'}
         o $E$ por \textit{`error'}. 
@@ -1126,13 +1144,13 @@ La implementación de la predicción conformal consta de los siguientes pasos:
     }. 
     Bajo las garantías estadísticas que ofrece el marco teórico de la \acrshort{CP}, esta flexibilidad muestra un gran potencial para ser integrada con otras técnicas de \acrshort{UQ}, ampliando así sus aplicaciones y mejorando la robustez de las estimaciones de incertidumbre.
 
-    Independientemente del diseño específico de la función de no conformidad, esta debe cumplir una condición esencial: las puntuaciones deben ser intercambiables entre el conjunto de calibración y las nuevas instancias. En otras palabras, deben ser idénticamente distribuidas. Esta propiedad es crucial para que \acrshort{CP} garantice cobertura marginal válida a un nivel de confianza determinado. Por tanto, aunque existe flexibilidad en el diseño de la función de no conformidad, su elección debe considerar tanto la capacidad para capturar incertidumbre útil como el cumplimiento del supuesto de intercambiabilidad. 
+    Independientemente del diseño específico de la función de \acrshort{NC}, esta debe cumplir una condición esencial: las puntuaciones deben ser intercambiables entre el conjunto de calibración y las nuevas instancias. En otras palabras, deben ser idénticamente distribuidas. Esta propiedad es crucial para que \acrshort{CP} garantice cobertura marginal válida a un nivel de confianza determinado. Por tanto, aunque existe flexibilidad en el diseño de la función de \acrshort{NC}, su elección debe considerar tanto la capacidad para capturar incertidumbre útil como el cumplimiento del supuesto de intercambiabilidad. 
 
-    A continuación, se calcula el \textbf{umbral de no conformidad}. Para un nivel de significación$\alpha$, se selecciona el $(1 - \alpha)(1 + 1/n)$-ésimo cuantil%
+    A continuación, se calcula el \textbf{umbral de \acrshort{NC}}. Para un nivel de significación$\alpha$, se selecciona el $(1 - \alpha)(1 + 1/n)$-ésimo cuantil%
     \footnote{
         La corrección $(1 + 1/n)$ asegura validez estadística para conjuntos de tamaño finito.
     } 
-    de las puntuaciones de no conformidad obtenidas en el conjunto de calibración (véase la Figura \ref{fig:nonconformity_quantile_comparison}).
+    de las puntuaciones de \acrshort{NC} obtenidas en el conjunto de calibración (véase la Figura \ref{fig:nonconformity_quantile_comparison}).
 
     $$
     \delta_\alpha = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( \left\{ A(x_i,y_i) \right\}_{i=1}^n )
@@ -1144,21 +1162,21 @@ La implementación de la predicción conformal consta de los siguientes pasos:
         \begin{subfigure}[b]{0.48\textwidth}
             \centering
             \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/nonconformity_quantile_threshold_simetric.png}
-            \caption{Determinación del umbral de no conformidad para intervalos simétricos.}
+            \caption{Determinación del umbral de NC para intervalos simétricos.}
             \label{fig:nonconformity_quantile_threshold_simetric}
         \end{subfigure}
         \hfill
         \begin{subfigure}[b]{0.49\textwidth}
             \centering
             \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/nonconformity_quantile_threshold_asimetric.png}
-            \caption{Determinación de los umbrales de no conformidad para intervalos asimétricos.}
+            \caption{Determinación de los umbrales de NC para intervalos asimétricos.}
             \label{fig:nonconformity_quantile_threshold_asimetric}
         \end{subfigure}
 
         \caption[
-            Determinación del umbral de no conformidad para intervalos simétricos y asimétricos.
+            Determinación del umbral de NC para intervalos simétricos y asimétricos.
         ]{
-            Determinación del umbral de no conformidad para intervalos simétricos y asimétricos. 
+            Determinación del umbral de NC para intervalos simétricos y asimétricos. 
             En (\ref{sub@fig:nonconformity_quantile_threshold_simetric}), el error es absoluto, y el umbral
             se calcula como se ha especificado anteriormente. 
             En (\ref{sub@fig:nonconformity_quantile_threshold_asimetric}), el error tiene signo, y hay dos
@@ -1172,7 +1190,7 @@ La implementación de la predicción conformal consta de los siguientes pasos:
 
     \item \textbf{Inferencia conformal}: Para cada nueva instancia $x_{n+1}$ se genera una predicción puntual
     $y_{n+1}$ utilizando el modelo entrenado. Luego, se construye un conjunto o intervalo de predicción
-    $\Gamma(x_{n+1})$ a partir de la predicción puntual y el umbral de no conformidad $\hat{q}_{1-\alpha}$, 
+    $\Gamma(x_{n+1})$ a partir de la predicción puntual y el umbral de \acrshort{NC} $\hat{q}_{1-\alpha}$, 
     tal que se garantiza con nivel de confianza $1-\alpha$ que el verdadero valor $y_{n+1}$ pertenezca al
     conjunto:
     
@@ -1180,7 +1198,7 @@ La implementación de la predicción conformal consta de los siguientes pasos:
     y_{n+1} \in \Gamma_{1-\alpha}(x_{n+1})
     $$
 
-    La forma de construir $\Gamma(x_{n+1})$ depende de cómo se haya definido la función de no conformidad 
+    La forma de construir $\Gamma(x_{n+1})$ depende de cómo se haya definido la función de \acrshort{NC} 
     durante la fase de calibración.
 
 \end{enumerate}
@@ -1188,19 +1206,19 @@ La implementación de la predicción conformal consta de los siguientes pasos:
 
 
 
-Por ejemplo, en la técnica \textit{Inductive Conformal Prediction} \cite{papadopoulos2002} para problemas de regresión, ---que describiremos en mayor profundidad en el Capítulo 4---, se utiliza el error absoluto como función de no conformidad:
+Por ejemplo, en la técnica \textit{Inductive Conformal Prediction} \cite{papadopoulos2002} para problemas de regresión, ---que describiremos en mayor profundidad en el Capítulo 4---, se utiliza el error absoluto como función de \acrshort{NC}:
 
 $$
 A(x_i, y_i) = | y_i - \hat{f}(x_i) |
 $$
 
-El umbral de no conformidad se obtiene como el $(1 - \alpha)(1 + 1/n)$-ésimo cuantil de las puntuacionesde no conformidad (véase la Figura \ref{fig:nonconformity_quantile_threshold_simetric}):
+El umbral de \acrshort{NC} se obtiene como el $(1 - \alpha)(1 + 1/n)$-ésimo cuantil de las puntuaciones de \acrshort{NC} (véase la Figura \ref{fig:nonconformity_quantile_threshold_simetric}):
 
 $$
 \delta_\alpha = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( \left\{ A(x_i,y_i) \right\}_{i=1}^n )
 $$
 
-La construcción del intervalo de predicción surge directamente de despejar el valor real $y_{n+1}$ en la expresión que iguala la función de no conformidad, evaluada sobre la nueva instancia, con el umbral de no conformidad. En este caso en el que se emplea el error absoluto, es decir:
+La construcción del intervalo de predicción surge directamente de despejar el valor real $y_{n+1}$ en la expresión que iguala la función de \acrshort{NC}, evaluada sobre la nueva instancia, con el umbral de \acrshort{NC}. En este caso en el que se emplea el error absoluto, es decir:
 
 $$
 A(x_i, y_i) = | y_i - \hat{f}(x_i) |
@@ -1227,4 +1245,11 @@ $$
 Esta expresión determina los límites inferior y superior del intervalo de predicción conformal para dicha
 instancia.
 
-\todo{Adaptarlo a un caso concreto de estimación de edad}
+
+A continuación se presenta un ejemplo numérico para ilustrar la construcción del intervalo. Supongamos que $x_i$ es un vector de unos determinados indicadores osteológicos de un individuo con edad cronológica conocida $y_i$ (en años). Entrenamos un modelo de regresión $\hat{f}$ en un conjunto de entrenamiento y reservamos un conjunto de calibración de $n$ individuos identificados.
+Se supone un conjunto de calibración de $n=50$ individuos y $\alpha=0.10$. Calculamos los residuos absolutos $A(x_i,y_i)$ en calibración y obtenemos su cuantil, $(1-\alpha)(1+1/n)=0.90\times1.02=0.918$ (percentil $91.8$). Si ese cuantil es $\delta_{0.10}=3.3$ años y para un caso nuevo $\hat{f}(x_{n+1})=34.7$ años, entonces:
+
+$$
+y_{n+1} \in \left[ 34.7 - 3.3 , 34.7 + 3.3  \right] = \left[ 31.4 , 38.0 \right] \textnormal{ años}
+$$
+

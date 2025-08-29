@@ -1,4 +1,4 @@
-\documentclass[a4paper,11pt]{book}
+\documentclass[a4paper,11pt,openany]{book}
 \setlength{\parskip}{0.5em plus 0.2em minus 0.1em}
 % \usepackage[a4paper, top=2.7cm, bottom=4.7cm, inner=4.6cm, outer=3.1cm]{geometry}
 \usepackage[a4paper, top=2.3cm, bottom=4.0cm, inner=3.9cm, outer=2.6cm]{geometry}
@@ -89,6 +89,8 @@
 
 \usepackage{pdflscape}
 
+\usepackage{wrapfig}
+
 % ********************************************************************
 % Re-usable information
 % ********************************************************************
@@ -136,7 +138,8 @@
 % \usepackage[style=long, cols=2,border=plain,toc=true,number=none]{glossary}
 \usepackage[acronym]{glossaries}
 \makeglossaries
-\renewcommand*{\acronymfont}[1]{\textcolor{black}{#1}}
+
+
 
 % Definición de comandos que me son útiles:
 %\renewcommand{\indexname}{Índice alfabético}
@@ -238,6 +241,7 @@
   \penalty -\@Mi
 }
 \makeatother
+
 
 
 \input{prefacios/abreviaciones.tex}

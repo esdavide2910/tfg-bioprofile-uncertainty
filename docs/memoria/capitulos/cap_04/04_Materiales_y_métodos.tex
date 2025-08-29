@@ -5,13 +5,23 @@
 
 \section{Conjunto de datos disponibles}
 
-Disponemos de un conjunto de datos compuesto por radiografías panorámicas maxilofaciales de individuos de 12 países distintos (véase en la tabla \ref{tab:instituciones_fuente_dataset}), obtenidas con distintos modelos de máquinas de rayos X%
+Disponemos de un conjunto de datos compuesto por radiografías panorámicas maxilofaciales de individuos de 12 países distintos (véase en la Tabla \ref{tab:instituciones_fuente_dataset}), obtenidas con distintos modelos de máquinas de rayos X%
 \footnote{
     Los modelos empleados fueron: \textit{Planmeca Promax Digital Panoramic}; \textit{Sirona ORTHOPHOS-XG}, \textit{ORTHOPHOS-DS}, y \textit{SIDEXIS}. Las constantes radiológicas usadas fueron de 66 a a 70 kV, 7 a 11 mA, y 15 s.
 }.
-Este conjunto de datos ha sido sido proporcionado por Panacea Cooperative Research, empresa \textit{spin-off} de la Universidad de Granada.  
+Este conjunto de datos ha sido sido proporcionado por Panacea Cooperative Research, empresa \textit{spin-off} de la Universidad de Granada. El \textit{dataset} incluye:
+
+\begin{itemize}
+
+    \item datos tabulares (en formato CSV), donde cada fila representa un ejemplo (un individuo), con los siguientes campos: un identificador único, sexo del individuo, edad del individuo y ``sample'' (clasificación según el origen geográfico de la radiografía).
+
+    \item imágenes bidimensionales de radiografías panorámicas maxilofaciales, con una imagen asociada a cada individuo mediante su ID único. 
+
+\end{itemize}
 
 \begin{table}[h]
+
+    \centering
     \begin{tabular}{@{}clc@{}}
     \toprule
     País                                                            & Instituciones                                                                                                                                                            & Nº de ejemplos \\ \midrule
@@ -36,19 +46,8 @@ Este conjunto de datos ha sido sido proporcionado por Panacea Cooperative Resear
     \label{tab:instituciones_fuente_dataset}
 \end{table}
 
-Este \textit{dataset} incluye:
-
-\begin{itemize}
-
-    \item datos tabulares (en formato CSV), donde cada fila representa un ejemplo (un individuo), con los siguientes campos: un identificador único, sexo del individuo, edad del individuo y ``sample'' (clasificación según el origen geográfico de la radiografía).
-
-    \item imágenes bidimensionales de radiografías panorámicas maxilofaciales, con una imagen asociada a cada individuo mediante su ID único. 
-
-\end{itemize}
-
 Se proporcionan los datos ya preprocesados, por lo que no es necesario realizar tareas adicionales de limpieza o transformación previa antes de su análisis. Se ha ignorado el campo ``sample'', dado que se trata de una asignación sesgada y no representa necesariamente una clasificación fiable del origen poblacional de los individuos. Por tanto, este campo no se emplea en el análisis ni en el entrenamiento de los modelos, centrándose exclusivamente en las variables de edad, sexo e imagen.
-
-En el \textit{dataset} hay un total de 10 739 ejemplos, de los que 5756 son de individuos de sexo femenino y 4983 de sexo masculino. Las edades mínima y máxima son 14 y 26 años, respectivamente, y la media son 19.13 años. En la Figura \ref{fig:histogram_ages} se observa que el número de ejemplos por edad se mantiene relativamente constante desde los 14 hasta los 21 años, a partir de los cuales disminuye progresivamente, con una representación notablemente menor en los grupos de 24, 25 y 26 años.
+Hay un total de 10 739 ejemplos, de los que 5756 son de individuos de sexo femenino y 4983 de sexo masculino. Las edades mínima y máxima son 14 y 26 años, respectivamente, y la media son 19.13 años. En la Figura \ref{fig:histogram_ages} se observa que el número de ejemplos por edad se mantiene relativamente constante desde los 14 hasta los 21 años, a partir de los cuales disminuye progresivamente, con una representación notablemente menor en los grupos de 24, 25 y 26 años.
  
 \begin{figure}[htbp]
     \centering
@@ -348,7 +347,7 @@ Se ha escogido este algoritmo ya que es el utilizado en trabajos recientes sobre
 
 \acrshort{LAC} \cite{sadinle2019} es el primer método propuesto de predicción conformal para problemas de clasificación. Propone un enfoque de clasificación de conjuntos de valores (\textit{set-valued classification}) en el que, en lugar de asignar una única etiqueta a cada instancia, se selecciona un conjunto de etiquetas que garanticen un nivel de confianza predeterminada por el usuario.
 
-La función de no conformidad es conocida como \textbf{probabilidad inversa o \textit{hinge loss}} \cite{johansson2017}, y se calcula como la unidad menos la probabilidad de la clase verdadera%
+La función de \acrshort{NC} es conocida como \textbf{probabilidad inversa o \textit{hinge loss}} \cite{johansson2017}, y se calcula como la unidad menos la probabilidad de la clase verdadera%
 \footnote{
     Se le denomina probabilidad a un valor de certeza que realmente no tiene garantías estadísticas, ya que proviene directamente de la salida \textit{softmax} o sigmoide del modelo. Estas salidas no están necesariamente bien calibradas ni corresponden a verdaderas probabilidades, si bien el término se utiliza frecuentemente por motivos de simplicidad y comunicación.
 }
@@ -363,20 +362,20 @@ donde $\hat{\pi}_{y_i}(x_i)$ es la probabilidad para la clase de la etiqueta ver
 }.
 
 
-El umbral de no conformidad para un nivel de confianza $1-\alpha$ se calcula como el cuantil 
-$(1-\alpha)(1+1/n)$ de las puntuaciones de no conformidad:
+El umbral de \acrshort{NC} para un nivel de confianza $1-\alpha$ se calcula como el cuantil 
+$(1-\alpha)(1+1/n)$ de las puntuaciones de \acrshort{NC}:
 
 $$
 \delta_\alpha = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( \left\{ A(x_i,y_i) \right\}_{i=1}^n)
 $$
 
-El conjunto de predicción conformal de una nueva instancia $x_{n+1}$ se construye como las clases cuyas probabilidades superan la unidad menos el umbral de no conformidad:
+El conjunto de predicción conformal de una nueva instancia $x_{n+1}$ se construye como las clases cuyas probabilidades superan la unidad menos el umbral de \acrshort{NC}:
 
 $$
 \Gamma_\alpha(x_{n+1}) = \left\{ k | \hat{\pi}_k(x_{n+1}) \ge 1-\delta_\alpha \right\} 
 $$
 
-Así, se seleccionan aquellas clases cuya probabilidad es lo suficientemente alta como para superar el umbral de no conformidad previamente calculado. No obstante, puede ocurrir que, para ciertas instancias, ninguna clase alcance dicho umbral, lo que resultaría en un conjunto de predicción vacío. Para evitar esta situación, se ha optado por incluir en estos casos todas las clases posibles dentro del conjunto de predicción. Esta elección responde a una estrategia conservadora: ante la falta de evidencia suficiente para respaldar alguna clase en particular con el nivel de confianza requerido, lo más prudente es no excluir ninguna posibilidad, y así reflejar una alta incertidumbre. 
+Así, se seleccionan aquellas clases cuya probabilidad es lo suficientemente alta como para superar el umbral de \acrshort{NC} previamente calculado. No obstante, puede ocurrir que, para ciertas instancias, ninguna clase alcance dicho umbral, lo que resultaría en un conjunto de predicción vacío. Para evitar esta situación, se ha optado por incluir en estos casos todas las clases posibles dentro del conjunto de predicción. Esta elección responde a una estrategia conservadora: ante la falta de evidencia suficiente para respaldar alguna clase en particular con el nivel de confianza requerido, lo más prudente es no excluir ninguna posibilidad, y así reflejar una alta incertidumbre. 
 
 Algunas propiedades de este método son:
 
@@ -386,7 +385,7 @@ Algunas propiedades de este método son:
 
     \item \textbf{Conjuntos de predicción no adaptativos}: A pesar de poder presentar conjuntos con distinto número de clases predichas, emplea un único umbral calibrado globalmente sobre todas las muestras y clases por igual. 
 
-    \item \textbf{Bajo coste computacional}: Solo añade coste computacional en la calibración, con el cálculo de puntuaciones de no conformidad ($\mathcal{O}(n_{calib})$) y la obtención del umbral de no conformidad ($\mathcal{O}(n_{calib})log n_{calib}$). No añade coste a la inferencia ($\mathcal{O}(1)$).
+    \item \textbf{Bajo coste computacional}: Solo añade coste computacional en la calibración, con el cálculo de puntuaciones de \acrshort{NC} ($\mathcal{O}(n_{calib})$) y la obtención del umbral de \acrshort{NC} ($\mathcal{O}(n_{calib} \textnormal{log } n_{calib})$). No añade coste a la inferencia ($\mathcal{O}(1)$).
     
 \end{itemize}
 
@@ -396,7 +395,7 @@ Algunas propiedades de este método son:
 
 \subsubsection{Mondrian Confidence Machine (MCM)}
 
-\acrshort{MCM} \cite{vovk2003} es un método estrechamente relacionado con \acrshort{LAC}, ya que emplea el mismo esquema general de \acrshort{CP}. Sin embargo, introduce una diferencia clave: en lugar de aplicar un único umbral global para todas las clases, \acrshort{MCM} segmenta el conjunto de calibración por clase y calcula las puntuaciones de no conformidad y los umbrales de decisión de forma independiente para cada una.
+\acrshort{MCM} \cite{vovk2003} es un método estrechamente relacionado con \acrshort{LAC}, ya que emplea el mismo esquema general de \acrshort{CP}. Sin embargo, introduce una diferencia clave: en lugar de aplicar un único umbral global para todas las clases, \acrshort{MCM} segmenta el conjunto de calibración por clase y calcula las puntuaciones de \acrshort{NC} y los umbrales de decisión de forma independiente para cada una.
 
 A continuación, se detallan sus principales característica diferenciadas de \acrshort{LAC}:
 
@@ -404,9 +403,9 @@ A continuación, se detallan sus principales característica diferenciadas de \a
 
     \item \textbf{Garantiza cobertura condicional por clase}, lo cual es muy útil en conjuntos desbalanceados. A diferencia de \acrshort{APS}, que ofrece cobertura marginal sobre el conjunto total, MCM busca asegurar que cada clase individual cumpla el nivel de cobertura deseado, lo que favorece una distribución más equitativa del error.
     
-    \item \textbf{Conjuntos de predicción parcialmente adaptativos}: Estos son adaptativos respecto a cada clase, aunque no por muestra, ya que emplea un umbral de no conformidad por cada clase, pero los aplica igual a todas las muestras.  
+    \item \textbf{Conjuntos de predicción parcialmente adaptativos}: Estos son adaptativos respecto a cada clase, aunque no por muestra, ya que emplea un umbral de \acrshort{NC} por cada clase, pero los aplica igual a todas las muestras.  
 
-    \item \textbf{Coste computacional ligeramente superior a \acrshort{LAC}}: En la calibración, se requiere calcular las puntuaciones de no conformidad y el umbral de no conformidad para cada clase, lo cual puede aumentar los tiempos linealmente en base al número de clases. La inferencia sigue manteniendo la eficiencia. No obstante, sigue siendo un método eficiente y apto para entornos de predicción en tiempo real, siempre que el número de clases no sea excesivo.
+    \item \textbf{Coste computacional ligeramente superior a \acrshort{LAC}}: En la calibración, se requiere calcular las puntuaciones de \acrshort{NC} y el umbral de \acrshort{NC} para cada clase, lo cual puede aumentar los tiempos linealmente en base al número de clases. La inferencia sigue manteniendo la eficiencia. No obstante, sigue siendo un método eficiente y apto para entornos de predicción en tiempo real, siempre que el número de clases no sea excesivo.
 
 \end{itemize}
 
@@ -416,21 +415,21 @@ A continuación, se detallan sus principales característica diferenciadas de \a
 
 \acrshort{APS} \cite{romano2020}, como sugiere su nombre, tiene como objetivo generar conjuntos de predicción adaptativos, cuyo tamaño se ajusta dinámicamente en función de la incertidumbre del modelo para cada muestra. De este modo, se busca que las predicciones sean más informativas y reflejen con mayor precisión la confianza del modelo.
 
-La función de no conformidad utilizada en \acrshort{APS} evalúa, para cada instancia, la probabilidad total acumulada en aquellas clases que el modelo considera al menos tan probables como la clase verdadera. En otras palabras, se calcula como la suma de las probabilidades predichas para todas las clases cuya probabilidad es mayor o igual a la asignada a la etiqueta correcta.
+La función de \acrshort{NC} utilizada en \acrshort{APS} evalúa, para cada instancia, la probabilidad total acumulada en aquellas clases que el modelo considera al menos tan probables como la clase verdadera. En otras palabras, se calcula como la suma de las probabilidades predichas para todas las clases cuya probabilidad es mayor o igual a la asignada a la etiqueta correcta.
 
 Sea el vector $\hat{\pi}$ ordenado en orden decreciente: 
 $$
 \hat{\pi}_{(1)}(x_i) \ge \hat{\pi}_{(2)}(x_i) \ge \cdot\cdot\cdot \ge \hat{\pi}_{(K)}(x)
 $$
-donde $(k)$ es el índice de la clase con la $k$ mayor probabilidad, la función de no conformidad se define como:
+donde $(k)$ es el índice de la clase con la $k$ mayor probabilidad, la función de \acrshort{NC} se define como:
 $$
 A(x_i, y_i) = \sum_{j=1}^k \hat{\pi}_{(j)}(x_i) \textnormal{ donde } (k)=y_i 
 % R = \left\{ \sum_{j=1}^k \hat{\pi}_{(j)}(x_i)  \right\}_{i=1,...,n} \textnormal{ donde } (k)=y_i
 $$
 
-Cabe destacar que, en el caso particular de clasificación binaria, esta medida de no conformidad coincide exactamente con la utilizada en el método \acrshort{LAC}, ya que la acumulación se limita a una o dos clases. Por tanto, ambos métodos resultan equivalentes en este escenario. Sin embargo, divergen en problemas multiclase, donde las puntuaciones de no conformidad de \acrshort{APS} son más permisivas que las de \acrshort{LAC}, ya que reconocen que un modelo puede identificar características comunes entre varias clases y generar valores probabilísticos repartidos. No existe incertidumbre cuando la puntuación probabilística más alta corresponde a la clase verdadera. Por tanto, \acrshort{APS} penaliza menos los casos en que la clase correcta está entre las más probables, aunque no necesariamente en primer lugar.
+Cabe destacar que, en el caso particular de clasificación binaria, esta medida de \acrshort{NC} coincide exactamente con la utilizada en el método \acrshort{LAC}, ya que la acumulación se limita a una o dos clases. Por tanto, ambos métodos resultan equivalentes en este escenario. Sin embargo, divergen en problemas multiclase, donde las puntuaciones de \acrshort{NC} de \acrshort{APS} son más permisivas que las de \acrshort{LAC}, ya que reconocen que un modelo puede identificar características comunes entre varias clases y generar valores probabilísticos repartidos. No existe incertidumbre cuando la puntuación probabilística más alta corresponde a la clase verdadera. Por tanto, \acrshort{APS} penaliza menos los casos en que la clase correcta está entre las más probables, aunque no necesariamente en primer lugar.
 
-A partir de las puntuaciones de no conformidad en el conjunto de calibración, se calcula el umbral de no conformidad de la manera habitual:
+A partir de las puntuaciones de \acrshort{NC} en el conjunto de calibración, se calcula el umbral de \acrshort{NC} de la manera habitual:
 
 $$
 \delta_\alpha = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( \left\{ A(x_i,y_i) \right\}_{i=1}^n )
@@ -443,15 +442,15 @@ $$
 k = min\left\{ j: \sum_{i=1}^{j} \hat{\pi}_{(i)}(x_{n+1}) \ge \delta_\alpha \right\} 
 $$
 
-Una extensión útil de \acrshort{APS} consiste en introducir una \textbf{componente aleatoria} durante la fase de calibración para compensar la tendencia del método a la \textit{sobrecobertura}. En este ajuste, cuando se calcula la puntuación de no conformidad para una instancia de calibración, se decide excluir la contribución de la última clase incluida (aquella correspondiente a la etiqueta verdadera $y_i$) con una probabilidad proporcional al exceso de cobertura ---respecto al nivel de confianza $1-\alpha$--- que dicha clase genera.
+Una extensión útil de \acrshort{APS} consiste en introducir una \textbf{componente aleatoria} durante la fase de calibración para compensar la tendencia del método a la \textit{sobrecobertura}. En este ajuste, cuando se calcula la puntuación de \acrshort{NC} para una instancia de calibración, se decide excluir la contribución de la última clase incluida (aquella correspondiente a la etiqueta verdadera $y_i$) con una probabilidad proporcional al exceso de cobertura ---respecto al nivel de confianza $1-\alpha$--- que dicha clase genera.
 
 Formalmente, sea:
 $$
 V_i = \frac{A(x_i, y_i) - (1-\alpha)}{\hat{\pi}_{(k)}(x_i)} \quad \text{con} \quad (k) = y_i
 $$
-donde $A$ es la puntuación de no conformidad estándar de \acrshort{APS} y $\hat{\pi}_{(k)}$ la probabilidad de la última clase incluida. Se genera un valor aleatorio $u_i \sim \mathcal{U}(0,1)$ y, si $u_i > V_i$ y la clase verdadera no está en primera posición ($k \ge 2$), se elimina completamente la contribución de dicha clase de la suma acumulada. En caso contrario, se mantiene la puntuación original.
+donde $A$ es la puntuación de \acrshort{NC} estándar de \acrshort{APS} y $\hat{\pi}_{(k)}$ la probabilidad de la última clase incluida. Se genera un valor aleatorio $u_i \sim \mathcal{U}(0,1)$ y, si $u_i > V_i$ y la clase verdadera no está en primera posición ($k \ge 2$), se elimina completamente la contribución de dicha clase de la suma acumulada. En caso contrario, se mantiene la puntuación original.
 
-De este modo, las instancias en las que la última clase aporta un exceso notable de cobertura tienen mayor probabilidad de ser recortadas, reduciendo así el umbral de no conformidad $\delta_\alpha$ y produciendo conjuntos de predicción más pequeños, sin comprometer significativamente la cobertura global. En la fase de inferencia, el procedimiento de construcción de $\Gamma_\alpha(x_{n+1})$ se mantiene idéntico, pero el umbral reducido provoca que se necesiten menos clases para alcanzar el criterio, generando así \textbf{conjuntos de predicción más pequeños} en promedio, y que siguen garantizando estadísticamente la cobertura marginal.
+De este modo, las instancias en las que la última clase aporta un exceso notable de cobertura tienen mayor probabilidad de ser recortadas, reduciendo así el umbral de \acrshort{NC} $\delta_\alpha$ y produciendo conjuntos de predicción más pequeños, sin comprometer significativamente la cobertura global. En la fase de inferencia, el procedimiento de construcción de $\Gamma_\alpha(x_{n+1})$ se mantiene idéntico, pero el umbral reducido provoca que se necesiten menos clases para alcanzar el criterio, generando así \textbf{conjuntos de predicción más pequeños} en promedio, y que siguen garantizando estadísticamente la cobertura marginal.
 
 Este algoritmo, al igual que \acrshort{LAC}, solo garantiza cobertura marginal, pero genera \textbf{conjuntos de predicción más adaptativos} respecto a la incertidumbre inherente a la predicción de cada instancia. A diferencia de métodos con umbrales fijos, ajusta dinámicamente el tamaño de los conjuntos según la confianza del modelo en regiones específicas del espacio de características.
 
@@ -463,9 +462,9 @@ Sin embargo, en la práctica se ha observado que esta adaptabilidad conlleva \te
 
 \acrshort{RAPS} \cite{angelopoulos2020} es una variante del método APS, que introduce modificaciones clave para reducir el tamaño de los conjuntos de predicción, especialmente en escenarios con muchas clases, donde \acrshort{APS} tiende a generar conjuntos excesivamente grandes. El objetivo principal de \acrshort{RAPS} es mantener la propiedad de cobertura marginal deseada, al tiempo que se obtienen conjuntos de predicción más compactos y útiles en la práctica. 
 
-\acrshort{RAPS} extiende la función de no conformidad utilizada en \acrshort{APS} mediante la incorporación de un término de regularización que penaliza explícitamente la inclusión de clases con baja probabilidad en conjuntos de predicciones de tamaño ya elevado. 
+\acrshort{RAPS} extiende la función de \acrshort{NC} utilizada en \acrshort{APS} mediante la incorporación de un término de regularización que penaliza explícitamente la inclusión de clases con baja probabilidad en conjuntos de predicciones de tamaño ya elevado. 
 
-Para ello, se introducen dos hiperparámetros en la función de no conformidad:
+Para ello, se introducen dos hiperparámetros en la función de \acrshort{NC}:
 
 \begin{itemize}
 
@@ -479,13 +478,13 @@ Para ello, se introducen dos hiperparámetros en la función de no conformidad:
 
 \end{itemize}
 
-Una vez determinados los valores de estos hiperparámetros, se calculan las puntuaciones de no conformidad de la siguiente manera:
+Una vez determinados los valores de estos hiperparámetros, se calculan las puntuaciones de \acrshort{NC} de la siguiente manera:
 
 $$
 A(x_i, y_i) = \sum_{j=1}^k \hat{\pi}_{(j)}(x_i) + \lambda (k-k_{reg})^+ \textnormal{ donde } (k) = y_i
 $$
 
-El procedimiento de calibración y predicción en \acrshort{RAPS} sigue la misma estructura general que \acrshort{APS}, pero utiliza la función de no conformidad regularizada en lugar de la acumulación pura de probabilidades. Así, el umbral calibrado se calcula como:
+El procedimiento de calibración y predicción en \acrshort{RAPS} sigue la misma estructura general que \acrshort{APS}, pero utiliza la función de \acrshort{NC} regularizada en lugar de la acumulación pura de probabilidades. Así, el umbral calibrado se calcula como:
 
 $$
 \delta_\alpha = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } \left( \left\{ A(x_i,y_i) \right\}_{i=1}^n \right)
@@ -514,9 +513,9 @@ Al igual que \acrshort{APS}, también admite una \textbf{componente aleatoria}, 
     \item el orden de clasificación de las clases según el modelo.
 \end{itemize}
 
-A partir de esta representación reducida, las clases se ordenan por probabilidad decreciente y se define una función de no conformidad que combina la probabilidad máxima con la posición $k$ de la clase verdadera en el ranking. El objetivo es que la inclusión de una clase dependa más de su relevancia relativa que de su probabilidad absoluta, evitando el efecto adverso de las colas largas.
+A partir de esta representación reducida, las clases se ordenan por probabilidad decreciente y se define una función de \acrshort{NC} que combina la probabilidad máxima con la posición $k$ de la clase verdadera en el ranking. El objetivo es que la inclusión de una clase dependa más de su relevancia relativa que de su probabilidad absoluta, evitando el efecto adverso de las colas largas.
 
-A diferencia de los anteriores métodos adaptativos, este método incluye la \textbf{componente aleatoria} desde su planteamiento inicial. La función de no conformidad propuesta es:
+A diferencia de los anteriores métodos adaptativos, este método incluye la \textbf{componente aleatoria} desde su planteamiento inicial. La función de \acrshort{NC} propuesta es:
 
 $$
 A(x_i, y_i) = \hat{\pi}_{max}(x_i) + \lambda \,(k - 2 + u_i)
@@ -532,12 +531,12 @@ donde:
 
 Obsérvese que la penalización efectiva se aplica sobre el término $k - 2 + u_i$: no se penaliza la clase en primera posición ($k=1$), mientras que para las siguientes posiciones la penalización crece de forma lineal. La inclusión de $u_i$ hace que la penalización de la última clase considerada se distribuya de manera uniforme en el intervalo $(k-1, k)$, lo que garantiza aleatoriedad controlada y una calibración más estable.
 
-El umbral de no conformidad $\delta_\alpha$ se calcula a partir de las puntuaciones $A(x_i, y_i)$ en el conjunto de calibración, de forma análoga a \acrshort{APS} y \acrshort{RAPS}:
+El umbral de \acrshort{NC} $\delta_\alpha$ se calcula a partir de las puntuaciones $A(x_i, y_i)$ en el conjunto de calibración, de forma análoga a \acrshort{APS} y \acrshort{RAPS}:
 $$
 \delta_\alpha = Quantile_{\lceil (1-\alpha)(1+1/n) \rceil} \left( \left\{ A(x_i, y_i) \right\}_{i=1}^n \right)
 $$
 
-En la fase de inferencia, el conjunto de predicción para una nueva instancia $x_{n+1}$ se construye añadiendo las clases en orden decreciente de probabilidad, calculando para cada una la puntuación de no conformidad y deteniéndose cuando esta supera el umbral $\delta_\alpha$:
+En la fase de inferencia, el conjunto de predicción para una nueva instancia $x_{n+1}$ se construye añadiendo las clases en orden decreciente de probabilidad, calculando para cada una la puntuación de \acrshort{NC} y deteniéndose cuando esta supera el umbral $\delta_\alpha$:
 
 \begin{align*}
 \Gamma_\alpha(x_{n+1}) = &\left\{ (1), \dots, (k) \right\} \ \textnormal{donde} \\

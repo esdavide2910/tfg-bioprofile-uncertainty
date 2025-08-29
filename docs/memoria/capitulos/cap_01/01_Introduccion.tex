@@ -100,9 +100,7 @@ Sin embargo, aún mejorando la exactitud de las predicciones, los modelos siguen
     \caption[
         Línea de regresión del modelo de regresión propuesto en \cite{verma2020} que predice la estatura a partir de la longitud de la tibia.
     ]{
-        Línea de regresión del modelo de regresión propuesto en \cite{verma2020} que predice la estatura a partir de la longitud de la tibia. En rojo, la línea de regresión; en verde, los intervalos de confianza al 95\% para la media poblacional; y la naranja, los intervalos de predicción al 95\% de confianza.
-
-        NOTA: Aunque en ambos casos se utilice la pabra ``confianza'', se refieren a conceptos distintos: el intervalo de confianza indica el rango donde, con una probabilidad del 95\%, se espera que se encuentre la media poblacional estimada para un valor dado de la variable independiente, mientras que el intervalo de predicción señala el rango donde, con la misma probabilidad, podría ubicarse una observación individual futura. Consulte el Anexo \ref{chap:intervalos_valores_razonables} para entrar en detalle.
+        Línea de regresión del modelo de regresión propuesto en \cite{verma2020} que predice la estatura a partir de la longitud de la tibia. En rojo, la línea de regresión; en verde, los intervalos de confianza al 95\% para la media poblacional; y la naranja, los intervalos de predicción al 95\% de confianza. Aunque en ambos casos se utilice la palabra ``confianza'', se refieren a conceptos distintos: el intervalo de confianza indica el rango donde, con una probabilidad del 95\%, se espera que se encuentre la media poblacional estimada para un valor dado de la variable independiente, mientras que el intervalo de predicción señala el rango donde, con la misma probabilidad, podría ubicarse una observación individual futura. Consulte el Anexo \ref{chap:intervalos_valores_razonables} para entrar en detalle.
     } 
     \label{fig:regression_lentibia_stature}
 \end{figure}
@@ -164,7 +162,6 @@ Este Trabajo de Fin de Grado tiene un doble objetivo:
 \end{itemize}
 
 De esta forma, podremos incorporar la incertidumbre propia del problema a resolver y del modelo entrenado para él, para, en aquellos casos más confusos, devolver conjuntos de predicciones con más de una etiqueta predicha (p.ej., \{masculino, femenino\}) en problemas de clasificación, o intervalos de predicción más amplios (p.ej., edad$\in$[16,20]) en problemas de regresión, en ambos casos para un nivel de confianza determinado.
-
 Por tanto, podemos desgranar los objetivos en:
 
 \begin{itemize}

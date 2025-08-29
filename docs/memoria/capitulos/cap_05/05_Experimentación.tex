@@ -108,14 +108,13 @@ regularización y buen ritmo de aprendizaje.
 
 \section{Esquema general de los experimentos realizados}
 
-Para cada problema planteado, se propone realizar una comparativa entre distintos métodos, incluyendo tanto predicciones puntuales como interválicas en los casos de regresión, y predicciones de una sola etiqueta o de un conjunto de etiquetas en los casos de clasificación, utilizando tanto heurísticas como métodos de \acrshort{CP}.
-De esta forma queremos evaluar tanto la utilidad tradicional para estimar el valor esperado como la capacidad para proporcionar intervalos de confianza fiables que capturen la incertidumbre predictiva. Todas las métricas se calculan sobre el conjunto de test. 
+Para cada problema planteado, se propone realizar una comparativa entre distintos métodos, incluyendo tanto predicciones puntuales como interválicas en los casos de regresión, y predicciones de una sola etiqueta o de un conjunto de etiquetas en los casos de clasificación, utilizando tanto heurísticas como métodos de \acrshort{CP}. De esta forma queremos evaluar tanto la utilidad tradicional para estimar el valor esperado como la capacidad para proporcionar intervalos de confianza fiables que capturen la incertidumbre predictiva. Todas las métricas se calculan sobre el conjunto de test. 
 
 Se requerirá el 95\% de confianza en las predicciones interválicas o de conjunto de etiquetas, que es la cifra de confianza generalmente empleada en \acrshort{AF}. 
 
 \subsection{Problema de estimación de edad}
 
-Para el problema de estimación de edad se han propuesto los siguientes cuatro métodos:
+Para el problema de estimación de edad se han propuesto los siguientes cuatro métodos (véase la Figura \ref{fig:AE_experimental_pipeline}):
 
 \begin{itemize}
 
@@ -135,24 +134,12 @@ Para el problema de estimación de edad se han propuesto los siguientes cuatro m
 
 Para cada método se han entrenado 10 modelos independientes desde cero, con el objetivo de capturar la variabilidad inherente al proceso de entrenamiento.
 
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[angle=90, width=\textwidth]{capitulos/cap_05/imagenes/AE_experimental_pipeline.png}
-    \caption[
-        Esquema de experimentación para la estimación de edad.
-    ]{
-        Esquema de experimentación para la estimación de edad. Cada modelo se entrena por separado. `R' se refiere a `Regresión puntual' (de una sola neurona de salida), `QR' a `Quantile Regression' , `ICP' a `Inductive Conformal Prediction' y `CQR' a Conformalized Quantile Regression.
-    } 
-    \label{fig:AE_experimental_pipeline}
-\end{figure}
-
-\FloatBarrier
 
 % ------------------------------------------------------------------------------------------------------------
 
 \subsection{Problema de clasificación de mayoría de edad}
 
-Respecto al problema de clasificación de mayoría de edad, se han propuesto los siguientes tres métodos: 
+Respecto al problema de clasificación de mayoría de edad, se han propuesto los siguientes tres métodos (veáse la Figura \ref{fig:AMM_experimental_pipeline}): 
 
 \begin{itemize}
 
@@ -164,22 +151,9 @@ Respecto al problema de clasificación de mayoría de edad, se han propuesto los
 
 \end{itemize} 
 
-No se han implementado las técnicas \acrshort{APS} y \acrshort{RAPS} de CP para clasificación, ya que \acrshort{APS} es teóricamente equivalente a \acrshort{LAC} en problemas de clasificación binaria, y \acrshort{RAPS} no resulta aplicable en dicho contexto.
+No se han implementado las técnicas \acrshort{APS} y \acrshort{RAPS} de \acrshort{CP} para clasificación, ya que \acrshort{APS} es teóricamente equivalente a \acrshort{LAC} en problemas de clasificación binaria, y \acrshort{RAPS} no resulta aplicable en dicho contexto.
 
 En este caso, también se han obtenido 10 modelos independientes para cada método. 
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[angle=90, width=\textwidth]{capitulos/cap_05/imagenes/AMM_experimental_pipeline.png}
-    \caption[
-        Esquema de experimentación para la clasificación de mayoría de edad.
-    ]{
-        Esquema de experimentación para la clasificación de mayoría de edad. 
-    } 
-    \label{fig:AMM_experimental_pipeline}
-\end{figure}
-
-\FloatBarrier
 
 % ------------------------------------------------------------------------------------------------------------
 
@@ -194,7 +168,7 @@ En este caso, también se han obtenido 10 modelos independientes para cada méto
 
 Para el problema de clasificación de edad, se ha empleado la técnica de calibración de probabilidades \textit{Temperature Scaling} para ajustar las salidas del modelo de clasificación multiclase, con el objetivo de mejorar la calidad de las probabilidades utilizadas durante la fase de inferencia conformal. Esta calibración probabilística se realiza antes del \textit{softmax}. Se ha optado por utilizar el conjunto de validación para llevar a cabo dicha calibración de probabilidades, dado que, aunque no es el enfoque más riguroso ---ya que lo ideal sería dividir el conjunto de calibración en dos subconjuntos independientes, uno para la calibración de probabilidades y otro para la calibración conformal--- esta estrategia mostró buenos resultados en la práctica. Esto se debe a que el conjunto de validación empleado era suficientemente representativo y permitió obtener probabilidades calibradas de manera adecuada. Esta calibración probabilística no afecta a la variabilidad entre modelos con los mismos parámetros, dado que el algoritmo es determinista y produce resultados consistentes para un mismo conjunto de datos y parámetros. 
 
-Los métodos propuestos para este problema son:
+Los métodos propuestos para este problema son (véase la Figura \ref{fig:AGC_experimental_pipeline}):
 
 \begin{itemize}
 
@@ -212,18 +186,129 @@ Los métodos propuestos para este problema son:
 
 \end{itemize} 
 
-\begin{figure}[htbp]
+
+% \begin{landscape}
+%     \thispagestyle{fancy}
+%     \begin{figure}[htbp]
+%         \centering
+%         \includegraphics[width=0.75\linewidth]{capitulos/cap_05/imagenes/AE_experimental_pipeline.png}
+%         \captionsetup{width=0.75\linewidth}
+%         \caption[
+%             Esquema de experimentación para la estimación de edad.
+%         ]{
+%             Esquema de experimentación para la estimación de edad. Cada modelo se entrena por separado. `R' se refiere a `Regresión puntual' (de una sola neurona de salida), `QR' a Quantile Regression , `ICP' a Inductive Conformal Prediction y `CQR' a Conformalized Quantile Regression.
+%         } 
+%         \label{fig:AE_experimental_pipeline}
+%     \end{figure}
+% \end{landscape}
+
+% \thispagestyle{fancy}
+\begin{landscape}
+\thispagestyle{fancy}
+
+\begin{figure}[H]
     \centering
-    \includegraphics[angle=90, width=\textwidth]{capitulos/cap_05/imagenes/AGC_experimental_pipeline.png}
-    \caption[
-        Esquema de experimentación para la clasificación de edad. 
-    ]{
-        Esquema de experimentación para la clasificación de edad. Se recuerda que LAC, MCM, APS, RAPS y SAPS refieren a los métodos de CP para clasificación presentados en el anterior capítulo; y \textit{Temp. Scaling} hace referencia a \textit{Temperature Scaling}.
-    } 
-    \label{fig:AGC_experimental_pipeline}
+    \begin{minipage}{0.53\linewidth}
+        \includegraphics[width=1.3\textwidth]{capitulos/cap_05/imagenes/AE_experimental_pipeline.png}
+    \end{minipage}%
+    \hfill
+    \begin{minipage}{0.3\linewidth}
+        \caption[
+            Esquema de experimentación para la estimación de edad.
+        ]{
+            Esquema de experimentación para la estimación de edad. 
+            Cada modelo se entrena por separado. 
+            
+            R: Regresión puntual
+            
+            QR: Quantile Regression 
+            
+            ICP: Inductive Conformal Prediction 
+            
+            CQR: Conformalized Quantile Regression
+        }
+        \label{fig:AE_experimental_pipeline}
+    \end{minipage}
 \end{figure}
 
+
+% \begin{figure}[H] 
+%     \centering 
+%     \includegraphics[width=1.3\textwidth]{capitulos/cap_05/imagenes/AMM_experimental_pipeline.png} 
+%     \caption[ 
+%         Esquema de experimentación para la clasificación de mayoría de edad. 
+%     ]{ 
+%         Esquema de experimentación para la clasificación de mayoría de edad. 
+
+%         LAC: Least-Ambiguous set-valued Classifiers
+
+%         MCM: Mondrian Confidence Machine
+%     } 
+%     \label{fig:AMM_experimental_pipeline} 
+% \end{figure}
+
+
+
+
+
+\begin{figure}[H]
+    \raggedleft
+    % --- Bloque con la imagen ---
+    \begin{minipage}{0.51\linewidth}
+        \includegraphics[width=1.3\linewidth]{capitulos/cap_05/imagenes/AMM_experimental_pipeline.png}
+    \end{minipage}%
+    \hfill
+    % --- Bloque con el caption ---
+    \begin{minipage}{0.33\linewidth}
+        \caption[ 
+            Esquema de experimentación para la clasificación de mayoría de edad. 
+        ]{ 
+            Esquema de experimentación para la clasificación de mayoría de edad. 
+
+            LAC: Least-Ambiguous set-valued Classifiers
+
+            MCM: Mondrian Confidence Machine
+        } 
+        \label{fig:AMM_experimental_pipeline}
+    \end{minipage}
+\end{figure}
+
+
+\begin{figure}[H]
+    \raggedleft
+    % --- Bloque con la imagen ---
+    \begin{minipage}{0.5\linewidth}
+        \includegraphics[width=1.3\linewidth]{capitulos/cap_05/imagenes/AGC_experimental_pipeline.png}
+    \end{minipage}%
+    \hfill
+    % --- Bloque con el caption ---
+    \begin{minipage}{0.36\linewidth}
+        \caption[
+            Esquema de experimentación para la clasificación de edad. 
+        ]{
+            Esquema de experimentación para la clasificación de edad. 
+
+            LAC: Least-Ambiguous set-valued Classifiers
+
+            MCM: Mondrian Confidence Machine
+
+            APS: Adaptive Prediction Sets
+
+            RAPS: Regularized Adaptive Prediction Sets
+
+            SAPS: Sorted Adaptive Prediction Sets
+
+            Temp. Scaling: Temperature Scaling
+        }
+        \label{fig:AGC_experimental_pipeline}
+    \end{minipage}
+\end{figure}
+
+\end{landscape}
+
 \FloatBarrier
+
+\thispagestyle{fancy}
 
 
 % ------------------------------------------------------------------------------------------------------------
@@ -311,7 +396,7 @@ Y, finalmente, también añadiremos elementos visuales para valorar el desempeñ
 
     \item \textbf{Histograma de tamaños de intervalos}: Esto nos permitirá analizar la distribución de las longitudes de los intervalos predichos. Una concentración alrededor de valores bajos indica intervalos más informativos, mientras que una distribución amplia o con colas largas puede revelar incertidumbre elevada en ciertos casos. Esta visualización nos será útil para aquellas técnicas que ofrecen intervalos predictivos adaptativos. 
     
-    Solo tiene sentido analizar el histograma para aquellos métodos que dan intervalos de predicción de tamaño variable, como es en nuestro caso QR y CQR. 
+    Solo tiene sentido analizar el histograma para aquellos métodos que dan intervalos de predicción de tamaño variable, como es en nuestro caso \acrshort{QR} y \acrshort{CQR}. 
 
 \end{itemize}
 
@@ -436,7 +521,7 @@ Y, finalmente, también usaremos elementos visuales para valorar el desempeño d
 
 En los casos en los que las diferencias en una métrica entre métodos presenten valores intercalados o solapamientos aparentes, se aplican tests estadísticos para determinar si las diferencias observadas son significativas, evitando basarnos únicamente de la comparación visual de medias o medianas.
 
-En el análisis de comparación de métodos de predicción, se seleccionaron diferentes pruebas estadísticas según el cumplimiento de los supuestos de normalidad y homocedasticidad de los datos:
+En el análisis de comparación de métodos de predicción, se seleccionaron diferentes pruebas estadísticas según el cumplimiento de los supuestos de normalidad y homocedasticidad de los datos \cite{agbangba2024use}:
 
 \begin{enumerate}
 
@@ -474,11 +559,25 @@ Estas comparaciones permiten identificar específicamente qué grupos presentan 
 
 \subsection{Entrenamiento de los modelos}
 
-Como se venía anticipando en el anterior capítulo, adaptaremos la arquitectura del modelo ResNeXt50 para el problema de regresión. El tamaño de las imágenes de entrada no modifica la arquitectura del modelo, pues el extractor de características conserva la dimensionalidad relativa a través de sus bloques convolucionales. Sustituiremos la última capa del modelo por un \textit{adaptive average pooling}, que permite reducir la dimensionalidad espacial de forma flexible independientemente del tamaño exacto de entrada. A continuación, este tensor de características se aplana en la capa \textit{flatten}.
+Como se venía anticipando en el anterior capítulo, adaptaremos la arquitectura del modelo ResNeXt50 para el problema de regresión:
 
-La salida aplanada pasa por dos bloques densos consecutivos, cada uno compuesto por un capa \textit{batch normalization}, una capa de \textit{dropout} y una capa completamente conectada (\acrshort{FC}), con una activación ReLU entre ambos bloques. La primera capa \acrshort{FC} contiene 4096 neuronas, la segunda 512, y finalmente se incluye una capa de salida de una sola neurona. Esta configuración ha sido seleccionada siguiendo la recomendación de los tutores, quienes cuentan con experiencia previa en el trabajo con este conjunto de datos.
+\begin{itemize}
+    \item El extractor de características no necesita ser modificado, ya que mantiene la proporcionalidad de las dimensiones a lo largo de sus bloques convolucionales, independientemente del tamaño de las imágenes de entrada.
+    \item Se sustituye la cabecera predeterminada de \textit{average pooling} con capa \acrshort{FC} por un \textit{adaptive average pooling}, seguido de una capa \textit{flatten}, y dos bloques densos consecutivos, cada uno compuesto por una capa \textit{batch normalization}, una capa de \textit{dropout} y una capa \acrshort{FC}, con una activación ReLU entre ambos bloques. La primera capa \acrshort{FC} contiene 4096 neuronas, la segunda 512, y finalmente se incluye una capa de salida de una sola neurona. Véase la Figura \ref{fig:adapted_resnext50}. Esta configuración ha sido seleccionada siguiendo la recomendación de los tutores, quienes cuentan con experiencia previa en el trabajo con este conjunto de datos.
+\end{itemize}
 
-\todo{Añadir un dibujo con el cambio de cabecera (AGOSTO)}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{capitulos/cap_05/imagenes/adapted_ResNext50.png}
+    \caption[
+        Adaptación de la arquitectura ResNeXt50 para la estimación de edad. 
+    ]{
+        Adaptación de la arquitectura ResNeXt50 para la estimación de edad. En la parte superior de la imagen se muestra la cabecera original de ResNeXt50 diseñada para CIFAR1000. En la parte inferior, se presenta la nueva cabecera adaptada al problema de regresión, con una única salida. Se representa un esquema de la función ReLU con fondo violeta sobre los nodos que emplean esta función de activación.Cabe destacar que, en el caso de la \textit{Quantile Regression}, el modelo genera tres salidas en lugar de una. 
+    } 
+    \label{fig:adapted_resnext50}
+\end{figure}
+
 
 Los componentes clave del \textit{pipeline} de entrenamiento son:
 
@@ -537,6 +636,7 @@ La Tabla \ref{tab:AE_MAE_MSE_comparative} presenta las métricas que evalúan el
 \renewcommand{\arraystretch}{1.4}
 \begin{table}[htbp]
     \small
+    \centering
     \begin{tabular}{clcccclcccc}
     % \hline
     \toprule
@@ -1056,7 +1156,7 @@ Resulta llamativo que el método \acrshort{LAC} muestre infracobertura en las in
 
 
 
-\begin{figure}[htbp]
+\begin{table}[htbp]
     \centering
 
     % Tabla 1
@@ -1109,7 +1209,7 @@ Resulta llamativo que el método \acrshort{LAC} muestre infracobertura en las in
         En cada celda, el valor indica la proporción de instancias que se obtiene un determinado conjunto de predicción dada una determinada etiqueta verdadera. Se recomienda leer horizontalmente, dado que estos valores están normalizados en esta dimensión. Todos los valores están expresados en porcentaje.
     }
     \label{fig:conf2matrix}
-\end{figure}
+\end{table}
 
 \todo{¿Es posible pasar esta figura a tabla?}
 
