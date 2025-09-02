@@ -34,7 +34,7 @@ Y por último, también son fundamentales para \textbf{estimar la edad de person
 
 Como hemos visto, la \textbf{identificación humana (\acrshort{ID})} es una de las principales tareas que aborda la \acrshort{AF}. Consiste en la determinación y verificación de la identidad de una persona en base a \cite{thompson2006}: evidencias circunstanciales (hora y lugar del descubrimiento del cuerpo, efectos personales, confirmación visual por parte de familiares y amigos); y evidencias físicas, obtenidas a través de examinación externa de características como el sexo, color de piel, tatuajes, o huellas dactilares, o, cuando estas no estén disponibles, mediante examinación interna con técnicas médico-científicas, donde se aplican técnicas de antropología y genética forense.
 
-Cabe destacar que, aunque los análisis dactilares y genéticos superan en precisión identificativa a los métodos antropológicos, su aplicabilidad enfrenta limitaciones técnicas significativas que condicionan su uso en ciertos contextos forenses \cite{beauthier2009}. Las huellas dactilares requieren de: tejido blando preservado, lo que es común en cadáveres frescos, pero se pierde con la descomposición o la carbonización; y una base de datos que incluya la huella del individuo en vida (registros \textit{ante mortem}). Por otro lado, en cuanto al análisis genético, este puede verse comprometido por una mala conservación del ADN que puede deberse a su degradación o contaminación. La concentración presente en un cadáver se reduce drásticamente en los primeros 8 meses \textit{post mortem} \cite{higgins2015}, y factores como las altas temperaturas, la exposición a humedad ambiental o la presencia de aguas subterraneas y entornos ricos en oxígeno, que fomentan la presencia microbiana, perjudican la conservación del ADN \cite{latham2018}. Y, aún extraída una secuencia válida de ADN, se necesita de muestras con las que compararla, a ser posible de familiares de primer grado, para establecer una identificación concluyente. 
+Cabe destacar que, aunque los análisis dactilares y genéticos superan en precisión identificativa a los métodos antropológicos, su aplicabilidad enfrenta limitaciones técnicas significativas que condicionan su uso en ciertos contextos forenses \cite{beauthier2009}. Las huellas dactilares requieren de: tejido blando preservado, lo que es común en cadáveres frescos, pero se pierde con la descomposición o la carbonización; y una base de datos que incluya la huella del individuo en vida (registros \textit{ante mortem}). Por otro lado, en cuanto al análisis genético, este puede verse comprometido por una mala conservación del ADN que puede deberse a su degradación o contaminación. La concentración presente en un cadáver se reduce drásticamente en los primeros 8 meses \textit{post mortem} \cite{higgins2015}, y factores como las altas temperaturas, la exposición a humedad ambiental o la presencia de aguas subterráneas y entornos ricos en oxígeno, que fomentan la presencia microbiana, perjudican la conservación del ADN \cite{latham2018}. Y, aún extraída una secuencia válida de ADN, se necesita de muestras con las que compararla, a ser posible de familiares de primer grado, para establecer una identificación concluyente. 
 
 Por tanto, la \acrshort{AF} contribuye al problema de identificación humana en dos escenarios \cite{swganth2010}:  
 
@@ -70,7 +70,11 @@ En los problemas de \acrshort{ID}, cuando estas características biológicas coi
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{capitulos/cap_01/imagenes/SFI_pipeline.png}
-    \caption{Procedimiento secuencial para la identificación forense basada en el esqueleto humano (\textit{skeleton-based forensic identification}) \cite{mesejo2020}.} 
+    \caption[
+        Procedimiento secuencial para la identificación forense basada en el esqueleto humano (\textit{skeleton-based forensic identification}).
+    ]{
+        Procedimiento secuencial para la identificación forense basada en el esqueleto humano (\textit{skeleton-based forensic identification}) \cite{mesejo2020}.
+    } 
     \label{fig:SFI_pipeline}
 \end{figure}
 
@@ -84,7 +88,7 @@ Además, como se ha mencionado anteriormente, la estimación de edad también se
 
 \section{Motivación}
 
-Los métodos de estimación del \acrshort{PB} se basan en la evaluación visual y en el análisis morfométrico de rasgos esqueléticos, que requieren de conocimiento especializado. Sin embargo, su aplicación puede presentar ambigüedades en su formulación que den lugar a interepretaciones variables ---muchas veces fruto de sesgos cognitivos \cite{nakhaeizadeh2014, cooper2019}--- y están sujetos a posibles errores de medición \cite{langley2018}. Además, la gran variabilidad genética y ambiental entre individuos, que afecta la morfología del esqueleto y genera diferencias significativas entre poblaciones de distintas regiones \cite{ubelaker2017}, hace que muchos de estos métodos ---basados en muestras de referencia limitadas o no representativas de la diversidad humana global--- pierdan precisión. Esto puede introducir sesgos al estimar el \acrshort{PB} de individuos de grupos poco estudiados o con características atípicas.
+Los métodos de estimación del \acrshort{PB} se basan en la evaluación visual y en el análisis morfométrico de rasgos esqueléticos, que requieren de conocimiento especializado. Sin embargo, su aplicación puede presentar ambigüedades en su formulación que den lugar a interpretaciones variables ---muchas veces fruto de sesgos cognitivos \cite{nakhaeizadeh2014, cooper2019}--- y están sujetos a posibles errores de medición \cite{langley2018}. Además, la gran variabilidad genética y ambiental entre individuos, que afecta la morfología del esqueleto y genera diferencias significativas entre poblaciones de distintas regiones \cite{ubelaker2017}, hace que muchos de estos métodos ---basados en muestras de referencia limitadas o no representativas de la diversidad humana global--- pierdan precisión. Esto puede introducir sesgos al estimar el \acrshort{PB} de individuos de grupos poco estudiados o con características atípicas.
 
 Frente a estas limitaciones, recientes avances en inteligencia artificial (\acrshort{IA}) y \textit{machine learning} (\acrshort{ML}) han demostrado el potencial de mejorar la exactitud y objetividad de estimación del \acrshort{PB}, tanto para la estimación de sexo \cite{curate2017, darmawan2015, pinto2016} como de edad \cite{kim2017, larson2018, lee2017}.
 
@@ -92,13 +96,13 @@ Sin embargo, aún mejorando la exactitud de las predicciones, los modelos siguen
 \footnote{
     La estadística frecuentista es la corriente que se desarrolla a partir de los conceptos de probabilidad y que se centra en el cálculo de probabilidades y el contraste de hipótesis.
 }
-\cite{verma2020, stepanovsky2024, heinrich2024}. Un ejemplo de este tipo de análisis se ilustra en la Figura \ref{fig:regression_lentibia_stature}, donde se examina la distribución probabilística del error residual arrojado por el modelo de regresión propuesto en \cite{verma2020}.
+\cite{verma2020, stepanovsky2024, heinrich2024}. Un ejemplo de este tipo de análisis se ilustra en la Figura \ref{fig:regression_lentibia_stature}, donde se examina la distribución probabilística del error residual arrojado por un modelo de regresión.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.7\textwidth]{capitulos/cap_01/imagenes/regression_line_lentibia_stature.png}
+    \includegraphics[width=0.75\textwidth]{capitulos/cap_01/imagenes/regression_line_lentibia_stature.png}
     \caption[
-        Línea de regresión del modelo de regresión propuesto en \cite{verma2020} que predice la estatura a partir de la longitud de la tibia.
+        Línea de regresión de un modelo de regresión que predice la estatura a partir de la longitud de la tibia.
     ]{
         Línea de regresión del modelo de regresión propuesto en \cite{verma2020} que predice la estatura a partir de la longitud de la tibia. En rojo, la línea de regresión; en verde, los intervalos de confianza al 95\% para la media poblacional; y la naranja, los intervalos de predicción al 95\% de confianza. Aunque en ambos casos se utilice la palabra ``confianza'', se refieren a conceptos distintos: el intervalo de confianza indica el rango donde, con una probabilidad del 95\%, se espera que se encuentre la media poblacional estimada para un valor dado de la variable independiente, mientras que el intervalo de predicción señala el rango donde, con la misma probabilidad, podría ubicarse una observación individual futura. Consulte el Anexo \ref{chap:intervalos_valores_razonables} para entrar en detalle.
     } 
@@ -115,11 +119,11 @@ Con lo anterior se expone la motivación de la aplicación de \acrshort{ML} a la
 
     \item En los últimos años, ha aumentado significativamente el número de cadáveres hallados en el territorio español, como podemos apreciar en la Figura \ref{fig:evolucion_hallazgosID_cadaveres} \cite{interior2025desaparecidos}. En 2024 se ha alcanzado una cifra record, ---en gran parte debido a las inundaciones de la DANA Valencia del mismo año---, de 531 cadáveres en 2024, de los cuales se pudo identificar a 323.
 
-    \begin{figure}[htbp]
+    \begin{figure}[h]
         \centering
-        \includegraphics[width=\textwidth]{capitulos/cap_01/imagenes/hallazgos_cadaveres.png}
+        \includegraphics[width=0.8\textwidth]{capitulos/cap_01/imagenes/hallazgos_cadaveres.png}
         \caption[
-            Evolución de hallazgos/identificación de cadáveres en España (2010-2024) \cite{interior2025desaparecidos}.
+            Evolución de hallazgos/identificación de cadáveres en España (2010-2024).
         ]{
             Evolución de hallazgos/identificación de cadáveres en España (2010-2024) \cite{interior2025desaparecidos}. 
         } 
@@ -132,11 +136,13 @@ Con lo anterior se expone la motivación de la aplicación de \acrshort{ML} a la
 
     \item En España, se ha registrado en la última década (2013-2023) un aumento significativo en la llegada de Menores Extranjeros No Acompañados \cite{fge2024,fge2019,fge2016,fge2013}, que ha disparado consigo el número de diligencias abiertas para la determinación de su edad, como se ve reflejado en la Figura \ref{fig:evolucion_DPDE}.
 
-    \begin{figure}[htbp]
+    \begin{figure}[h]
         \centering
-        \includegraphics[width=\textwidth]{capitulos/cap_01/imagenes/dpde_España.png}
-        \caption{
-            Evolución del número de diligencias preprocesales de determinación de edad abiertas en España (2011–2023). Elaboración propia a partir de \cite{fge2013,fge2016,fge2019, fge2024}.
+        \includegraphics[width=0.8\textwidth]{capitulos/cap_01/imagenes/dpde_España.png}
+        \caption[
+            Evolución del número de diligencias preprocesales de determinación de edad abiertas en España (2011-2023).
+        ]{
+            Evolución del número de diligencias preprocesales de determinación de edad abiertas en España (2011-2023). Elaboración propia a partir de \cite{fge2013,fge2016,fge2019, fge2024}.
         } 
         \label{fig:evolucion_DPDE}
     \end{figure}
@@ -166,13 +172,13 @@ Por tanto, podemos desgranar los objetivos en:
 
 \begin{itemize}
 
-    \item Estudiar de forma exhaustiva la bibliografía sobre predicción conformal y sus diversas variantes, así como de la estimación de sexo y edad, centrando nuestra atención en el estado del arte.
+    \item Estudiar de forma exhaustiva la bibliografía sobre predicción conformal y algunas de sus técnicas,así como de la estimación de sexo y edad.
 
-    \item Implementar, entrenar y validar modelos de regresión ---en problemas de estimación de edad--- y clasificación ---tanto en problema de estimación de sexo como edad legal--- a los que aplicar la inferencia conformal.
+    \item Implementar, entrenar y validar modelos de regresión ---en problemas de estimación de edad--- y clasificación ---tanto en problema de estimación de sexo como edad legal--- a los que aplicar la inferencia conformal, y comparar aproximaciones heurísticas de cuantificación de incertidumbre con los métodos conformales.
+    
+    % \item s intervalos y conjuntos de predicciones generados para evaluar su calibración empírica y utilidad forense.  
 
-    \item Comparar los intervalos y conjuntos de predicciones generados para evaluar su calibración empírica, robustez ante datos ambiguos y utilidad forense, contrastándolos con métodos tradicionales (p.ej., intervalos de confianza clásicos).  
-
-    \item Realiza una primera aproximación a un marco interpretable y con garantías estadísticas para la estimación del perfil biológico (véase un ejemplo práctico en la Figura \ref{fig:example_intervalic_estimation}), donde la incertidumbre cuantificada pueda integrarse en informes periciales bajo estándares jurídicos.
+    \item Realizar una primera aproximación a un marco interpretable y con garantías estadísticas para la estimación del perfil biológico (véase un ejemplo práctico en la Figura \ref{fig:example_intervalic_estimation}), donde la incertidumbre cuantificada pueda integrarse en informes periciales bajo estándares jurídicos.
 
 \end{itemize}
 
@@ -194,12 +200,12 @@ En resumen, este trabajo pretende explorar la integración de marcos probabilís
 
 % ------------------------------------------------------------------------------------------------------------
 
-\section{Planificación temporal del proyecto}
+\section{Planificación temporal}
 
 Partimos de que el Proyecto de Fin de Grado tiene asignado 12 créditos ECTS, lo que equivale a 360 horas de trabajo%
 \footnote{
     De 25 a 30 horas por crédito según \cite{ComisionEuropea2015ECTS}.
-}. Estas 360 horas se distribuyen a lo largo del segundo cuatrimestre del curso 2024/2025, constando de 66 días lectivos, lo que resulta en una carga de trabajo de aproximadamente 5.45 horas al día, apróximadamente 5 horas y media. La planificación inicial del proyecto se presenta en el diagrama de Gantt de la Figura \ref{fig:inicial_gantt}.
+}. Estas 360 horas se distribuyen a lo largo del segundo cuatrimestre del curso 2024/2025, constando de 66 días lectivos, lo que resulta en una carga de trabajo de aproximadamente 5.45 horas al día, aproximadamente 5 horas y media. La planificación inicial del proyecto se presenta en el diagrama de Gantt de la Figura \ref{fig:inicial_gantt}.
 
 
 % \begin{landscape}

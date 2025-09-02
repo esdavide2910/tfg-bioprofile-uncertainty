@@ -6,15 +6,13 @@
 
 \section{Problemas propuestos}
 
-Como se ha mecionado anteriormente, y con el objetivo de validar los métodos de predicción conformal en diferentes tipos de problemas, este trabajo se centra en tres casuísticas que, si bien están relacionadas en el ámbito de la \acrshort{AF}, se tratan de diferente forma en el campo del \acrshort{ML}: 
+Como se ha mencionado anteriormente, y con el objetivo de validar los métodos de predicción conformal en diferentes tipos de problemas, este trabajo se centra en tres casuísticas que, si bien están relacionadas en el ámbito de la \acrshort{AF}, se tratan de diferente forma en el campo del \acrshort{ML}: 
 
 \begin{enumerate}
 
     \item Estimación de la edad legal resuelta como un problema de regresión: El problema de \textbf{estimación de edad (\textit{age estimation})} consiste en predecir la edad cronológica de un individuo en una escala continua, lo que lo define como un problema de regresión.
 
-    Para ello, se ha escogido usar las imágenes de radiografías maxilofaciales como entrada del algoritmo (véase la Figura \ref{fig:regression_problems}). Inicialmente se consideró incluir el sexo como metadato adicional en el modelo; sin embargo, se descartó tras observar de manera preliminar que no tenía un impacto significativo en el rendimiento del modelo, además de que su exclusión simplifica la arquitectura. 
-
-    \todo{Para agosto: Un anexo que demuestre esto, yo ya lo he comprobado empíricamente}
+    Para ello, se ha escogido usar las imágenes de radiografías maxilofaciales como entrada del algoritmo (véase la Figura \ref{fig:regression_problems}). Inicialmente se consideró incluir el sexo como metadato adicional en el modelo; sin embargo, se descartó tras observar de manera preliminar que no tenía un impacto significativo en el rendimiento del modelo, además de que su exclusión simplificaba la arquitectura. 
 
     \begin{figure}[htbp]
         \centering
@@ -28,9 +26,9 @@ Como se ha mecionado anteriormente, y con el objetivo de validar los métodos de
         \label{fig:regression_problems}
     \end{figure}
     
-    \item Estimación de la mayoría de edad: Un problema inmediatamente derivado del anterior es la \textbf{estimación de mayoría de edad (\textit{age majority esimation})}, útil en contextos legales donde es necesario determinar si una persona ha alcanzado la mayoría de edad. Este se trata de un problema de clasificación binaria, en el que el objetivo es asignar a cada individuo una de dos clases: ``menor de edad'' o ``mayor de edad''.
+    \item Estimación de la mayoría de edad: Un problema inmediatamente derivado del anterior es la \textbf{estimación de mayoría de edad (\textit{age majority estimation})}, útil en contextos legales donde es necesario determinar si una persona ha alcanzado la mayoría de edad. Este se trata de un problema de clasificación binaria, en el que el objetivo es asignar a cada individuo una de dos clases: ``menor de edad'' o ``mayor de edad''.
     
-    \item Estimación de la edad legal resuelta como un problema de clasificación multiclase: Se propone un problema de estimación de edad, pero planteado como problema de clasificación multiclase, donde cada edad ---como valor entero--- es una clase independiente. El potencial para aunar el planteamiento de un problema de regresión con uno de clasificación viene de la mano de la \acrshort{CP}, que, aplicada al problema de clasificación, permite generar conjuntos de etiquetas que toleran la cercanía entre clases, de forma que errores pequeños en el valor predicho (por ejemplo, predecir 19 en lugar de 20) no se consideren fallos completos.
+    \item \textbf{Estimación de la edad legal} resuelta \textbf{como un problema de clasificación} multiclase: Se propone un problema de estimación de edad, pero planteado como problema de clasificación multiclase, donde cada edad ---como valor entero--- es una clase independiente. El potencial para aunar el planteamiento de un problema de regresión con uno de clasificación viene de la mano de la \acrshort{CP}, que, aplicada al problema de clasificación, permite generar conjuntos de etiquetas que toleran la cercanía entre clases, de forma que errores pequeños en el valor predicho (por ejemplo, predecir 19 en lugar de 20) no se consideren fallos completos.
 
 \end{enumerate}
 
@@ -39,7 +37,7 @@ Como se ha mecionado anteriormente, y con el objetivo de validar los métodos de
 
 \section{Protocolo de validación experimental}
 
-Como se ha descrito en el capítulo previo, se han proporcionado los datos ya dividos en conjunto de entrenamiento (\textit{train}) y de test, para evitar problemas asociados al \textit{data snooping}%
+Como se ha descrito en el capítulo previo, se han proporcionado los datos ya divididos en conjunto de entrenamiento (\textit{train}) y de test, para evitar problemas asociados al \textit{data snooping}%
 \footnote{
     El \textbf{\textit{data snooping}} ocurre cuando información del conjunto de test se filtra, directa o indirectamente, en el proceso de entrenamiento del modelo, lo que puede llevar a una sobreestimación del rendimiento y a modelos que no generalizan adecuadamente ante datos nuevos.
 }.
@@ -63,7 +61,7 @@ En la Figura \ref{fig:data_split_base} podemos ver la división del \textit{data
     \label{fig:data_split_base}
 \end{figure}
 
-Es importante destacar que esta división se mantiene constante en todos los experimentos y para todos los problemas planteados, asegurando que las mismas instancias permanezcan en los mismos subconjuntos. Esto permite garantizar que ningún modelo preentrenado reutilice datos previamente utilizados en etapas de validación o calibración, algo especialmente relevante dado que los problemas abordados están jerárquicamente relacionados (la clasificación de sexo y mayoría de edad se deriva directamente de la clasificación de mayoría de edad, que a su vez se deriva de la estimación de edad).
+Es importante destacar que esta división se mantiene constante en todos los experimentos y para todos los problemas planteados, asegurando que las mismas instancias permanezcan en los mismos subconjuntos. Esto permite garantizar que ningún modelo preentrenado reutilice datos previamente utilizados en etapas de validación o calibración, algo especialmente relevante dado que los problemas abordados están jerárquicamente relacionados (la clasificación de sexo y mayoría de edad se deriva directamente de la estimación de mayoría de edad, que a su vez se deriva de la estimación de edad).
 
 Sin embargo, al emplear métodos de calibración o predicción conformal, si usamos los mismos datos de entrenamiento para la calibración, las probabilidades o intervalos de predicción tenderán a ser optimistas, pues el modelo ha sido entrenado con esos datos \cite{niculescu2005}. Por tanto, para evitar el sobreajuste y garantizar validez estadística se requiere de un subconjunto de datos adicional: el \textbf{conjunto de calibración}. Se ha escogido destinar el  20\% de los ejemplos de entrenamiento para calibración, basándose en los resultados empíricos de \cite{sesia2020} (que recomienda dedicar entre un 10\% y 30\% de datos de entrenamiento a calibración), tal y como se muestra en la Figura \ref{fig:data_split_conformal}.
 
@@ -132,14 +130,31 @@ Para el problema de estimación de edad se han propuesto los siguientes cuatro m
 
 \end{itemize} 
 
-Para cada método se han entrenado 10 modelos independientes desde cero, con el objetivo de capturar la variabilidad inherente al proceso de entrenamiento.
-
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.05\textwidth]{capitulos/cap_05/imagenes/AE_experimental_pipeline.png}
+    \caption[
+        Esquema de experimentación para la estimación de edad.
+    ]{
+        Esquema de experimentación para la estimación de edad. 
+        Cada modelo se entrena por separado. 
+        
+        R: Regresión puntual
+        
+        QR: Quantile Regression 
+        
+        ICP: Inductive Conformal Prediction 
+        
+        CQR: Conformalized Quantile Regression
+    }
+    \label{fig:AE_experimental_pipeline}
+\end{figure}
 
 % ------------------------------------------------------------------------------------------------------------
 
-\subsection{Problema de clasificación de mayoría de edad}
+\subsection{Problema de estimación de mayoría de edad}
 
-Respecto al problema de clasificación de mayoría de edad, se han propuesto los siguientes tres métodos (veáse la Figura \ref{fig:AMM_experimental_pipeline}): 
+Respecto al problema de estimación de mayoría de edad, se han propuesto los siguientes tres métodos (véase la Figura \ref{fig:AMM_experimental_pipeline}): 
 
 \begin{itemize}
 
@@ -155,6 +170,21 @@ No se han implementado las técnicas \acrshort{APS} y \acrshort{RAPS} de \acrsho
 
 En este caso, también se han obtenido 10 modelos independientes para cada método. 
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.05\linewidth]{capitulos/cap_05/imagenes/AMM_experimental_pipeline.png}
+    \caption[ 
+        Esquema de experimentación para la estimación de mayoría de edad. 
+    ]{ 
+        Esquema de experimentación para la estimación de mayoría de edad. 
+
+        LAC: Least-Ambiguous set-valued Classifiers
+
+        MCM: Mondrian Confidence Machine
+    } 
+    \label{fig:AMM_experimental_pipeline}
+\end{figure}
+
 % ------------------------------------------------------------------------------------------------------------
 
 \subsection{Problema de clasificación de edad}
@@ -166,15 +196,15 @@ En este caso, también se han obtenido 10 modelos independientes para cada méto
 % }
 
 
-Para el problema de clasificación de edad, se ha empleado la técnica de calibración de probabilidades \textit{Temperature Scaling} para ajustar las salidas del modelo de clasificación multiclase, con el objetivo de mejorar la calidad de las probabilidades utilizadas durante la fase de inferencia conformal. Esta calibración probabilística se realiza antes del \textit{softmax}. Se ha optado por utilizar el conjunto de validación para llevar a cabo dicha calibración de probabilidades, dado que, aunque no es el enfoque más riguroso ---ya que lo ideal sería dividir el conjunto de calibración en dos subconjuntos independientes, uno para la calibración de probabilidades y otro para la calibración conformal--- esta estrategia mostró buenos resultados en la práctica. Esto se debe a que el conjunto de validación empleado era suficientemente representativo y permitió obtener probabilidades calibradas de manera adecuada. Esta calibración probabilística no afecta a la variabilidad entre modelos con los mismos parámetros, dado que el algoritmo es determinista y produce resultados consistentes para un mismo conjunto de datos y parámetros. 
+Para el problema de clasificación de edad, se ha empleado la técnica de \textbf{calibración de probabilidades \textit{Temperature Scaling}} para ajustar las salidas del modelo de clasificación multiclase, con el objetivo de mejorar la calidad de las probabilidades utilizadas durante la fase de inferencia conformal. Esta calibración probabilística se realiza antes del \textit{softmax}. Se ha optado por utilizar el conjunto de validación para llevar a cabo dicha calibración de probabilidades, dado que, aunque no es el enfoque más riguroso ---ya que lo ideal sería dividir el conjunto de calibración en dos subconjuntos independientes, uno para la calibración de probabilidades y otro para la calibración conformal--- esta estrategia mostró buenos resultados en la práctica. Esto se debe a que el conjunto de validación empleado era suficientemente representativo y permitió obtener probabilidades calibradas de manera adecuada. Esta calibración probabilística no afecta a la variabilidad entre modelos con los mismos parámetros, dado que el algoritmo es determinista y produce resultados consistentes para un mismo conjunto de datos y parámetros. 
 
 Los métodos propuestos para este problema son (véase la Figura \ref{fig:AGC_experimental_pipeline}):
 
 \begin{itemize}
 
-    \item \textbf{Método `base'}: Al igual que para el problema de clasificación de mayoría de edad, funciona como un clasificador normal sin métodos de \acrshort{CP}, y se usa de \textit{baseline} para comparar con el resto. El entrenamiento de este modelo partirá de un modelo `base' ya entrenado para el problema de AMM.
+    \item \textbf{Método `base'}: Dado que los valores de edad se discretizaron en clases y considerando la cercanía entre estas ---como se observó en el análisis de regresión---, para evitar evitar que el conjunto de predicción sea demasiado estrecho y no capture la incertidumbre inherente entre clases adyacentes, se propone un enfoque alternativo: se construyen conjuntos de predicción agregando clases hasta que la suma de sus puntuaciones de softmax supere el 95\%. Este método sirve como \textit{baseline} y no utiliza ningún método de \acrshort{CP}. El modelo se entrena a partir de un modelo `base' previamente entrenado para el problema de estimación de mayoría de edad. 
 
-    \item \textbf{Método `LAC'}: Este método implementa la técnica LAC para \acrshort{CP}. El entrenamiento de este modelo partirá del modelo \acrshort{LAC} ya entrenado para el problema de AMM.
+    \item \textbf{Método `LAC'}: Este método implementa la técnica LAC para \acrshort{CP}. El entrenamiento de este modelo partirá del modelo \acrshort{LAC} ya entrenado para el problema de estimación de mayoría de edad. 
 
     \item \textbf{Método `MCM'}: Implementa la técnica \acrshort{MCM} para \acrshort{CP}. El modelo será exactamente el mismo que el de LAC para este mismo problema. 
 
@@ -186,129 +216,117 @@ Los métodos propuestos para este problema son (véase la Figura \ref{fig:AGC_ex
 
 \end{itemize} 
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.05\linewidth]{capitulos/cap_05/imagenes/AGC_experimental_pipeline.png}
+    \caption[
+        Esquema de experimentación para la clasificación de edad. 
+    ]{
+        Esquema de experimentación para la clasificación de edad. 
 
+        LAC: Least-Ambiguous set-valued Classifiers
+
+        MCM: Mondrian Confidence Machine
+
+        APS: Adaptive Prediction Sets
+
+        RAPS: Regularized Adaptive Prediction Sets
+
+        SAPS: Sorted Adaptive Prediction Sets
+
+        Temp. Scaling: Temperature Scaling
+    }
+    \label{fig:AGC_experimental_pipeline}
+\end{figure}
+
+% % \thispagestyle{fancy}
 % \begin{landscape}
-%     \thispagestyle{fancy}
-%     \begin{figure}[htbp]
-%         \centering
-%         \includegraphics[width=0.75\linewidth]{capitulos/cap_05/imagenes/AE_experimental_pipeline.png}
-%         \captionsetup{width=0.75\linewidth}
+% \thispagestyle{fancy}
+
+% \begin{figure}[H]
+%     \centering
+%     \begin{minipage}{0.53\linewidth}
+%         \includegraphics[width=1.3\textwidth]{capitulos/cap_05/imagenes/AE_experimental_pipeline.png}
+%     \end{minipage}%
+%     \hfill
+%     \begin{minipage}{0.3\linewidth}
 %         \caption[
 %             Esquema de experimentación para la estimación de edad.
 %         ]{
-%             Esquema de experimentación para la estimación de edad. Cada modelo se entrena por separado. `R' se refiere a `Regresión puntual' (de una sola neurona de salida), `QR' a Quantile Regression , `ICP' a Inductive Conformal Prediction y `CQR' a Conformalized Quantile Regression.
-%         } 
+%             Esquema de experimentación para la estimación de edad. 
+%             Cada modelo se entrena por separado. 
+            
+%             R: Regresión puntual
+            
+%             QR: Quantile Regression 
+            
+%             ICP: Inductive Conformal Prediction 
+            
+%             CQR: Conformalized Quantile Regression
+%         }
 %         \label{fig:AE_experimental_pipeline}
-%     \end{figure}
-% \end{landscape}
-
-% \thispagestyle{fancy}
-\begin{landscape}
-\thispagestyle{fancy}
-
-\begin{figure}[H]
-    \centering
-    \begin{minipage}{0.53\linewidth}
-        \includegraphics[width=1.3\textwidth]{capitulos/cap_05/imagenes/AE_experimental_pipeline.png}
-    \end{minipage}%
-    \hfill
-    \begin{minipage}{0.3\linewidth}
-        \caption[
-            Esquema de experimentación para la estimación de edad.
-        ]{
-            Esquema de experimentación para la estimación de edad. 
-            Cada modelo se entrena por separado. 
-            
-            R: Regresión puntual
-            
-            QR: Quantile Regression 
-            
-            ICP: Inductive Conformal Prediction 
-            
-            CQR: Conformalized Quantile Regression
-        }
-        \label{fig:AE_experimental_pipeline}
-    \end{minipage}
-\end{figure}
-
-
-% \begin{figure}[H] 
-%     \centering 
-%     \includegraphics[width=1.3\textwidth]{capitulos/cap_05/imagenes/AMM_experimental_pipeline.png} 
-%     \caption[ 
-%         Esquema de experimentación para la clasificación de mayoría de edad. 
-%     ]{ 
-%         Esquema de experimentación para la clasificación de mayoría de edad. 
-
-%         LAC: Least-Ambiguous set-valued Classifiers
-
-%         MCM: Mondrian Confidence Machine
-%     } 
-%     \label{fig:AMM_experimental_pipeline} 
+%     \end{minipage}
 % \end{figure}
 
 
+% \begin{figure}[H]
+%     \raggedleft
+%     % --- Bloque con la imagen ---
+%     \begin{minipage}{0.51\linewidth}
+%         \includegraphics[width=1.3\linewidth]{capitulos/cap_05/imagenes/AMM_experimental_pipeline.png}
+%     \end{minipage}%
+%     \hfill
+%     % --- Bloque con el caption ---
+%     \begin{minipage}{0.33\linewidth}
+%         \caption[ 
+%             Esquema de experimentación para la clasificación de mayoría de edad. 
+%         ]{ 
+%             Esquema de experimentación para la clasificación de mayoría de edad. 
+
+%             LAC: Least-Ambiguous set-valued Classifiers
+
+%             MCM: Mondrian Confidence Machine
+%         } 
+%         \label{fig:AMM_experimental_pipeline}
+%     \end{minipage}
+% \end{figure}
 
 
+% \begin{figure}[H]
+%     \raggedleft
+%     % --- Bloque con la imagen ---
+%     \begin{minipage}{0.5\linewidth}
+%         \includegraphics[width=1.3\linewidth]{capitulos/cap_05/imagenes/AGC_experimental_pipeline.png}
+%     \end{minipage}%
+%     \hfill
+%     % --- Bloque con el caption ---
+%     \begin{minipage}{0.36\linewidth}
+%         \caption[
+%             Esquema de experimentación para la clasificación de edad. 
+%         ]{
+%             Esquema de experimentación para la clasificación de edad. 
 
-\begin{figure}[H]
-    \raggedleft
-    % --- Bloque con la imagen ---
-    \begin{minipage}{0.51\linewidth}
-        \includegraphics[width=1.3\linewidth]{capitulos/cap_05/imagenes/AMM_experimental_pipeline.png}
-    \end{minipage}%
-    \hfill
-    % --- Bloque con el caption ---
-    \begin{minipage}{0.33\linewidth}
-        \caption[ 
-            Esquema de experimentación para la clasificación de mayoría de edad. 
-        ]{ 
-            Esquema de experimentación para la clasificación de mayoría de edad. 
+%             LAC: Least-Ambiguous set-valued Classifiers
 
-            LAC: Least-Ambiguous set-valued Classifiers
+%             MCM: Mondrian Confidence Machine
 
-            MCM: Mondrian Confidence Machine
-        } 
-        \label{fig:AMM_experimental_pipeline}
-    \end{minipage}
-\end{figure}
+%             APS: Adaptive Prediction Sets
 
+%             RAPS: Regularized Adaptive Prediction Sets
 
-\begin{figure}[H]
-    \raggedleft
-    % --- Bloque con la imagen ---
-    \begin{minipage}{0.5\linewidth}
-        \includegraphics[width=1.3\linewidth]{capitulos/cap_05/imagenes/AGC_experimental_pipeline.png}
-    \end{minipage}%
-    \hfill
-    % --- Bloque con el caption ---
-    \begin{minipage}{0.36\linewidth}
-        \caption[
-            Esquema de experimentación para la clasificación de edad. 
-        ]{
-            Esquema de experimentación para la clasificación de edad. 
+%             SAPS: Sorted Adaptive Prediction Sets
 
-            LAC: Least-Ambiguous set-valued Classifiers
+%             Temp. Scaling: Temperature Scaling
+%         }
+%         \label{fig:AGC_experimental_pipeline}
+%     \end{minipage}
+% \end{figure}
 
-            MCM: Mondrian Confidence Machine
-
-            APS: Adaptive Prediction Sets
-
-            RAPS: Regularized Adaptive Prediction Sets
-
-            SAPS: Sorted Adaptive Prediction Sets
-
-            Temp. Scaling: Temperature Scaling
-        }
-        \label{fig:AGC_experimental_pipeline}
-    \end{minipage}
-\end{figure}
-
-\end{landscape}
+% \end{landscape}
 
 \FloatBarrier
 
-\thispagestyle{fancy}
+% \thispagestyle{fancy}
 
 
 % ------------------------------------------------------------------------------------------------------------
@@ -358,15 +376,16 @@ Por otra parte, las métricas aplicadas a las predicciones interválicas examina
 
     donde $l_i$ y $u_i$ son los límites inferior y superior, respectivamente, de los intervalos de predicción obtenidos mediante inferencia conformal.
 
-    Cuanto mayor sea el valor, mejor cobertura ofrece el modelo, si bien coberturas altas suelen conllevar intervalos excesivamente amplios, lo que reduce su utilidad práctica. Es por ello que, empleando métodos de \acrshort{CP}, tiene más sentido que el objetivo sea acercarse lo máximo posible a la cobertura marginal nominal ($1-\alpha$), garantizando así intervalos de predicción que equilibren precisión y fiabilidad sin ser inneceseriamente conservadores. 
+    Cuanto mayor sea el valor, mejor cobertura ofrece el modelo, si bien coberturas altas suelen conllevar intervalos excesivamente amplios, lo que reduce su utilidad práctica. Es por ello que, empleando métodos de \acrshort{CP}, tiene más sentido que el objetivo sea acercarse lo máximo posible a la cobertura marginal nominal ($1-\alpha$), garantizando así intervalos de predicción que equilibren precisión y fiabilidad sin ser innecesariamente conservadores. 
     
-    \item El \textbf{tamaño medio de intevalo de predicción (\textit{mean prediction inteval width})} mide qué tan amplios son en promedio los intervalos predichos.
+    \item El \textbf{tamaño medio de intervalo de predicción (\textit{mean prediction interval width})} mide qué tan amplios son en promedio los intervalos predichos.
     
     $$
     MPIW = \frac{1}{n} \sum_{i=1}^n{ \left( u_i - l_i \right) } \in (0, +\infty)
     $$
     
-    Se desea matener este valor lo más pequeño posible, dado un nivel de cobertura adecuado. Valores altos indican intervalos anchos y, por tanto, poco útiles para la toma de decisiones. 
+    Se desea mantener este valor lo más pequeño posible, dado un nivel de cobertura adecuado. Valores altos indican intervalos anchos y, por tanto, poco útiles para la toma de decisiones. Sin embargo, valores excesivamente pequeños conducen inevitablemente a coberturas pueden indicar ..., especialmente cuando el problema muestra una variabilidad inherente
+    A diferencia de la cobertura empírica, no sabemos cuál es el valor óptimo, 
 
     \item La \textbf{\textit{mean interval score}} \cite{gneiting2007} trata de unificar en una sola métrica el \textit{trade-off} cobertura vs. amplitud del intervalo. Su expresión es la siguiente:
 
@@ -415,8 +434,10 @@ Para la clasificación de etiqueta única usaremos:
     \begin{figure}[htbp]
         \centering
         \includegraphics[width=0.6\textwidth]{capitulos/cap_02/imagenes/confusion_matrix_binary.png}
-        \caption{
-            Matriz de confusión para la estimación de sexo según el modelo \textit{random forest} propuesto en \cite{bidmos2023}.
+        \caption[
+            Ejemplo de matriz de confusión para un modelo de estimación de sexo.
+        ]{
+            Ejemplo de matriz de confusión para el modelo de estimación de sexo propuesto en \cite{bidmos2023}.
         } 
         \label{fig:conf_matrix_binary}
     \end{figure}
@@ -511,7 +532,7 @@ Y, finalmente, también usaremos elementos visuales para valorar el desempeño d
 
     \item \textbf{Gráfica de dispersión de Cobertura Empírica - Tamaño Medio del Conjunto de Predicción}: Este gráfico permite visualizar el compromiso entre cobertura lograda y tamaño del intervalo. Un buen modelo debería situarse cerca del nivel de confianza objetivo con intervalos lo más cortos posible. 
 
-    \item \textbf{Histograma de tamaños de conjuntos de predicción}: De similar forma a como se plantean los histogramas de amplitudes de intervalos para regresión, se puede plantear histograma donde cada tamaño es el número de clases del conjunto predicho. Este nos permite ver la distribución de tamaños de conjuntos de predicción. Aquellos con pocas clases serán más informativos, mientras que tamaños más grnades pueden revelar una incertidumbre elevada.
+    \item \textbf{Histograma de tamaños de conjuntos de predicción}: De similar forma a como se plantean los histogramas de amplitudes de intervalos para regresión, se puede plantear histograma donde cada tamaño es el número de clases del conjunto predicho. Este nos permite ver la distribución de tamaños de conjuntos de predicción. Aquellos con pocas clases serán más informativos, mientras que tamaños más grandes pueden revelar una incertidumbre elevada.
     
 \end{itemize}
 
@@ -529,14 +550,14 @@ En el análisis de comparación de métodos de predicción, se seleccionaron dif
     
     \item \textbf{Welch ANOVA + Games-Howell}: Cuando se cumple la normalidad pero no se cumple la homocedasticidad, se recurre a Welch ANOVA, que ajusta los grados de libertad para compensar la desigualdad de varianzas. Para las comparaciones \textit{post-hoc} se utiliza Games-Howell, que es robusto frente a varianzas desiguales y tamaños de grupo distintos. Esta combinación permite detectar diferencias entre grupos sin asumir igualdad de varianzas, manteniendo el control del error tipo I.
     
-    \item \textbf{Kruskal-Wallis + Dunn}: Si no se cumple la normalidad, se opta por un enfoque no paramétrico. El test de Kruskal-Wallis compara medianas entre grupos y no requiere que los datos sigan una distribución normal. Cuando se detectan diferencias significativas, se realizan comparaciones por pares con el test de Dunn, aplicando corrección de Bonferroni para controlar el error tipo I. Esta estrategia asegura la validez estadística incluso cuando los supuestos paramétricos no se cumplen.
+    % \item \textbf{Kruskal-Wallis + Dunn}: Si no se cumple la normalidad, se opta por un enfoque no paramétrico. El test de Kruskal-Wallis compara medianas entre grupos y no requiere que los datos sigan una distribución normal. Cuando se detectan diferencias significativas, se realizan comparaciones por pares con el test de Dunn, aplicando corrección de Bonferroni para controlar el error tipo I. Esta estrategia asegura la validez estadística incluso cuando los supuestos paramétricos no se cumplen.
     
 \end{enumerate}
 
 En todos las pruebas globales, las hipótesis son:
 
 \begin{itemize}
-    \item \textbf{Hipótesis nula ($H_0$)}: No existen diferencias en la métrica analizada entre los métodos comparados, asumiendo que las medias (o medianas, en el caso de pruebas no parámetricas) son iguales.
+    \item \textbf{Hipótesis nula ($H_0$)}: No existen diferencias en la métrica analizada entre los métodos comparados, asumiendo que las medias (o medianas, en el caso de pruebas no paramétricas) son iguales.
     \item \textbf{Hipótesis alternativa ($H_1$)}: Al menos un método difiere significativamente de los demás.
 \end{itemize}
 
@@ -548,7 +569,8 @@ En las pruebas \textit{post-hoc} por pares, las hipótesis son:
     \item \textbf{Hipótesis alternativa ($H_1$)}: La métrica de un método difiere significativamente de la de otro método.
 \end{itemize}
 
-Estas comparaciones permiten identificar específicamente qué grupos presentan diferencias significativas, controlando el error tipo I mediante correcciones apropiadas según la prueba utilizada (Tukey HSD, Games-Howell o Dunn con Bonferroni).
+Estas comparaciones permiten identificar específicamente qué grupos presentan diferencias significativas, controlando el error tipo I%
+\footnote{El error tipo I ocurre cuando se rechaza la hipótesis nula ($H_0$) siendo esta en realidad verdad.} mediante correcciones apropiadas según la prueba utilizada (Tukey HSD o Games-Howell).
 
 % ------------------------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
@@ -571,9 +593,9 @@ Como se venía anticipando en el anterior capítulo, adaptaremos la arquitectura
     \centering
     \includegraphics[width=0.9\textwidth]{capitulos/cap_05/imagenes/adapted_ResNext50.png}
     \caption[
-        Adaptación de la arquitectura ResNeXt50 para la estimación de edad. 
+        Adaptación de la arquitectura ResNeXt50 para el problema de la estimación de edad. 
     ]{
-        Adaptación de la arquitectura ResNeXt50 para la estimación de edad. En la parte superior de la imagen se muestra la cabecera original de ResNeXt50 diseñada para CIFAR1000. En la parte inferior, se presenta la nueva cabecera adaptada al problema de regresión, con una única salida. Se representa un esquema de la función ReLU con fondo violeta sobre los nodos que emplean esta función de activación.Cabe destacar que, en el caso de la \textit{Quantile Regression}, el modelo genera tres salidas en lugar de una. 
+        Adaptación de la arquitectura ResNeXt50 para el problema de la estimación de edad. En la parte superior de la imagen se muestra la cabecera original de ResNeXt50 diseñada para CIFAR1000. En la parte inferior, se presenta la nueva cabecera adaptada al problema de regresión, con una única salida. Se representa un esquema de la función ReLU con fondo violeta sobre los nodos que emplean esta función de activación.Cabe destacar que, en el caso de la \textit{Quantile Regression}, el modelo genera tres salidas en lugar de una. 
     } 
     \label{fig:adapted_resnext50}
 \end{figure}
@@ -594,18 +616,16 @@ Los componentes clave del \textit{pipeline} de entrenamiento son:
 Para el entrenamiento de la nueva cabecera, se han congelado todas las capas de la arquitectura salvo las nuevas capas densas, de las cuales se han entrenado los pesos con \textit{learning rate} de 3e-2 y \textit{weight decay} 2e-4 durante dos épocas.
 
 Tras esto, se ha entrenado la red completa. Para ello, se han descongelado todas las capas y se ha aplicado una estrategia de optimización basada en \textbf{\textit{learning rates} discriminativos} combinada con la política de ajuste de \textit{learning rate \textbf{OneCycle}} \cite{smith2018}.
-
 En concreto, se han definido diferentes tasas de aprendizaje para cada grupo de capas del modelo, asignadas según su profundidad. Los bloques convolucionales iniciales ---más generales y preentrenados--- reciben \textit{learning rates} más bajos, mientras que las capas más profundas ---específicas de la tarea y recientemente añadidas--- se entrenan con tasas más altas. Esta asignación se ha realizado mediante una progresión exponencial, que varía desde 1.5e-4 en los bloques más profundos hasta 1.5e-2 en los más superficiales. Este enfoque busca preservar el conocimiento útil de las capas inferiores y permitir una adaptación más rápida en las superiores.
-
 La política OneCycle se ha aplicado individualmente a cada grupo de capas, haciendo que cada uno siga un ciclo de una sola fase: el \textit{learning rate} comienza en un valor inicial bajo, aumenta progresivamente durante las primeras épocas (\textit{warm-up}), y desciende de forma suave hasta un valor final aún menor%
 \footnote{
     Se han mantenido los parámetros por defecto del método OneCycle en PyTorch. Con esta configuración, cada grupo de capas comienza con una tasa de aprendizaje equivalente al 4\% del valor máximo asignado. Durante aproximadamente el 30\% inicial de las épocas, esta tasa crece de forma progresiva, y posteriormente decrece hasta alcanzar el 0.01\% del learning rate máximo.
 }. 
 Esta estrategia permite acelerar la convergencia en las fases iniciales del entrenamiento y afinar los pesos En las etapas finales, mejorando tanto la estabilidad como el rendimiento del modelo.
-
 Esta combinación entre \textit{learning rates} discriminativos y la política de un solo ciclo permite acelerar la convergencia en las primeras etapas del entrenamiento, al tiempo que se mejora la capacidad de generalización mediante un afinado progresivo de los pesos en las fases finales.
-
 El entrenamiento se ha llevado a cabo durante un total de 30 épocas. Para mitigar el riesgo de sobreajuste, se ha implementado una estrategia de \textit{checkpointing}, guardando los pesos del modelo correspondientes a la época en la que se obtuvo la mejor puntuación en el conjunto de validación (menor pérdida). Al finalizar el entrenamiento, se restauran estos pesos, asegurando así que se conserve la versión del modelo con mayor capacidad de generalización.
+
+El tiempo de entrenamiento medio ---incluyendo en este tanto entrenamiento como validación de la red hasta la última época--- ha sido de 1 hora y 24 minutos, mientras que el tiempo de calibración ha supuesto 4 minutos y 45 segundos de media. Por tanto, el entrenamiento supone un 94\% del tiempo total de cómputo para la puesta en marcha del modelo, y la calibración el restante, considerándose residual en términos prácticos, más todavía considerándose que se está incluyendo en este el tiempo de infencia puntual del conjunto de calibración. Esta distribución temporal confirma que \textbf{la sobrecarga asociada a la inferencia conformal es mínima comparedo con el coste inicial de entrenamiento del modelo}, lo que refuerza su viabilidad para aplicaciones prácticas donde la eficiencia operativa es crítica.
 
 % En la Figura \ref{fig:learning_curve_AE_model02_ICP} se puede ver la curva de aprendizaje de uno de los modelos entrenados.
 
@@ -630,11 +650,18 @@ El entrenamiento se ha llevado a cabo durante un total de 30 épocas. Para mitig
 
 \subsubsection{Análisis de métricas para la estimación puntual de edad}
 
-La Tabla \ref{tab:AE_MAE_MSE_comparative} presenta las métricas que evalúan el rendimiento del modelo de regresión en sus estimaciones del valor esperado de edad. En general, se observa poca variabilidad entre modelos y ejecuciones, con diferencias de tan solo unas centésimas en las métricas evaluadas. No obstante, un análisis estadístico riguroso entre los valores obtenidos reveló diferencias significativas entre métodos tanto en el MAE ($F(3, 36) = 27.754$, $p < 0.001$) como el MSE ($F(3, 36) = 17.284$, $p < 0.001$), confirmadas mediante ANOVA bajo el cumplimiento de todos los supuestos: normalidad (Shapiro-Wilk, $p > 0.5$ para ambas métricas) y homocedasticidad (Levene, $p>0.7$). Para identificar qué pares de modelos presentaban diferencias significativas, se aplicó la prueba \textit{post-hoc} de comparaciones múltiples de Tukey HSD
-(véanse las Tablas \ref{tab:AE_tukey_mae} y \ref{tab:AE_tukey_mse}). Los resultados identificaron los siguientes patrones:
+La Tabla \ref{tab:AE_MAE_MSE_comparative} presenta las métricas que evalúan el rendimiento del modelo de regresión en sus estimaciones del valor esperado de edad. En general, se observa poca variabilidad entre modelos y ejecuciones, con diferencias de tan solo unas centésimas en las métricas evaluadas. No obstante, un análisis estadístico riguroso entre los valores obtenidos (véase el Análisis Estadístico \ref{stat:MAE_MSE_AE}) reveló diferencias significativas entre métodos tanto en el MAE como el MSE. Los resultados identificaron los siguientes patrones:
+
+\begin{itemize}
+
+    \item No existen diferencias significativas entre los modelos QR y base en ninguna métrica, al igual que tampoco entre los modelo CQR e ICP, lo que sugiere rendimientos similares entre estos pares de modelos. Esto indica que los modelos de regresión cuantílica obtiene resultados equivalentes a los modelos de regresión central. 
+
+    \item Los modelos conformales (ICP y CQR) mostraron errores significativamente mayores ($p<0.01$) que los modelos no conformales (base y QR). Esto era esperable, pues los métodos conformales tienen menos ejemplos para entrenarse y, por tanto, generalizan peor. 
+
+\end{itemize}
 
 \renewcommand{\arraystretch}{1.4}
-\begin{table}[htbp]
+\begin{table}[h]
     \small
     \centering
     \begin{tabular}{clcccclcccc}
@@ -656,6 +683,7 @@ La Tabla \ref{tab:AE_MAE_MSE_comparative} presenta las métricas que evalúan el
     \bottomrule
     \end{tabular}
     \caption[
+        Problema de estimación de edad: 
         Error absoluto medio y error cuadrático medio obtenidos por cada método de predicción a lo largo de distintas ejecuciones.
     ]{
         Error absoluto medio y error cuadrático medio obtenidos por cada método de predicción a lo largo de distintas ejecuciones. 
@@ -665,16 +693,16 @@ La Tabla \ref{tab:AE_MAE_MSE_comparative} presenta las métricas que evalúan el
     \label{tab:AE_MAE_MSE_comparative}
 \end{table}
 
-\begin{itemize}
 
-    \item No existen diferencias significativas entre los modelos QR y base en ninguna métrica, al igual que tampoco entre los modelo CQR e ICP, lo que sugiere rendimientos similares entre estos pares de modelos. Esto indica que los modelos de regresión cuantílica obtiene resultados equivalentes a los modelos de regresión central. 
+\begin{StatisticsRef}[stat:MAE_MSE_AE]{MAE y MSE en el problema de estimación de edad}
+%
+El test ANOVA indicó diferencias significativas tanto en MAE ($F(3, 36) = 27.754$, $p < 0.001$) como en MSE ($F(3, 36) = 17.284$, $p < 0.001$), cumpliéndose los supuestos de normalidad (Shapiro-Wilk, $p > 0.5$ para ambas métricas) y homocedasticidad (Levene, $p>0.7$).
+%
+Para identificar qué pares de modelos presentaban diferencias significativas, se aplicó la prueba \textit{post-hoc} de comparaciones múltiples Tukey HSD (véanse las Tablas \ref{tab:AE_tukey_mae} y \ref{tab:AE_tukey_mse}).
 
-    \item Los modelos conformales (ICP y CQR) mostraron errores significativamente mayores ($p<0.01$) que los modelos no conformales (base y QR). Esto era esperable, pues los métodos conformales tienen menos ejemplos para entrenarse y, por tanto, generalizan peor. 
-
-\end{itemize}
-
+%
 \renewcommand{\arraystretch}{1.2}
-\begin{table}[htbp]
+\begin{table}[H]
     \small
     \centering
     \begin{tabular}{llllll}
@@ -689,18 +717,16 @@ La Tabla \ref{tab:AE_MAE_MSE_comparative} presenta las métricas que evalúan el
     \bottomrule
     \end{tabular}
     \caption[
-        Resultados de la prueba \textit{post-hoc} de Tukey HSD para MAE entre pares de métodos.
+        Problema de estimación de edad: 
+        Resultados de la prueba \textit{post-hoc} de Tukey HSD para el error absoluto medio entre pares de métodos.
     ]{
-        Resultados de la prueba \textit{post-hoc} de Tukey HSD para MAE entre pares de métodos.
+        Resultados de la prueba \textit{post-hoc} de Tukey HSD para el error absoluto medio entre pares de métodos.
         Se muestran la diferencia media entre grupos, el valor $p$ ajustado, el intervalo de confianza al 95\% y si la diferencia es estadísticamente significativa ($\alpha = 0.05$).
     }
     \label{tab:AE_tukey_mae}
 \end{table}
 
-
-
-\renewcommand{\arraystretch}{1.2}
-\begin{table}[htbp]
+\begin{table}[H]
     \small
     \centering
     \begin{tabular}{llllll}
@@ -715,9 +741,10 @@ La Tabla \ref{tab:AE_MAE_MSE_comparative} presenta las métricas que evalúan el
     \bottomrule
     \end{tabular}
     \caption[
-        Resultados de la prueba \textit{post-hoc} de Tukey HSD para MSE entre pares de métodos.
+        Problema de estimación de edad: 
+        Resultados de la prueba \textit{post-hoc} de Tukey HSD para el error cuadrático medio entre pares de métodos.
     ]{
-        Resultados de la prueba \textit{post-hoc} de Tukey HSD para MSE entre pares de métodos.
+        Resultados de la prueba \textit{post-hoc} de Tukey HSD para el error cuadrático medio entre pares de métodos.
         Se muestran la diferencia media entre grupos, el valor $p$ ajustado, el intervalo de confianza al 95\% y si la diferencia es estadísticamente significativa ($\alpha = 0.05$).
         % La columna \textbf{Signif.} indica el rechazo de $H_0$ (valor $p$ < 0.05), mostrando diferencias estadísticamente significativas entre métodos. 
         % Los intervalos de confianza (IC 95\%) que no contienen el cero apoyan la significancia estadística.
@@ -725,16 +752,24 @@ La Tabla \ref{tab:AE_MAE_MSE_comparative} presenta las métricas que evalúan el
     }
     \label{tab:AE_tukey_mse}
 \end{table}
+\end{StatisticsRef}
+
+
+
+
+
+
 
 % ------------------------------------------------------------------------------------------------------------
 
 \subsubsection{Análisis de métricas para la estimación interválica de edad}
 
-A continuación, la Tabla \ref{tab:AE_EC_MPIW_comparative} presenta las métricas sobre las predicciones interválicas de los métodos. A primera vista, se observan diferencias marcadas entre los métodos conformales y no conformales en las métricas de cobertura empírica y amplitud del intervalo. En particular, los métodos no conformales (`base' y QR) muestran coberturas notablemente inferiores al nivel deseado (alrededor del 88-89\% frente al 95\% nominal), lo que indica una infracobertura sistemática. Esto ocurre porque ni la heurística del método `base' ni las regiones generadas por la regresión cuantílica en QR cuentan con garantías teóricas de cobertura estadística.
+A continuación, la Tabla \ref{tab:AE_EC_MPIW_comparative} presenta las métricas sobre las predicciones interválicas de los métodos. A primera vista, se observan diferencias marcadas entre los métodos conformales (ICP y CQR) y no conformales (`base' y QR)  en las métricas de cobertura empírica y amplitud del intervalo. En particular, los métodos no conformales  muestran coberturas notablemente inferiores al nivel deseado (alrededor del 88-89\% frente al 95\% nominal), lo que indica una infracobertura sistemática. Esto ocurre porque ni la heurística del método `base' ni las regiones generadas por la regresión cuantílica en QR cuentan con garantías teóricas de cobertura estadística.
+En contraste, los métodos conformales sí logran coberturas próximas al valor nominal, tal como se espera dada su fundamentación estadística. Esta mayor cobertura, sin embargo, tiene un coste en cuanto a la amplitud del intervalo, que es mayor en estos métodos. Esta relación de compromiso o \textit{trade-off} entre cobertura y amplitud de los intervalos ---típico en la predicción interválica--- se visualiza claramente en la Figura \ref{fig:AE_scatterplot_EC-MPIW}, donde se observa una correlación entre la cobertura empírica y el tamaño del intervalo de predicción.
 
 \renewcommand{\arraystretch}{1.4}
-\begin{table}[htbp]
-    \small 
+\begin{table}[h]
+    \small
     \centering
     \begin{tabular}{cc@{\hskip 3pt}ccccc@{\hskip 3pt}cccc}
     \toprule
@@ -754,6 +789,7 @@ A continuación, la Tabla \ref{tab:AE_EC_MPIW_comparative} presenta las métrica
     \bottomrule
     \end{tabular}
     \caption[
+        Problema de estimación de edad: 
         Cobertura empírica y amplitud media del intervalo de predicción obtenidos por cada método de predicción a lo largo de distintas ejecuciones.
     ]{   
         Cobertura empírica y amplitud media del intervalo de predicción obtenidos por cada método de predicción a lo largo de distintas ejecuciones. 
@@ -763,28 +799,56 @@ A continuación, la Tabla \ref{tab:AE_EC_MPIW_comparative} presenta las métrica
     \label{tab:AE_EC_MPIW_comparative}
 \end{table}
 
-En contraste, los métodos conformales (ICP y CQR) sí logran coberturas próximas al valor nominal, tal como se espera dada su fundamentación estadística. Esta mayor cobertura, sin embargo, tiene un coste en cuanto a la amplitud del intervalo, que es mayor en estos métodos. Esta relación de compromiso o \textit{trade-off} entre cobertura y amplitud de los intervalos ---típico en la predicción interválica--- se visualiza claramente en la Figura \ref{fig:AE_scatterplot_EC-MPIW}, donde se observa una alta correlación entre la cobertura empírica y el tamaño del intervalo de predicción.
-
-\begin{figure}[htbp]
+\begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AE_scatterplot_EC-MPIW.png}
+    \includegraphics[width=0.9\textwidth]{capitulos/cap_05/imagenes/AE_scatterplot_EC-MPIW.png}
     \caption[
-        Gráfica de dispersión de la Cobertura empírica frente a la Amplitud media del intervalo de predicción. 
+        Problema de estimación de edad:
+        Gráfica de dispersión de la cobertura empírica frente a la amplitud media del intervalo de predicción.
     ]{
-        Gráfica de dispersión de la Cobertura empírica frente a la Amplitud media del intervalo de predicción. 
+        Gráfica de dispersión de la Cobertura empírica frente a la Amplitud media del intervalo de predicción.
         Existe una relación de compromiso entre la cobertura y la amplitud de los intervalo: al aumentar una, generalmente también lo hace la otra, y viceversa. Los métodos más eficaces son aquellos que alcanzan una cobertura empírica cercana o superior al valor nominal (0.95), manteniendo al mismo tiempo una amplitud media lo más baja posible. Estos métodos se sitúan idealmente en la esquina superior izquierda del gráfico.
     }
     \label{fig:AE_scatterplot_EC-MPIW}
 \end{figure}
 
-CQR presenta unas amplitudes medias de intervalo significativamente más reducidas que ICP, logrando ambos métodos coberturas muy similares. Esta diferencia significativa entre amplitudes de intervalo se ha comprobado estadísticamente mediante un test Welch ANOVA%
-\footnote{
-    Se aplicaron estos tests porque los datos mostraban normalidad en los residuos (Shapiro-Wilk, $p>0.8$), pero no cumplían homocedasticidad (Levene, $p<0.01$), lo que hace inapropiado un ANOVA clásico y justifica el uso de Welch ANOVA y Games-Howell.
-},
-que mostró diferencias globales significativas entre los métodos ($F(3, 18.62) = 1240.15$, $p < 0.001$). Posteriormente, las comparaciones por pares mediante Games-Howell (véase la Tabla \ref{tab:AE_games-howell_width}) confirmaron que CQR tiene intervalos significativamente más estrechos que ICP, así como que también se diferencia significativamente de otros métodos como QR y base. Estas pruebas permiten concluir que, aunque la cobertura empírica sea similar, CQR consigue reducir la amplitud del intervalo de predicción de manera estadísticamente significativa frente a ICP y otros métodos.
+\FloatBarrier
 
+Aunque la cobertura empírica sea comparable entre ICP y CQR, este último método logra reducir de manera estadísticamente significativa la amplitud del intervalo de predicción frente a ICP (véase el Análisis Estadístico \ref{stat:MPIW_AE}). 
+
+\begin{StatisticsRef}[stat:MPIW_AE]{Cobertura empírica y Amplitud Media del Intervalo de predicción en el problema de estimación de edad}
+%
+En cuanto a cobertura empírica, se cumple tanto normalidad en la distribución (Shapiro-Wilk, $p>0.2$) y homocedasticidad (Levene, $p>0.5$), por lo que se puede aplicar el test ANOVA, que revela diferencias globales significativas entre métodos: $F(3,36)=877.92$, $p<0.0001$. Para identificar qué pares de métodos presentaban diferencias significativas, se aplicó la prueba \textit{post-hoc} de comparaciones múltiples Tukey HSD (véase la Tabla \ref{tab:AE_tukey_EC}).
+%
 \renewcommand{\arraystretch}{1.2}
-\begin{table}[htbp]
+\begin{table}[H]
+    \small
+    \centering
+    \begin{tabular}{llllll}
+    \toprule
+    \textbf{Modelo 1} & \textbf{Modelo 2} & \textbf{Dif. media} & \textbf{Valor $p$} & \textbf{IC 95\%} & \textbf{Signif.} \\ \hline
+    CQR & ICP & -0.0009 & 0.9596 & [-0.0057, 0.0039] & No \\
+    CQR & QR & -0.0601 & \textless 0.0001 & [-0.0649, -0.0553] & \textbf{Sí} \\
+    CQR & base & -0.0695 & \textless 0.0001 & [-0.0743, -0.0647] & \textbf{Sí} \\
+    ICP & QR & -0.0592 & \textless 0.0001 & [-0.064, -0.0544] & \textbf{Sí} \\
+    ICP & base & -0.0686 & \textless 0.0001 & [-0.0734, -0.0638] & \textbf{Sí} \\
+    QR & base & -0.0093 & \textless 0.0001 & [-0.0141, -0.0045] & \textbf{Sí} \\
+    \bottomrule
+    \end{tabular}
+    \caption[
+        Problema de estimación de edad: 
+        Resultados de la prueba \textit{post-hoc} de Tukey HSD para cobertura empírica entre pares de métodos.
+    ]{
+        Resultados de la prueba \textit{post-hoc} de Tukey HSD para cobertura empírica entre pares de métodos.
+        Se muestran la diferencia media entre grupos, el valor $p$ ajustado, el intervalo de confianza al 95\% y si la diferencia es estadísticamente significativa ($\alpha = 0.05$).
+    }
+    \label{tab:AE_tukey_EC}
+\end{table}
+%
+Respecto a las amplitudes medias de los intervalos de predicción, se evaluaron las diferencias de los métodos utilizando un test Welch ANOVA, dado que los residuos de los datos seguían una distribución normal (Shapiro-Wilk, $p>0.8$), pero no cumplían con la homocedasticidad (Levene, $p<0.01$). El Welch ANOVA reveló diferencias globales significativas entre los métodos: $F(3, 18.62) = 1240.15$, $p < 0.001$. Tras esto, se aplicó la prueba \textit{post-hoc} de Games-Howell para comparar las marcas por pares de métodos (véase la Tabla \ref{tab:AE_games-howell_width}).
+%
+\renewcommand{\arraystretch}{1.2}
+\begin{table}[H]
     \small
     \centering
     \begin{tabular}{llllll}
@@ -800,6 +864,7 @@ que mostró diferencias globales significativas entre los métodos ($F(3, 18.62)
     \bottomrule
     \end{tabular}
     \caption[
+        Problema de estimación de edad: 
         Resultados de la prueba \textit{post-hoc} de Games-Howell para la amplitud media del intervalo de predicción entre pares de métodos.
     ]{
         Resultados de la prueba \textit{post-hoc} de Games-Howell para la amplitud media del intervalo de predicción entre pares de métodos.
@@ -808,11 +873,15 @@ que mostró diferencias globales significativas entre los métodos ($F(3, 18.62)
     \label{tab:AE_games-howell_width}
 \end{table}
 
-De hecho, en la Tabla \ref{tab:AE_MIS_comparative} apreciamos cómo CQR logra significativamente menores valores de \textit{interval score} que ICP, indicando que CQR tiene un mejor equilibrio entre cobertura y tamaño del intervalo. En consecuencia, CQR se perfila como una opción más ventajosa, con garantías de cobertura e intervalos de predicción ajustados. 
+\end{StatisticsRef}
+
+
+De hecho, en la Tabla \ref{tab:AE_MIS_comparative} apreciamos cómo CQR logra significativamente menores valores de \textit{interval score} que ICP, indicando que CQR tiene un mejor equilibrio entre cobertura y tamaño del intervalo. En consecuencia, CQR se perfila como una opción \textit{a priori} más ventajosa, con garantías de cobertura para el nominal requerido e intervalos de predicción ajustados. 
 
 \renewcommand{\arraystretch}{1.4}
 \begin{table}[htbp]
-    \small \centering
+    \small
+    \centering
     \begin{tabular}{cccccc}
     \toprule
     \multirow{2}{*}{\textbf{Ejecución}} &  & \multicolumn{4}{c}{\textbf{Mean Interval Score}} \\ \cline{3-6} 
@@ -831,9 +900,10 @@ De hecho, en la Tabla \ref{tab:AE_MIS_comparative} apreciamos cómo CQR logra si
     \bottomrule
     \end{tabular}
     \caption[
-        Resultados de las predicciones obtenidas por los modelos para el problema de estimación de edad en cada ejecución.
+        Problema de estimación de edad: 
+        \textit{Mean Interval Score} obtenidos por cada método de predicción a lo largo de distintas ejecuciones. 
     ]{   
-        Resultados de las predicciones obtenidas por los modelos para el problema de estimación de edad en cada ejecución.
+        \textit{Mean Interval Score} obtenidos por cada método de predicción a lo largo de distintas ejecuciones. Se presentan los valores para cada ejecución individual, así como la media final de cada métrica.
         Se marca en negrita la mejor marca en la métrica media.
     }
     \label{tab:AE_MIS_comparative}
@@ -843,78 +913,143 @@ De hecho, en la Tabla \ref{tab:AE_MIS_comparative} apreciamos cómo CQR logra si
 
 \subsubsection{Análisis de la cobertura en base al tamaño del intervalo}
 
-En los métodos donde los intervalos de predicción varían en amplitud entre instancias (QR y CQR), resulta relevante analizar cómo se comporta la cobertura empírica en función de dicho tamaño. La hipótesis subyacente es que intervalos más amplios reflejan una mayor incertidumbre asociada a la predicción, mientras que intervalos más estrechos denotan mayor confianza, de forma que todos los intervalos lograrían cubrir al nivel de confianza deseado los valores reales. 
+En los métodos donde los intervalos de predicción son adaptativos (QR y CQR), resulta relevante analizar cómo se comporta la cobertura empírica en función de las distintas amplitudes de intervalos de predicción obtenidos de las instancias. La hipótesis subyacente es que intervalos más amplios reflejan una mayor incertidumbre asociada a la predicción, mientras que intervalos más estrechos denotan mayor confianza, de forma que todos los intervalos lograrían cubrir al nivel de confianza deseado los valores reales. 
+Frente a esta situación, en el peor de los escenarios, los intervalos más estrechos tenderían a infracubrir (es decir, no contener el valor real con la frecuencia esperada) y los intervalos más amplios tenderían a sobrecubrir (conteniendo el valor real más allá del nivel objetivo de confianza). Este escenario sería especialmente negativo dado que implicaría una distribución ineficiente de la incertidumbre, donde solo alcanzaría la cobertura nominal en aquellas predicciones menos informativas o más conservadoras.
 
-En el peor de los escenarios, los intervalos más estrechos tenderían a infracubrir (es decir, no contienen el valor real con la frecuencia esperada) y los intervalos más amplios tenderían a sobrecubrir (conteniendo el valor real más allá del nivel objetivo de confianza). Este escenario sería especialmente negativo dado que implicaría una distribución ineficiente de la incertidumbre, donde solo alcanzaría la cobertura nominal en aquellas predicciones menos informativas o más conservadoras.
+La Figura \ref{fig:AE_EC_by_PIW} muestra los histogramas de la amplitud de los intervalos de predicción para los métodos adaptativos en todas sus ejecuciones, diferenciando el número de instancias que cubre el el valor real de las que no. Es notable en ambas figuras la presencia de dos grupos principales de instancias: uno más reducido, asociado a intervalos más estrechos, y otro más numeroso, correspondiente a intervalos de mayor amplitud. Respecto a la cobertura, el método QR presenta valores inferiores, lo cual es consistente con su cobertura marginal, que ya se encontraba por debajo del 89\%. En cuanto al ratio entre cobertura e incobertura, este parece mantenerse relativamente estable a lo largo de los distintos rangos de amplitud del intervalo. 
 
-\begin{figure}[htbp]
+\begin{figure}[h]
     \centering
 
-    \begin{subfigure}[b]{0.8\textwidth}
+    \begin{subfigure}[b]{0.75\textwidth}
         \centering
         \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AE_histogram_EC_by_PIW_QR.png}
-        \caption{
-            Histograma de amplitud del intervalo de predicción con diferenciación por cobertura (modelo QR).
+        \caption[
+            Histograma de amplitud del intervalo de predicción con diferenciación por cobertura (método QR).
+        ]{
+            Método QR.
         }
         \label{fig:AE_EC_by_PIW_QR}
     \end{subfigure}
 
     \vspace{0.5cm}
     
-    \begin{subfigure}[b]{0.8\textwidth}
+    \begin{subfigure}[b]{0.75\textwidth}
         \centering
         \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AE_histogram_EC_by_PIW_CQR.png}
-        \caption{
-            Histograma de amplitud del intervalo de predicción con diferenciación por cobertura (modelo CQR).
+        \caption[
+            Histograma de amplitud del intervalo de predicción con diferenciación por cobertura (método CQR).
+        ]{
+            Método CQR.
         }
         \label{fig:AE_EC_by_PIW_CQR}
     \end{subfigure}
 
     \caption[
-        Histogramas del amplitud del intervalo de predicción con diferenciación por cobertura, correspondientes a los modelos QR y CQR.
+        Problema de estimación de edad: 
+        Histogramas del amplitud del intervalo de predicción con diferenciación por cobertura, correspondientes a los métodos QR y CQR.
     ]{
-        Histogramas de amplitud del intervalo de predicción con diferenciación por cobertura, correspondientes a los modelos QR y CQR. 
-        Para cada tipo de método se ha seleccionado el modelo con el mejor \textit{interval score}. La comparación permite visualizar cómo varía la capacidad de cobertura en función del tamaño del intervalo.
+        Histogramas de amplitud del intervalo de predicción con diferenciación por cobertura, correspondientes a los métodos QR y CQR.
+        La comparación permite visualizar cómo varía la capacidad de cobertura en función del tamaño del intervalo.
     }
     \label{fig:AE_EC_by_PIW}
 \end{figure}
 
-En la Figura \ref{fig:AE_EC_by_PIW} se presentan los histogramas de la amplitud de los intervalos de predicción para dos modelos representativos, uno QR y otro CQR. En cada caso, se diferencia visualmente la cantidad de instancias cuya predicción cubre el valor real de aquellas en las que no lo hace. Es notable en ambas figuras la presencia de dos grupos principales de instancias: uno más reducido, asociado a intervalos más estrechos, y otro más numeroso, correspondiente a intervalos de mayor amplitud. Respecto a la cobertura, el modelo QR presenta valores inferiores, lo cual es consistente con su cobertura marginal, que ya se encontraba por debajo del 89\%. En cuanto al ratio entre cobertura e incobertura, este parece mantenerse relativamente estable a lo largo de los distintos rangos de amplitud del intervalo. Sin embargo, para un análisis más detallado y específico sobre cómo varía la cobertura en función del tamaño del intervalo, observemos la información desglosada en la Figura \ref{fig:AE_coverage_by_interval_width}.
+\FloatBarrier
 
-En esta figura se ofrece información detallada sobre la cobertura empírica alcanzada por cada método de predicción (en todas sus ejecuciones) en función de diferentes rangos de amplitud del intervalo de predicción. Esta desagregación permite analizar si existe una relación entre el tamaño del intervalo y la capacidad del modelo para cubrir el valor real. 
+Sin embargo, para un análisis más detallado y específico sobre cómo varía la cobertura en función del tamaño del intervalo, observemos la información desglosada en la Figura \ref{fig:AE_coverage_by_interval_width}.
+En ella se ofrece información detallada sobre la cobertura empírica alcanzada por cada método de predicción (en todas sus ejecuciones) en función de diferentes rangos de amplitud del intervalo de predicción. Podemos observar los siguientes patrones:
 
-Como era de esperar, los modelos basados en regresión cuantílica (QR y CQR) presentan una mayor diversidad en la amplitud de sus intervalos, dado que generan límites adaptativos y específicos para cada instancia, a diferencia de los métodos conformales de tamaño más constante.
+\begin{itemize}
+    
+    \item Como era de esperar, los métodos adaptativos (QR y CQR) presentan una mayor diversidad en la amplitud de sus intervalos, dado que generan límites adaptativos y específicos para cada instancia, a diferencia del resto de métodos, con intervalos de predicción de tamaño constante.
+    
+    \item CQR es el único método adaptativo que aproxima a la cobertura nominal. Este logra sobrecobertura tanto en los intervalos más estrechos como en los más amplios, a costa de una infracobertura en los intervalos de amplitud intermedia, concretamente entre 5.5 y 6.5 años, donde se concentra más de la mitad de instancias. Su peor marca es de un 93.14\%, para instancias con intervalo de predicción de 6 a 6.5 años de longitud, 2 puntos porcentuales por debajo del nominal. 
 
-Llama la atención que se logra sobrecobertura tanto en los intervalos más estrechos como en los más amplios, a costa de una infracobertura en los intervalos de amplitud intermedia, concretamente entre 5.5 y 6.5 años, siendo especialmente más bajas en el último medio tramo, donde la cobertura alcanza un 93.14\%.
+\end{itemize}
 
-\begin{figure}[htbp]
+\begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AE_coverage_by_interval_width.png}
+    \includegraphics[width=0.95\textwidth]{capitulos/cap_05/imagenes/AE_coverage_by_interval_width.png}
     \caption[
-        Mapa de calor de cobertura empírica en base a la amplitud del intervalo de predicción por cada método de predicción a lo largo de las distintas ejecuciones. 
+        Problema de estimación de edad: 
+        Mapa de calor de la cobertura empírica en base a la amplitud del intervalo de predicción por cada método de predicción en media de sus ejecuciones. 
     ]{
-        Mapa de calor de cobertura empírica en base a la amplitud del intervalo de predicción por cada método de predicción a lo largo de las distintas ejecuciones.
+        Mapa de calor de la cobertura empírica en base a la amplitud del intervalo de predicción por cada método de predicción en media de sus ejecuciones. 
         Se especifica entre paréntesis el número de instancias clasificadas en cada franja de amplitud de intervalo.
         La escala de colores está centrada en la cobertura nominal ($0.95$): los valores por debajo de este umbral se representan en tonos rojos, los superiores en tonos azules, y el blanco indica una cobertura empírica equivalente a la nominal.
     }
     \label{fig:AE_coverage_by_interval_width}
 \end{figure}
 
-
+\FloatBarrier
 
 % ------------------------------------------------------------------------------------------------------------
 
-\subsubsection{Análisis de la cobertura en base a la edad cronológica}
+\subsubsection{Análisis de la cobertura en base a la edad cronológica y sexo}
 
-Por último, se ha analizado la cobertura en base a la edad real de los individuos, ya que resulta crucial identificar posibles sesgos en el desempeño del modelo a lo largo de esta variable. 
-La Figura \ref{fig:AE_EC_MPIW_by_true_age} muestra la evolución de la cobertura empírica y el ancho medio de los intervalos de predicción en función de la edad cronológica%
+Por último, se ha analizado la cobertura en base a la edad real de los individuos y su sexo, ya que resulta crucial identificar posibles sesgos en el desempeño del modelo a lo largo de estas variables.
+
+Las Figuras \ref{fig:AE_EC_by_true_age} y \ref{fig:AE_MPIW_by_true_age} muestran la evolución de la cobertura empírica y el ancho medio de los intervalos de predicción en función de la edad cronológica %
 \footnote{
     Parte entera o suelo de la edad real.
-}.
+} y el sexo.
 
-Se observa que todos los métodos tienden a reducir su cobertura conforme aumenta la edad cronológica de los individuos. Esta disminución es especialmente notable a partir de los 22 años, afectando incluso al método CQR, el método hasta ahora con la cobertura más robusta.
 
-En particular, CQR logra mantener una cobertura cercana al 95\% para individuos de hasta 22 años, pero a partir de los 23 comienza a descender, alcanzando aproximadamente un 85\% en los individuos de 25 años. Este descenso ocurre a pesar de que el tamaño de los intervalos de predicción aumenta de forma sostenida con la edad, lo que indica que, aunque el modelo expresa mayor incertidumbre, no consigue cubrir adecuadamente el valor real. Este patrón refleja que la estimación de la edad biológica se vuelve más incierta conforme avanza la edad cronológica, posiblemente atribuible a:
+\begin{figure}[h]
+    \centering
+    
+    \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AE_EC_by_true_age_Male.png}
+        \caption{Masculino}
+        \label{fig:AE_EC_by_true_age_M}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AE_EC_by_true_age_Female.png}
+        \caption{Femenino}
+        \label{fig:AE_EC_by_true_age_F}
+    \end{subfigure}
+
+    \caption[
+        Problema de estimación de edad: 
+        Gráficos de líneas de la cobertura empírica del intervalo de predicción (\%) para cada método en función de la edad cronológica entera de los individuos, diferenciando por sexo.
+    ]{
+        Gráficos de líneas de la cobertura empírica del intervalo de predicción (\%) para cada método en función de la edad cronológica entera de los individuos, diferenciando por sexo.
+    }
+    \label{fig:AE_EC_by_true_age}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    
+    \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AE_MPIW_by_true_age_Male.png}
+        \caption{Masculino}
+        \label{fig:AE_MPIW_by_true_age_M}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AE_MPIW_by_true_age_Female.png}
+        \caption{Femenino}
+        \label{fig:AE_MPIW_by_true_age_F}
+    \end{subfigure}
+
+    \caption[
+        Problema de estimación de edad: 
+        Gráficos de líneas de la amplitud media del intervalo de predicción para cada método en función de la edad cronológica entera de los individuos, diferenciando por sexo.
+    ]{
+        Gráficos de líneas de la amplitud media del intervalo de predicción para cada método en función de la edad cronológica entera de los individuos, diferenciando por sexo.
+    }
+    \label{fig:AE_MPIW_by_true_age}
+\end{figure}
+
+
+En general, todos los métodos tienden a perder cobertura conforme aumenta la edad cronológica de los individuos, independientemente del sexo. Esta disminución se vuelve especialmente marcada a partir de los 22 años, afectando incluso al método \acrshort{CQR}, que hasta entonces presentaba la cobertura más robusta. En particular, \acrshort{CQR} mantiene valores cercanos al 95\% en edades tempranas, pero a partir de los 22 en hombres y de los 23 en mujeres comienza a descender, alcanzando aproximadamente un 91.5\% y un 82\% de cobertura a los 25 años, en sexo masculino y femenino respectivamente Este descenso ocurre a pesar de que el tamaño de los intervalos de predicción aumenta de forma sostenida con la edad, lo que indica que, aunque el modelo expresa mayor incertidumbre, no consigue cubrir adecuadamente el valor real. Este patrón refleja que \textbf{la estimación de la edad biológica se vuelve más incierta conforme avanza la edad cronológica}, posiblemente atribuible a:
 
 \begin{itemize}
 
@@ -924,6 +1059,7 @@ En particular, CQR logra mantener una cobertura cercana al 95\% para individuos 
 
 \end{itemize}
 
+Además, como hemos descrito antes, el \textbf{fenómeno es más acusado en el sexo femenino que en el masculino}, a pesar de que había ---ligeramente--- más ejemplos del sexo femenino que del masculino para los 21 y 22 años. Esto podría deberse a que el sexo femenino suele completar antes la maduración dental que los hombres \cite{scheuer2004}, lo que puede hacer que las diferencias interindividuales en mujeres pueden deberse más a factores ambientales.
 
 % \renewcommand{\arraystretch}{1.4}
 % \begin{table}[h]
@@ -958,47 +1094,47 @@ En particular, CQR logra mantener una cobertura cercana al 95\% para individuos 
 
 
 
-\begin{figure}[htbp]
-    \centering
 
-    \begin{subfigure}[b]{0.9\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AE_EC_by_true_age.png}
-        \caption{
-            Gráfico de líneas de cobertura empírica del intervalo de predicción (\%) para cada método en función de la edad cronológica entera de los individuos. Se observa cómo varía la capacidad de cobertura según la edad y el método empleado.
-        }
-        \label{fig:AE_EC_by_true_age}
-    \end{subfigure}
 
-    \vspace{0.5cm}
+% \begin{figure}[htbp]
+%     \centering
+
+%     \begin{subfigure}[b]{0.9\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AE_EC_by_true_age.png}
+%         \caption{
+%             Gráfico de líneas de cobertura empírica del intervalo de predicción (\%) para cada método en función de la edad cronológica entera de los individuos. Se observa cómo varía la capacidad de cobertura según la edad y el método empleado.
+%         }
+%         \label{fig:AE_EC_by_true_age}
+%     \end{subfigure}
+
+%     \vspace{0.5cm}
     
-    \begin{subfigure}[b]{0.9\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AE_MPIW_by_true_age.png}
-        \caption{
-            Gráfico de líneas de amplitud media del intervalo de predicción para cada método en función de la edad cronológica entera de los individuos. Esta gráfica muestra cómo cambia el tamaño de intervalo con la edad.
-        }
-        \label{fig:AE_MPIW_by_true_age}
-    \end{subfigure}
+%     \begin{subfigure}[b]{0.9\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AE_MPIW_by_true_age.png}
+%         \caption{
+%             Gráfico de líneas de amplitud media del intervalo de predicción para cada método en función de la edad cronológica entera de los individuos. Esta gráfica muestra cómo cambia el tamaño de intervalo con la edad.
+%         }
+%         \label{fig:AE_MPIW_by_true_age}
+%     \end{subfigure}
 
-    \caption[
-        Gráficos de líneas comparativos de la cobertura empírica y la amplitud media del intervalo de predicción por edad cronológica para los diferentes métodos evaluados.
-    ]{
-        Gráficos de líneas comparativos de la cobertura empírica y la amplitud media del intervalo de predicción por edad cronológica para los diferentes métodos evaluados.
-    }
-    \label{fig:AE_EC_MPIW_by_true_age}
-\end{figure}
+%     \caption[
+%         Gráficos de líneas comparativos de la cobertura empírica y la amplitud media del intervalo de predicción por edad cronológica para los diferentes métodos evaluados.
+%     ]{
+%         Gráficos de líneas comparativos de la cobertura empírica y la amplitud media del intervalo de predicción por edad cronológica para los diferentes métodos evaluados.
+%     }
+%     \label{fig:AE_EC_MPIW_by_true_age}
+% \end{figure}
 
 % ------------------------------------------------------------------------------------------------------------
 
 \subsubsection{Discusión de resultados}
 
-El método CQR se posiciona como el claro ganador en todos los apartados analizados. Este resultado era previsible, ya que se trata del único método conformal y adaptativo considerado en el estudio.
+El método \acrshort{CQR} se posiciona como el claro ganador en todos los apartados analizados. Este resultado era previsible, ya que se trata del único método conformal y adaptativo considerado en el estudio.
 
 Destaca por presentar la menor amplitud media de los intervalos, manteniendo al mismo tiempo una cobertura muy próxima a la nominal. Además, al ser el único método conformal adaptativo de la lista, ofrece una ventaja estructural frente a los demás. Sus tasas de cobertura empírica son consistentes para diferentes amplitudes de intervalo, y sobresale especialmente en los casos con pocas instancias de edades cronológicas avanzadas, donde logra adaptarse a la mayor incertidumbre ampliando de forma adecuada el intervalo de predicción.
 
-\FloatBarrier
-
 % ------------------------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
 
@@ -1008,28 +1144,23 @@ Destaca por presentar la menor amplitud media de los intervalos, manteniendo al 
 % ------------------------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
 
-\section{Experimentación para la clasificación de mayoría de edad}
+\section{Experimentación para la estimación de mayoría de edad}
 
 % ------------------------------------------------------------------------------------------------------------
 
 \subsection{Entrenamiento de los modelos}
 
-Dado que la tarea de estimación de mayoría de edad guarda una estrecha relación con la estimación de edad continua, se ha optado por reutilizar el extractor de características previamente entrenado para esta última. Al tratarse de una clasificación binaria cuya frontera de decisión es el umbral de los 18 años, se considera que las representaciones latentes aprendidas por el modelo son igualmente útiles para resolver esta nueva tarea.
+Dado que la tarea de estimación de mayoría de edad guarda una estrecha relación con la estimación de edad continua, se ha optado por reutilizar el extractor de características previamente entrenado para esta última. Al tratarse de una clasificación binaria cuya frontera de decisión es el umbral de los 18 años, se considera que las representaciones latentes aprendidas por el modelo son igualmente útiles para resolver esta nueva tarea. En consecuencia, únicamente se ha ajustado la cabecera del modelo, manteniendo congelados los pesos del extractor de características. 
 
-En consecuencia, únicamente se ha ajustado la cabecera del modelo, manteniendo congelados los pesos del extractor de características. Se ha empleado el mismo optimizador AdamW que en la tarea de regresión y se ha seguido el mismo procedimiento de entrenamiento descrito para la cabecera: dos épocas con un \textit{learning rate} de 3e-2 y un \textit{weight decay} de 2e-4.
+Se ha empleado el mismo optimizador AdamW que en la tarea de regresión y se ha seguido el mismo procedimiento de entrenamiento descrito para la cabecera: dos épocas con un \textit{learning rate} de 3e-2 y un \textit{weight decay} de 2e-4. La función de pérdida utilizada en este caso ha sido la \textbf{\textit{Binary Cross-Entropy Loss}}, adecuada para tareas de clasificación binaria. Esta función combina de forma eficiente una activación sigmoide y la entropía cruzada, lo que permite interpretar la salida del modelo como una probabilidad. Su formulación penaliza de forma asimétrica las predicciones incorrectas, lo que resulta especialmente útil cuando se requiere una buena calibración de las probabilidades de salida.
 
-La función de pérdida utilizada en este caso ha sido la \textbf{\textit{Binary Cross-Entropy Loss}}, adecuada para tareas de clasificación binaria. Esta función combina de forma eficiente una activación sigmoide y la entropía cruzada, lo que permite interpretar la salida del modelo como una probabilidad. Su formulación penaliza de forma asimétrica las predicciones incorrectas, lo que resulta especialmente útil cuando se requiere una buena calibración de las probabilidades de salida.
+El tiempo de entrenamiento medio de la cabecera ha sido de 12 minutos y 45 segundos, mientras que el tiempo de calibración ha supuesto 4 minutos y 41 segundos de media. 
 
 \subsection{Resultados}
 
 \subsubsection{Análisis de métricas para la clasificación puntual de mayoría de edad}
 
 En la Tabla \ref{tab:AMM_accuracy_comparative} se presentan las métricas que evalúan el rendimiento del modelo de clasificación en sus predicciones de una sola etiqueta.
-El método `base' obtiene una exactitud (\textit{accuracy}) significativamente superior que los métodos conformales%
-\footnote{
-    Comprobado estadísticamente mediante ANOVA: $F(2, 27) = 9.6850$, $p < 0.001$, una vez comprobado el cumplimiento de normalidad (Shapiro-Wilk, $p>0.05$) y homocedasticidad (Levene, $p>0.5$). En esta ocasión no se ha aplicado test \textit{post-hoc} por pares, dado que solo hay dos grupos con valores diferentes. 
-}, 
-principalmente debido a una mayor especificidad, ya que la sensibilidad se mantiene prácticamente igual. Esto sugiere que los errores del modelo se concentran en la predicción de individuos menores de 18 años. Una posible explicación es que los métodos conformales, al entrenarse con un conjunto de datos más reducido, se ven aún más afectados por el desequilibrio de clases. Como resultado, tienden a favorecer la clase mayoritaria ($\ge 18$), lo que incrementa los falsos positivos y reduce los verdaderos negativos.
 
 \renewcommand{\arraystretch}{1.4}
 \begin{table}[h]
@@ -1055,13 +1186,23 @@ principalmente debido a una mayor especificidad, ya que la sensibilidad se manti
     \bottomrule
     \end{tabular}
     \caption[
+        Problema de estimación de mayoría de edad: 
         Exactitud, sensibilidad y especifidad obtenidos por cada método de predicción a lo largo de distintas ejecuciones. 
     ]{   
-        Exactitud, sensibilidad y especifidad obtenidos por cada método de predicción a lo largo de distintas ejecuciones. Se presentan los valores para cada ejecución individual, así como la media final de cada métrica.
+        Exactitud, sensibilidad y especifidad obtenidos por cada método de predicción a lo largo de distintas ejecuciones. 
+        Se presentan los valores para cada ejecución individual, así como la media final de cada métrica.
         `CP' se refiere a los métodos conformales empleados: LAC y MCM (se recuerda que es el mismo modelo para todos los métodos conformales y, por ello, presentan los mismas predicciones puntuales). Se marca en negrita la media con mejor valor para cada métrica. 
     }
     \label{tab:AMM_accuracy_comparative}
 \end{table}
+
+El método `base' obtiene una exactitud (\textit{accuracy}) significativamente superior a los métodos conformales (véase el Análisis Estadístico \ref{stat:accuracy_AMM}), 
+principalmente debido a una mayor especificidad, ya que la sensibilidad se mantiene prácticamente igual. Esto sugiere que los errores del modelo se concentran en la predicción de individuos menores de 18 años. Una posible explicación es que los métodos conformales, al entrenarse con un conjunto de datos más reducido, se ven aún más afectados por el desequilibrio de clases. Como resultado, tienden a favorecer la clase mayoritaria ($\ge 18$), lo que incrementa los falsos positivos y reduce los verdaderos negativos.
+
+
+\begin{StatisticsRef}[stat:accuracy_AMM]{Exactitud en el problema de estimación de mayoría de edad}
+    La exactitud (\textit{accuracy}) ha mostrado diferencias significativas en los distintos métodos, comprobado mediante test ANOVA: $F(2, 27) = 9.6850$, $p < 0.001$, una vez comprobado el cumplimiento de normalidad (Shapiro-Wilk, $p>0.05$) y homocedasticidad (Levene, $p>0.5$). En esta ocasión no se ha aplicado test \textit{post-hoc} por pares, dado que solo hay dos grupos con valores diferentes.
+\end{StatisticsRef}
 
 
 \FloatBarrier
@@ -1069,10 +1210,19 @@ principalmente debido a una mayor especificidad, ya que la sensibilidad se manti
 
 \subsubsection{Análisis de métricas para la estimación de mayoría de edad en conjunto de predicción}
 
-La Tabla \ref{tab:AMM_EC_MPSS_comparative} presenta las métricas sobre los conjuntos de predicción de los métodos. Para complementar esta información, estos valores también se representan de manera visual en la Figura \ref{fig:AMM_scatterplot_EC-MPSS}.
+La Tabla \ref{tab:AMM_EC_MPSS_comparative} presenta las métricas sobre los conjuntos de predicción de los métodos. Para complementar esta información, estos valores también se representan de manera visual en la Figura \ref{fig:AMM_scatterplot_EC-MPSS}. A partir de ellos, pueden identificarse los siguientes patrones:
+
+\begin{itemize}
+    
+    \item Los métodos conformales logran una cobertura significativamente superior al método `base', como es obvio, dado que este último no está diseñado para garantizar cobertura estadística, sino únicamente para realizar predicciones puntuales.
+    
+    \item Aunque los métodos LAC y MCM muestran tamaños medios del conjunto de predicción muy similares, LAC alcanza una cobertura significativamente superior en prácticamente todas las ejecuciones (véase el Análisis Estadístico \ref{stat:coverage_AMM}). Esto podría deberse a que MCM calcula un umbral de no conformidad por clase utilizando únicamente las puntuaciones de no conformidad correspondientes a las instancias de esa clase, lo que reduce el tamaño de la muestra utilizada y, en consecuencia, disminuye su representatividad. 
+
+\end{itemize}
+
 
 \renewcommand{\arraystretch}{1.4}
-\begin{table}[htbp]
+\begin{table}[h]
     \small
     \centering
     \begin{tabular}{ccccccccc}
@@ -1094,66 +1244,74 @@ La Tabla \ref{tab:AMM_EC_MPSS_comparative} presenta las métricas sobre los conj
     \bottomrule
     \end{tabular}
     \caption[
+        Problema de estimación de mayoría de edad: 
         Cobertura empírica y tamaño medio del conjunto de predicción obtenidos por cada método de predicción a lo largo de las distintas ejecuciones.
     ]{   
         Cobertura empírica y tamaño medio del conjunto de predicción obtenidos por cada método de predicción a lo largo de las distintas ejecuciones. 
         Se presentan los valores para cada ejecución individual, así como la media final de cada métrica.
+        Se marcan en negrita las marcas de los métodos conformales.
     }
     \label{tab:AMM_EC_MPSS_comparative}
 \end{table}
 
-Se observa que los métodos conformales logran una cobertura significativamente superior al método `base', como es obvio, dado que este último no está diseñado para garantizar cobertura estadística, sino únicamente para realizar predicciones puntuales.
-Por otro lado, aunque los métodos LAC y MCM muestran tamaños medios del conjunto de predicción muy similares, LAC alcanza una cobertura significativamente superior en prácticamente todas las ejecuciones. Esto se confirma estadísticamente mediante un test ANOVA: F(2, 27) = 1097.68, $p < 0.001$, cumpliendo todos los supuestos necesarios: normalidad (Shapiro-Wilk, $p > 0.5$) y homocedasticidad (Levene $p > 0.18$).
 
-\renewcommand{\arraystretch}{1.2}
-\begin{table}[htbp]
-    \small
-    \centering
-    \begin{tabular}{llllll}
-    \toprule
-    \textbf{Modelo 1} & \textbf{Modelo 2} & \textbf{Dif. media} & \textbf{Valor $p$} & \textbf{IC 95\%} & \textbf{Signif.} \\ \hline
-    LAC & MCM & -0.0043 & 0.0415 & [-0.0084, -0.0001] & \textbf{Sí} \\
-    LAC & base & -0.0697 & 0.0000 & [-0.0738, -0.0655] & \textbf{Sí} \\
-    MCM & base & -0.0654 & 0.0000 & [-0.0695, -0.0612] & \textbf{Sí} \\
-    \bottomrule
-    \end{tabular}
-    \caption[
-        Resultados de la prueba \textit{post-hoc} de Tukey HSD para la cobertura empírica entre pares de métodos.
-    ]{
-        Resultados de la prueba \textit{post-hoc} de Tukey HSD para la cobertura empírica entre pares de métodos.
-        Se muestran la diferencia media entre grupos, el valor $p$ ajustado, el intervalo de confianza al 95\% y si la diferencia es estadísticamente significativa ($\alpha = 0.05$).
-    }
-    \label{tab:AMM_tukey_EC}
-\end{table}
-
-Esto podría deberse a que MCM calcula un umbral de no conformidad por clase utilizando únicamente las puntuaciones de no conformidad correspondientes a las instancias de esa clase, lo que reduce el tamaño de la muestra utilizada y, en consecuencia, disminuye su representatividad. 
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AMM_scatterplot_EC-MPSS.png}
+    \includegraphics[width=0.9\textwidth]{capitulos/cap_05/imagenes/AMM_scatterplot_EC-MPSS.png}
     \caption[
-        Gráfica de dispersión Cobertura empírica - Tamaño Medio de Conjunto de Predicción.
+        Problema de estimación de mayoría de edad: 
+        Gráfica de dispersión de la cobertura empírica frente al tamaño medio de conjunto de predicción.
     ]{
-        Gráfica de dispersión Cobertura empírica - Tamaño Medio de Conjunto de Predicción. 
+        Gráfica de dispersión de la cobertura empírica frente al tamaño medio de conjunto de predicción.
     }
     \label{fig:AMM_scatterplot_EC-MPSS}
 \end{figure}
 
 \FloatBarrier
 
-\subsubsection{Análisis de la cobertura en base a la clase}
+\begin{StatisticsRef}[stat:coverage_AMM]{Cobertura empírica en el problema de estimación de mayoría de edad}
+
+    La cobertura empírica de los métodos cumple normalidad (Shapiro-Wilk, $p > 0.5$) y homocedasticidad (Levene $p > 0.18$). Dado esto, se confirma mediante test ANOVA, que hay diferencias significativas entre las marcas de los distintos métodos (F(2, 27) = 1097.68, $p < 0.001$).
+
+    Se aplicó posteriormente la prueba \textit{post-hoc} de comparaciones múltiples Tukey HSD para ver qué métodos presentaban diferencias significativas en la métrica (véase la Tabla \ref{tab:AMM_tukey_EC}).
+
+    \renewcommand{\arraystretch}{1.2}
+    \begin{table}[H]
+        \small
+        \centering
+        \begin{tabular}{llllll}
+        \toprule
+        \textbf{Modelo 1} & \textbf{Modelo 2} & \textbf{Dif. media} & \textbf{Valor $p$} & \textbf{IC 95\%} & \textbf{Signif.} \\ \hline
+        LAC & MCM & -0.0043 & 0.0415 & [-0.0084, -0.0001] & \textbf{Sí} \\
+        LAC & base & -0.0697 & 0.0000 & [-0.0738, -0.0655] & \textbf{Sí} \\
+        MCM & base & -0.0654 & 0.0000 & [-0.0695, -0.0612] & \textbf{Sí} \\
+        \bottomrule
+        \end{tabular}
+        \caption[
+            Problema de estimación de mayoría de edad: 
+            Resultados de la prueba \textit{post-hoc} de Tukey HSD para la cobertura empírica entre pares de métodos.
+        ]{
+            Resultados de la prueba \textit{post-hoc} de Tukey HSD para la cobertura empírica entre pares de métodos.
+            Se muestran la diferencia media entre grupos, el valor $p$ ajustado, el intervalo de confianza al 95\% y si la diferencia es estadísticamente significativa ($\alpha = 0.05$).
+        }
+        \label{tab:AMM_tukey_EC}
+    \end{table}
+\end{StatisticsRef}
+
+
+\FloatBarrier
+
+\subsubsection{Análisis de la cobertura en base a la mayoría de edad real}
 
 Ahora analizaremos la cobertura en cada clase mediante las matrices de confusión obtenidas por cada método. 
-En la Figura \ref{fig:conf2matrix} se recogen las matrices de confusión conformales ---normalizadas por el número de instancias total de cada etiqueta real--- de los diferentes métodos. 
+En la Tabla \ref{fig:conf2matrix} se recogen las matrices de confusión conformales ---normalizadas por el número de instancias total de cada etiqueta real--- de los diferentes métodos. 
 
 La cobertura empírica de una clase se define como la proporción de instancias en las que la etiqueta verdadera está presente dentro del conjunto de predicción generado. Para calcularla, se suman las proporciones de instancias cuyo conjunto de predicción incluye la etiqueta real, considerando únicamente aquellas instancias pertenecientes a la clase en cuestión. Por ejemplo, la cobertura empírica para la clase `menor de 18' corresponde a la suma de las proporciones de instancias que contienen la etiqueta `menor de 18' en su conjunto de predicción, siendo su etiqueta real `menor de 18'.
 
 Respecto al método `base', cabe señalar que la cobertura para cada clase coincide con las métricas clásicas de sensitividad y especificidad, ya que el conjunto de predicción contiene siempre una única etiqueta y no se emplea ningún ajuste adicional para calibrar la confianza.
-\todo{Este último párrafo no aporta mucho, pero si lo borro no habré discutido nada sobre el método `base'.}
 
 Resulta llamativo que el método \acrshort{LAC} muestre infracobertura en las instancias de menores de 18 años y sobrecobertura en aquellas de 18 años o más, mientras que en el caso del método MCM ocurre lo contrario, lo que querría indicar que \acrshort{LAC} es más fiable para estimaciones en población adulta, mientras que MCM ofrecería mejores resultados en población menor de edad. 
-
-
 
 
 \begin{table}[htbp]
@@ -1203,6 +1361,7 @@ Resulta llamativo que el método \acrshort{LAC} muestre infracobertura en las in
     \end{subfigure}
 
     \caption[
+        Problema de estimación de mayoría de edad: 
         Matrices de confusión conformal correspondientes a los métodos `base', LAC y MCM.
     ]{
         Matrices de confusión conformal correspondientes a los métodos `base', LAC y MCM. 
@@ -1210,8 +1369,6 @@ Resulta llamativo que el método \acrshort{LAC} muestre infracobertura en las in
     }
     \label{fig:conf2matrix}
 \end{table}
-
-\todo{¿Es posible pasar esta figura a tabla?}
 
 % ------------------------------------------------------------------------------------------------------------
 
@@ -1236,171 +1393,261 @@ Sin embargo, si la prioridad en la predicción conformal fuera maximizar la cobe
 
 \subsection{Entrenamiento de los modelos}
 
-Dado que este es un problema directamente derivado del primer problema de estimación de edad como regresión, se ha optado de nuevo por reutilizar el extractor de características de este. 
+Dado que este es un problema directamente derivado del de estimación de edad, se ha optado de nuevo por reutilizar el extractor de características de este. La última capa del modelo ha sido ajustada para producir 12 salidas, correspondientes a las edades enteras del problema (de los 14 a 26 años, ambos inclusive), que son las clases de este. La activación \textit{softmax} se aplica durante la inferencia para obtener probabilidades normalizadas.
 
-La última capa del modelo ha sido ajustada para producir 12 salidas, correspondientes a las edades enteras del problema (de los 14 a 25 años, ambos inclusive), que son las clases de este. La activación \textit{softmax} se aplica durante la inferencia para obtener probabilidades normalizadas.
+Al igual que con la estimación de mayoría de edad, se realizará un ajuste de la nueva cabecera durante 2 épocas, con \textit{learning rate} de 3e-2 y \textit{weight decay} de 2e-4. La función de pérdida utilizada ha sido la \textbf{\textit{Cross-Entropy Loss}}, adecuada para clasificación multiclase mutuamente excluyente. Esta función compara la distribución de probabilidad predicha por el modelo con la distribución real codificada como etiqueta única, y penaliza fuertemente las asignaciones erróneas. Su formulación es robusta, ampliamente utilizada y permite una interpretación probabilística directa de la salida del modelo cuando se combina con una capa de activación \textit{softmax} al final.
 
-Al igual que con la clasificación de mayoría de edad, se realizará un ajuste de la nueva cabecera durante 2 épocas, con \textit{learning rate} de 3e-2 y \textit{weight decay} de 2e-4. La función de pérdida utilizada ha sido la \textbf{\textit{Cross-Entropy Loss}}, adecuada para clasificación multiclase mutuamente excluyente. Esta función compara la distribución de probabilidad predicha por el modelo con la distribución real codificada como etiqueta única, y penaliza fuertemente las asignaciones erróneas. Su formulación es robusta, ampliamente utilizada y permite una interpretación probabilística directa de la salida del modelo cuando se combina con una capa de activación \textit{softmax} al final.
+El tiempo de entrenamiento medio de la cabecera ha sido de 4 minutos y 32 segundos, mientras que el tiempo de calibración ha supuesto 4 minutos y 47 segundos de media. Cabe mencionar que en este problema sí que hay diferencia muy leve de tiempo en la inferencia de métodos. Mientras los métodos `base', LAC y MCM tardan unos 14 segundos en realizar la inferencia con el conjunto de datos de test, los métodos APS, RAPS y SAPS tardan 20-22 segundos, lo que sigue sin ser tiempos muy preocupantes en ningún caso. 
 
 % ------------------------------------------------------------------------------------------------------------
 
 \subsection{Resultados}
 
-En este caso no se han analizado en profundidad las métricas de clasificación de una sola etiqueta, pues no tenía mucho sentido plantearlas tal cual: métricas como la exactitud (\textit{accuracy}) presentan valores muy bajos, ya que existe una gran proximidad entre clases adyacentes y, por tanto, errores que en términos de regresión serían pequeños (por ejemplo, predecir 19 en lugar de 20) se contabilizan como fallos completos en clasificación.
+\subsubsection{Análisis de métricas para la clasificación puntual de edad}
 
-También se han probado métricas propias de regresión, pero estas obtenían valores artificialmente elevados debido a la discretización previa de la variable objetivo: al forzar las predicciones a valores enteros, se reduce la variabilidad y se exagera la coincidencia con los valores reales.
-
-% \subsubsection{Análisis de métricas para la clasificación puntual de edad}
+En este caso no se han analizado las métricas de clasificación de una sola etiqueta, pues no tenía mucho sentido plantearlas tal cual: métricas como la exactitud (\textit{accuracy}) presentan valores muy bajos, ya que existe una gran proximidad entre clases adyacentes y, por tanto, errores que en términos de regresión serían pequeños (por ejemplo, predecir 19 en lugar de 20) se contabilizan como fallos completos en clasificación. También se consideró usar métricas propias de regresión, pero estas obtenían valores artificialmente elevados debido a la discretización previa de la variable objetivo: al forzar las predicciones a valores enteros, se reduce la variabilidad y se exagera la coincidencia con los valores reales.
 
 \subsubsection{Análisis de métricas para la clasificación de edad en conjuntos de predicción}
 
-La Tabla \ref{tab:AGC_EC_MPSS_comparative} presenta las métricas sobre el conjunto de predicción de los métodos. Se observa, como era de esperar una cobertura muy baja para el método `base' como se podía venir augurando por las mismas razones anteriormente descritas para la clasificación puntual. Por ello, ignoraremos este método de ahora en adelante.
+Las Tablas \ref{tab:AGC_EC_comparative} y \ref{tab:AGC_MPSS_comparative} presenta las métricas sobre los conjuntos de predicción obtenidos con los métodos. Para completar esta información de manera visual, la Figura \ref{fig:AGC_scatterplot_EC-MPSS} muestra en un gráfico de dispersión la relación de las métricas obtenidas en los diferentes métodos. Llama la atención los resultados extraordinarios de dos métodos:
+
+\begin{itemize}
+
+    \item El método `base' presenta cobertura del 100\% con tamaño medio del conjunto 13 (el máximo). Esto indica que el conjunto de predicción siempre contiene todas las clases posibles, comportándose de manera no informativa. Al requerir que la suma acumulada de las probabilidades softmax alcance el 95\%, y dada la distribución probabilística del modelo sobre las 13 clases, la estrategia termina incluyendo sistemáticamente la totalidad de las categorías para cumplir con el umbral establecido. Es por ello, que este método será descartado de ahora en adelante, al no tener ningún valor práctico para la toma de decisiones.
+    
+    \item El método MCM presenta de media la mayor cobertura empírica de entre los métodos, pero con tamaños medio de conjuntos también muy superiores, como se evidencia en la Figura \ref{fig:AGC_scatterplot_EC-MPSS}. Esto probablemente se deba a que, en MCM, se calcula el umbral de \acrshort{NC} de manera independiente para cada clase utilizando únicamente las instancias pertenecientes a esta. Dado el gran número de clases, cada estimación se realiza con menos datos, lo que incrementa la variabilidad de los umbrales y conduce a intervalos más amplios para garantizar la cobertura deseada. En consecuencia, este método está en clara desventaja respecto al resto. 
+
+\end{itemize}
 
 \renewcommand{\arraystretch}{1.4}
-\begin{figure}[htbp]
+\begin{table}[h]
     \centering
-
-    \begin{subfigure}[b]{\textwidth}
-        \small
-        \centering
-        \begin{tabular}{ccccccccccccccc}
-        \toprule
-        \multirow{2}{*}{\textbf{Método}} &  & \multicolumn{6}{c}{\textbf{Cobertura empírica (\%)}} \\ \cline{3-8} 
-        &  & \textbf{base} & \textbf{LAC} & \textbf{MCM} & \textbf{APS} & \textbf{RAPS} & \textbf{SAPS} \\ \cline{1-1} \cline{3-8} 
-        Ejecución 1 &  & 26.53 & 94.66 & 95.86 & 94.38 & 94.47 & 94.98 \\
-        Ejecución 2 &  & 25.46 & 94.24 & 95.45 & 93.63 & 94.10 & 95.12 \\
-        Ejecución 3 &  & 27.51 & 95.21 & 95.49 & 94.61 & 94.52 & 95.26 \\
-        Ejecución 4 &  & 27.60 & 94.89 & 95.59 & 94.56 & 94.80 & 94.80 \\
-        Ejecución 5 &  & 27.51 & 95.17 & 95.86 & 94.93 & 95.45 & 95.21 \\
-        Ejecución 6 &  & 27.74 & 94.80 & 94.70 & 94.52 & 94.61 & 95.45 \\
-        Ejecución 7 &  & 28.02 & 93.91 & 94.80 & 94.28 & 94.01 & 94.56 \\
-        Ejecución 8 &  & 25.98 & 95.59 & 95.49 & 95.07 & 95.17 & 95.86 \\
-        Ejecución 9 &  & 28.39 & 94.70 & 95.63 & 93.91 & 94.70 & 95.59 \\
-        Ejecución 10 &  & 28.49 & 94.14 & 95.59 & 94.14 & 94.19 & 94.80 \\ \cline{1-1} \cline{3-8} 
-        Media &  & 27.32 & 94.73 & 95.45 & 94.41 & 94.60 & 95.16 \\
-        \bottomrule
-        \end{tabular}
-        \caption{Cobertura empírica}
-        \label{tab:AGG_EC_comparative}
-    \end{subfigure}
-
-    \vspace{0.5cm}
-
-    \begin{subfigure}[b]{\textwidth}
-        \small
-        \centering
-
-        \begin{tabular}{ccccccccccccccc}
-        \toprule
-        \multirow{2}{*}{\textbf{Método}} &  & \multicolumn{6}{c}{\textbf{Tamaño Medio del Conjunto}} \\ \cline{3-8} 
-        &  & \textbf{base} & \textbf{LAC} & \textbf{MCM} & \textbf{APS} & \textbf{RAPS} & \textbf{SAPS} \\ \cline{1-1} \cline{3-8} 
-        Ejecución 1 &  & 1.00 & 5.79 & 7.83 & 6.09 & 5.89 & 6.05 \\
-        Ejecución 2 &  & 1.00 & 5.76 & 7.84 & 5.89 & 5.85 & 6.03 \\
-        Ejecución 3 &  & 1.00 & 6.04 & 7.70 & 6.06 & 5.89 & 6.17 \\
-        Ejecución 4 &  & 1.00 & 5.86 & 7.75 & 6.17 & 6.11 & 5.98 \\
-        Ejecución 5 &  & 1.00 & 5.77 & 7.81 & 6.14 & 6.12 & 6.16 \\
-        Ejecución 6 &  & 1.00 & 5.80 & 7.70 & 6.18 & 5.97 & 6.08 \\
-        Ejecución 7 &  & 1.00 & 5.69 & 7.19 & 5.90 & 5.77 & 6.07 \\
-        Ejecución 8 &  & 1.00 & 6.03 & 7.80 & 6.25 & 6.03 & 6.28 \\
-        Ejecución 9 &  & 1.00 & 5.86 & 7.70 & 6.00 & 6.00 & 6.15 \\
-        Ejecución 10 &  & 1.00 & 5.88 & 7.61 & 6.23 & 6.12 & 6.36 \\ \cline{1-1} \cline{3-8} 
-        Media &  & 1.00 & 5.85 & 7.69 & 6.09 & 5.97 & 6.13 \\
-        \bottomrule
-        \end{tabular}
-
-        \caption{Tamaño medio del conjunto de predicción}
-        \label{tab:AGG_MPSS_comparative}
-    \end{subfigure}
-
+    \small
+    \begin{tabular}{cccccccc}
+    \toprule
+    \multirow{2}{*}{\textbf{Método}} &  & \multicolumn{6}{c}{\textbf{Cobertura empírica (\%)}} \\ \cline{3-8} 
+    &  & \textbf{base} & \textbf{LAC} & \textbf{MCM} & \textbf{APS} & \textbf{RAPS} & \textbf{SAPS} \\ \cline{1-1} \cline{3-8} 
+    Ejecución 1 &  & 100.00 & 94.89 & 95.96 & 94.66 & 95.12 & 95.26 \\
+    Ejecución 2 &  & 100.00 & 94.98 & 95.21 & 94.01 & 94.10 & 95.35 \\
+    Ejecución 3 &  & 100.00 & 95.40 & 95.35 & 94.24 & 94.28 & 95.31 \\
+    Ejecución 4 &  & 100.00 & 95.03 & 95.91 & 94.75 & 94.14 & 95.26 \\
+    Ejecución 5 &  & 100.00 & 94.84 & 95.35 & 94.24 & 94.24 & 95.54 \\
+    Ejecución 6 &  & 100.00 & 94.24 & 95.07 & 94.52 & 94.89 & 94.52 \\
+    Ejecución 7 &  & 100.00 & 94.14 & 94.80 & 93.54 & 93.68 & 94.66 \\
+    Ejecución 8 &  & 100.00 & 94.28 & 94.84 & 93.31 & 93.40 & 95.21 \\
+    Ejecución 9 &  & 100.00 & 94.75 & 95.68 & 94.75 & 94.89 & 95.91 \\
+    Ejecución 10 &  & 100.00 & 95.86 & 96.00 & 94.89 & 95.77 & 95.96 \\ \cline{1-1} \cline{3-8} 
+    Media &  & 100.00 & \textbf{94.84} & 95.42 & 94.29 & 94.45 & \textbf{95.30} \\ 
+    \bottomrule
+    \end{tabular}
     \caption[
-        Cobertura empírica y tamaño medio del conjunto de predicción obtenidos por cada método de predicción a lo largo de las distintas ejecuciones.
-    ]{   
-        Cobertura empírica y tamaño medio del conjunto de predicción obtenidos por cada método de predicción a lo largo de las distintas ejecuciones. Se presentan los valores para cada ejecución individual, así como la media final de cada métrica.
-    }
-    \label{tab:AGC_EC_MPSS_comparative}
-\end{figure}
-
-Para facilitar la interpretación, en la Figura \ref{fig:AGC_scatterplot_EC-MPSS} se representan gráficamente estos valores, lo que permite apreciar también la relación de \textit{trade-off} entre las métricas. En particular, se observa que los métodos LAC y los adaptativos forman una nube de puntos claramente separada de la correspondiente a MCM, el cual ofrece una cobertura empírica ligeramente superior, aunque a costa de un tamaño medio del conjunto de predicción considerablemente mayor. Esto probablemente se deba a que el MCM calcula el umbral de no conformidad de manera independiente para cada clase utilizando únicamente las instancias pertenecientes a esta. Dado el gran número de clases, cada estimación se realiza con menos datos, lo que incrementa la variabilidad de los umbrales y conduce a intervalos más amplios para garantizar la cobertura deseada. En consecuencia, este método está en clara desventaja para el presente problema y ha sido descartado del análisis estadístico.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AGC_scatterplot_EC_MPSS.png}
-    \caption[
-        Gráfica de dispersión Cobertura empírica - Tamaño Medio de Conjunto de Predicción.
+        Problema de clasificación de edad: 
+        Cobertura empírica obtenida por cada método de predicción a lo largo de las distintas ejecuciones.
     ]{
-        Gráfica de dispersión Cobertura empírica - Tamaño Medio de Conjunto de Predicción. No se incluyen los puntos del método `base' dado que estos 
+        Cobertura empírica obtenida por cada método de predicción a lo largo de las distintas ejecuciones. 
+        Se presentan los valores para cada ejecución individual, así como la media final de cada métrica.
+    }
+    \label{tab:AGC_EC_comparative}
+\end{table}
+
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{cccccccc}
+    \toprule
+    \multirow{2}{*}{\textbf{Método}} &  & \multicolumn{6}{c}{\textbf{Tamaño Medio del Conjunto}} \\ \cline{3-8} 
+    &  & \textbf{base} & \textbf{LAC} & \textbf{MCM} & \textbf{APS} & \textbf{RAPS} & \textbf{SAPS} \\ \cline{1-1} \cline{3-8} 
+    Ejecución 1 &  & 13.00 & 5.85 & 7.58 & 6.08 & 6.03 & 6.29 \\
+    Ejecución 2 &  & 13.00 & 6.00 & 7.63 & 6.18 & 5.96 & 6.31 \\
+    Ejecución 3 &  & 13.00 & 6.12 & 7.73 & 6.07 & 5.99 & 6.37 \\
+    Ejecución 4 &  & 13.00 & 5.99 & 7.73 & 6.28 & 6.02 & 6.33 \\
+    Ejecución 5 &  & 13.00 & 5.93 & 7.48 & 6.10 & 5.90 & 6.29 \\
+    Ejecución 6 &  & 13.00 & 5.74 & 7.68 & 5.97 & 5.99 & 6.12 \\
+    Ejecución 7 &  & 13.00 & 5.75 & 7.26 & 5.81 & 5.73 & 6.05 \\
+    Ejecución 8 &  & 13.00 & 5.82 & 7.46 & 5.94 & 5.74 & 6.23 \\
+    Ejecución 9 &  & 13.00 & 5.96 & 7.88 & 6.30 & 6.03 & 6.45 \\
+    Ejecución 10 &  & 13.00 & 6.16 & 7.70 & 6.14 & 6.08 & 6.37 \\ \cline{1-1} \cline{3-8} 
+    Media &  & 13.00 & \textbf{5.93} & 7.61 & 6.09 & 5.95 & \textbf{6.28} \\ 
+    \bottomrule
+    \end{tabular}
+    \caption[
+        Problema de clasificación de edad: 
+        Tamaño medio del conjunto de predicción obtenido por cada método a lo largo de las distintas ejecuciones.
+    ]{
+        Tamaño medio del conjunto de predicción obtenido por cada método a lo largo de las distintas ejecuciones. 
+        Se presentan los valores para cada ejecución individual, así como la media final de cada métrica.
+    }
+    \label{tab:AGC_MPSS_comparative}
+\end{table}
+
+% \begin{table}[h]
+%     \centering
+%     \small
+
+%     \begin{subfigure}[b]{\textwidth}
+%         \centering
+%         \begin{tabular}{cccccccc}
+%         \toprule
+%         \multirow{2}{*}{\textbf{Método}} &  & \multicolumn{6}{c}{\textbf{Cobertura empírica (\%)}} \\ \cline{3-8} 
+%         &  & \textbf{base} & \multicolumn{1}{c}{\textbf{LAC}} & \multicolumn{1}{c}{\textbf{MCM}} & \multicolumn{1}{c}{\textbf{APS}} & \multicolumn{1}{c}{\textbf{RAPS}} & \multicolumn{1}{c}{\textbf{SAPS}} \\ \cline{1-1} \cline{3-8} 
+%         Ejecución 1 &  & 100.00 & 94.89 & 95.96 & 94.66 & 95.12 & 95.26 \\
+%         Ejecución 2 &  & 100.00 & 94.98 & 95.21 & 94.01 & 94.10 & 95.35 \\
+%         Ejecución 3 &  & 100.00 & 95.40 & 95.35 & 94.24 & 94.28 & 95.31 \\
+%         Ejecución 4 &  & 100.00 & 95.03 & 95.91 & 94.75 & 94.14 & 95.26 \\
+%         Ejecución 5 &  & 100.00 & 94.84 & 95.35 & 94.24 & 94.24 & 95.54 \\
+%         Ejecución 6 &  & 100.00 & 94.24 & 95.07 & 94.52 & 94.89 & 94.52 \\
+%         Ejecución 7 &  & 100.00 & 94.14 & 94.80 & 93.54 & 93.68 & 94.66 \\
+%         Ejecución 8 &  & 100.00 & 94.28 & 94.84 & 93.31 & 93.40 & 95.21 \\
+%         Ejecución 9 &  & 100.00 & 94.75 & 95.68 & 94.75 & 94.89 & 95.91 \\
+%         Ejecución 10 &  & 100.00 & 95.86 & 96.00 & 94.89 & 95.77 & 95.96 \\ \cline{1-1} \cline{3-8} 
+%         Media &  & 100.00 & \textbf{94.84} & 95.42 & 94.29 & 94.45 & \textbf{95.30} \\ 
+%         \bottomrule
+%         \end{tabular}
+%         \caption{Cobertura empírica}
+%         \label{tab:AGG_EC_comparative}
+%     \end{subfigure}
+
+%     \vspace{0.5cm}
+
+%     \begin{subfigure}[b]{\textwidth}
+%         \centering
+
+%         \begin{tabular}{cccccccc}
+%         \toprule
+%         \multirow{2}{*}{\textbf{Método}} &  & \multicolumn{6}{c}{\textbf{Tamaño Medio del Conjunto}} \\ \cline{3-8} 
+%         &  & \textbf{base} & \textbf{LAC} & \textbf{MCM} & \textbf{APS} & \textbf{RAPS} & \textbf{SAPS} \\ \cline{1-1} \cline{3-8} 
+%         Ejecución 1 &  & 13.00 & 5.85 & 7.58 & 6.08 & 6.03 & 6.29 \\
+%         Ejecución 2 &  & 13.00 & 6.00 & 7.63 & 6.18 & 5.96 & 6.31 \\
+%         Ejecución 3 &  & 13.00 & 6.12 & 7.73 & 6.07 & 5.99 & 6.37 \\
+%         Ejecución 4 &  & 13.00 & 5.99 & 7.73 & 6.28 & 6.02 & 6.33 \\
+%         Ejecución 5 &  & 13.00 & 5.93 & 7.48 & 6.10 & 5.90 & 6.29 \\
+%         Ejecución 6 &  & 13.00 & 5.74 & 7.68 & 5.97 & 5.99 & 6.12 \\
+%         Ejecución 7 &  & 13.00 & 5.75 & 7.26 & 5.81 & 5.73 & 6.05 \\
+%         Ejecución 8 &  & 13.00 & 5.82 & 7.46 & 5.94 & 5.74 & 6.23 \\
+%         Ejecución 9 &  & 13.00 & 5.96 & 7.88 & 6.30 & 6.03 & 6.45 \\
+%         Ejecución 10 &  & 13.00 & 6.16 & 7.70 & 6.14 & 6.08 & 6.37 \\ \cline{1-1} \cline{3-8} 
+%         Media &  & 13.00 & \textbf{5.93} & 7.61 & 6.09 & 5.95 & \textbf{6.28} \\ 
+%         \bottomrule
+%         \end{tabular}
+%         \caption{Tamaño medio del conjunto de predicción}
+%         \label{tab:AGG_MPSS_comparative}
+%     \end{subfigure}
+
+%     \caption[
+%         Cobertura empírica y tamaño medio del conjunto de predicción obtenidos por cada método de predicción a lo largo de las distintas ejecuciones.
+%     ]{   
+%         Cobertura empírica y tamaño medio del conjunto de predicción obtenidos por cada método de predicción a lo largo de las distintas ejecuciones. Se presentan los valores para cada ejecución individual, así como la media final de cada métrica. Se marcan en negrita las marcas obtenidas por los métodos que más se aproximan a la cobertura nominal. 
+%     }
+%     \label{tab:AGC_EC_MPSS_comparative}
+% \end{table}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{capitulos/cap_05/imagenes/AGC_scatterplot_EC_MPSS.png}
+    \caption[
+        Problema de clasificación de edad: 
+        Gráfica de dispersión de la cobertura empírica frente al tamaño medio de conjunto de predicción.
+    ]{
+        Gráfica de dispersión de la Cobertura empírica frente al Tamaño medio de conjunto de predicción. 
+        No se incluyen los puntos del método `base' dado que estos están muy alejados y concentrado en cobertura del 100\% y tamaño medio de conjunto 13, dificultando la visualización de la gráfica. 
     }
     \label{fig:AGC_scatterplot_EC-MPSS}
 \end{figure}
 
-La comparación estadística entre los métodos de la primera nube se llevó a cabo mediante un test ANOVA, tanto para la cobertura empírica ($F(5, 36) > 10^5$, $p<0.001$) como para el tamaño medio del conjunto de predicción ($F(5, 36) > 10^5$, $p<0.001$). El análisis asume normalidad (Shapiro-Wilk: $p=0.56$ para la cobertura empírica y $p=0.4$ para el tamaño medio) y homocedasticidad (Levene: $p>0.9$ en ambas métricas). Los resultados de la prueba post-hoc de Tukey para la comparación por pares de métodos en ambas métricas se presentan en las Tablas \ref{tab:AGC_tukey_EC} y \ref{tab:AGC_tukey_MPSS}.
+\FloatBarrier
 
-\renewcommand{\arraystretch}{1.2}
-\begin{table}[htbp]
-    \small
-    \centering
-    \begin{tabular}{llllll}
-    \toprule
-    \textbf{Modelo 1} & \textbf{Modelo 2} & \textbf{Dif. media} & \textbf{Valor $p$} & \textbf{IC 95\%} & \textbf{Signif.} \\ \hline
-    APS & LAC & 0.0033 & 0.394 & [-0.002, 0.0087] & No \\
-    APS & RAPS & 0.002 & 0.7742 & [-0.0035, 0.0074] & No \\
-    APS & SAPS & 0.0076 & 0.0037 & [0.0021, 0.0131] & \textbf{Sí} \\
-    LAC & RAPS & -0.0013 & 0.919 & [-0.0068, 0.0042] & No \\
-    LAC & SAPS & 0.0043 & 0.1663 & [-0.0012, 0.0098] & No \\
-    RAPS & SAPS & 0.0056 & 0.0431 & [0.0001, 0.0111] & \textbf{Sí} \\
-    \bottomrule
-    \end{tabular}
-    \caption[
-        Resultados de la prueba \textit{post-hoc} de Tukey HSD para la cobertura empírica entre pares de métodos.
-    ]{
-        Resultados de la prueba \textit{post-hoc} de Tukey HSD para la cobertura empírica entre pares de métodos.
-        Se muestran la diferencia media entre grupos, el valor $p$ ajustado, el intervalo de confianza al 95\% y si la diferencia es estadísticamente significativa ($\alpha = 0.05$).
-    }
-    \label{tab:AGC_tukey_EC}
-\end{table}
+\begin{StatisticsRef}[stat:coverage_MPSS_AGC]{Cobertura empírica y tamaño medio del conjunto de predicción en el problema de estimación de mayoría de edad}
 
-\renewcommand{\arraystretch}{1.2}
-\begin{table}[htbp]
-    \small
-    \centering
-    \begin{tabular}{llllll}
-    \toprule
-    \textbf{Modelo 1} & \textbf{Modelo 2} & \textbf{Dif. media} & \textbf{Valor $p$} & \textbf{IC 95\%} & \textbf{Signif.} \\ \hline
-    APS & LAC & -0.2435 & 0.0004 & [-0.3892, -0.0978] & \textbf{Sí} \\
-    APS & RAPS & -0.1167 & 0.1551 & [-0.2624, 0.029] & No \\
-    APS & SAPS & 0.0401 & 0.8802 & [-0.1057, 0.1858] & No \\
-    LAC & RAPS & 0.1268 & 0.107 & [-0.0189, 0.2725] & No \\
-    LAC & SAPS & 0.2836 & 0 & [0.1378, 0.4293] & \textbf{Sí} \\
-    RAPS & SAPS & 0.1567 & 0.031 & [0.011, 0.3025] & \textbf{Sí} \\
-    \bottomrule
-    \end{tabular}
-    \caption[
-        Resultados de la prueba \textit{post-hoc} de Tukey HSD para el tamaño medio del conjunto de predicción entre pares de métodos.
-    ]{
-        Resultados de la prueba \textit{post-hoc} de Tukey HSD para el tamaño medio del conjunto de predicción entre pares de métodos.
-        Se muestran la diferencia media entre grupos, el valor $p$ ajustado, el intervalo de confianza al 95\% y si la diferencia es estadísticamente significativa ($\alpha = 0.05$).
-    }
-    \label{tab:AGC_tukey_MPSS}
-\end{table}
+    Se llevó a cabo una comparación estadística entre los métodos, ---descartando el `base'---. La comparación estadística entre los métodos de la primera nube se llevó a cabo mediante un test ANOVA, tanto para la cobertura empírica ($F(5, 36) > 10^5$, $p<0.001$) como para el tamaño medio del conjunto de predicción ($F(5, 36) > 10^5$, $p<0.001$). El análisis asume normalidad (Shapiro-Wilk: $p=0.6174$ para la cobertura empírica y $p=0.2465$ para el tamaño medio) y homocedasticidad (Levene: $p>0.65$ en ambas métricas). Los resultados de la prueba post-hoc de Tukey para la comparación por pares de métodos en ambas métricas se presentan en las Tablas \ref{tab:AGC_tukey_EC} y \ref{tab:AGC_tukey_MPSS}.
+
+    \renewcommand{\arraystretch}{1.2}
+    \begin{table}[H]
+        \small
+        \centering
+        \begin{tabular}{llllll}
+        \toprule
+        \textbf{Modelo 1} & \textbf{Modelo 2} & \textbf{Dif. media} & \textbf{Valor $p$} & \textbf{IC 95\%} & \textbf{Signif.} \\ \hline
+        %
+        APS & LAC & 0.0055 & 0.1766 & [-0.0014, 0.0125] & No \\
+        %
+        APS & MCM & 0.0113 & 0.0003 & [0.0043, 0.0182] & \textbf{Sí} \\
+        %
+        APS & RAPS & 0.0016 & 0.9628 & [-0.0053, 0.0086] & No \\
+        %
+        APS & SAPS & 0.0101 & 0.0014 & [0.0031, 0.017] & \textbf{Sí} \\
+        %
+        LAC & MCM & 0.0058 & 0.1465 & [-0.0012, 0.0127] & No\\
+        %
+        LAC & RAPS & -0.0039 & 0.5075 & [-0.0109, 0.003] & No \\
+        %
+        LAC & SAPS & 0.0046 & 0.3521 & [-0.0024, 0.0115] & No \\
+        %
+        MCM & RAPS & -0.0097 & 0.0024 & [-0.0166, -0.0027] & \textbf{Sí} \\
+        %
+        MCM & SAPS & -0.0012 & 0.9875 & [-0.0082, 0.0057] & No \\
+        %
+        RAPS & SAPS & 0.0085 & 0.01 & [0.0015, 0.0154] & \textbf{Sí} \\
+        \bottomrule
+        \end{tabular}
+        \caption[
+            Problema de clasificación de edad: 
+            Resultados de la prueba \textit{post-hoc} de Tukey HSD para la cobertura empírica entre pares de métodos.
+        ]{
+            Resultados de la prueba \textit{post-hoc} de Tukey HSD para la cobertura empírica entre pares de métodos.
+            Se muestran la diferencia media entre grupos, el valor $p$ ajustado, el intervalo de confianza al 95\% y si la diferencia es estadísticamente significativa ($\alpha = 0.05$).
+        }
+        \label{tab:AGC_tukey_EC}
+    \end{table}
+
+    \renewcommand{\arraystretch}{1.2}
+    \begin{table}[H]
+        \small
+        \centering
+        \begin{tabular}{llllll}
+        \toprule
+        \textbf{Modelo 1} & \textbf{Modelo 2} & \textbf{Dif. media} & \textbf{Valor $p$} & \textbf{IC 95\%} & \textbf{Signif.} \\ \hline
+        %
+        APS & LAC & -0.1558	& 0.1271 & [-0.3383, 0.0267] & No \\
+        %
+        APS & MCM & 1.5265 & \textless 0.001 & [1.344, 1.709] & \textbf{Sí} \\
+        %
+        APS & RAPS & -0.1403 & 0.2043 & [-0.3228, 0.0422] & No \\
+        %
+        APS & SAPS & 0.1931 & 0.0333 & [0.0106, 0.3756] & \textbf{Sí} \\
+        %
+        LAC & MCM & 1.6823 & \textless 0.001 & [0.14998, 1.8648] & \textbf{Sí} \\
+        %
+        LAC & RAPS & 0.0155	& 0.9992 & [-0.167, 0.198] & No \\
+        %
+        LAC & SAPS & 0.3489 & \textless 0.001 & [0.1664, 0.5314] & \textbf{Sí} \\
+        %
+        MCM & RAPS & -1.6668 & \textless 0.001 & [-1.8493, -1.4843] & \textbf{Sí} \\
+        %
+        MCM & SAPS & -1.3335 & \textless 0.001 & [-1.516, -1.151] & \textbf{Sí} \\
+        %
+        RAPS & SAPS & 0.3334 & \textless 0.001 & [0.1509, 0.5159] & \textbf{Sí} \\
+        \bottomrule
+        \end{tabular}
+        \caption[
+            Problema de clasificación de edad: 
+            Resultados de la prueba \textit{post-hoc} de Tukey HSD para el tamaño medio del conjunto de predicción entre pares de métodos.
+        ]{
+            Resultados de la prueba \textit{post-hoc} de Tukey HSD para el tamaño medio del conjunto de predicción entre pares de métodos.
+            Se muestran la diferencia media entre grupos, el valor $p$ ajustado, el intervalo de confianza al 95\% y si la diferencia es estadísticamente significativa ($\alpha = 0.05$).
+        }
+        \label{tab:AGC_tukey_MPSS}
+    \end{table}
+\end{StatisticsRef}
 
 
-Los resultados revelan para un 95\% de nivel de confianza:
+El resto de los métodos muestra resultados más comparables, formando una nube de puntos claramente visible en la Figura \ref{fig:AGC_scatterplot_EC-MPSS}. El Análisis Estadístico \ref{stat:coverage_MPSS_AGC} permite establecer las siguientes conclusiones:
 
 \begin{itemize}
     
-    \item Cobertura empírica: SAPS presenta una cobertura ligeramente superior que APS y RAPS, con diferencias medias de 0.76\% y 0.56\%, respectivamente. No se detectaron diferencias significativas entre los demás pares de métodos.
+    \item \acrshort{SAPS} presenta una cobertura significativamente superior a la de \acrshort{APS} y \acrshort{RAPS}, aunque con un tamaño medio de conjunto mayor, lo que refleja el compromiso inherente entre fiabilidad y precisión en los métodos de predicción conformal.
     
-    \item Tamaño medio del conjunto de predicción: APS genera conjuntos significativamente más grandes que LAC (diferencia de media de 0.2435), y SAPS también supera a RAPS y LAC (diferencia media de 0.1567 y 0.2836, respectivamente). No se detectaron diferencias significativas entre el resto. 
-    
-\end{itemize}
-
-Por tanto, de entre todos los métodos seleccionados, basándonos únicamente en las dos métricas de cobertura empírica y tamaño medio del conjunto de predicción, podríamos destacar dos métodos con buena relación cobertura/tamaño medio del conjunto:
-
-\begin{itemize}
-    
-    \item LAC se presenta como la alternativa más equilibrada, ya que, manteniendo una cobertura comparable a la de APS y RAPS, logra un tamaño medio del conjunto de predicción menor. Esto se traduce en salidas más compactas sin pérdida significativa de fiabilidad.
-    
-    \item SAPS alcanza una cobertura empírica ligeramente superior a la de los demás métodos, aunque este incremento viene acompañado de un aumento moderado en el tamaño medio del conjunto de predicción.
+    \item \acrshort{LAC} alcanza una cobertura empírica estadísticamente equivalente a \acrshort{SAPS}, pero con un tamaño medio de conjunto significativamente menor. Esta combinación de alta cobertura y conjuntos más compactos posiciona a \acrshort{LAC} como el método con la mejor relación cobertura-tamaño entre todas las alternativas evaluadas.
     
 \end{itemize}
 
@@ -1413,13 +1660,14 @@ Por tanto, de entre todos los métodos seleccionados, basándonos únicamente en
 De igual manera a como hicimos con el problema de regresión, aquí también analizaremos la cobertura en base al tamaño del conjunto de predicción conformal. 
 La Figura \ref{fig:AGC_coverage_by_PSS} presenta un mapa de calor que resume, para cada método, la cobertura empírica obtenida según el número de etiquetas incluidas en el conjunto de predicción.
 
-\begin{figure}[htbp]
+\begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AGC_coverage_by_PSS.png}
     \caption[
+        Problema de clasificación de edad: 
         Mapa de calor de cobertura empírica en base al tamaño del conjunto por cada método de predicción a lo largo de las distintas ejecuciones.
     ]{
-        Mapa de calor de cobertura empírica en base al tamaño del conjunto por cada método de predicción a lo largo de las distintas ejecuciones. 
+        Mapa de calor de cobertura empírica en base al tamaño del conjunto por cada método de predicción a lo largo de las distintas ejecuciones.
         Se especifica entre paréntesis el número de instancias clasificadas en cada franja de amplitud de intervalo.
         La escala de colores está centrada en la cobertura nominal ($0.95$): los valores por debajo de este umbral se representan en tonos rojos, los superiores en tonos azules, y el blanco indica una cobertura empírica equivalente a la nominal.
     }
@@ -1430,75 +1678,131 @@ En términos generales, se observan dos tendencias clave:
 
 \begin{itemize}
     
-    \item \textbf{Cobertura en aumento con el tamaño de los conjuntos}: todos los métodos tienden a mejorar su cobertura a mayor tamaño de conjuntos de predicción devuelven. Esto es esperable, ya que, cuanto mayor es el conjunto, más probable es que incluya la clase verdadera.
+    \item \textbf{Cobertura en aumento con el tamaño de los conjuntos}: todos los métodos tienden a mejorar su cobertura a mayor tamaño de conjuntos de predicción devuelven. Esto es esperable, ya que, cuanto más etiquetas tiene el conjunto, más probable es que incluya la de la clase verdadera.
     
-    \item \textbf{Sobrecobertura como síntoma de desequilibrio}: la presencia de sobrecobertura en determinados tamaños implica, inevitablemente, infracobertura en otros. Cuando este patrón se repite y la sobrecobertura se concentra en conjuntos de gran tamaño, suele indicar que el método está “compensando” un mal ajuste en los conjuntos pequeños, lo cual resulta indeseable. En contextos prácticos, esto significa sacrificar precisión en situaciones de alta confianza para inflar artificialmente los resultados en escenarios menos exigentes.
+    \item \textbf{Sobrecobertura como síntoma de desequilibrio}: la presencia de sobrecobertura en determinados tamaños implica, inevitablemente, infracobertura en otros. Cuando este patrón se repite y la sobrecobertura se concentra en conjuntos de gran tamaño, suele indicar que el método está ``compensando'' un mal ajuste en los conjuntos pequeños, lo cual resulta indeseable. En contextos prácticos, esto significa sacrificar precisión en situaciones de alta confianza para inflar artificialmente los resultados en escenarios menos exigentes.
     
 \end{itemize}
+
+% Antes de analizar en detalle los métodos, es importante destacar que, en el problema de estimación de edad, se determinó que una amplitud de intervalo aceptable se sitúa alrededor de unos 6 años. Esto significa que, con un 95\% de confianza, una edad biológica determinada generalmente corresponde a un rango de 6 años en términos de edad cronológica. Por consiguiente, aquellos conjuntos de predicción con un tamaño inferior a este umbral carecen de la capacidad necesaria para capturar adecuadamente la variabilidad inherente del problema, lo que se traduce en una cobertura insuficiente y notablemente inestable. Así, el hecho de que muchos de los conjuntos tengan menos de 6 etiquetas constituye \textit{per se} un indicador problemático, independientemente de las tasas de cobertura observadas, ya que estos valores no reflejan la variabilidad real del fenómeno estudiado.
 
 Y ahora, centrándonos en los métodos:
 
 \begin{itemize}
     
-    \item \textbf{MCM}: genera conjuntos de predicción muy conservadores, con un gran número de etiquetas. Presenta infracobertura para instancias cuyo conjunto de predicción contiene entre 3 y 7 etiquetas, y sobrecobertura para tamaños de 8 a 13. Su adaptatividad es baja, ya que no ajusta el tamaño del conjunto en función del nivel de incertidumbre de la instancia.
+    \item \textbf{MCM}: Genera \textbf{conjuntos de predicción excesivamente conservadores}, con un gran número de etiquetas. La mayoría de los conjuntos (un 53\%) tiene más de 7 etiquetas. Además, presenta infracobertura para conjuntos de 7 etiquetas o menos y sobrecobertura sistemática en conjuntos más grandes, lo que evidencia una adaptabilidad limitada al no ajustar adecuadamente el tamaño del conjunto según el nivel de incertidumbre inherente a cada instancia. 
     
-    \item \textbf{LAC}: muestra una alta variabilidad en el tamaño de los conjuntos, que oscilan entre 1 y 13 etiquetas. Registra infracobertura para tamaños de 1 a 6 etiquetas y sobrecobertura para el resto, con la excepción de los conjuntos de 10 etiquetas, donde la cobertura es muy próxima a la nominal.
-    
-    \item \textbf{APS}: comparte el patrón de LAC ---si bien no presenta conjuntos de predicción de 13 etiquetas---, con infracobertura para tamaños de 6 etiquetas o menos y sobrecobertura para los mayores. Sin embargo, tanto las infracoberturas como las sobrecoberturas son más pronunciadas, evidenciando un mayor desequilibrio.
-    
-    \item \textbf{RAPS}: muy similar a APS, pero mejorando sus marcas, por lo general aumenta la cobertura de aquellas marcas en las que APS presenta infracobertura, y reduce la cobertura en aquellas en las que presenta sobrecobertura. Además reduce la variabilidad de tamaños del conjunto, concentrando muchas instancias entre 5 y 7 etiquetas, con coberturas muy cercanas al nominal. 
+    \item \textbf{LAC}: Genera conjuntos de tamaño muy variable, que oscilan entre 1 y 13 etiquetas, si bien más del 90\% tienen entre 3 y 8 etiquetas. Presenta valores de cobertura cercanos al nominal para prácticamente todos los tamaños de conjunto de predicción, siendo la mayor desviación para conjuntos de más de tamaño 3 de 2 puntos porcentuales. 
 
-    \item \textbf{SAPS}: es el método con mayor estabilidad en el tamaño de los conjuntos de predicción, que varían entre 1 y 9 etiquetas. Presenta las mayores cifras de cobertura empírica para tamaños de conjuntos de predicción menores de 4 etiquetas, si bien siguen infracubriendo.
+    \item \textbf{APS}: Presenta una \textbf{muy alta variabilidad en tamaños de conjuntos de predicción}, con un 96\% de los conjuntos de entre 2 y 9 etiquetas. Al igual que LAC, presenta infracobertura en conjuntos de menos de 7 etiquetas en conjuntos más grandes, pero de manera más pronunciada, evidenciando un mayor desequilibrio en las coberturas en base al tamaño.% 
+    
+    \item \textbf{RAPS}: La extensión de APS consigue reducir la variabilidad de tamaños del conjunto, con más del 96\% de los conjuntos de entre 2 y 7 etiquetas. Cabe comentar que logra su objetivo de reducir el tamaño de los conjuntos de predicción de APS manteniendo la cobertura marginal global. De hecho, hasta mejora su cobertura: aumenta aquellas marcas en las que APS presenta infracobertura. Sin embargo, obtiene tasas de cobertura bajas para conjuntos de mayor tamaño. Esto puede indicar una \textbf{penalización de tamaño excesiva en instancias con alto nivel de incertidumbre}, en las que la regularización de RAPS ha penalizado en exceso la inclusión de clases adicionales.
+    
+    \item \textbf{SAPS}: Presenta \textbf{conjuntos de predicción muy equilibrados}, con un número de etiquetas ni muy conservador ni excesivamente arriesgado. Un 93\% de los conjuntos de predicción tiene entre 5 y 8 etiquetas. También presenta coberturas equilibradas, con valores más cercanos al nominal que los métodos hermanos (APS y RAPS) para prácticamente todos los tamaños de conjunto. 
     
 \end{itemize}
 
-SAPS ha presentado valores de cobertura más estables para los diferentes tamaños del conjunto de predicción, así como mayor estabilidad en los propios tamaños de los conjuntos, siendo el más equilibrado, sin llegar a ser demasiado conservador ni excesivamente arriesgado. Esto sugiere que SAPS logra un mejor compromiso entre precisión y fiabilidad, manteniendo la cobertura cercana al valor nominal en un rango amplio de tamaños y evitando los extremos de infracobertura pronunciada o sobrecobertura excesiva que presentan otros métodos.
+LAC y SAPS son los dos métodos más equilibrados en este apartado. Presentan los valores de cobertura más estables para los diferentes tamaños del conjunto de predicción, evitando extremos de infracobertura o sobrecobertura excesiva. La principal diferencia entre ambos es que SAPS presenta tamaños de conjuntos con menor variabilidad que LAC.
+
 
 % ------------------------------------------------------------------------------------------------------------
 
 \subsubsection{Análisis de la cobertura en base a la edad cronológica}
 
 Y, en este último apartado, tal y como se hizo con el problema de regresión, se ha analizado la cobertura en base a la edad cronológica de cada individuo, que en este caso es la etiqueta real de cada instancia. 
-La Figura \ref{fig:AGC_EC_MPSS_by_true_age} muestra la relación de la cobertura empírica y el tamaño medio de los conjuntos de predicción con las distintas edades cronológicas en el conjunto de datos. 
+Las Figuras \ref{fig:AGC_EC_by_true_age} y \ref{fig:AGC_MPSS_by_true_age} muestran la relación de la cobertura empírica y el tamaño medio de los conjuntos de predicción para las distintas edades cronológica, en cada sexo. 
 
-\begin{figure}[htbp]
+\begin{figure}[h]
     \centering
-
-    \begin{subfigure}[b]{0.9\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AGC_EC_by_true_age.png}
-        \caption[
-            Gráfica de líneas de cobertura empírica del conjunto de predicción (\%) para cada método en función de la edad cronológica entera de los individuos.
-        ]{
-            Gráfico de líneas de cobertura empírica del intervalo de predicción (\%) para cada método en función de la edad cronológica entera de los individuos. Se observa cómo varía la capacidad de cobertura según la edad y el método empleado.
-        }
-        \label{fig:AGC_EC_by_true_age}
-    \end{subfigure}
-
-    \vspace{0.5cm}
     
-    \begin{subfigure}[b]{0.9\textwidth}
+    \begin{subfigure}[b]{0.49\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AGC_MPSS_by_true_age.png}
-        \caption[
-            Gráfica de líneas de tamaño medio del conjunto de predicción para cada método en función de la edad cronológica entera de los individuos.
-        ]{
-            Gráfica de líneas de cobertura empírica del conjunto de predicción (\%) para cada método en función de la edad cronológica entera de los individuos. Se observa cómo varía la capacidad de cobertura según la edad y el método empleado.
-        }
-        \label{fig:AGC_MPSS_by_true_age}
+        \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AGC_EC_by_true_age_Male.png}
+        \caption{Masculino}
+        \label{fig:AGC_EC_by_true_age_M}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AGC_EC_by_true_age_Female.png}
+        \caption{Femenino}
+        \label{fig:AGC_EC_by_true_age_F}
     \end{subfigure}
 
     \caption[
-        Gráficos de líneas comparativos de la cobertura empírica y el tamaño medio del conjunto de predicción por edad cronológica para los diferentes métodos evaluados.
+        Problema de clasificación de edad: 
+        Gráficos de líneas de la cobertura empírica del intervalo de predicción (\%) para cada método en función de la edad cronológica entera de los individuos, diferenciando por sexo.
     ]{
-        Gráficos de líneas comparativos de la cobertura empírica y el tamaño medio del conjunto de predicción por edad cronológica para los diferentes métodos evaluados.
+        Gráficos de líneas de la cobertura empírica del intervalo de predicción (\%) para cada método en función de la edad cronológica entera de los individuos, diferenciando por sexo. 
     }
-    \label{fig:AGC_EC_MPSS_by_true_age}
+    \label{fig:AGC_EC_by_true_age}
 \end{figure}
 
-Se observa un patrón general común en casi todos los métodos ---salvo MCM---: la cobertura empírica disminuye notablemente para edades avanzadas, especialmente a partir de los 23 años, probablemente debido a la escasez de ejemplos en este rango etario.
+\begin{figure}[h]
+    \centering
+    
+    \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AGC_MPSS_by_true_age_Male.png}
+        \caption{Masculino} 
+        \label{fig:AGC_MPSS_by_true_age_M}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AGC_MPSS_by_true_age_Female.png}
+        \caption{Femenino}
+        \label{fig:AGC_MPSS_by_true_age_F}
+    \end{subfigure}
 
-Sin embargo, a diferencia de con el problema de regresión, donde los intervalos de predicción aumentaban continuamente con la edad, aquí el tamaño medio de los conjuntos de predicción crece hasta un máximo alrededor de los 20-22 años, y posteriormente disminuye en las edades más avanzadas.
+    \caption[
+        Problema de clasificación de edad: 
+        Gráficos de líneas de tamaño medio del conjunto de predicción para cada método en función de la edad cronológica entera de los individuos, diferenciando por sexo.
+    ]{
+        Gráficos de líneas de tamaño medio del conjunto de predicción para cada método en función de la edad cronológica entera de los individuos, diferenciando por sexo.
+    }
+    \label{fig:AGC_MPSS_by_true_age}
+\end{figure}
+
+
+
+
+% \begin{figure}[htbp]
+%     \centering
+
+%     \begin{subfigure}[b]{0.9\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AGC_EC_by_true_age.png}
+%         \caption[
+%             Gráfica de líneas de cobertura empírica del conjunto de predicción (\%) para cada método en función de la edad cronológica entera de los individuos.
+%         ]{
+%             Gráfico de líneas de cobertura empírica del intervalo de predicción (\%) para cada método en función de la edad cronológica entera de los individuos. Se observa cómo varía la capacidad de cobertura según la edad y el método empleado.
+%         }
+%         \label{fig:AGC_EC_by_true_age}
+%     \end{subfigure}
+
+%     \vspace{0.5cm}
+    
+%     \begin{subfigure}[b]{0.9\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AGC_MPSS_by_true_age.png}
+%         \caption[
+%             Gráfica de líneas de tamaño medio del conjunto de predicción para cada método en función de la edad cronológica entera de los individuos.
+%         ]{
+%             Gráfica de líneas de cobertura empírica del conjunto de predicción (\%) para cada método en función de la edad cronológica entera de los individuos. Se observa cómo varía la capacidad de cobertura según la edad y el método empleado.
+%         }
+%         \label{fig:AGC_MPSS_by_true_age}
+%     \end{subfigure}
+
+%     \caption[
+%         Gráficos de líneas comparativos de la cobertura empírica y el tamaño medio del conjunto de predicción por edad cronológica para los diferentes métodos evaluados.
+%     ]{
+%         Gráficos de líneas comparativos de la cobertura empírica y el tamaño medio del conjunto de predicción por edad cronológica para los diferentes métodos evaluados.
+%     }
+%     \label{fig:AGC_EC_MPSS_by_true_age}
+% \end{figure}
+
+Se observa un patrón general común en casi todos los métodos ---salvo MCM---: la cobertura empírica disminuye notablemente para edades avanzadas, especialmente a partir de los 22 años, probablemente debido a la escasez de ejemplos en este rango etario. Sin embargo, a diferencia de con el problema de regresión, donde los intervalos de predicción aumentaban continuamente con la edad, aquí el tamaño medio de los conjuntos de predicción crece hasta un máximo alrededor de los 20-21 años, y posteriormente disminuye en las edades más avanzadas, lo que refleja una falta de diversidad en las predicciones y una subestimación de la incertidumbre epistémica, resultando en conjuntos potencialmente demasiado optimistas y con cobertura insuficiente para estos grupos subrepresentados
 
 Entre los métodos, se identifican algunos patrones destacables:
 
@@ -1510,9 +1814,11 @@ Entre los métodos, se identifican algunos patrones destacables:
     
     \item \textbf{SAPS}, de manera consistente con lo observado en el apartado anterior, mantiene una mayor estabilidad en el tamaño medio de los conjuntos. Además, es el método que mejor cobertura logra para edades jóvenes menores de 23, alcanzando coberturas muy cercanas al 95\%, y en la mayoría de casos superándolo. 
     
-    El resto de métodos adaptativos y el método LAC presentan tamaño medio de conjunto muy variables para las distintas edades cronológicas, Su cobertura fluctúa alrededor de SAPS, si bien para la mayoría de edades ligeramente por debajo.
+    \item El resto de métodos adaptativos y el método LAC presentan tamaño medio de conjunto muy variables para las distintas edades cronológicas, Su cobertura fluctúa alrededor de SAPS, si bien para la mayoría de edades ligeramente por debajo.
     
 \end{itemize}
+
+Respecto a la variable sexo, se observa una divergencia consistente con los hallazgos del problema de regresión: el sexo femenino presenta un deterioro anticipado de la cobertura, detectable desde los 22 años, mientras que el sexo masculino mantiene coberturas adecuadas hasta los 23 años, donde registra su primera caída significativa. 
 
 % ------------------------------------------------------------------------------------------------------------
 
@@ -1526,7 +1832,7 @@ En definitiva, para este problema, LAC y SAPS se perfilan como los métodos más
 
     \item LAC sobresale por su sencillez de implementación y por generar conjuntos de tamaño moderado, que si bien alcanzan una cobertura ligeramente inferior a la nominal, resultan muy eficientes en términos prácticos.
     
-    \item SAPS, por su parte, se caracteriza por producir conjuntos de predicción con tamaños poco variables, ofreciendo una mayor consistencia. Además, presenta una mayor adaptatividad respecto al tamaño, con tasas de cobertura más estables a lo largo de los diferentes tamaños del conjunto. 
+    \item SAPS, por su parte, se caracteriza por producir conjuntos de predicción con tamaños ligeramente superior a LAC, pero menos variables, ofreciendo una mayor consistencia. Además, presenta una mayor adaptatividad respecto al tamaño, con tasas de cobertura más estables a lo largo de los diferentes tamaños del conjunto. 
     
 \end{itemize}
 

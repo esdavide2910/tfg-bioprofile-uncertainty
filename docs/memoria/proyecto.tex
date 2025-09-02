@@ -1,7 +1,7 @@
 \documentclass[a4paper,11pt,openany]{book}
 \setlength{\parskip}{0.5em plus 0.2em minus 0.1em}
 % \usepackage[a4paper, top=2.7cm, bottom=4.7cm, inner=4.6cm, outer=3.1cm]{geometry}
-\usepackage[a4paper, top=2.3cm, bottom=4.0cm, inner=3.9cm, outer=2.6cm]{geometry}
+\usepackage[a4paper, top=2.3cm, bottom=3cm, inner=3.7cm, outer=2.6cm]{geometry}
 %\documentclass[a4paper,twoside,11pt,titlepage]{book}
 \usepackage{listings}
 \usepackage{enumitem}
@@ -139,6 +139,41 @@
 \usepackage[acronym]{glossaries}
 \makeglossaries
 
+\usepackage{mdframed}
+
+\definecolor{LightGrayBox}{HTML}{EAEAEA}
+% Definición del estilo que ya tienes
+\mdfdefinestyle{StatisticsStyle}{%
+   skipabove=0.5cm,
+   skipbelow=0.5cm,
+   % topline=false,
+   roundcorner=10pt,
+   frametitlefont={\color{black}\normalfont\bfseries},
+   frametitlerule=true,
+   frametitlealignment =\raggedright\noindent,
+   frametitlebackgroundcolor=LightGrayBox,
+   backgroundcolor=LightGrayBox,
+   linecolor=LightGrayBox,
+   fontcolor=black, 
+}
+\newmdenv[style=StatisticsStyle]{Statistics} 
+
+
+% --- Contador para Statistics ---
+\newcounter{statistics}[chapter]
+\renewcommand{\thestatistics}{\thechapter.\arabic{statistics}}
+
+% --- Nuevo entorno que añade numeración y referencia ---
+\newenvironment{StatisticsRef}[2][]{%
+    \refstepcounter{statistics} % permite \label
+    \begin{Statistics}[frametitle={Análisis estadístico \thestatistics: #2}]%
+    \ifx&#1&\else\label{#1}\fi
+}{%
+    \end{Statistics}%
+}
+
+
+
 
 
 % Definición de comandos que me son útiles:
@@ -270,7 +305,7 @@
    
    \appendix
    \input{apendices/A_Problema4_SC.tex}
-   \input{apendices/B_Comparación_AE_AC.tex}
+   %\input{apendices/B_Comparación_AE_AC.tex}
    \input{apendices/C_Intervalos_razonables.tex}
 
    \chapter*{}

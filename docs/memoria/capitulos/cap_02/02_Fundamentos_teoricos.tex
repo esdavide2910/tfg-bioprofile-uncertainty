@@ -1,7 +1,7 @@
 \chapter{Fundamentos teóricos}
 
 Este capítulo tiene el propósito de presentar y describir los fundamentos teóricos que sustentan los métodos 
-utilizados en el trabajo, además de justificar su importtancia para abordar los problemas planteados.
+utilizados en el trabajo, además de justificar su importancia para abordar los problemas planteados.
 
 % ------------------------------------------------------------------------------------------------------------
 % MACHINE LEARNING -------------------------------------------------------------------------------------------
@@ -155,7 +155,7 @@ Existen multitud de variante de clasificación, que pueden diferenciarse según 
     
 \end{itemize}
 
-No obstante, la mayoría de los problemas estudiados en la literatura de \acrshort{ML}, y concretamente en antropología forense, corresponden a clasificación binaria o multiclase, con etiquetas únicas y asignación precisa \cite{bishop2006}, que será el tipo de clasificación en el que nos centraremos. La cardinalidad de las clases tiene implicanciones significativas en el diseño del modelo y la evaluación de su desempeño:
+No obstante, la mayoría de los problemas estudiados en la literatura de \acrshort{ML}, y concretamente en antropología forense, corresponden a clasificación binaria o multiclase, con etiquetas únicas y asignación precisa \cite{bishop2006}, que será el tipo de clasificación en el que nos centraremos. La cardinalidad de las clases tiene implicaciones significativas en el diseño del modelo y la evaluación de su desempeño:
 
 \begin{itemize}
 
@@ -229,9 +229,9 @@ ha impulsado técnicas como el \textit{transfer learning} y modelos eficientes p
 
 El \textbf{perceptrón multicapa (\textit{multilayer perceptron}, \acrshort{MLP})} forma la base del \textit{deep learning}. Su diseño ---con capas ocultas, funciones de activación no lineales y entrenamiento  mediante \textit{backpropagation}--- sentó las bases conceptuales para arquitecturas más complejas, como las redes neuronales convolucionales o los \textit{transformers} \cite{murphy2022}. El \acrshort{MLP} sigue siendo un referente teórico y la expresión más simple de cómo el aprendizaje jerárquico puede capturar patrones en los datos. 
 
-Cada nodo en la red es denominado \textbf{unidad o neurona artifical}. Siguiendo el diseño propuesto en \cite{mcculloch1943,rosenblatt1958}, cada unidad recibe señales de entrada ---que o bien son las características de los datos o bien las salidas de las unidades de la anterior capa---, realiza una suma ponderada de estas con los pesos entrenables de cada conexión ---más un término independiente o sesgo, también entrenable---, aplica una función no lineal sobre esta para producir una salida que propaga a las unidades de la siguiente capa (véase la Figura \ref{fig:neuron_MLP}).
+Cada nodo en la red es denominado \textbf{unidad o neurona artificial}. Siguiendo el diseño propuesto en \cite{mcculloch1943,rosenblatt1958}, cada unidad recibe señales de entrada ---que o bien son las características de los datos o bien las salidas de las unidades de la anterior capa---, realiza una suma ponderada de estas con los pesos entrenables de cada conexión ---más un término independiente o sesgo, también entrenable---, aplica una función no lineal sobre esta para producir una salida que propaga a las unidades de la siguiente capa (véase la Figura \ref{fig:neuron_MLP}).
 
-Matemáticamente, la operación de una unidad artifical se expresaría como:
+Matemáticamente, la operación de una unidad artificial se expresaría como:
 
 $$
 y = f \left( \sum_{i=1}^n{w_ix_i+b} \right)
@@ -246,9 +246,11 @@ donde $x_i$ son las entradas, $w_i$ son los pesos entrenables ($w_0$ el sesgo)%
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/Neuron_perceptron.png}
-    \caption{
-        Esquema visual del funcionamiento de una unidad artificial. Adaptado de 
-        \cite{codeworld2022understandingMLDL}.
+    \caption[
+        Esquema gráfico del funcionamiento de una unidad artificial de un perceptrón multicapa.
+    ]{
+        Esquema gráfico del funcionamiento de una unidad artificial de un perceptrón multicapa. 
+        Adaptado de \cite{codeworld2022understandingMLDL}.
     } 
     \label{fig:neuron_MLP}
 \end{figure}
@@ -257,7 +259,7 @@ donde $x_i$ son las entradas, $w_i$ son los pesos entrenables ($w_0$ el sesgo)%
 Esta \textbf{función de activación} a la salida de la unidad es un componente esencial que introduce no 
 linealidad en el modelo, permitiendo a la red aprender relaciones complejas en los datos%
 \footnote{
-    Sin ella, el MLP se reduciría a una simple combinación lineal de las entradas, incapaz de
+    Sin ella, el \acrshort{MLP} se reduciría a una simple combinación lineal de las entradas, incapaz de
     representar jerarquías de características \cite{murphy2022}.
 }.
 Existe multitud de funciones de activación, como la sigmoide, la tangente hiperbólica o ReLu ---y sus 
@@ -307,8 +309,10 @@ que consta de tres partes (véase la Figura \ref{fig:neural_network}):
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/ActivationFuncClassification.png}
-    \caption{
-        Diagrama de obtención de probabilidad en problemas de clasificación. 
+    \caption[
+        Esquema gráfico de obtención de probabilidades mediante sigmoide y \textit{softmax} en problemas de clasificación binaria y multiclase. 
+    ]{
+        Esquema gráfico de obtención de probabilidades mediante sigmoide y \textit{softmax} en problemas de clasificación binaria y multiclase, respectivamente. 
         Adaptado de \cite{furnieles2022sigmoidandsoftmax}.
     } 
     \label{fig:activation_func_classification}
@@ -319,9 +323,10 @@ que consta de tres partes (véase la Figura \ref{fig:neural_network}):
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/neural_network.png}
-    \caption{
+    \caption[
         Arquitectura simplificada de un MLP. 
-        Recuperado de \cite{bre2017}.
+    ]{
+        Arquitectura simplificada de un \acrshort{MLP}. Recuperado de \cite{bre2017}.
     } 
     \label{fig:neural_network}
 \end{figure}
@@ -369,7 +374,7 @@ eficacia:
 
     No se debe confundir con las métrica de evaluación de un modelo: aunque en algunos casos se pueden usar 
     métricas como funciones de pérdida y viceversa, las métricas destacan por ser fáciles de interpretar 
-    y suele utilizarse más de una. En cambio, debe existir una únifa función de pérdida durante el 
+    y suele utilizarse más de una. En cambio, debe existir una única función de pérdida durante el 
     entrenamiento de una red neuronal, que debe cumplir tres requisitos clave:
 
     \begin{enumerate}
@@ -459,7 +464,7 @@ eficacia:
 
 Como ya se venía anticipando, la arquitectura \acrshort{MLP} es especialmente adecuada para trabajar con datos estructurados o tabulares, donde la información se organiza en una matriz en la que cada columna representa una característica concreta (como sexo, altura o peso). Sin embargo, su diseño presenta limitaciones clave: al manejar vectores de entrada de tamaño fijo y carecer de mecanismos para aprovechar relaciones espaciales o secuenciales, no es óptima para datos no estructurados, como imágenes o texto, donde cada elemento individual (un píxel o una palabra) carece de significado por sí mismo \cite{murphy2022}.
 
-Por ejemplo, los patrones aprendidos en una posición de una imagen podrían no ser reconocidos en otra ubicación, ya que las entradas tienen un recorrido distinto dentro de la red. Por tanto, el modelo arecería       % DUDA: Esto de que las entradas tienen un recorrido distinto en la red se entiende?
+Por ejemplo, los patrones aprendidos en una posición de una imagen podrían no ser reconocidos en otra ubicación, ya que las entradas tienen un recorrido distinto dentro de la red. Por tanto, el modelo carecería       % DUDA: Esto de que las entradas tienen un recorrido distinto en la red se entiende?
 de \textbf{invarianza traslacional}, puesto que los pesos no se comparten entre distintas posiciones, a lo que 
 se suma una marcada ineficiencia por el elevado número de parámetros requeridos \cite{szeliski2010}.
 
@@ -491,8 +496,11 @@ central por el resultado del producto (véase la Figura \ref{fig:conv_op}).
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/convolution_operation.jpg}
-    \caption[Esquema gráfico de la aplicación de un filtro convolucional sobre una región de una imagen.]{
+    \caption
+    [
         Esquema gráfico de la aplicación de un filtro convolucional sobre una región de una imagen.
+    ]{
+        Esquema gráfico de la aplicación de un filtro convolucional de 3×3 sobre una región de una imagen.
         Adaptado de \cite{nvidia2025convolutionoperation}.
     } 
     \label{fig:conv_op}
@@ -568,15 +576,17 @@ Hay diversas operaciones de \textit{pooling}, entre los que destacan:
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.7\textwidth]{capitulos/cap_02/imagenes/max_pooling.png}
-    \caption{
-        Esquema gráfico de \textit{max pooling} con un filtro 2x2 y \textit{stride} de 1.
+    \caption[
+        Esquema gráfico de aplicación de \textit{max pooling} con un filtro 2×2 y \textit{stride} de 1.
+    ]{
+        Esquema gráfico de aplicación de \textit{max pooling} con un filtro 2×2 y \textit{stride} de 1.
         Recuperado de la Figura 14.12 de \cite{murphy2022}.
     } 
     \label{fig:max_pooling}
 \end{figure}
 
 La región de aplicación del \textit{pooling}, al igual que en la convolución, viene determinada por ciertos 
-parámetros, definidos por el diseñador, como el tamaño de filtro (que suele ser de 2x2), el \textit{stride} 
+parámetros, definidos por el diseñador, como el tamaño de filtro (que suele ser de 2×2), el \textit{stride} 
 y el \textit{padding}, si bien también existen variantes  adaptativas (\textit{adaptive}), que ajustan
 automáticamente su cobertura para producir una salida con dimensiones específicas, independientemente del 
 tamaño de la imagen de entrada. Esta funcionalidad es especialmente útil cuando se necesita adaptar los mapas
@@ -599,16 +609,13 @@ En una convolución estándar, un filtro se desliza sobre la imagen con un despl
     \centering
     \includegraphics[width=0.7\textwidth]{capitulos/cap_02/imagenes/Example-of-a-square-image-convolution-with-zero-padding-While-training-a-CNN-there-are.png}
     \caption[
-        Esquema gráfico de filtro convolucional de 3x3 con \textit{zero-padding} de 1 y \textit{stride} de 2.
-        Recuperado de la Figura 3 de \cite{kiourt2020deep}.
+        Esquema gráfico de aplicación de un filtro convolucional de 3x3 con \textit{zero-padding} de 1 y \textit{stride} de 2.
     ]{
-        Esquema gráfico de filtro convolucional de 3x3 con \textit{zero-padding} de 1 y \textit{stride} de 2.
+        Esquema gráfico de aplicación de un filtro convolucional de 3x3 con \textit{zero-padding} de 1 y \textit{stride} de 2.
         Recuperado de la Figura 3 de \cite{kiourt2020deep}.El \textit{zero-padding} consiste en agregar filas y columnas de ceros alrededor de la imagen, de forma que los bordes puedan ser procesados por el filtro sin reducir excesivamente el tamaño del \textit{feature map} resultante. Esto permite que la convolución considere todas las regiones de la imagen, incluyendo los bordes, y facilita la preservación de la información espacial. Con un \textit{stride} de 2, el filtro se desplaza de dos en dos píxeles, realizando simultáneamente la extracción de características y el \textit{subsampling}, lo que genera una reducción controlada del tamaño de salida.
     } 
     \label{fig:stride_example}
 \end{figure}
-
-
 
 
 \subsubsection{Capas \textit{Fully-Connected}}
@@ -646,14 +653,11 @@ En la Figura \ref{fig:CNN_complete} se puede observar un ejemplo de arquitectura
     \centering
     \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/CNN_complete.png}
     \caption[
-        Esquema gráfico de la arquitectura conocida como ``AlexNet'', diseñada para resolver un problema
-        de clasificación con 1000 clases.
-        Recuperado de la Figura 5.39 de \cite{szeliski2010}.
+       Diagrama de la arquitectura de la red neuronal convolucional ``AlexNet''.
     ]{
-        Esquema gráfico de la arquitectura conocida como ``AlexNet'', diseñada para resolver un problema
-        de clasificación con 1000 clases.
+        Diagrama de la arquitectura de la red neuronal convolucional ``AlexNet'', diseñada para resolver un problema de clasificación con 1000 clases.
         Recuperado de la Figura 5.39 de \cite{szeliski2010}.
-        Esta arquitectura presenta una serie de capas convolucionales con funciones de activación no lineales ReLU y \textit{max pooling}, que formarían el \textit{backbone} y una serie de capas \acrshort{FC} (\textit{classifier}), con una capa final \textit{softmax}, que aplimentad una función de pérdida de entropía cruzada multiclase.
+        Esta arquitectura presenta una serie de capas convolucionales con funciones de activación no lineales ReLU y \textit{max pooling}, que formarían el \textit{backbone} y una serie de capas \acrshort{FC} (\textit{classifier}), con una capa final \textit{softmax}, que alimenta una función de pérdida de entropía cruzada multiclase.
     } 
     \label{fig:CNN_complete}
 \end{figure}
@@ -691,14 +695,11 @@ Como en otras arquitecturas de redes neuronales, existen numerosas técnicas de 
         \end{subfigure}
 
         \caption[
-            Diagrama del funcionamiento de neuronas con \textit{dropout}.
-            Recuperado de la Figura 5.29 de \cite{szeliski2010}.
+            Esquema gráfico del funcionamiento de neuronas con \textit{dropout}.
         ]{
-            Diagrama del funcionamiento de neuronas con \textit{dropout}.
+            Esquema gráfico del funcionamiento de neuronas con \textit{dropout}.
             Recuperado de la Figura 5.29 de \cite{szeliski2010}.
-            Cuando se evalúa el modelo, todas las unidades funcionan correctamente 
-            (\ref{sub@fig:net_deactivate_dropout}). Durante el entrenamiento, algunas son ``apagadas'' 
-            (\ref{sub@fig:net_activate_dropout}). 
+            Cuando se evalúa el modelo, todas las unidades funcionan correctamente (\ref{sub@fig:net_deactivate_dropout}). Durante el entrenamiento, algunas son ``apagadas'' (\ref{sub@fig:net_activate_dropout}). 
         }
         \label{fig:net_with_dropout}
     \end{figure}
@@ -740,19 +741,17 @@ El \textbf{aprendizaje por transferencia (\textit{transfer learning})} es una t�
 aprovechar el conocimiento aprendido por un modelo entrenado en una tarea como punto de partida para
 mejorar el rendimiento y acelerar el entrenamiento en una nueva tarea relacionada \cite{rusell2021}.
 En redes neuronales, el aprendizaje consiste en ajustar pesos, y en el caso del \textit{transfer learning}, 
-estos pesos se inicializan con valores previamente optimizados para una tarea fuente, en lugar de comenzar con 
-valores aleatorios (véase la Figura \ref{fig:fine-tuning}).
+estos pesos se inicializan con valores previamente optimizados para una tarea fuente, en lugar de comenzar con valores aleatorios (véase la Figura \ref{fig:fine-tuning}).
 
 Se conoce como \textbf{fine-tuning} a la técnica de inicialización de los pesos de aquellas partes del modelo (como capas convolucionales) con los pesos previamente aprendidos, y que continúa el entrenamiento con los datos específicos de la nueva tarea. En este contexto, se denomina \textit{head} a las capas finales del modelo que se sustituyen para adaptarse a la nueva tarea. Por ejemplo, en \cite{venema2022} se utilizan dos modelos de \acrshort{CNN} preentrenados en clasificación con ImageNet (que contiene imágenes de 1000 clases): VGG16 y ResNet50. Estos modelos se ajustan (\textit{fine-tuning}) para estimar el sexo de una persona a partir de radiografías de húmero. Aunque ambas tareas parecen muy diferentes, las primeras capas de la red, especializadas en detectar características generales como bordes y texturas, pueden ser útiles en los dos casos, lo que permite una transferencia efectiva del conocimiento. El \textit{fine-tuning} puede aplicarse de forma gradual: primero se entrena solo el \textit{head} (manteniendo el resto del modelo congelado) y luego, si es necesario, se afinan también algunas capas  preentrenadas para mejorar el rendimiento en la tarea específica.
 
-\begin{figure}[htbp]
+\begin{figure}[h]
     \centering
     \includegraphics[width=0.95\textwidth]{capitulos/cap_02/imagenes/fine-tunning.png}
     \caption[
-        Diagrama de \textit{fine-tuning} de un modelo en una nueva tarea. 
-        Recuperado de la Figura 19.2 de \cite{murphy2022}.
+        Diagrama del proceso de \textit{fine-tuning} de un modelo de red neuronal en una nueva tarea.
     ]{
-        Diagrama de \textit{fine-tuning} de un modelo en una nueva tarea. 
+        Diagrama del proceso de \textit{fine-tuning} de un modelo de red neuronal en una nueva tarea. 
         Recuperado de la Figura 19.2 de \cite{murphy2022}.
         La capa final de salida es entrenada desde cero para la nueva tarea. El resto de capas son 
         inicializadas con los pesos previos. 
@@ -1003,15 +1002,14 @@ En este trabajo exploraremos la predicción el método determinista de predicci�
 
 \section{Predicción conformal}
 
-La \textbf{predicción conformal (\textit{conformal predition}, \acrshort{CP})} \cite{vovk2005, angelopoulos2021} es un marco teórico para la \acrshort{UQ} en modelos de \acrshort{ML}, que proporciona intervalos o conjuntos de predicción con garantías estadísticas de cobertura, esto es, para una entrada dada $x$, el marco de \acrshort{CP} genera un conjunto de posibles salidas $\hat{C}(x) \subseteq Y$ que garantiza, con una probabilidad predefinida $1-\alpha$, que la verdadera etiqueta o valor $y$ esté contenida en $\hat{C}(x)$ (véanse los ejemplos de la Figura 
+La \textbf{predicción conformal (\textit{conformal prediction}, \acrshort{CP})} \cite{vovk2005, angelopoulos2021} es un marco teórico para la \acrshort{UQ} en modelos de \acrshort{ML}, que proporciona intervalos o conjuntos de predicción con garantías estadísticas de cobertura, esto es, para una entrada dada $x$, el marco de \acrshort{CP} genera un conjunto de posibles salidas $\hat{C}(x) \subseteq Y$ que garantiza, con una probabilidad predefinida $1-\alpha$, que la verdadera etiqueta o valor $y$ esté contenida en $\hat{C}(x)$ (véanse los ejemplos de la Figura 
 \ref{fig:educational_visual}).
 
-\begin{figure}[htbp]
+\begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/educational_visual.png}
     \caption[
-        Ejemplo de predicción conformal en problemas de regresión (arriba) y clasificación (abajo).
-        Recuperado de \cite{mapie-docs2023}.
+        Ejemplo de predicción conformal en problemas de regresión y clasificación.
     ]{
         Ejemplo de predicción conformal en problemas de regresión (arriba) y clasificación (abajo).
         Recuperado de \cite{mapie-docs2023}. MAPIE es una biblioteca de Python para para la cuantificación
@@ -1027,8 +1025,7 @@ Para construir los conjuntos de predicción conformal, se requiere dividir el co
     \centering
     \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/adversarial_example.png}
     \caption[
-        Ejemplo adversario mal clasificado por un modelo de ML entrenado con datos textuales.
-        Adaptado de la Figura 2 de \cite{hullermeier2021}, original de \cite{sato2018}.
+        Ejemplo adversario mal clasificado por un modelo de \textit{machine learning} entrenado con datos textuales.
     ]{
         Ejemplo adversario mal clasificado por un modelo de \acrshort{ML} entrenado con datos textuales.
         %
@@ -1053,13 +1050,13 @@ $$
 
 Esta propiedad se denomina \textbf{cobertura marginal válida} \cite{prinster2024}, y se cumple para todas las entrada $X$, siempre y cuando los datos sean intercambiables (\textit{interexchangeable}). Esta intercambiabilidad en imágenes implicaría que todas fueran tomadas en condiciones similares: mismo dominio, distribución de valores de salida, iluminación, resolución, estilo, etc. Sin embargo, la \acrshort{CP} \textbf{no asegura cobertura condicional válida} \cite{foygel2021}; es decir, no es posible garantizar cobertura para todos los subgrupos de datos sin hacer suposiciones fuertes o sacrificar utilidad práctica, en concordancia con el conocido \textit{No Free Lunch Theorem} \cite{wolpert1997}. En la Figura \ref{fig:coverage} se presenta una noción de la diferencia entre cobertura marginal y condicional. 
 
-\begin{figure}[htbp]
+\begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/coverage_types.png}
     \caption[
-        Conjuntos de predicción bajo distintas nociones de cobertura: sin cobertura garantizada, con cobertura marginal y con cobertura condicional. Recuperado de \cite{angelopoulos2021}.
+        Esquema gráfico de conjuntos de predicción bajo distintas nociones de cobertura: sin cobertura garantizada, con cobertura marginal y con cobertura condicional. 
     ]{
-        Conjuntos de predicción bajo distintas nociones de cobertura: sin cobertura garantizada, con cobertura marginal y con cobertura condicional. Recuperado de \cite{angelopoulos2021}.
+        Esquema gráfico de conjuntos de predicción bajo distintas nociones de cobertura: sin cobertura garantizada, con cobertura marginal y con cobertura condicional. Recuperado de \cite{angelopoulos2021}.
         %
         En la parte inferior de la figura se muestra la amplitud de los intervalos de predicción (en línea amarilla) generados en un problema de regresión. En la parte superior, las instancias se dividen en dos grupos; los valores reales contenidos en los intervalos se representan en verde, mientras que los no contenidos aparecen en rojo.
         %
@@ -1162,21 +1159,21 @@ La implementación de la predicción conformal consta de los siguientes pasos:
         \begin{subfigure}[b]{0.48\textwidth}
             \centering
             \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/nonconformity_quantile_threshold_simetric.png}
-            \caption{Determinación del umbral de NC para intervalos simétricos.}
+            \caption{Intervalos simétricos.}
             \label{fig:nonconformity_quantile_threshold_simetric}
         \end{subfigure}
         \hfill
         \begin{subfigure}[b]{0.49\textwidth}
             \centering
             \includegraphics[width=\textwidth]{capitulos/cap_02/imagenes/nonconformity_quantile_threshold_asimetric.png}
-            \caption{Determinación de los umbrales de NC para intervalos asimétricos.}
+            \caption{Intervalos asimétricos.}
             \label{fig:nonconformity_quantile_threshold_asimetric}
         \end{subfigure}
 
         \caption[
-            Determinación del umbral de NC para intervalos simétricos y asimétricos.
+            Determinación del umbral de no conformidad para intervalos simétricos y asimétricos.
         ]{
-            Determinación del umbral de NC para intervalos simétricos y asimétricos. 
+            Determinación del umbral de \acrshort{NC} para intervalos simétricos y asimétricos. 
             En (\ref{sub@fig:nonconformity_quantile_threshold_simetric}), el error es absoluto, y el umbral
             se calcula como se ha especificado anteriormente. 
             En (\ref{sub@fig:nonconformity_quantile_threshold_asimetric}), el error tiene signo, y hay dos
