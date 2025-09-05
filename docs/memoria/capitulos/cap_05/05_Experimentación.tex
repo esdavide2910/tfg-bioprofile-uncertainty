@@ -1131,9 +1131,9 @@ Además, como hemos descrito antes, el \textbf{fenómeno es más acusado en el s
 
 \subsubsection{Discusión de resultados}
 
-El método \acrshort{CQR} se posiciona como el claro ganador en todos los apartados analizados. Este resultado era previsible, ya que se trata del único método conformal y adaptativo considerado en el estudio.
+El método \textbf{\acrshort{CQR}} se posiciona como el claro ganador en todos los apartados analizados. Este resultado era previsible, ya que se trata del único método conformal y adaptativo considerado en el estudio.
 
-Destaca por presentar la menor amplitud media de los intervalos, manteniendo al mismo tiempo una cobertura muy próxima a la nominal. Además, al ser el único método conformal adaptativo de la lista, ofrece una ventaja estructural frente a los demás. Sus tasas de cobertura empírica son consistentes para diferentes amplitudes de intervalo, y sobresale especialmente en los casos con pocas instancias de edades cronológicas avanzadas, donde logra adaptarse a la mayor incertidumbre ampliando de forma adecuada el intervalo de predicción.
+\textbf{Destaca por presentar la menor amplitud media de los intervalos, manteniendo al mismo tiempo una cobertura muy próxima a la nominal}. Además, al ser el único método conformal adaptativo de la lista, ofrece una ventaja estructural frente a los demás. Sus \textbf{tasas de cobertura empírica son consistentes para diferentes amplitudes de intervalo, y sobresale especialmente en los casos con pocas instancias de edades cronológicas avanzadas}, donde logra adaptarse a la mayor incertidumbre ampliando de forma adecuada el intervalo de predicción.
 
 % ------------------------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
@@ -1374,9 +1374,9 @@ Resulta llamativo que el método \acrshort{LAC} muestre infracobertura en las in
 
 \subsubsection{Discusión de resultados}
 
-Basándonos únicamente en el criterio de cobertura/tamaño medio del conjunto, el método LAC presenta clara ventaja, ya que ofrece una mayor cobertura al mismo tamaño medio del conjunto que MCM.
+Basándonos únicamente en el criterio de cobertura/tamaño medio del conjunto, el método \textbf{LAC} presenta clara ventaja, ya que \textbf{ofrece una mayor cobertura al mismo tamaño medio del conjunto que MCM}.
 
-Sin embargo, si la prioridad en la predicción conformal fuera maximizar la cobertura en los casos de menores, para proteger sus derechos y minimizar el riesgo de exclusión o clasificación errónea en decisiones sensibles, entonces el método MCM sería el más adecuado, ya que ofrece una mayor proporción de aciertos en este grupo etario, incluso a costa de una ligera infracobertura en el resto de la población.
+Sin embargo, \textbf{si la prioridad en la predicción conformal fuera maximizar la cobertura en los casos de menores, para proteger sus derechos} y minimizar el riesgo de exclusión o clasificación errónea en decisiones sensibles, entonces \textbf{el método MCM sería el más adecuado}, ya que ofrece una mayor proporción de aciertos en este grupo etario, incluso a costa de una ligera infracobertura en el resto de la población.
 
 
 \FloatBarrier
@@ -1415,7 +1415,7 @@ Las Tablas \ref{tab:AGC_EC_comparative} y \ref{tab:AGC_MPSS_comparative} present
 
     \item El método `base' presenta cobertura del 100\% con tamaño medio del conjunto 13 (el máximo). Esto indica que el conjunto de predicción siempre contiene todas las clases posibles, comportándose de manera no informativa. Al requerir que la suma acumulada de las probabilidades softmax alcance el 95\%, y dada la distribución probabilística del modelo sobre las 13 clases, la estrategia termina incluyendo sistemáticamente la totalidad de las categorías para cumplir con el umbral establecido. Es por ello, que este método será descartado de ahora en adelante, al no tener ningún valor práctico para la toma de decisiones.
     
-    \item El método MCM presenta de media la mayor cobertura empírica de entre los métodos, pero con tamaños medio de conjuntos también muy superiores, como se evidencia en la Figura \ref{fig:AGC_scatterplot_EC-MPSS}. Esto probablemente se deba a que, en MCM, se calcula el umbral de \acrshort{NC} de manera independiente para cada clase utilizando únicamente las instancias pertenecientes a esta. Dado el gran número de clases, cada estimación se realiza con menos datos, lo que incrementa la variabilidad de los umbrales y conduce a intervalos más amplios para garantizar la cobertura deseada. En consecuencia, este método está en clara desventaja respecto al resto. 
+    \item El método MCM presenta de media la mayor cobertura empírica de entre los métodos, pero con tamaños medio de conjuntos también muy superiores, como se evidencia en la Figura \ref{fig:AGC_scatterplot_EC-MPSS}. Esto probablemente se deba a que, en MCM, se calcula el umbral de no conformidad de manera independiente para cada clase utilizando únicamente las instancias pertenecientes a esta. Dado el gran número de clases, cada estimación se realiza con menos datos, lo que incrementa la variabilidad de los umbrales y conduce a intervalos más amplios para garantizar la cobertura deseada. En consecuencia, este método está en clara desventaja respecto al resto. 
 
 \end{itemize}
 
@@ -1808,11 +1808,11 @@ Entre los métodos, se identifican algunos patrones destacables:
 
 \begin{itemize}
 
-    \item \textbf{MCM} presenta una alta variabilidad, con infracobertura y sobrecobertura distribuidas de manera irregular a lo largo de las edades, probablemente debido a la limitada representatividad de las puntuaciones de no conformidad en cada clase.
+    \item \textbf{MCM presenta una alta variabilidad}, con infracobertura y sobrecobertura distribuidas de manera irregular a lo largo de las edades, probablemente debido a la limitada representatividad de las puntuaciones de no conformidad en cada clase.
     
     % \item RAPS y SAPS son los más afectados en términos de cobertura para edades avanzadas.
     
-    \item \textbf{SAPS}, de manera consistente con lo observado en el apartado anterior, mantiene una mayor estabilidad en el tamaño medio de los conjuntos. Además, es el método que mejor cobertura logra para edades jóvenes menores de 23, alcanzando coberturas muy cercanas al 95\%, y en la mayoría de casos superándolo. 
+    \item \textbf{SAPS}, de manera consistente con lo observado en el apartado anterior, \textbf{mantiene una mayor estabilidad en el tamaño medio de los conjuntos}. Además, es el método que mejor cobertura logra para edades jóvenes menores de 23, alcanzando coberturas muy cercanas al 95\%, y en la mayoría de casos superándolo. 
     
     \item El resto de métodos adaptativos y el método LAC presentan tamaño medio de conjunto muy variables para las distintas edades cronológicas, Su cobertura fluctúa alrededor de SAPS, si bien para la mayoría de edades ligeramente por debajo.
     
@@ -1830,9 +1830,9 @@ En definitiva, para este problema, LAC y SAPS se perfilan como los métodos más
 
 \begin{itemize}
 
-    \item LAC sobresale por su sencillez de implementación y por generar conjuntos de tamaño moderado, que si bien alcanzan una cobertura ligeramente inferior a la nominal, resultan muy eficientes en términos prácticos.
+    \item \textbf{LAC sobresale por} su sencillez de implementación y por \textbf{generar conjuntos de tamaño moderado, que alcanzan una cobertura muy próxima a la requerida}, muy eficientes en términos prácticos.
     
-    \item SAPS, por su parte, se caracteriza por producir conjuntos de predicción con tamaños ligeramente superior a LAC, pero menos variables, ofreciendo una mayor consistencia. Además, presenta una mayor adaptatividad respecto al tamaño, con tasas de cobertura más estables a lo largo de los diferentes tamaños del conjunto. 
+    \item \textbf{SAPS}, por su parte, se caracteriza por \textbf{producir conjuntos de predicción con tamaños ligeramente superior a LAC, pero menos variables, ofreciendo una mayor consistencia}. Además, \textbf{presenta una mayor adaptatividad respecto al tamaño, con tasas de cobertura más estables} a lo largo de los diferentes tamaños del conjunto. 
     
 \end{itemize}
 

@@ -1012,7 +1012,7 @@ La \textbf{predicción conformal (\textit{conformal prediction}, \acrshort{CP})}
         Ejemplo de predicción conformal en problemas de regresión y clasificación.
     ]{
         Ejemplo de predicción conformal en problemas de regresión (arriba) y clasificación (abajo).
-        Recuperado de \cite{mapie-docs2023}. MAPIE es una biblioteca de Python para para la cuantificación
+        Recuperado de \cite{mapie-docs2023}. MAPIE es una biblioteca de Python para la cuantificación
         de incertidumbre, principalmente con técnicas de \acrshort{CP}. 
     } 
     \label{fig:educational_visual}
@@ -1077,11 +1077,10 @@ Algunas características deseables en las técnicas de \acrshort{CP} son:
 \begin{itemize}
     \item \textbf{Independencia del modelo (\textit{model-agnostic})}: que no requiera reentrenar el modelo ni modificar su arquitectura, permitiendo su aplicación \textit{post-hoc} a modelos preentrenados.
 
-    \item \textbf{Independencia del dominio (\textit{domain-agnostic})}: que pueda manejar entradas de cualquier tipo sin restricciones, tantos datos estructurado como no estructurados.
+    \item \textbf{Independencia del dominio (\textit{domain-agnostic})}: que pueda manejar entradas de cualquier tipo sin restricciones, tantos datos estructurado como no estructurados. En este trabajos todos los métodos estudiados presentan esta característica.
      
-    \item \textbf{Predicción adaptativa (\textit{adaptive prediction})}: se refiere a que el intervalo o conjunto de predicción varía su tamaño en función de la incertidumbre asociada a cada predicción individual. En general, cuanto más rica y específica sea la información que la técnica utiliza sobre las predicciones y su incertidumbre, más adaptativa será la predicción conformal. 
-    
-    Que la predicción sea adaptativa es una condición necesaria pero no suficiente para garantizar la cobertura condicional válida. 
+    \item \textbf{Predicción adaptativa (\textit{adaptive prediction})}: se refiere a que el intervalo o conjunto de predicción varía su tamaño en función de la incertidumbre asociada a cada predicción individual. En general, cuanto más rica y específica sea la información que la técnica utiliza sobre las predicciones y su incertidumbre, más adaptativa será la predicción conformal.
+    Esta adaptatividad aproxima a la cobertura condicional.
 
     \item \textbf{Ser eficiente computacionalmente}: es deseable que tanto la fase de calibración como la inferencia sean rápidas y no introduzcan una sobrecarga significativa en comparación con la predicción puntual.
     
@@ -1113,24 +1112,24 @@ Existen multitud de técnicas de \acrshort{CP}. Generalmente, estas dependen del
 },
 o detección de anomalías \cite{laxhammar2015}, entre otros. 
 A pesar de su diversidad, todos los algoritmos conformales comparten un elemento clave: la definición de una 
-\textbf{función de no conformidad (\acrshort{NC})} $A(x_i,y_i)$, una heurística que mide la incertidumbre asociada a cada predicción. Intuitivamente, esta función actúa como una medida de discrepancia entre el valor predicho y el valor observado, y permite determinar cuán ``extraña'' o ``no conforme'' es una nueva observación respecto al comportamiento esperado del modelo.
+\textbf{función de no conformidad} $NC(x_i,y_i)$, una heurística que mide la incertidumbre asociada a cada predicción. Intuitivamente, esta función actúa como una medida de discrepancia entre el valor predicho y el valor observado, y permite determinar cuán ``extraña'' o ``no conforme'' es una nueva observación respecto al comportamiento esperado del modelo.
 
 La implementación de la predicción conformal consta de los siguientes pasos:
 
 \begin{enumerate}
 
-    \item Se divide el conjunto de datos disponible en dos subconjuntos: un conjunto de entrenamiento, utilizado para ajustar el modelo predictivo ---es decir, para entrenar el modelo de forma habitual---, y un conjunto de calibración, que se reserva exclusivamente para estimar la incertidumbre mediante el cálculo de las puntuaciones de NC. Esta separación permite que la estimación del intervalo de predicción sea independiente del proceso de entrenamiento, lo cual es crucial para garantizar la validez estadística del método.
+    \item Se divide el conjunto de datos disponible en dos subconjuntos: un conjunto de entrenamiento, utilizado para ajustar el modelo predictivo ---es decir, para entrenar el modelo de forma habitual---, y un conjunto de calibración, que se reserva exclusivamente para estimar la incertidumbre mediante el cálculo de las puntuaciones de no conformidad. Esta separación permite que la estimación del intervalo de predicción sea independiente del proceso de entrenamiento, lo cual es crucial para garantizar la validez estadística del método.
 
     \item Se entrena el modelo predictivo con los ejemplos del conjunto de entrenamiento. 
 
-    \item \textbf{Calibración conformal}: En este, se calculan las \textbf{puntuaciones de NC (\textit{nonconformity scores}) $R$}%
+    \item \textbf{Calibración conformal}: En este, se calculan las \textbf{puntuaciones de no conformidad (\textit{nonconformity scores}) $R$}%
     \footnote{
         En la literatura, a este vector de puntuaciones se le suele denotar como $R$ por \textit{`residual'}
         o $E$ por \textit{`error'}. 
     }:
 
     $$
-    R = \left\{ A(x_i,y_i) \right\}_{i=1}^n
+    R = \left\{ NC(x_i,y_i) \right\}_{i=1}^n
     $$
 
     donde $n$ es el número de ejemplos del conjunto de calibración.
@@ -1141,16 +1140,16 @@ La implementación de la predicción conformal consta de los siguientes pasos:
     }. 
     Bajo las garantías estadísticas que ofrece el marco teórico de la \acrshort{CP}, esta flexibilidad muestra un gran potencial para ser integrada con otras técnicas de \acrshort{UQ}, ampliando así sus aplicaciones y mejorando la robustez de las estimaciones de incertidumbre.
 
-    Independientemente del diseño específico de la función de \acrshort{NC}, esta debe cumplir una condición esencial: las puntuaciones deben ser intercambiables entre el conjunto de calibración y las nuevas instancias. En otras palabras, deben ser idénticamente distribuidas. Esta propiedad es crucial para que \acrshort{CP} garantice cobertura marginal válida a un nivel de confianza determinado. Por tanto, aunque existe flexibilidad en el diseño de la función de \acrshort{NC}, su elección debe considerar tanto la capacidad para capturar incertidumbre útil como el cumplimiento del supuesto de intercambiabilidad. 
+    Independientemente del diseño específico de la función de no conformidad, esta debe cumplir una condición esencial: las puntuaciones deben ser intercambiables entre el conjunto de calibración y las nuevas instancias. En otras palabras, deben ser idénticamente distribuidas. Esta propiedad es crucial para que \acrshort{CP} garantice cobertura marginal válida a un nivel de confianza determinado. Por tanto, aunque existe flexibilidad en el diseño de la función de no conformidad, su elección debe considerar tanto la capacidad para capturar incertidumbre útil como el cumplimiento del supuesto de intercambiabilidad. 
 
-    A continuación, se calcula el \textbf{umbral de \acrshort{NC}}. Para un nivel de significación$\alpha$, se selecciona el $(1 - \alpha)(1 + 1/n)$-ésimo cuantil%
+    A continuación, se calcula el \textbf{umbral de no conformidad}. Para un nivel de significación$\alpha$, se selecciona el $(1 - \alpha)(1 + 1/n)$-ésimo cuantil%
     \footnote{
         La corrección $(1 + 1/n)$ asegura validez estadística para conjuntos de tamaño finito.
     } 
-    de las puntuaciones de \acrshort{NC} obtenidas en el conjunto de calibración (véase la Figura \ref{fig:nonconformity_quantile_comparison}).
+    de las puntuaciones de no conformidad obtenidas en el conjunto de calibración (véase la Figura \ref{fig:nonconformity_quantile_comparison}).
 
     $$
-    \delta_\alpha = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( \left\{ A(x_i,y_i) \right\}_{i=1}^n )
+    \delta_\alpha = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( \left\{ NC(x_i,y_i) \right\}_{i=1}^n )
     $$
 
     \begin{figure}[htbp]
@@ -1173,7 +1172,7 @@ La implementación de la predicción conformal consta de los siguientes pasos:
         \caption[
             Determinación del umbral de no conformidad para intervalos simétricos y asimétricos.
         ]{
-            Determinación del umbral de \acrshort{NC} para intervalos simétricos y asimétricos. 
+            Determinación del umbral de no conformidad para intervalos simétricos y asimétricos. 
             En (\ref{sub@fig:nonconformity_quantile_threshold_simetric}), el error es absoluto, y el umbral
             se calcula como se ha especificado anteriormente. 
             En (\ref{sub@fig:nonconformity_quantile_threshold_asimetric}), el error tiene signo, y hay dos
@@ -1187,7 +1186,7 @@ La implementación de la predicción conformal consta de los siguientes pasos:
 
     \item \textbf{Inferencia conformal}: Para cada nueva instancia $x_{n+1}$ se genera una predicción puntual
     $y_{n+1}$ utilizando el modelo entrenado. Luego, se construye un conjunto o intervalo de predicción
-    $\Gamma(x_{n+1})$ a partir de la predicción puntual y el umbral de \acrshort{NC} $\hat{q}_{1-\alpha}$, 
+    $\Gamma(x_{n+1})$ a partir de la predicción puntual y el umbral de no conformidad $\hat{q}_{1-\alpha}$, 
     tal que se garantiza con nivel de confianza $1-\alpha$ que el verdadero valor $y_{n+1}$ pertenezca al
     conjunto:
     
@@ -1195,7 +1194,7 @@ La implementación de la predicción conformal consta de los siguientes pasos:
     y_{n+1} \in \Gamma_{1-\alpha}(x_{n+1})
     $$
 
-    La forma de construir $\Gamma(x_{n+1})$ depende de cómo se haya definido la función de \acrshort{NC} 
+    La forma de construir $\Gamma(x_{n+1})$ depende de cómo se haya definido la función de no conformidad 
     durante la fase de calibración.
 
 \end{enumerate}
@@ -1203,25 +1202,25 @@ La implementación de la predicción conformal consta de los siguientes pasos:
 
 
 
-Por ejemplo, en la técnica \textit{Inductive Conformal Prediction} \cite{papadopoulos2002} para problemas de regresión, ---que describiremos en mayor profundidad en el Capítulo 4---, se utiliza el error absoluto como función de \acrshort{NC}:
+Por ejemplo, en la técnica \textit{Inductive Conformal Prediction} \cite{papadopoulos2002} para problemas de regresión, ---que describiremos en mayor profundidad en el Capítulo 4---, se utiliza el error absoluto como función de no conformidad:
 
 $$
-A(x_i, y_i) = | y_i - \hat{f}(x_i) |
+NC(x_i, y_i) = | y_i - \hat{f}(x_i) |
 $$
 
-El umbral de \acrshort{NC} se obtiene como el $(1 - \alpha)(1 + 1/n)$-ésimo cuantil de las puntuaciones de \acrshort{NC} (véase la Figura \ref{fig:nonconformity_quantile_threshold_simetric}):
+El umbral de no conformidad se obtiene como el $(1 - \alpha)(1 + 1/n)$-ésimo cuantil de las puntuaciones de no conformidad (véase la Figura \ref{fig:nonconformity_quantile_threshold_simetric}):
 
 $$
-\delta_\alpha = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( \left\{ A(x_i,y_i) \right\}_{i=1}^n )
+\delta_\alpha = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( \left\{ NC(x_i,y_i) \right\}_{i=1}^n )
 $$
 
-La construcción del intervalo de predicción surge directamente de despejar el valor real $y_{n+1}$ en la expresión que iguala la función de \acrshort{NC}, evaluada sobre la nueva instancia, con el umbral de \acrshort{NC}. En este caso en el que se emplea el error absoluto, es decir:
+La construcción del intervalo de predicción surge directamente de despejar el valor real $y_{n+1}$ en la expresión que iguala la función de no conformidad, evaluada sobre la nueva instancia, con el umbral de no conformidad. En este caso en el que se emplea el error absoluto, es decir:
 
 $$
-A(x_i, y_i) = | y_i - \hat{f}(x_i) |
+NC(x_i, y_i) = | y_i - \hat{f}(x_i) |
 $$
 
-entonces al imponer la condición $A(x_{n+1}, y_{n+1}) \le \delta_\alpha$, se obtiene: 
+entonces al imponer la condición $NC(x_{n+1}, y_{n+1}) \le \delta_\alpha$, se obtiene: 
 
 $$
 |y_{n+1}-\hat{f}(x_{n+1})| \le \delta_\alpha
@@ -1244,7 +1243,7 @@ instancia.
 
 
 A continuación se presenta un ejemplo numérico para ilustrar la construcción del intervalo. Supongamos que $x_i$ es un vector de unos determinados indicadores osteológicos de un individuo con edad cronológica conocida $y_i$ (en años). Entrenamos un modelo de regresión $\hat{f}$ en un conjunto de entrenamiento y reservamos un conjunto de calibración de $n$ individuos identificados.
-Se supone un conjunto de calibración de $n=50$ individuos y $\alpha=0.10$. Calculamos los residuos absolutos $A(x_i,y_i)$ en calibración y obtenemos su cuantil, $(1-\alpha)(1+1/n)=0.90\times1.02=0.918$ (percentil $91.8$). Si ese cuantil es $\delta_{0.10}=3.3$ años y para un caso nuevo $\hat{f}(x_{n+1})=34.7$ años, entonces:
+Se supone un conjunto de calibración de $n=50$ individuos y $\alpha=0.10$. Calculamos los residuos absolutos $NC(x_i,y_i)$ en calibración y obtenemos su cuantil, $(1-\alpha)(1+1/n)=0.90\times1.02=0.918$ (percentil $91.8$). Si ese cuantil es $\delta_{0.10}=3.3$ años y para un caso nuevo $\hat{f}(x_{n+1})=34.7$ años, entonces:
 
 $$
 y_{n+1} \in \left[ 34.7 - 3.3 , 34.7 + 3.3  \right] = \left[ 31.4 , 38.0 \right] \textnormal{ años}

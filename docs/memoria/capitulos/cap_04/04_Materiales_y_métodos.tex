@@ -11,20 +11,13 @@ Disponemos de un conjunto de datos compuesto por radiografías panorámicas maxi
 }.
 Este conjunto de datos ha sido sido proporcionado por Panacea Cooperative Research, empresa \textit{spin-off} de la Universidad de Granada. El \textit{dataset} incluye:
 
-\begin{itemize}
-
-    \item datos tabulares (en formato CSV), donde cada fila representa un ejemplo (un individuo), con los siguientes campos: un identificador único, sexo del individuo, edad del individuo y ``sample'' (clasificación según el origen geográfico de la radiografía).
-
-    \item imágenes bidimensionales de radiografías panorámicas maxilofaciales, con una imagen asociada a cada individuo mediante su ID único. 
-
-\end{itemize}
 
 \begin{table}[h]
-
+    \small
     \centering
     \begin{tabular}{@{}clc@{}}
     \toprule
-    País                                                            & Instituciones                                                                                                                                                            & Nº de ejemplos \\ \midrule
+    PAÍS                                                            & INSTITUCIONES                                                                                                                                                            & Nº DE EJEMPLOS \\ \midrule
     \begin{tabular}[c]{@{}c@{}}Bosnia y \\ Herzegovina\end{tabular} & Universidad de Sarajevo                                                                                                                                                  & 882            \\ \hline
     Botsuana                                                        & \begin{tabular}[c]{@{}l@{}}Dos clínicas dentales privadas en \\ Garobone\end{tabular}                                                                                    & 1242           \\ \hline
     Chile                                                           & \begin{tabular}[c]{@{}l@{}}Dos clínicas dentales privadas en \\ Santiago y Rancagua\end{tabular}                                                                         & 1016           \\ \hline
@@ -46,68 +39,36 @@ Este conjunto de datos ha sido sido proporcionado por Panacea Cooperative Resear
     \label{tab:instituciones_fuente_dataset}
 \end{table}
 
+\begin{itemize}
+
+    \item datos tabulares (en formato CSV), donde cada fila representa un ejemplo (un individuo), con los siguientes campos: un identificador único, sexo del individuo, edad del individuo y ``sample'' (clasificación según el origen geográfico de la radiografía).
+
+    \item imágenes bidimensionales de radiografías panorámicas maxilofaciales, con una imagen asociada a cada individuo mediante su ID único. 
+
+\end{itemize}
+
 Se proporcionan los datos ya preprocesados, por lo que no es necesario realizar tareas adicionales de limpieza o transformación previa antes de su análisis. Se ha ignorado el campo ``sample'', dado que se trata de una asignación sesgada y no representa necesariamente una clasificación fiable del origen poblacional de los individuos. Por tanto, este campo no se emplea en el análisis ni en el entrenamiento de los modelos, centrándose exclusivamente en las variables de edad, sexo e imagen.
-Hay un total de 10 739 ejemplos, de los que 5756 son de individuos de sexo femenino y 4983 de sexo masculino. Las edades mínima y máxima son 14 y 26 años, respectivamente, y la media son 19.13 años. En la Figura \ref{fig:histogram_ages} se observa que el número de ejemplos por edad se mantiene relativamente constante desde los 14 hasta los 21 años, a partir de los cuales disminuye progresivamente, con una representación notablemente menor en los grupos de 24, 25 y 26 años.
- 
-\begin{figure}[htbp]
+
+Hay un total de 10 739 ejemplos, de los que 5756 son de individuos de sexo femenino y 4983 de sexo masculino. Las edades mínima y máxima son 14 y 26 años, respectivamente, y la media son 19.13 años. 
+En la Figura \ref{fig:histogram_ages_sex} se observa que el número de ejemplos por edad se mantiene relativamente constante desde los 14 hasta los 21 años, a partir de los cuales disminuye progresivamente, con una representación notablemente menor en los grupos de 24, 25 y 26 años.
+En esta figura también podemos comprobar la distribución de ejemplos en cada edad por sexo, y observamos que hay ligeramente más ejemplos del sexo femenino que del masculino para prácticamente todas las edades.
+
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{capitulos/cap_04/imagenes/histogram_ages.png}
+    \includegraphics[width=0.7\textwidth]{capitulos/cap_04/imagenes/histogram_by_age_and_sex.png}
     \caption[
-        Histograma de edad de los individuos del conjunto de datos disponible.
+        Histograma de edades de los individuos del conjunto de datos disponible diferenciado por sexo.
     ]{
-        Histograma de edad de los individuos del conjunto de datos disponible. 
+        Histograma de edades de los individuos del conjunto de datos disponible diferenciado por sexo. 
     } 
-    \label{fig:histogram_ages}
+    \label{fig:histogram_ages_sex}
 \end{figure}
 
-En la Figura \ref{fig:kde_and_boxplot_ages_sex} podemos comprobar cómo en términos relativos la distribución de edad por sexo es muy similar, compartiendo ambas prácticamente el mismo rango de edades y patrones de dispersión, sin observarse diferencias sustanciales en la mediana ni en la forma general de las distribuciones. Sí se podría mencionar que existen ligeramente más ejemplos femeninos que masculinos para edades de 21 y 22 años. 
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=\textwidth]{capitulos/cap_04/imagenes/kdeplot_ages.png}
-    \caption[
-        Gráficas de densidad y de caja de edad por sexo de los individuos del conjunto de datos disponible.
-    ]{
-        Gráficas de densidad y de caja de edad por sexo de los individuos del conjunto de datos disponible. 
-    } 
-    \label{fig:kde_and_boxplot_ages_sex}
-\end{figure}
-
-En conclusión, el dataset presenta en general un buen balance entre clases y edades, lo que permite un análisis representativo de la población incluida. No obstante, será necesario examinar con mayor detalle la infrarepresentación de los grupos de mayor edad, especialmente a partir de los 22 años, para evaluar su posible impacto en el rendimiento y generalización de los modelos entrenados.
+En conclusión, el dataset no presenta desbalances extremos, lo que permite un análisis representativo de la población incluida. No obstante, será necesario examinar con mayor detalle la infrarrepresentación de la población de mayor edad, especialmente a partir de los 22 años, para evaluar su posible impacto en el rendimiento y generalización de los modelos entrenados
 
 Se proporcionan los datos ya divididos en \textit{train} ---con un 80\% de los individuos--- y \textit{test} ---con el 20\% restante---, con la intención de que puedan ser utilizados para entrenar y evaluar modelos de predicción. La división de ambos conjuntos se hizo de forma estratificada, de lo que se asume que la distribución será igual en ambos datasets. 
 
-% DATA LEAKAGE:
-% En la Figura \ref{fig:kde_ages_train_test} se puede observar cómo existe una distribución 
-% edad-sexo similar en los datos de ambos subconjuntos, por lo que se puede asumir que la partición respeta la 
-% representatividad de la población original, favoreciendo una evaluación más realista del rendimiento de los 
-% modelos en datos no vistos.
-
-% \begin{figure}[htbp]
-%     \centering
-
-%     \begin{subfigure}[b]{0.47\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{capitulos/cap_04/imagenes/kde_ages_F.png}
-%         \caption{Distribución de edad de individuos de sexo femenino.}
-%         \label{fig:kde_ages_F}
-%     \end{subfigure}
-%     \hfill
-%     \begin{subfigure}[b]{0.47\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{capitulos/cap_04/imagenes/kde_ages_M.png}
-%         \caption{Distribución de edad de individuos de sexo masculino.}
-%         \label{fig:kde_ages_M}
-%     \end{subfigure}
-
-%     \caption[
-%         Distribución de edad de los individuos del conjunto de datos disponible por sexo.
-%     ]{
-%         Distribución de edad de los individuos del conjunto de datos disponible por sexo. 
-%     }
-%     \label{fig:kde_ages_train_test}
-% \end{figure}
-
+\FloatBarrier
 
 % ------------------------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
@@ -129,7 +90,7 @@ La \textbf{regresión cuantílica (\textit{quantile regression}, \acrshort{QR})}
 
 En este sentido, la regresión cuantílica permite modelar límites inferiores y superiores (por ejemplo, el percentil 10\% y 90\%) para capturar la incertidumbre o heterocedasticidad en los datos. No debe confundirse con una técnica de \acrshort{UQ}, ya que no modela explícitamente la incertidumbre epistémica ni proporciona garantías estadísticas de cobertura como lo hacen los métodos de predicción conformal. Sin embargo, puede utilizarse como parte de un enfoque para cuantificar la incertidumbre aleatoria o condicional al estimar intervalos de predicción directamente a partir de los datos.
 
-Esta técnica de regresión puede implementarse en modelos de redes neuronales y modelos tipo \textit{ensemble}, aunque su implementación difiere significativamente. 
+Esta técnica de regresión puede implementarse solo en arquitectura de redes neuronales y modelos tipo \textit{ensemble}, aunque su implementación difiere significativamente. 
 
 En redes neuronales, esta regresión requiere de:
 
@@ -200,17 +161,17 @@ Todos los métodos propuestos en este trabajo son \textit{split calibration}, es
 \subsubsection{\textit{Inductive Conformal Prediction} (ICP)}
 
 La \acrshort{ICP} (también conocida como \textit{Split Conformal Prediction}) \cite{papadopoulos2002} fue el primer método de predicción conformal desarrollada para problemas de regresión. Su planteamiento es muy simple: consiste en añadir un margen a las predicciones puntuales, calculado a partir de un cuantil del error absoluto observado en un conjunto de calibración independiente. Este margen permite construir intervalos de predicción que contienen el valor real con una probabilidad determinada previamente (por ejemplo, 90\% o 95\%). 
-Por ello, la función de \acrshort{NC} es el error absoluto de la predicción respecto al valor real:
+Por ello, la función de no conformidad es el error absoluto de la predicción respecto al valor real:
 
 $$
-A(x_i, y_i) = | y_i - \hat{f}(x_i) |
+NC(x_i, y_i) = | y_i - \hat{f}(x_i) |
 % R = \left\{ | y_i - \hat{f}(x_i) | \right\}_{i=1,...,n}
 $$
 
-Luego, el umbral de \acrshort{NC} para un nivel de confianza $1-\alpha$ se calcula como el cuantil $(1-\alpha)(1+1/n)$ de las puntuaciones de \acrshort{NC}:
+Luego, el umbral de no conformidad para un nivel de confianza $1-\alpha$ se calcula como el cuantil $(1-\alpha)(1+1/n)$ de las puntuaciones de no conformidad:
 
 $$
-\delta_\alpha = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( \left\{ A(x_i,y_i) \right\}_{i=1}^n )
+\delta_\alpha = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( \left\{ NC(x_i,y_i) \right\}_{i=1}^n )
 $$
 
 Finalmente, para una instancia $x_{n+1}$, el intervalo de predicción $C(x_{n+1})$ se construye como: 
@@ -223,21 +184,21 @@ Este método de \acrshort{CP} presenta varias ventajas:
 
 \begin{itemize}
 
-    \item \textbf{\textit{Model-agnostic} y \textit{domain-agnostic}}: Es independiente tanto del modelo como del dominio, ya que no utiliza representaciones internas del modelo ni de las entradas. 
+    \item \textbf{\textit{Model-agnostic}}: Es completamente independiente del modelo y su arquitectura, ya que no utiliza representaciones internas del modelo y solo emplea una salida.  
     
-    \item \textbf{Bajo coste computacional}: El método introduce una fase adicional tras el entrenamiento, denominada calibración, en la que se calculan las puntuaciones de \acrshort{NC} sobre el conjunto de calibración $\left( \mathcal{O}(n_{calib}) \right)$ y se determina el umbral correspondiente mediante el cálculo de cuantiles $\left( \mathcal{O}(n_{calib} \log n_{calib}) \right)$. En consecuencia, el coste global es $\mathcal{O}(n_{calib} \log n_{calib})$. Aun cuando este orden de complejidad es superior al lineal, en la práctica el tiempo requerido resulta despreciable en comparación con el entrenamiento de modelos complejos, como \textit{ensembles} o \acrshort{DNN}. La inferencia conformal no introduce ningún cambio de orden ($\mathcal{O}(1)$), ya que tan solo calcula la puntuación de \acrshort{NC} de la nueva instancia para compararla con el umbral. 
+    \item \textbf{Bajo coste computacional}: El método introduce una fase adicional tras el entrenamiento, denominada calibración, en la que se calculan las puntuaciones de no conformidad sobre el conjunto de calibración $\left( O(n_{calib}) \right)$ y se determina el umbral correspondiente mediante el cálculo de cuantiles $\left( O(n_{calib} \log n_{calib}) \right)$. En consecuencia, el coste global es $O(n_{calib} \log n_{calib})$. Aun cuando este orden de complejidad es superior al lineal, en la práctica el tiempo requerido resulta despreciable en comparación con el entrenamiento de modelos complejos, como \textit{ensembles} o \acrshort{DNN}. La inferencia conformal no introduce ningún cambio de orden ($O(1)$), ya que tan solo calcula la puntuación de no conformidad de la nueva instancia para compararla con el umbral. 
 
 \end{itemize}
 
-Sin embargo, también presenta importantes limitaciones: 
+Sin embargo, también presenta una importante limitación: los \textbf{intervalos generados son simétricos y no adaptativos}, es decir, todos tienen el mismo ancho ($2q_{1-\alpha}$), no permitiéndose adaptarse a la incertidumbre específica de cada predicción.
 
-\begin{itemize}
+% \begin{itemize}
     
-    \item \textbf{Intervalo simétrico y no adaptativo}: El intervalo es simétrico, además de tener siempre el mismo ancho ($2q_{1-\alpha}$), no permitiendo adaptarse a la incertidumbre específica de cada predicción. 
+%     \item \textbf{Intervalo simétrico y no adaptativo}: El intervalo es simétrico, además de tener siempre el mismo ancho ($2q_{1-\alpha}$), no permitiendo adaptarse a la incertidumbre específica de cada predicción. 
 
-    \item \textbf{Sensibilidad a datos ruidosos o \textit{Out-of-Distribution} (\acrshort{OOD})}: Si el conjunto de calibración contiene \textit{outliers} o viola el supuesto de intercambiabilidad, el umbral \(q_{1-\alpha}\) puede inflarse, generando intervalos excesivamente conservadores. Tampoco detecta heterocedasticidad automáticamente.
+%     \item \textbf{Sensibilidad a datos ruidosos o \textit{Out-of-Distribution} (\acrshort{OOD})}: Si el conjunto de calibración contiene \textit{outliers} o viola el supuesto de intercambiabilidad, el umbral \(q_{1-\alpha}\) puede inflarse, generando intervalos excesivamente conservadores. Tampoco detecta heterocedasticidad automáticamente.
 
-\end{itemize}
+% \end{itemize}
 
 % ------------------------------------------------------------------------------------------------------------
 
@@ -250,23 +211,23 @@ Se ha optado por implementar la segunda definición del intervalo de predicción
 El proceso de calibración de este método se lleva a cabo de la siguiente manera: 
 
 \begin{itemize}
-    \item Se calculan las puntuaciones de \acrshort{NC} sobre los datos del conjunto de calibración como las diferencias entre los valores observados y los límites del intervalo predictivo:
+    \item Se calculan las puntuaciones de no conformidad sobre los datos del conjunto de calibración como las diferencias entre los valores observados y los límites del intervalo predictivo:
     
     \begin{equation*}
     \begin{split}
-        A_{lower}(x_i,y_i) = \hat{q}_{lower}(x_i) - y_i \\
-        A_{upper}(x_i,y_i) = y_i - \hat{q}_{upper}(x_i)  
+        NC_{lower}(x_i,y_i) = \hat{q}_{lower}(x_i) - y_i \\
+        NC_{upper}(x_i,y_i) = y_i - \hat{q}_{upper}(x_i)  
     \end{split}
     \end{equation*}
 
     donde $\hat{q}_{upper}(x_i)$ y $\hat{q}_{lower}(x_i)$ representan los límites superior e inferior del intervalo predictivo para la observación $x_i$, respectivamente, e $y_i$ es el valor observado real.
 
-    \item Se calcula un umbral de \acrshort{NC} para un nivel de confianza dado $1-\alpha$ como el cuantil $(1-\alpha)(1+1/n)$ de $R$:
+    \item Se calcula un umbral de no conformidad para un nivel de confianza dado $1-\alpha$ como el cuantil $(1-\alpha)(1+1/n)$ de $R$:
 
     \begin{equation*}
     \begin{split}
-        \delta_{lower_\alpha} &= Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( \left\{ A_{lower}(x_i,y_i) \right\}_{i=1}^n  ) \\
-        \delta_{upper_\alpha} &= Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( \left\{ A_{upper}(x_i,y_i) \right\}_{i=1}^n  )
+        \delta_{lower_\alpha} &= Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( \left\{ NC_{lower}(x_i,y_i) \right\}_{i=1}^n  ) \\
+        \delta_{upper_\alpha} &= Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( \left\{ NC_{upper}(x_i,y_i) \right\}_{i=1}^n  )
     \end{split}
     \end{equation*}
 
@@ -283,11 +244,13 @@ $$
         \right]
 $$
 
-\acrshort{CQR}, al igual que \acrshort{ICP}, es \textbf{independiente del modelo y del dominio}, ya que solo emplea las salidas y valores reales para realizar la calibración%
-\footnote{
-    Que sea independiente del modelo no significa que no requiera reentrenamiento. CQR requiere de la adaptación de modelos de una sola salida para que tengan las tres salidas cuantílicas. 
-}
-y no usa representaciones de las entradas. También tiene un \textbf{similar coste computacional}, puesto que realiza prácticamente las mismas operaciones que \acrshort{ICP}, pero para cada límite del intervalo predicho, calibrando los cuantiles inferior y superior de manera independiente para mantener la cobertura deseada. Sin embargo, \acrshort{CQR} logra \textbf{intervalos asimétricos y adaptativos}, dado que la regresión cuantílica estima directamente los cuantiles condicionales de la distribución de la variable objetivo, permitiendo que los límites del intervalo se ajusten según la heterocedasticidad y la forma local de la distribución de los datos, en lugar de asumir una distribución simétrica o constante del error. 
+En comparación con \acrshort{ICP}:
+
+\begin{itemize}
+    \item \acrshort{CQR} no es \textbf{independiente del modelo}, ya que al implementar \acrshort{QR}, requiere de que la arquitectura sea una red neuronal o un modelo \textit{ensemble}. Por tanto, además, requiere de reentrenamiento (a no ser que se partiera de un modelo ya con \acrshort{QR} implementada).
+    \item \acrshort{CQR} comparte un \textbf{similar coste computacional}, puesto que realiza prácticamente las mismas operaciones que \acrshort{ICP}, pero para cada límite del intervalo predicho, calibrando los cuantiles inferior y superior de manera independiente para mantener la cobertura deseada. 
+    \item \acrshort{CQR} logra \textbf{intervalos asimétricos y adaptativos}, dado que la regresión cuantílica estima directamente los cuantiles condicionales de la distribución de la variable objetivo, permitiendo que los límites del intervalo se ajusten según la heterocedasticidad y la forma local de la distribución de los datos, en lugar de asumir una distribución simétrica o constante del error. 
+\end{itemize}
 
 Para cada método se han entrenado 10 modelos independientes desde cero, con el objetivo de capturar la variabilidad inherente al proceso de entrenamiento.
 
@@ -302,9 +265,9 @@ En la Tabla \ref{tab:comparativa_cp} observamos un cuadro comparativo de los dis
     %
     Model-agnostic & Sí & Sí & Sí \\
     %
-    \begin{tabular}[c]{@{}c@{}}Cobertura marginal\\[-1.2ex]garantizada\end{tabular} & Sí & No & Sí \\
+    \begin{tabular}[c]{@{}c@{}}Cobertura marginal\\[-1.2ex]global garantizada\end{tabular} & Sí & No & Sí \\
     %
-    \begin{tabular}[c]{@{}c@{}}Cobertura condicional\\[-1.2ex]garantizada\end{tabular} & No & No & No \\
+    \begin{tabular}[c]{@{}c@{}}Cobertura condicional\\[-1.2ex]global garantizada\end{tabular} & No & No & No \\
     %
     % Intervalos asimétricos & No & Sí & Sí \\
     %
@@ -321,7 +284,7 @@ En la Tabla \ref{tab:comparativa_cp} observamos un cuadro comparativo de los dis
     \caption[
         Comparativa de métodos propuestos para problemas de regresión.
     ]{   
-        Comparativa de métodos propuestos para problemas de regresión. Las técnicas de \acrshort{CP} son las únicas que garantizan cobertura marginal.
+        Comparativa de métodos propuestos para problemas de regresión. Las técnicas de \acrshort{CP} son las únicas que garantizan cobertura marginal. Se recuerda que no existe ninguna técnica que garantice la cobertura global condicional.
     }
     \label{tab:comparativa_cp}
 \end{table}
@@ -360,13 +323,13 @@ Se ha escogido este algoritmo ya que es el utilizado en trabajos recientes sobre
 
 \acrshort{LAC} \cite{sadinle2019} es el primer método propuesto de predicción conformal para problemas de clasificación. Propone un enfoque de clasificación de conjuntos de valores (\textit{set-valued classification}) en el que, en lugar de asignar una única etiqueta a cada instancia, se selecciona un conjunto de etiquetas que garanticen un nivel de confianza predeterminada por el usuario.
 
-La función de \acrshort{NC} es conocida como \textbf{probabilidad inversa o \textit{hinge loss}} \cite{johansson2017}, y se calcula como la unidad menos la probabilidad de la clase verdadera%
+La función de no conformidad es conocida como \textbf{probabilidad inversa o \textit{hinge loss}} \cite{johansson2017}, y se calcula como la unidad menos la probabilidad de la clase verdadera%
 \footnote{
     Se le denomina probabilidad a un valor de certeza que realmente no tiene garantías estadísticas, ya que proviene directamente de la salida \textit{softmax} o sigmoide del modelo. Estas salidas no están necesariamente bien calibradas ni corresponden a verdaderas probabilidades, si bien el término se utiliza frecuentemente por motivos de simplicidad y comunicación.
 }
 o, lo que es lo mismo, la suma de valores de probabilidad de todas las clases salvo la correspondiente a la etiqueta verdadera:
 $$
-A(x_i,y_i) = 1- \hat{\pi}_{y_i}(x_i)
+NC(x_i,y_i) = 1- \hat{\pi}_{y_i}(x_i)
 $$
 
 donde $\hat{\pi}_{y_i}(x_i)$ es la probabilidad para la clase de la etiqueta verdadera%
@@ -375,14 +338,14 @@ donde $\hat{\pi}_{y_i}(x_i)$ es la probabilidad para la clase de la etiqueta ver
 }.
 
 
-El umbral de \acrshort{NC} para un nivel de confianza $1-\alpha$ se calcula como el cuantil 
-$(1-\alpha)(1+1/n)$ de las puntuaciones de \acrshort{NC}:
+El umbral de no conformidad para un nivel de confianza $1-\alpha$ se calcula como el cuantil 
+$(1-\alpha)(1+1/n)$ de las puntuaciones de no conformidad:
 
 $$
-\delta_\alpha = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( \left\{ A(x_i,y_i) \right\}_{i=1}^n)
+\delta_\alpha = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( \left\{ NC(x_i,y_i) \right\}_{i=1}^n)
 $$
 
-El conjunto de predicción conformal de una nueva instancia $x_{n+1}$ se construye como las clases cuyas probabilidades superan la unidad menos el umbral de \acrshort{NC} (véase la Figura \ref{fig:LAC_threshold}):
+El conjunto de predicción conformal de una nueva instancia $x_{n+1}$ se construye como las clases cuyas probabilidades superan la unidad menos el umbral de no conformidad (véase la Figura \ref{fig:LAC_threshold}):
 
 $$
 \Gamma_\alpha(x_{n+1}) = \left\{ k | \hat{\pi}_k(x_{n+1}) \ge 1-\delta_\alpha \right\} 
@@ -399,7 +362,7 @@ $$
     \label{fig:LAC_threshold}
 \end{figure}
 
-Así, se seleccionan aquellas clases cuya probabilidad es lo suficientemente alta como para superar el umbral de \acrshort{NC} previamente calculado. No obstante, puede ocurrir que, para ciertas instancias, ninguna clase alcance dicho umbral, lo que resultaría en un conjunto de predicción vacío. Para evitar esta situación, se ha optado por incluir en estos casos todas las clases posibles dentro del conjunto de predicción. Esta elección responde a una estrategia conservadora: ante la falta de evidencia suficiente para respaldar alguna clase en particular con el nivel de confianza requerido, lo más prudente es no excluir ninguna posibilidad, y así reflejar una alta incertidumbre. 
+Así, se seleccionan aquellas clases cuya probabilidad es lo suficientemente alta como para superar el umbral de no conformidad previamente calculado. No obstante, puede ocurrir que, para ciertas instancias, ninguna clase alcance dicho umbral, lo que resultaría en un conjunto de predicción vacío. Para evitar esta situación, se ha optado por incluir en estos casos todas las clases posibles dentro del conjunto de predicción. Esta elección responde a una estrategia conservadora: ante la falta de evidencia suficiente para respaldar alguna clase en particular con el nivel de confianza requerido, lo más prudente es no excluir ninguna posibilidad, y así reflejar una alta incertidumbre. 
 
 Algunas propiedades de este método son:
 
@@ -407,9 +370,12 @@ Algunas propiedades de este método son:
 
     \item \textbf{\textit{Model agnostic}}: Es independiente del modelo, ya que solo necesita el vector de puntuaciones predictivas $\hat{\pi}(x_i)$ y la etiqueta verdadera para cada instancia $y_i$.  
 
-    \item \textbf{Conjuntos de predicción no adaptativos}: A pesar de poder presentar conjuntos con distinto número de clases predichas, emplea un único umbral calibrado globalmente sobre todas las muestras y clases por igual. 
+    \item \textbf{Conjuntos de predicción no adaptativos}: A pesar de poder presentar conjuntos con distinto número de clases predichas, 
+    
+    
+    emplea un único umbral calibrado globalmente sobre todas las muestras y clases por igual. Este enfoque no ajusta dinámicamente el tamaño del conjunto de predicción en función de la incertidumbre del modelo para cada instancia.
 
-    \item \textbf{Bajo coste computacional}: Al igual que pasaba en regresión, solo añade coste computacional en la calibración, con el cálculo de puntuaciones de \acrshort{NC} ($\mathcal{O}(n_{calib})$) y la obtención del umbral de \acrshort{NC} ($\mathcal{O}(n_{calib} \textnormal{log } n_{calib})$). No añade coste a la inferencia ($\mathcal{O}(1)$).
+    \item \textbf{Bajo coste computacional}: Al igual que pasaba en regresión, solo añade coste computacional en la calibración, con el cálculo de puntuaciones de no conformidad ($O(n_{calib})$) y la obtención del umbral de no conformidad ($O(n_{calib} \textnormal{log } n_{calib})$). No añade coste a la inferencia ($O(1)$).
     
 \end{itemize}
 
@@ -417,7 +383,7 @@ Algunas propiedades de este método son:
 
 \subsubsection{Mondrian Confidence Machine (MCM)}
 
-\acrshort{MCM} \cite{vovk2003} es un método estrechamente relacionado con \acrshort{LAC}, ya que emplea el mismo esquema general de \acrshort{CP}. Sin embargo, introduce una diferencia clave: en lugar de aplicar un único umbral global para todas las clases, \acrshort{MCM} segmenta el conjunto de calibración por clase y calcula las puntuaciones y los umbrales de \acrshort{NC} de forma independiente para cada una (véase la Figura \ref{fig:mondrian_diagram}).
+\acrshort{MCM} \cite{vovk2003} es un método estrechamente relacionado con \acrshort{LAC}, ya que emplea el mismo esquema general de \acrshort{CP}. Sin embargo, introduce una diferencia clave: en lugar de aplicar un único umbral global para todas las clases, \acrshort{MCM} segmenta el conjunto de calibración por clase y calcula las puntuaciones y los umbrales de no conformidad de forma independiente para cada una (véase la Figura \ref{fig:mondrian_diagram}).
 
 \begin{figure}[h]
     \centering
@@ -425,7 +391,7 @@ Algunas propiedades de este método son:
     \caption[
         Diagrama ilustrativo de la división de ejemplos utilizada en MCM.
     ]{
-        Diagrama ilustrativo de la división de ejemplos utilizada en \acrshort{MCM}. Para cada clase se calcula un umbral de \acrshort{NC} a partir de las puntuaciones de no conformidad de los ejemplos pertenecientes a esa clase.
+        Diagrama ilustrativo de la división de ejemplos utilizada en \acrshort{MCM}. Para cada clase se calcula un umbral de no conformidad a partir de las puntuaciones de no conformidad de los ejemplos pertenecientes a esa clase.
     }
     \label{fig:mondrian_diagram}
 \end{figure}
@@ -435,10 +401,8 @@ A continuación, se detallan sus principales característica diferenciadas de \a
 \begin{itemize}
 
     \item \textbf{Garantiza cobertura condicional por clase}, lo cual es muy útil en conjuntos desbalanceados. A diferencia de \acrshort{APS}, que ofrece cobertura marginal sobre el conjunto total, MCM busca asegurar que cada clase individual cumpla el nivel de cobertura deseado, lo que favorece una distribución más equitativa del error.
-    
-    \item \textbf{Conjuntos de predicción parcialmente adaptativos}: Estos son adaptativos respecto a cada clase, aunque no por muestra, ya que emplea un umbral de \acrshort{NC} por cada clase, pero los aplica igual a todas las muestras.  
 
-    \item \textbf{Coste computacional comparable a \acrshort{LAC}}: Al igual que LAC, MCM calcula las puntuaciones de \acrshort{NC} para todas las instancias del conjunto de calibración. Posteriormente, para cada clase se ordenan las puntuaciones de su subconjunto para determinar el umbral correspondiente. Si hay $K$ clases y $n_k$ instancias por clase, el coste total de esta fase es $\sum_{k=1}^{K} \mathcal{O}(n_k \log n_k)$, que en la práctica se aproxima a $\mathcal{O}(n_{calib} \log n_{calib})$, manteniendo la complejidad algorítmica de LAC. En la fase de inferencia, la predicción para una nueva instancia requiere únicamente calcular la puntuación de \acrshort{NC} y compararla con el umbral de su clase, lo que supone un coste lineal respecto al número de clases, $\mathcal{O}(K)$, que se sigue traduciendo en tiempos prácticamente despreciables para la inmensa mayoría de problemas. Por tanto, MCM sigue siendo eficiente.
+    \item \textbf{Coste computacional comparable a \acrshort{LAC}}: Al igual que LAC, MCM calcula las puntuaciones de no conformidad para todas las instancias del conjunto de calibración. Posteriormente, para cada clase se ordenan las puntuaciones de su subconjunto para determinar el umbral correspondiente. Si hay $K$ clases y $n_k$ instancias por clase, el coste total de esta fase es $\sum_{k=1}^{K} O(n_k \log n_k)$, que en la práctica se aproxima a $O(n_{calib} \log n_{calib})$, manteniendo la complejidad algorítmica de LAC. En la fase de inferencia, la predicción para una nueva instancia requiere únicamente calcular la puntuación de no conformidad y compararla con el umbral de su clase, lo que supone un coste lineal respecto al número de clases, $O(K)$, que se sigue traduciendo en tiempos prácticamente despreciables para la inmensa mayoría de problemas. Por tanto, MCM sigue siendo eficiente.
 
 \end{itemize}
 
@@ -448,23 +412,23 @@ A continuación, se detallan sus principales característica diferenciadas de \a
 
 \acrshort{APS} \cite{romano2020}, como sugiere su nombre, tiene como objetivo generar conjuntos de predicción adaptativos, cuyo tamaño se ajusta dinámicamente en función de la incertidumbre del modelo para cada muestra. De este modo, se busca que las predicciones sean más informativas y reflejen con mayor precisión la confianza del modelo.
 
-La función de \acrshort{NC} utilizada en \acrshort{APS} evalúa, para cada instancia, la probabilidad total acumulada en aquellas clases que el modelo considera al menos tan probables como la clase verdadera. En otras palabras, se calcula como la suma de las probabilidades predichas para todas las clases cuya probabilidad es mayor o igual a la asignada a la etiqueta correcta.
+La función de no conformidad utilizada en \acrshort{APS} evalúa, para cada instancia, la probabilidad total acumulada en aquellas clases que el modelo considera al menos tan probables como la clase verdadera. En otras palabras, se calcula como la suma de las probabilidades predichas para todas las clases cuya probabilidad es mayor o igual a la asignada a la etiqueta correcta.
 
 Sea el vector $\hat{\pi}$ ordenado en orden decreciente: 
 $$
 \hat{\pi}_{(1)}(x_i) \ge \hat{\pi}_{(2)}(x_i) \ge \cdot\cdot\cdot \ge \hat{\pi}_{(K)}(x)
 $$
-donde $(k)$ es el índice de la clase con la $k$ mayor probabilidad, la función de \acrshort{NC} se define como:
+donde $(k)$ es el índice de la clase con la $k$ mayor probabilidad, la función de no conformidad se define como:
 $$
-A(x_i, y_i) = \sum_{j=1}^k \hat{\pi}_{(j)}(x_i) \textnormal{ donde } (k)=y_i 
+NC(x_i, y_i) = \sum_{j=1}^k \hat{\pi}_{(j)}(x_i) \textnormal{ donde } (k)=y_i 
 $$
 
-Cabe destacar que, en el caso particular de clasificación binaria, esta medida de \acrshort{NC} coincide exactamente con la utilizada en el método \acrshort{LAC}, ya que la acumulación se limita a una o dos clases. Por tanto, ambos métodos resultan equivalentes en este escenario. Sin embargo, divergen en problemas multiclase, donde las puntuaciones de \acrshort{NC} de \acrshort{APS} son más permisivas que las de \acrshort{LAC}, ya que reconocen que un modelo puede identificar características comunes entre varias clases y generar valores probabilísticos repartidos. No existe incertidumbre cuando la puntuación probabilística más alta corresponde a la clase verdadera. Por tanto, \acrshort{APS} penaliza menos los casos en que la clase correcta está entre las más probables, aunque no necesariamente en primer lugar.
+Cabe destacar que, en el caso particular de clasificación binaria, esta medida de no conformidad coincide exactamente con la utilizada en el método \acrshort{LAC}, ya que la acumulación se limita a una o dos clases. Por tanto, ambos métodos resultan equivalentes en este escenario. Sin embargo, divergen en problemas multiclase, donde las puntuaciones de no conformidad de \acrshort{APS} son más permisivas que las de \acrshort{LAC}, ya que reconocen que un modelo puede identificar características comunes entre varias clases y generar valores probabilísticos repartidos. No existe incertidumbre cuando la puntuación probabilística más alta corresponde a la clase verdadera. Por tanto, \acrshort{APS} penaliza menos los casos en que la clase correcta está entre las más probables, aunque no necesariamente en primer lugar.
 
-A partir de las puntuaciones de \acrshort{NC} en el conjunto de calibración, se calcula el umbral de \acrshort{NC} de la manera habitual:
+A partir de las puntuaciones de no conformidad en el conjunto de calibración, se calcula el umbral de no conformidad de la manera habitual:
 
 $$
-\delta_\alpha = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( \left\{ A(x_i,y_i) \right\}_{i=1}^n )
+\delta_\alpha = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } ( \left\{ NC(x_i,y_i) \right\}_{i=1}^n )
 $$
 
 Tras la calibración, para una nueva instancia $x_{n+1}$, se calcula la distribución de probabilidad ordenada en orden decreciente, y se suman de forma acumulada las probabilidades desde la clase más probable hasta que dicha suma sea mayor o igual que el umbral calibrado. El conjunto de predicción $\Gamma_\alpha(x_{n+1})$ se forma entonces incluye todas las clases correspondientes a ese conjunto acumulado: 
@@ -477,15 +441,15 @@ $$
 
 \paragraph{Componente aleatoria}
 
-Una extensión útil de \acrshort{APS} consiste en introducir una componente aleatoria durante la fase de calibración para compensar la tendencia del método a la \textit{sobrecobertura}. En este ajuste, cuando se calcula la puntuación de \acrshort{NC} para una instancia de calibración, se decide excluir la contribución de la última clase incluida (aquella correspondiente a la etiqueta verdadera $y_i$) con una probabilidad proporcional al exceso de cobertura ---respecto al nivel de confianza $1-\alpha$--- que dicha clase genera.
+Una extensión útil de \acrshort{APS} consiste en introducir una componente aleatoria durante la fase de calibración para compensar la tendencia del método a la \textit{sobrecobertura}. En este ajuste, cuando se calcula la puntuación de no conformidad para una instancia de calibración, se decide excluir la contribución de la última clase incluida (aquella correspondiente a la etiqueta verdadera $y_i$) con una probabilidad proporcional al exceso de cobertura ---respecto al nivel de confianza $1-\alpha$--- que dicha clase genera.
 
 Formalmente, sea:
 $$
-V_i = \frac{A(x_i, y_i) - (1-\alpha)}{\hat{\pi}_{(k)}(x_i)} \quad \text{con} \quad (k) = y_i
+V_i = \frac{NC(x_i, y_i) - (1-\alpha)}{\hat{\pi}_{(k)}(x_i)} \quad \text{con} \quad (k) = y_i
 $$
-donde $A$ es la puntuación de \acrshort{NC} estándar de \acrshort{APS} y $\hat{\pi}_{(k)}$ la probabilidad de la última clase incluida. Se genera un valor aleatorio $u_i \sim \mathcal{U}(0,1)$ y, si $u_i > V_i$ y la clase verdadera no está en primera posición ($k \ge 2$), se elimina completamente la contribución de dicha clase de la suma acumulada. En caso contrario, se mantiene la puntuación original.
+donde $A$ es la puntuación de no conformidad estándar de \acrshort{APS} y $\hat{\pi}_{(k)}$ la probabilidad de la última clase incluida. Se genera un valor aleatorio $u_i \sim \mathcal{U}(0,1)$ y, si $u_i > V_i$ y la clase verdadera no está en primera posición ($k \ge 2$), se elimina completamente la contribución de dicha clase de la suma acumulada. En caso contrario, se mantiene la puntuación original.
 
-De este modo, las instancias en las que la última clase aporta un exceso notable de cobertura tienen mayor probabilidad de ser recortadas, reduciendo así el umbral de \acrshort{NC} $\delta_\alpha$ y produciendo conjuntos de predicción más pequeños, sin comprometer significativamente la cobertura global. En la fase de inferencia, el procedimiento de construcción de $\Gamma_\alpha(x_{n+1})$ se mantiene idéntico, pero el umbral reducido provoca que se necesiten menos clases para alcanzar el criterio, generando así \textbf{conjuntos de predicción más pequeños} en promedio, y que siguen garantizando estadísticamente la cobertura marginal.
+De este modo, las instancias en las que la última clase aporta un exceso notable de cobertura tienen mayor probabilidad de ser recortadas, reduciendo así el umbral de no conformidad $\delta_\alpha$ y produciendo conjuntos de predicción más pequeños, sin comprometer significativamente la cobertura global. En la fase de inferencia, el procedimiento de construcción de $\Gamma_\alpha(x_{n+1})$ se mantiene idéntico, pero el umbral reducido provoca que se necesiten menos clases para alcanzar el criterio, generando así \textbf{conjuntos de predicción más pequeños} en promedio, y que siguen garantizando estadísticamente la cobertura marginal.
 
 Las principales características de APS son las siguientes:
 
@@ -494,7 +458,7 @@ Las principales características de APS son las siguientes:
     
     Sin embargo, en la práctica se ha observado que esta adaptabilidad conlleva \textbf{conjuntos de predicción más grandes en promedio que los de LAC} \cite{romano2020, angelopoulos2020}. Este fenómeno es un \textit{trade-off} inherente al intentar aproximar la cobertura condicional sin asumir distribuciones subyacentes.
     
-    \item El \textbf{coste computacional resulta más elevado que los dos algoritmos previos}. Durante la fase de calibración, cada ejemplo requiere ordenar las probabilidades de las clases para calcular su puntuación de no conformidad, lo que implica un coste total de $\mathcal{O}(n_{calib} \cdot K \log K)$ donde $K$ es el número total de clases. En la fase de inferencia, el procedimiento se repite para cada nueva instancia: se ordenan las clases por probabilidad y se van acumulando hasta superar el cuantil de calibración, alcanzando un coste de $\mathcal{O}(K \log K)$ por predicción. Aunque este orden es superior al del método clásico, en la práctica sigue siendo asumible para valores moderados de $K$.
+    \item El \textbf{coste computacional resulta más elevado que los dos algoritmos previos}. Durante la fase de calibración, cada ejemplo requiere ordenar las probabilidades de las clases para calcular su puntuación de no conformidad, lo que implica un coste total de $O(n_{calib} \cdot K \log K)$ donde $K$ es el número total de clases. En la fase de inferencia, el procedimiento se repite para cada nueva instancia: se ordenan las clases por probabilidad y se van acumulando hasta superar el cuantil de calibración, alcanzando un coste de $O(K \log K)$ por predicción. Aunque este orden es superior al del método clásico, en la práctica sigue siendo asumible para valores moderados de $K$.
     
 \end{itemize}
 
@@ -504,9 +468,9 @@ Las principales características de APS son las siguientes:
 
 \acrshort{RAPS} \cite{angelopoulos2020} es una variante del método APS, que introduce modificaciones clave para reducir el tamaño de los conjuntos de predicción, especialmente en escenarios con muchas clases, donde \acrshort{APS} tiende a generar conjuntos excesivamente grandes. El objetivo principal de \acrshort{RAPS} es mantener la propiedad de cobertura marginal deseada, al tiempo que se obtienen conjuntos de predicción más compactos y útiles en la práctica. 
 
-\acrshort{RAPS} extiende la función de \acrshort{NC} utilizada en \acrshort{APS} mediante la incorporación de un término de regularización que penaliza explícitamente la inclusión de clases con baja probabilidad en conjuntos de predicciones de tamaño ya elevado. 
+\acrshort{RAPS} extiende la función de no conformidad utilizada en \acrshort{APS} mediante la incorporación de un término de regularización que penaliza explícitamente la inclusión de clases con baja probabilidad en conjuntos de predicciones de tamaño ya elevado. 
 
-Para ello, se introducen dos hiperparámetros en la función de \acrshort{NC}:
+Para ello, se introducen dos hiperparámetros en la función de no conformidad:
 
 \begin{itemize}
 
@@ -520,16 +484,16 @@ Para ello, se introducen dos hiperparámetros en la función de \acrshort{NC}:
 
 \end{itemize}
 
-Una vez determinados los valores de estos hiperparámetros, se calculan las puntuaciones de \acrshort{NC} de la siguiente manera:
+Una vez determinados los valores de estos hiperparámetros, se calculan las puntuaciones de no conformidad de la siguiente manera:
 
 $$
-A(x_i, y_i) = \sum_{j=1}^k \hat{\pi}_{(j)}(x_i) + \lambda (k-k_{reg})^+ \textnormal{ donde } (k) = y_i
+NC(x_i, y_i) = \sum_{j=1}^k \hat{\pi}_{(j)}(x_i) + \lambda (k-k_{reg})^+ \textnormal{ donde } (k) = y_i
 $$
 
-El procedimiento de calibración y predicción en \acrshort{RAPS} sigue la misma estructura general que \acrshort{APS}, pero utiliza la función de \acrshort{NC} regularizada en lugar de la acumulación pura de probabilidades. Así, el umbral calibrado se calcula como:
+El procedimiento de calibración y predicción en \acrshort{RAPS} sigue la misma estructura general que \acrshort{APS}, pero utiliza la función de no conformidad regularizada en lugar de la acumulación pura de probabilidades. Así, el umbral calibrado se calcula como:
 
 $$
-\delta_\alpha = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } \left( \left\{ A(x_i,y_i) \right\}_{i=1}^n \right)
+\delta_\alpha = Quantile_{ \lceil  (1-\alpha) (1 + 1/n)  \rceil } \left( \left\{ NC(x_i,y_i) \right\}_{i=1}^n \right)
 $$
 
 Y el conjunto de predicción para una nueva instancia $x_{n+1}$ se construye como
@@ -557,12 +521,12 @@ Al tratarse de una extensión de \acrshort{APS}, \acrshort{RAPS} tiene un \textb
     \item el orden de clasificación de las clases según el modelo.
 \end{itemize}
 
-A partir de esta representación reducida, las clases se ordenan por probabilidad decreciente y se define una función de \acrshort{NC} que combina la probabilidad máxima con la posición $k$ de la clase verdadera en el ranking. El objetivo es que la inclusión de una clase dependa más de su relevancia relativa que de su probabilidad absoluta, evitando el efecto adverso de las colas largas.
+A partir de esta representación reducida, las clases se ordenan por probabilidad decreciente y se define una función de no conformidad que combina la probabilidad máxima con la posición $k$ de la clase verdadera en el ranking. El objetivo es que la inclusión de una clase dependa más de su relevancia relativa que de su probabilidad absoluta, evitando el efecto adverso de las colas largas.
 
-A diferencia de los anteriores métodos adaptativos, este método incluye la \textbf{componente aleatoria} desde su planteamiento inicial. La función de \acrshort{NC} propuesta es:
+A diferencia de los anteriores métodos adaptativos, este método incluye la \textbf{componente aleatoria} desde su planteamiento inicial. La función de no conformidad propuesta es:
 
 $$
-A(x_i, y_i) = \hat{\pi}_{max}(x_i) + \lambda \,(k - 2 + u_i)
+NC(x_i, y_i) = \hat{\pi}_{max}(x_i) + \lambda \,(k - 2 + u_i)
 $$
 
 donde:  
@@ -575,12 +539,12 @@ donde:
 
 Observe que la penalización efectiva se aplica sobre el término $k - 2 + u_i$: no se penaliza la clase en primera posición ($k=1$), mientras que para las siguientes posiciones la penalización crece de forma lineal. La inclusión de $u_i$ hace que la penalización de la última clase considerada se distribuya de manera uniforme en el intervalo $(k-1, k)$, lo que garantiza aleatoriedad controlada y una calibración más estable.
 
-El umbral de \acrshort{NC} $\delta_\alpha$ se calcula a partir de las puntuaciones $A(x_i, y_i)$ en el conjunto de calibración, de forma análoga a \acrshort{APS} y \acrshort{RAPS}:
+El umbral de no conformidad $\delta_\alpha$ se calcula a partir de las puntuaciones $NC(x_i, y_i)$ en el conjunto de calibración, de forma análoga a \acrshort{APS} y \acrshort{RAPS}:
 $$
-\delta_\alpha = Quantile_{\lceil (1-\alpha)(1+1/n) \rceil} \left( \left\{ A(x_i, y_i) \right\}_{i=1}^n \right)
+\delta_\alpha = Quantile_{\lceil (1-\alpha)(1+1/n) \rceil} \left( \left\{ NC(x_i, y_i) \right\}_{i=1}^n \right)
 $$
 
-En la fase de inferencia, el conjunto de predicción para una nueva instancia $x_{n+1}$ se construye añadiendo las clases en orden decreciente de probabilidad, calculando para cada una la puntuación de \acrshort{NC} y deteniéndose cuando esta supera el umbral $\delta_\alpha$:
+En la fase de inferencia, el conjunto de predicción para una nueva instancia $x_{n+1}$ se construye añadiendo las clases en orden decreciente de probabilidad, calculando para cada una la puntuación de no conformidad y deteniéndose cuando esta supera el umbral $\delta_\alpha$:
 
 \begin{align*}
 \Gamma_\alpha(x_{n+1}) = &\left\{ (1), \dots, (k) \right\} \ \textnormal{donde} \\
@@ -592,6 +556,38 @@ Gracias a esta estrategia basada en orden y probabilidad máxima, \acrshort{SAPS
 El \textbf{coste computacional es idéntico al de \acrshort{APS}} tanto en orden algorítmico como en las operaciones realizadas con las implementaciones realizadas para este trabajo.
 
 
+En la Tabla \ref{tab:comparativa_cp_classification} observamos un cuadro comparativo de los distintos métodos presentados para la estimación de conjuntos predictivos. 
+
+\renewcommand{\arraystretch}{1.8}
+\begin{table}[h]
+    \centering
+    \begin{tabular}{cccc}
+    \toprule
+    Característica & LAC & MCM & (R/S)APS \\ \hline
+    %
+    Model-agnostic & Sí & Sí & Sí \\
+    %
+    \begin{tabular}[c]{@{}c@{}}Cobertura marginal\\[-1.4ex]global garantizada\end{tabular} & Sí & Sí & Sí \\
+    %
+    \begin{tabular}[c]{@{}c@{}}Cobertura condicional\\[-1.4ex]por clase garantizada\end{tabular} & No & Sí & No \\
+    %
+   \begin{tabular}[c]{@{}l@{}}Conjuntos de\\[-1.4ex]tamaño variable\end{tabular} & Sí & Sí & Sí \\
+    %
+    Conjuntos adaptativos & No & No & Sí \\
+    %
+    Coste calibración   & $O(n \log(n))$    & $O(n \log(n))$ & $O(n K \log(K))$ \\
+    % 
+    \begin{tabular}[c]{@{}l@{}}Coste inferencia \\[-1.4ex] (por predicción)\end{tabular} & $O(1)$ & $O(1)$ & $O(K \log(K))$ \\ 
+    %
+    \bottomrule
+    \end{tabular}
+    \caption[
+        Comparativa de métodos propuestos para problemas de clasificación.
+    ]{   
+        Comparativa de métodos propuestos para problemas de clasificación. 
+    }
+    \label{tab:comparativa_cp_classification}
+\end{table}
 
 % ------------------------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------

@@ -90,26 +90,28 @@ Además, como se ha mencionado anteriormente, la estimación de edad también se
 
 Los métodos de estimación del \acrshort{PB} se basan en la evaluación visual y en el análisis morfométrico de rasgos esqueléticos, que requieren de conocimiento especializado. Sin embargo, su aplicación puede presentar ambigüedades en su formulación que den lugar a interpretaciones variables ---muchas veces fruto de sesgos cognitivos \cite{nakhaeizadeh2014, cooper2019}--- y están sujetos a posibles errores de medición \cite{langley2018}. Además, la gran variabilidad genética y ambiental entre individuos, que afecta la morfología del esqueleto y genera diferencias significativas entre poblaciones de distintas regiones \cite{ubelaker2017}, hace que muchos de estos métodos ---basados en muestras de referencia limitadas o no representativas de la diversidad humana global--- pierdan precisión. Esto puede introducir sesgos al estimar el \acrshort{PB} de individuos de grupos poco estudiados o con características atípicas.
 
-Frente a estas limitaciones, recientes avances en inteligencia artificial (\acrshort{IA}) y \textit{machine learning} (\acrshort{ML}) han demostrado el potencial de mejorar la exactitud y objetividad de estimación del \acrshort{PB}, tanto para la estimación de sexo \cite{curate2017, darmawan2015, pinto2016} como de edad \cite{kim2017, larson2018, lee2017}.
+Frente a estas limitaciones, recientes avances en inteligencia artificial (\acrshort{IA}) y \textit{machine learning} (\acrshort{ML}) han demostrado el potencial de mejorar la exactitud y objetividad de estimación del \acrshort{PB}, tanto para la estimación de sexo \cite{curate2017, darmawan2015, pinto2016, venema2022, park2024} como de edad \cite{kim2017, larson2018, lee2017, imaizumi2021, stepanovsky2024, park2024}. 
+Sin embargo, aún mejorando la exactitud de las predicciones, la variabilidad biológica inherente al desarrollo esquelético humano continúa representando un desafío para la interpretación de estas. No todas las predicciones tienen el mismo nivel de confianza o fiabilidad, y los modelos no incluyen información sobre esta incertidumbre en sus predicciones. Ya en \cite{ferrante2009} se introducía no solo la necesidad de identificar el método adecuado para estimar la edad a partir de los elementos disponibles, sino también de evaluar su confiabilidad. 
 
-Sin embargo, aún mejorando la exactitud de las predicciones, los modelos siguen mostrando carencias respecto a la cuantificación de incertidumbre, pues no todas las predicciones tienen el mismo nivel de confianza o fiabilidad. Ya en \cite{ferrante2009} se introducía no solo la necesidad de identificar el método adecuado para estimar la edad a partir de los elementos disponibles, sino también de evaluar su confiabilidad y realizar un estudio del error arrojado por las predicciones del método. Estos generalmente se han basado en la estadística frecuentista%
-\footnote{
-    La estadística frecuentista es la corriente que se desarrolla a partir de los conceptos de probabilidad y que se centra en el cálculo de probabilidades y el contraste de hipótesis.
-}
-\cite{verma2020, stepanovsky2024, heinrich2024}. Un ejemplo de este tipo de análisis se ilustra en la Figura \ref{fig:regression_lentibia_stature}, donde se examina la distribución probabilística del error residual arrojado por un modelo de regresión.
+% los modelos siguen mostrando carencias respecto a la cuantificación de incertidumbre, pues no todas las predicciones tienen el mismo nivel de confianza o fiabilidad. 
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.75\textwidth]{capitulos/cap_01/imagenes/regression_line_lentibia_stature.png}
-    \caption[
-        Línea de regresión de un modelo de regresión que predice la estatura a partir de la longitud de la tibia.
-    ]{
-        Línea de regresión del modelo de regresión propuesto en \cite{verma2020} que predice la estatura a partir de la longitud de la tibia. En rojo, la línea de regresión; en verde, los intervalos de confianza al 95\% para la media poblacional; y la naranja, los intervalos de predicción al 95\% de confianza. Aunque en ambos casos se utilice la palabra ``confianza'', se refieren a conceptos distintos: el intervalo de confianza indica el rango donde, con una probabilidad del 95\%, se espera que se encuentre la media poblacional estimada para un valor dado de la variable independiente, mientras que el intervalo de predicción señala el rango donde, con la misma probabilidad, podría ubicarse una observación individual futura. Consulte el Anexo \ref{chap:intervalos_valores_razonables} para entrar en detalle.
-    } 
-    \label{fig:regression_lentibia_stature}
-\end{figure}
+% Ya en \cite{ferrante2009} se introducía no solo la necesidad de identificar el método adecuado para estimar la edad a partir de los elementos disponibles, sino también de evaluar su confiabilidad y realizar un estudio del error arrojado por las predicciones del método. Estos generalmente se han basado en la estadística frecuentista%
+% \footnote{
+%     La estadística frecuentista es la corriente que se desarrolla a partir de los conceptos de probabilidad y que se centra en el cálculo de probabilidades y el contraste de hipótesis.
+% }
+% \cite{verma2020, stepanovsky2024, heinrich2024}. Un ejemplo de este tipo de análisis se ilustra en la Figura \ref{fig:regression_lentibia_stature}, donde se examina la distribución probabilística del error residual arrojado por un modelo de regresión.
+% La mayoría de los modelos actuales se limitan a ofrecer predicciones puntuales en regresión \cite{park2024, imaizumi2021, stepanovsky2024} o etiquetas únicas en clasificación \cite{venema2022, park2024}, sin cuantificar la incertidumbre asociada a cada predicción.
 
-Aunque existen métricas para evaluar el error cuando se dispone de \textit{ground truth}, la mayoría de los modelos actuales se limitan a ofrecer predicciones puntuales en regresión \cite{park2024, imaizumi2021, stepanovsky2024} o etiquetas únicas en clasificación \cite{venema2022, park2024}, sin cuantificar la incertidumbre asociada a cada predicción.
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=0.75\textwidth]{capitulos/cap_01/imagenes/regression_line_lentibia_stature.png}
+%     \caption[
+%         Línea de regresión de un modelo de regresión que predice la estatura a partir de la longitud de la tibia.
+%     ]{
+%         Línea de regresión del modelo de regresión propuesto en \cite{verma2020} que predice la estatura a partir de la longitud de la tibia. En rojo, la línea de regresión; en verde, los intervalos de confianza al 95\% para la media poblacional; y la naranja, los intervalos de predicción al 95\% de confianza. Aunque en ambos casos se utilice la palabra ``confianza'', se refieren a conceptos distintos: el intervalo de confianza indica el rango donde, con una probabilidad del 95\%, se espera que se encuentre la media poblacional estimada para un valor dado de la variable independiente, mientras que el intervalo de predicción señala el rango donde, con la misma probabilidad, podría ubicarse una observación individual futura. Consulte el Anexo \ref{chap:intervalos_valores_razonables} para más detalle.
+%     } 
+%     \label{fig:regression_lentibia_stature}
+% \end{figure}
 
 Con lo anterior se expone la motivación de la aplicación de \acrshort{ML} a la \acrshort{AF}, así como de la necesidad de cuantificar la incertidumbre en las predicciones, para ofrecer garantías de confiabilidad estadística que aspiren a sustentar la validez legal en contextos judiciales. Algunos datos que magnifican la necesidad de técnicas de \acrshort{AF} confiables actualmente son:
 
@@ -155,33 +157,29 @@ Con lo anterior se expone la motivación de la aplicación de \acrshort{ML} a la
 
 \section{Objetivos}
 
-La \textbf{predicción conformal} emerge como un marco teórico robusto para generar intervalos de predicción con garantías estadísticas sólidas, independientemente de la distribución subyacente de los datos. A diferencia de los enfoques tradicionales, este método no solo ofrece predicciones puntuales sino que cuantifica la incertidumbre asociada a cada estimación mediante intervalos o conjuntos de predicción que reflejan la confiabilidad de la predicción en cada caso particular.
+La \textbf{predicción conformal} emerge como un marco teórico robusto para generar intervalos de predicción con garantías estadísticas sólidas, independientemente de la distribución subyacente de los datos. A diferencia de los enfoques tradicionales, este método no solo ofrece predicciones puntuales sino que cuantifica la incertidumbre asociada a cada estimación mediante intervalos o conjuntos de predicción que reflejan la confiabilidad de la predicción.
 
 Este Trabajo de Fin de Grado tiene un doble objetivo: 
 
 \begin{itemize}
 
-    \item desde un prisma teórico, defender la cuantificación de incertidumbre como herramienta esencial en \acrshort{ML}, ofrecer un panorama de métodos destacados, analizando sus ventajas y limitaciones, y centrarnos en la predicción conformal y sus técnicas más populares.
+    \item Defender la cuantificación de incertidumbre como herramienta esencial en \acrshort{ML}, ofrecer un panorama de métodos destacados, analizando superficialmente sus ventajas y limitaciones, y centrarnos en la predicción conformal y sus técnicas más populares.
 
-    \item aplicar la predicción conformal a un contexto práctico como es el problema de estimación del \acrshort{PB}, centrándose en la estimación de edad y de sexo a partir de datos biológicos e imágenes médicas.
-
-\end{itemize}
-
-De esta forma, podremos incorporar la incertidumbre propia del problema a resolver y del modelo entrenado para él, para, en aquellos casos más confusos, devolver conjuntos de predicciones con más de una etiqueta predicha (p.ej., \{masculino, femenino\}) en problemas de clasificación, o intervalos de predicción más amplios (p.ej., edad$\in$[16,20]) en problemas de regresión, en ambos casos para un nivel de confianza determinado.
-Por tanto, podemos desgranar los objetivos en:
-
-\begin{itemize}
-
-    \item Estudiar de forma exhaustiva la bibliografía sobre predicción conformal y algunas de sus técnicas,así como de la estimación de sexo y edad.
-
-    \item Implementar, entrenar y validar modelos de regresión ---en problemas de estimación de edad--- y clasificación ---tanto en problema de estimación de sexo como edad legal--- a los que aplicar la inferencia conformal, y comparar aproximaciones heurísticas de cuantificación de incertidumbre con los métodos conformales.
+    \item Aplicar la predicción conformal a un contexto práctico como es el problema de estimación del \acrshort{PB}, centrándose en la estimación de edad y de sexo a partir de datos biológicos e imágenes médicas. De esta forma, podremos incorporar la incertidumbre propia del problema a resolver y del modelo entrenado para él, para, en aquellos casos más confusos, devolver conjuntos de predicciones con más de una etiqueta predicha (p.ej., \{masculino, femenino\}) en problemas de clasificación, o intervalos de predicción más amplios (p.ej., edad$\in$[16,20]) en problemas de regresión, en ambos casos para un nivel de confianza determinado.
     
-    % \item s intervalos y conjuntos de predicciones generados para evaluar su calibración empírica y utilidad forense.  
+    Podemos dividir este objetivo a su vez en los siguientes:
 
-    \item Realizar una primera aproximación a un marco interpretable y con garantías estadísticas para la estimación del perfil biológico (véase un ejemplo práctico en la Figura \ref{fig:example_intervalic_estimation}), donde la incertidumbre cuantificada pueda integrarse en informes periciales bajo estándares jurídicos.
+    \begin{itemize}
+
+        \item Estudiar de forma exhaustiva la bibliografía sobre predicción conformal y algunas de sus técnicas, así como de la estimación de sexo y edad.
+
+        \item Implementar, entrenar y validar modelos de regresión ---en problemas de estimación de edad--- y clasificación ---tanto en problema de estimación de sexo como edad legal--- a los que aplicar la inferencia conformal, y comparar aproximaciones heurísticas de cuantificación de incertidumbre con los métodos conformales.
+
+        \item Realizar una primera aproximación a un marco interpretable y con garantías estadísticas para la estimación del perfil biológico (véase un ejemplo práctico en la Figura \ref{fig:example_intervalic_estimation}), donde la incertidumbre cuantificada pueda integrarse en informes periciales bajo estándares jurídicos.
+
+    \end{itemize}
 
 \end{itemize}
-
 
 \begin{figure}[htbp]
     \centering
@@ -529,11 +527,11 @@ Finalmente, en cuanto a recursos humanos, el coste asociado a la mano de obra se
     
     \begin{align*}
         \textnormal{Coste Investigador} &= \textnormal{Tiempo de trabajo} \times \textnormal{Coste por tiempo} \\[1ex]
-        &= 360\text{ h} \times 21 \text{ \euro/h} = 7,560 \text{ \euro}
+        &= 360\text{ h} \times 21 \text{ \euro/h} = 7 560 \text{ \euro}
     \end{align*}
     
     \item \textbf{Mantenimiento del clúster}: no se considera un coste adicional, ya que está incluido en el servicio de la nube proporcionado.
     
 \end{itemize}
 
-El coste total estimado, considerando todos los componentes anteriormente citados, ascendería a \textbf{8.623,67\euro}.
+El coste total estimado, considerando todos los componentes anteriormente citados, ascendería a \textbf{8 623.67\euro}.

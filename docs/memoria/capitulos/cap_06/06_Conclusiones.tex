@@ -9,23 +9,23 @@ A la luz de los resultados obtenidos, se puede concluir que el empleo de método
 En primer lugar, se observa que tanto las predicciones puntuales como las conformales mejoran en sus métricas a medida que aumenta el desempeño del modelo subyacente. Es decir, cuanto más preciso resulta el modelo al estimar el valor esperado o clase verdadera de cada instancia, mayor es también la calidad de los intervalos o conjuntos conformales asociados. Por tanto, \textbf{el objetivo de mejorar la precisión del modelo base y el de obtener mejores intervalos conformales es común y está alineado}. Esta sinergia entre el modelo y el método conformal es también crucial a la hora de su implementación.
 
 En términos prácticos, \textbf{la mayoría de las técnicas de predicción conformal presentan la ventaja de no requerir un reentrenamiento completo del modelo}, siempre que se disponga de suficientes ejemplos para la calibración, distintos de los empleados en el entrenamiento o la validación. En caso de no contar con este volumen de datos, resulta necesario reentrenar el modelo tras realizar una nueva partición del conjunto de datos que reserve un subconjunto específico para la calibración.
-Existen, no obstante, métodos que sí implican modificaciones en el entrenamiento, como la \textit{Conformalized Quantile Regression}. Este enfoque requiere incorporar nuevas salidas ---de la \textit{Quantile Regression}--- y entrenar nuevamente el modelo bajo una función de pérdida adaptada. Sin embargo, cabe destacar que este proceso de ajuste resulta relativamente poco costoso, dado que el modelo suele converger en pocas épocas.
+Existen, no obstante, métodos que sí implican modificaciones en la arquitectura y reentrenamiento o, como la \textit{Conformalized Quantile Regression}. Este enfoque requiere incorporar nuevas salidas ---de la \textit{Quantile Regression}--- y entrenar nuevamente el modelo bajo una función de pérdida adaptada. Sin embargo, cabe destacar que este proceso de ajuste resulta relativamente poco costoso, dado que el modelo suele converger en pocas épocas a partir de uno base ya entrenado con una única salida.
 
 
 % ¿Qué aporta la predicción conformal?
 
 La principal contribución de la predicción conformal reside en \textbf{proporcionar una medida rigurosa de incertidumbre a través del conjunto predicho}. Algunas técnicas miden la incertidumbre del conjunto completo, de modo que todos los ejemplos reciben conjuntos de predicción del mismo tamaño. En estos casos, la incertidumbre no se refleja en la variabilidad del tamaño del conjunto, sino en la frecuencia con que dicho conjunto contiene o no el valor o clase verdadero. Así, los tamaños de los conjuntos conformales son constantes, lo que no deja de ser una aproximación muy cercana al análisis del error tradicional: se garantiza que, en promedio, el error se mantenga bajo un umbral prefijado.
 Sin embargo, \textbf{los métodos conformales adaptativos entrañan un mayor potencial, ya que ajustan dinámicamente el tamaño del conjunto de predicción en función de la dificultad de predecir cada instancia}. De este modo, ejemplos en los que el modelo está más seguro tienden a recibir conjuntos más pequeños, mientras que en aquellos en los que la predicción es más incierta, los conjuntos se amplían para mantener la garantía de cobertura. 
-Esta adaptatividad permite capturar mejor tanto la incertidumbre epistémica (p.ej., los intervalos de edad más amplios por escasez de datos en individuos de edad avanzada) como la estocástica (p.ej., los intervalos amplios por la mayor variabilidad fisiológica en edades avanzadas), reflejando así de manera más fiel la heterogeneidad de los datos y proporcionando información más útil para la toma de decisiones.
+Esta adaptatividad permite capturar mejor tanto la incertidumbre epistémica (p.ej., los intervalos de edad más amplios por escasez de datos en individuos de edad avanzada) como la estocástica (p.ej., los intervalos amplios por la mayor variabilidad fisiológica en edades avanzadas), reflejando así de manera más fiel la heterogeneidad de los datos. Esta adaptatividad no siempre consigue conjuntos más pequeños, pero aproxima más a una cobertura condicional.
 
 
 % ¿Cuál es el coste de la predicción conformal?
 
-En cuanto a los costes de implementar la predicción conformal, estos se concentran en dos aspectos principales:
+En cuanto a los \textbf{costes de implementar la predicción conformal}, estos se concentran en dos aspectos principales:
 
 \begin{itemize}
 
-    \item \textbf{Reserva de datos para calibración}: destinar una fracción del conjunto de entrenamiento puede degradar el rendimiento del modelo. No obstante, en el caso analizado, el volumen de datos fue suficiente para que la retención del 20\% apenas afectara los resultados: en el problema de estimación de edad, el error asbolute medio y el error cuadrático medio apenas se resentía un 3.5\% y 5.5\%, respectivamente; o en el problema de estimación de la mayoría de edad, la exactitud solo variaba un 0.63 \% de media. En contextos con conjuntos de datos reducidos, este aspecto puede volverse más problemático, por lo que resultaría recomendable explorar estrategias alternativas de predicción conformal como \textit{Jackknife+}. 
+    \item \textbf{Reserva de datos para calibración}: destinar una fracción del conjunto de entrenamiento \textbf{puede degradar ligeramente el rendimiento del modelo en la predicción puntual}. No obstante, en el caso analizado, el volumen de datos fue suficiente para que la retención del 20\% apenas afectara los resultados: en el problema de estimación de edad, el error absolute medio apenas se resentía un 3.5\% (de 1.16 en métodos no conformales a 1.20 en ICP); o en el problema de estimación de la mayoría de edad, la exactitud solo variaba un 0.63\% de media (de 87.63\% en métodos no conformales al 87\% en los conformales). En contextos con conjuntos de datos reducidos, este aspecto puede volverse más problemático, por lo que resultaría recomendable explorar estrategias alternativas de predicción conformal como \textit{Jackknife+}. 
     
     \item \textbf{Incorporación del proceso de calibración e inferencia conformal}: la calibración supone una fase adicional, y en algunos casos (con los métodos APS, RAPS y SAPS) la inferencia conformal también un mayor coste en tiempo que la inferencia puntual. Aun así, en el problema de estimación de edad, los tiempos de calibración han supuesto en media menos de un 6\% de los tiempos totales de modelado, lo que evidencia que la sobrecarga computacional introducida por este método es mínima comparada con el coste global del proceso, especialmente cuando se emplean modelos de ML complejos. 
 
@@ -38,15 +38,29 @@ Cabe destacar que, si bien todos los métodos conformales garantizan teóricamen
 
 \begin{itemize}
 
-    \item Las \textbf{garantías de cobertura estadística no garantizan la cobertura al nivel deseado sobre el conjunto de datos nuevo. La elección de la función de no conformidad es crucial}, pues determina la eficiencia de los intervalos: funciones mal calibradas pueden producir intervalos excesivamente amplios o poco informativos, mientras que elecciones adecuadas permiten intervalos más ajustados sin perder la validez. Nuestros resultados para el problema de clasificación de edad, en igualdad de condiciones (mismo dataset de calibración y modelo), exhiben métodos que logran desde un 94.29\% de cobertura hasta un 95.42\% para una cobertura global deseada del 95\%. 
+    \item Las \textbf{garantías de cobertura estadística no garantizan la cobertura empírica al nivel deseado sobre el conjunto de datos nuevo. La elección de la función de no conformidad es crucial}, pues determina la eficiencia de los intervalos: funciones mal calibradas pueden producir intervalos excesivamente amplios o poco informativos, mientras que elecciones adecuadas permiten intervalos más ajustados sin perder la validez. Nuestros resultados para el problema de clasificación de edad, en igualdad de condiciones (mismo dataset de calibración y modelo), exhiben métodos que logran desde un 94.29\% de cobertura hasta un 95.42\% para una cobertura global deseada del 95\%. 
     
     \item \textbf{Algunas variantes tienden a generar intervalos o conjuntos inestables, sobrecubriendo ciertos grupos e infracubriendo otros, mientras que otros ofrecen un mayor equilibrio}, reduciendo la sobrecobertura en los primeros en favor de una cobertura más homogénea entre subpoblaciones.
     %\todo{Completar}
      
 \end{itemize}
 
+En resumen, y atendiendo a los métodos analizados en este trabajo, se pueden establecer algunas conclusiones claras sobre estos:
 
-En consecuencia, \textbf{del mismo modo que las predicciones puntuales exigen un análisis de error, las conformales requieren una evaluación sistemática de la cobertura empírica}. Este análisis debe identificar discrepancias entre la cobertura nominal y la real, detectar subpoblaciones sistemáticamente infracubiertas o sobrecubiertas, y examinar el tamaño de los intervalos. Unos intervalos excesivamente amplios carecen de utilidad práctica; unos demasiado estrechos, comprometen las garantías de cobertura. El desafío actual reside en avanzar hacia la cobertura condicional.
+\begin{itemize}
+    
+    \item Para problemas de regresión, CQR se consolida como la opción más robusta. Sus intervalos muestran una cobertura muy cercana a la nominal y mantienen tasas de cobertura empírica consistentes tanto en diferentes tamaños muestrales como en subpoblaciones definidas por edad cronológica y sexo. Esto lo convierte en un método confiable y estable en diversos escenarios.
+    
+    \item En problemas de clasificación, no es tan claro:
+    \begin{itemize}
+        \item LAC es la opción predeterminada: fácil de implementar y eficiente, logra valores muy cercanos a la cobertura marginal con conjuntos de predicción de tamaño muy moderado.
+        \item MCM es una buena opción en casos con pocas clases, donde es prioritario lograr la cobertura requerida en todas ellas.
+        \item SAPS es la mejor opción para problemas con muchas clases, poniéndo énfasis en la adaptatividad, logra tasas de cobertura marginal muy sólidas y conjuntos de predicción de tamaño muy estable. 
+    \end{itemize}
+
+\end{itemize}
+
+En consecuencia, \textbf{del mismo modo que las predicciones puntuales exigen un análisis de error, las conformales requieren una evaluación sistemática de la cobertura empírica y la comparación entre métodos}. Este análisis debe identificar discrepancias entre la cobertura nominal y la real, detectar subpoblaciones sistemáticamente infracubiertas o sobrecubiertas, y examinar el tamaño de los intervalos. Unos intervalos excesivamente amplios carecen de utilidad práctica; unos demasiado estrechos, comprometen las garantías de cobertura. \textbf{El desafío inmediato reside en avanzar hacia métodos que se aproximen a la cobertura condicional, cerrando la brecha entre teoría y práctica.}
 
 % ------------------------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
@@ -74,7 +88,7 @@ Una de las virtudes más destacables de la predicción conformal es su inherente
 
 \begin{itemize}
 
-    \item \textbf{Integración con otros paradigmas de cuantificación de la incertidumbre}: La predicción conformal puede combinarse con métodos como \textit{Monte Carlo Dropout} (como en \cite{bethell2024}) o los \textit{ensembles} de modelos para generar intervalos conformales que no solo garantizan una cobertura marginal, sino que también se benefician de una estimación de incertidumbre más afinada. 
+    \item \textbf{Integración con otros paradigmas de cuantificación de la incertidumbre}: La predicción conformal puede combinarse con métodos como \textit{Monte Carlo Dropout} (como en \cite{bethell2024}) o la regresión cuantílica con modelos \textit{ensembles} para generar intervalos conformales que no solo garantizan una cobertura marginal, sino que también se benefician de una estimación de incertidumbre más afinada. 
 
     \item \textbf{Aprovechamiento de información experta del dominio}: El marco conformal es agnóstico al modelo, pero no al problema. Puede ser adaptado para incorporar conocimiento experto y restricciones propias del ámbito de aplicación (p.ej., correlaciones biológicas conocidas en la estimación de la edad). 
     Se podría añadir, por tanto, un postprocesado para refinar los conjuntos de predicciones conformales,
