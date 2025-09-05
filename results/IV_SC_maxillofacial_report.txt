@@ -1,0 +1,490 @@
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  1
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Accuracy: 88.75 %
+Cobertura empírica: 88.75 %
+Tamaño medio de conjunto: 1.00
+Ratio de indeterminación: 0.00 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  LAC
+Nivel de confianza:  0.95
+Iteración:  1
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 87.04 %
+Cobertura empírica: 94.19 %
+Tamaño medio de conjunto: 1.18
+Ratio de indeterminación: 17.70 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  MCM
+Nivel de confianza:  0.95
+Iteración:  1
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 87.04 %
+Cobertura empírica: 94.33 %
+Tamaño medio de conjunto: 1.19
+Ratio de indeterminación: 19.47 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  2
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Accuracy: 89.08 %
+Cobertura empírica: 89.08 %
+Tamaño medio de conjunto: 1.00
+Ratio de indeterminación: 0.00 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  LAC
+Nivel de confianza:  0.95
+Iteración:  2
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 89.03 %
+Cobertura empírica: 96.24 %
+Tamaño medio de conjunto: 1.20
+Ratio de indeterminación: 20.03 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  MCM
+Nivel de confianza:  0.95
+Iteración:  2
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 89.03 %
+Cobertura empírica: 96.42 %
+Tamaño medio de conjunto: 1.21
+Ratio de indeterminación: 20.91 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  3
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Accuracy: 89.64 %
+Cobertura empírica: 89.64 %
+Tamaño medio de conjunto: 1.00
+Ratio de indeterminación: 0.00 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  LAC
+Nivel de confianza:  0.95
+Iteración:  3
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 88.15 %
+Cobertura empírica: 94.98 %
+Tamaño medio de conjunto: 1.16
+Ratio de indeterminación: 16.50 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  MCM
+Nivel de confianza:  0.95
+Iteración:  3
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 88.15 %
+Cobertura empírica: 94.56 %
+Tamaño medio de conjunto: 1.15
+Ratio de indeterminación: 15.33 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  4
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Accuracy: 88.10 %
+Cobertura empírica: 88.10 %
+Tamaño medio de conjunto: 1.00
+Ratio de indeterminación: 0.00 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  LAC
+Nivel de confianza:  0.95
+Iteración:  4
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 88.75 %
+Cobertura empírica: 94.84 %
+Tamaño medio de conjunto: 1.17
+Ratio de indeterminación: 16.59 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  MCM
+Nivel de confianza:  0.95
+Iteración:  4
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 88.75 %
+Cobertura empírica: 94.89 %
+Tamaño medio de conjunto: 1.15
+Ratio de indeterminación: 15.15 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  5
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Accuracy: 88.20 %
+Cobertura empírica: 88.20 %
+Tamaño medio de conjunto: 1.00
+Ratio de indeterminación: 0.00 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  LAC
+Nivel de confianza:  0.95
+Iteración:  5
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 88.29 %
+Cobertura empírica: 95.91 %
+Tamaño medio de conjunto: 1.20
+Ratio de indeterminación: 19.70 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  MCM
+Nivel de confianza:  0.95
+Iteración:  5
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 88.29 %
+Cobertura empírica: 95.68 %
+Tamaño medio de conjunto: 1.17
+Ratio de indeterminación: 17.33 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  6
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Accuracy: 88.48 %
+Cobertura empírica: 88.48 %
+Tamaño medio de conjunto: 1.00
+Ratio de indeterminación: 0.00 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  LAC
+Nivel de confianza:  0.95
+Iteración:  6
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 87.04 %
+Cobertura empírica: 94.75 %
+Tamaño medio de conjunto: 1.19
+Ratio de indeterminación: 18.87 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  MCM
+Nivel de confianza:  0.95
+Iteración:  6
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 87.04 %
+Cobertura empírica: 94.93 %
+Tamaño medio de conjunto: 1.19
+Ratio de indeterminación: 19.38 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  7
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Accuracy: 88.80 %
+Cobertura empírica: 88.80 %
+Tamaño medio de conjunto: 1.00
+Ratio de indeterminación: 0.00 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  LAC
+Nivel de confianza:  0.95
+Iteración:  7
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 86.99 %
+Cobertura empírica: 95.03 %
+Tamaño medio de conjunto: 1.22
+Ratio de indeterminación: 21.65 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  MCM
+Nivel de confianza:  0.95
+Iteración:  7
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 86.99 %
+Cobertura empírica: 94.56 %
+Tamaño medio de conjunto: 1.21
+Ratio de indeterminación: 20.63 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  8
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Accuracy: 87.50 %
+Cobertura empírica: 87.50 %
+Tamaño medio de conjunto: 1.00
+Ratio de indeterminación: 0.00 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  LAC
+Nivel de confianza:  0.95
+Iteración:  8
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 87.83 %
+Cobertura empírica: 94.89 %
+Tamaño medio de conjunto: 1.17
+Ratio de indeterminación: 17.01 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  MCM
+Nivel de confianza:  0.95
+Iteración:  8
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 87.83 %
+Cobertura empírica: 95.12 %
+Tamaño medio de conjunto: 1.17
+Ratio de indeterminación: 17.10 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  9
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Accuracy: 88.94 %
+Cobertura empírica: 88.94 %
+Tamaño medio de conjunto: 1.00
+Ratio de indeterminación: 0.00 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  LAC
+Nivel de confianza:  0.95
+Iteración:  9
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 88.48 %
+Cobertura empírica: 94.70 %
+Tamaño medio de conjunto: 1.15
+Ratio de indeterminación: 15.24 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  MCM
+Nivel de confianza:  0.95
+Iteración:  9
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 88.48 %
+Cobertura empírica: 94.89 %
+Tamaño medio de conjunto: 1.14
+Ratio de indeterminación: 14.13 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  10
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Accuracy: 88.20 %
+Cobertura empírica: 88.20 %
+Tamaño medio de conjunto: 1.00
+Ratio de indeterminación: 0.00 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  LAC
+Nivel de confianza:  0.95
+Iteración:  10
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 88.57 %
+Cobertura empírica: 95.77 %
+Tamaño medio de conjunto: 1.21
+Ratio de indeterminación: 21.28 %
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  MCM
+Nivel de confianza:  0.95
+Iteración:  10
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 88.57 %
+Cobertura empírica: 94.80 %
+Tamaño medio de conjunto: 1.17
+Ratio de indeterminación: 17.29 %
+✅ Testeo de la red completado
+

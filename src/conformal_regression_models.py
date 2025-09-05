@@ -115,7 +115,7 @@ class ClassifierResNeXt(nn.Module):
 
 class ResNeXtRegressor(nn.Module):
     
-    PRED_MODEL_TYPE = 'base'
+    PRED_METHOD = 'base'
     
     def __init__(self, **kwargs):
         
@@ -140,7 +140,7 @@ class ResNeXtRegressor(nn.Module):
     def save_checkpoint(self, save_model_path):
         """Guarda el estado actual de un modelo y parámetros de calibración en un archivo"""
         checkpoint = {
-            'pred_model_type': self.PRED_MODEL_TYPE,
+            'pred_method': self.PRED_METHOD,
             'torch_state_dict': self.state_dict()
         }
         torch.save(checkpoint, save_model_path)
@@ -282,11 +282,14 @@ class ResNeXtRegressor(nn.Module):
         
         #
         valid_pred_point_values, valid_true_values = self._inference(valid_loader)
-        valid_mae = torch.mean(torch.abs(valid_true_values - valid_pred_point_values))
+        valid_mean = torch.mean(valid_true_values - valid_pred_point_values)
+        valid_std = torch.std(valid_true_values - valid_pred_point_values)
         
         #
-        pred_lower_bound = pred_point_values - 2 * valid_mae
-        pred_upper_bound = pred_point_values + 2 * valid_mae
+        pred_point_values += valid_mean
+        z = 1.96  # para un 95% de cobertura bajo normalidad
+        pred_lower_bound = pred_point_values - z * valid_std
+        pred_upper_bound = pred_point_values + z * valid_std
         
         return pred_point_values, pred_lower_bound, pred_upper_bound, true_values
 
@@ -310,7 +313,7 @@ class ResNeXtRegressor(nn.Module):
 
 class ResNeXtRegressor_ICP(ResNeXtRegressor):
     
-    PRED_MODEL_TYPE = 'ICP'
+    PRED_METHOD = 'ICP'
     
     def __init__(self, confidence=0.95):
         """
@@ -321,7 +324,7 @@ class ResNeXtRegressor_ICP(ResNeXtRegressor):
         
         # Parámetros para la conformal prediction
         self.alpha = 1-confidence
-        self.q_hat = None 
+        self.delta = None 
         
     
     def save_checkpoint(self, save_model_path):
@@ -329,10 +332,10 @@ class ResNeXtRegressor_ICP(ResNeXtRegressor):
         Guarda el estado del modelo en un archivo checkpoint.
         """
         checkpoint = {
-            'pred_model_type': self.PRED_MODEL_TYPE,
+            'pred_method': self.PRED_METHOD,
             'torch_state_dict': self.state_dict(),
             'alpha': self.alpha,
-            'q_hat': self.q_hat
+            'delta': self.delta
         }
         torch.save(checkpoint, save_model_path)
     
@@ -353,11 +356,11 @@ class ResNeXtRegressor_ICP(ResNeXtRegressor):
         
         self.load_state_dict(checkpoint['torch_state_dict'], strict=False)
         
-        if (checkpoint['pred_model_type'] == self.PRED_MODEL_TYPE and
+        if (checkpoint['pred_method'] == self.PRED_METHOD and
             checkpoint['alpha'] == self.alpha and
-            'q_hat' in checkpoint
+            'delta' in checkpoint
         ):
-            self.q_hat = checkpoint['q_hat']
+            self.delta = checkpoint['delta']
 
 
     def evaluate(self, dataloader, loss_fn=None):
@@ -388,20 +391,22 @@ class ResNeXtRegressor_ICP(ResNeXtRegressor):
         nonconformity_scores = torch.abs(calib_true_values-calib_pred_values)
         
         # Calcula el umbral de no conformidad como el cuantil empírico de las puntuaciones de no conformidad
-        self.q_hat = torch.quantile(nonconformity_scores, q_level, interpolation='higher')
+        self.delta_middle = torch.quantile(calib_true_values-calib_pred_values, 0.5, interpolation='higher')
+        self.delta = torch.quantile(nonconformity_scores, q_level, interpolation='higher')
     
     
     def inference(self, dataloader):
         
-        if self.q_hat is None:
+        if self.delta is None:
             raise ValueError("Modelo no calibrado")
         
         # Obtiene predicciones puntuales y valores reales
         point_pred_values, true_values = self._inference(dataloader)
         
         # Calcula las predicciones interválicas conformales
-        lower_pred_values = point_pred_values - self.q_hat
-        upper_pred_values = point_pred_values + self.q_hat
+        point_pred_values = point_pred_values + self.delta_middle
+        lower_pred_values = point_pred_values - self.delta
+        upper_pred_values = point_pred_values + self.delta
         
         # Devuelve las predicciones puntuales, interválicas y valores reales
         return point_pred_values, lower_pred_values, upper_pred_values, true_values
@@ -411,7 +416,7 @@ class ResNeXtRegressor_ICP(ResNeXtRegressor):
 
 class ResNeXtRegressor_QR(ResNeXtRegressor):
     
-    PRED_MODEL_TYPE = 'QR'
+    PRED_METHOD = 'QR'
     
     def __init__(self, confidence=0.95):
         """
@@ -438,7 +443,7 @@ class ResNeXtRegressor_QR(ResNeXtRegressor):
         Guarda el estado del modelo en un archivo checkpoint.
         """
         checkpoint = {
-            'pred_model_type': self.PRED_MODEL_TYPE,
+            'pred_method': self.PRED_METHOD,
             'torch_state_dict': self.state_dict(),
             'alpha': self.alpha,
             'quantiles': self.quantiles
@@ -488,7 +493,7 @@ class ResNeXtRegressor_QR(ResNeXtRegressor):
 
 class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
     
-    PRED_MODEL_TYPE = 'CQR'
+    PRED_METHOD = 'CQR'
     
     def __init__(self, confidence=0.95):
         """
@@ -498,8 +503,8 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
         super().__init__(confidence)
         
         # Parámetros para la conformal prediction
-        self.q_hat_lower = None 
-        self.q_hat_upper = None
+        self.delta_lower = None 
+        self.delta_upper = None
     
     
     def save_checkpoint(self, save_model_path):
@@ -507,12 +512,12 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
         Guarda el estado del modelo en un archivo checkpoint.
         """
         checkpoint = {
-            'pred_model_type': self.PRED_MODEL_TYPE,
+            'pred_method': self.PRED_METHOD,
             'torch_state_dict': self.state_dict(),
             'alpha': self.alpha,
             'quantiles': self.quantiles,
-            'q_hat_lower': self.q_hat_lower,
-            'q_hat_upper': self.q_hat_upper
+            'delta_lower': self.delta_lower,
+            'delta_upper': self.delta_upper
         }
         torch.save(checkpoint, save_model_path)
         
@@ -533,14 +538,14 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
                 
         self.load_state_dict(checkpoint['torch_state_dict'], strict=False)
         
-        if (checkpoint['pred_model_type'] == self.PRED_MODEL_TYPE and
+        if (checkpoint['pred_method'] == self.PRED_METHOD and
             checkpoint['quantiles'] == self.quantiles and
             checkpoint['alpha'] == self.alpha and
-            'q_hat_lower' in checkpoint and
-            'q_hat_upper' in checkpoint
+            'delta_lower' in checkpoint and
+            'delta_upper' in checkpoint
         ):
-            self.q_hat_lower = checkpoint['q_hat_lower']
-            self.q_hat_upper = checkpoint['q_hat_upper']
+            self.delta_lower = checkpoint['delta_lower']
+            self.delta_upper = checkpoint['delta_upper']
         
         self.quantiles = checkpoint['quantiles']
         self.alpha = checkpoint['alpha']
@@ -549,7 +554,7 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
     def calibrate(self, calib_loader):
         
         # Obtiene predicciones y valores verdaderos del conjunto de calibración
-        _, calib_pred_lower_bound, calib_pred_upper_bound, calib_true_values = \
+        calib_pred_middle, calib_pred_lower_bound, calib_pred_upper_bound, calib_true_values = \
             super().inference(calib_loader)
         
         # Calcula el nivel de cuantificación ajustado basado en el tamaño del conjunto de calibración y alpha
@@ -559,25 +564,28 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
         # Calcula las puntuaciones de no conformidad para el límite inferior (diferencia entre predicción 
         # inferior y valor real) y para el límite superior (diferencia entre valor real y predicción superior)
         calib_scores_lower_bound = calib_pred_lower_bound - calib_true_values 
+        calib_scores_middle_bound = calib_true_values - calib_pred_middle
         calib_scores_upper_bound = calib_true_values - calib_pred_upper_bound
         
         # Calcula los umbrales de no conformidad como los cuantiles empíricos de las puntuaciones de no 
         # conformidad
-        self.q_hat_lower = torch.quantile(calib_scores_lower_bound, q_level, interpolation='higher')
-        self.q_hat_upper = torch.quantile(calib_scores_upper_bound, q_level, interpolation='higher')
+        self.delta_lower = torch.quantile(calib_scores_lower_bound, q_level, interpolation='higher')
+        self.delta_middle = torch.quantile(calib_scores_middle_bound, 0.5, interpolation='higher')
+        self.delta_upper = torch.quantile(calib_scores_upper_bound, q_level, interpolation='higher')
     
     
     def inference(self, dataloader):
         
-        if self.q_hat_lower is None or self.q_hat_upper is None:
+        if self.delta_lower is None or self.delta_upper is None:
             raise ValueError("Modelo no calibrado")
         
         # Obtiene predicciones puntuales e interválicas y valores reales
         point_pred_values, lower_pred_values, upper_pred_values, true_values = super().inference(dataloader)
         
         # Calcula las predicciones interválicas conformales
-        lower_pred_values -= self.q_hat_lower
-        upper_pred_values += self.q_hat_upper
+        lower_pred_values -= self.delta_lower
+        point_pred_values += self.delta_middle
+        upper_pred_values += self.delta_upper
         
         # Devuelve las predicciones puntuales, interválicas y valores reales
         return point_pred_values, lower_pred_values, upper_pred_values, true_values
@@ -592,8 +600,8 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
 #         Inicializa el regresor ResNeXt con CQR (Conformalized Quantile Regression).
 #         """
 #         super().__init__(confidence, use_metadata=use_metadata, meta_input_size=meta_input_size)
-#         self.q_hat_lower = None 
-#         self.q_hat_upper = None
+#         self.delta_lower = None 
+#         self.delta_upper = None
 
     
 #     def _enable_dropout(self, p=None):
@@ -696,8 +704,8 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
     
 #     def inference(self, dataloader, patience=5, min_delta=0.01, max_mc=100, p=0.5):
         
-#         if self.q_hat_lower is None or self.q_hat_upper is None:
-#             raise ValueError("Modelo no calibrado. Faltan q_hat_lower y q_hat_upper.")
+#         if self.delta_lower is None or self.delta_upper is None:
+#             raise ValueError("Modelo no calibrado. Faltan delta_lower y delta_upper.")
         
 #         # Hace inferencia MC (ya estabilizada) con dropout
 #         outputs, targets = self._mc_dropout_inference(dataloader, patience=patience, 
@@ -713,8 +721,8 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
 #         upper_preds = torch.maximum(upper_preds, point_preds)
 
 #         # Aplica la corrección conformal
-#         lower_preds -= self.q_hat_lower
-#         upper_preds += self.q_hat_upper
+#         lower_preds -= self.delta_lower
+#         upper_preds += self.delta_upper
 
 #         # Devuelve resultados
 #         return point_preds, lower_preds, upper_preds, targets
@@ -730,8 +738,8 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
 #         """
 #         super().__init__()
 #         self.alpha = 1-confidence
-#         self.q_hat_lower = None
-#         self.q_hat_upper = None 
+#         self.delta_lower = None
+#         self.delta_upper = None 
 #         self.sigma_model = None
         
     
@@ -740,12 +748,12 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
 #         Guarda el estado del modelo en un archivo checkpoint.
 #         """
 #         checkpoint = {
-#             'pred_model_type': 'CRF',
+#             'pred_method': 'CRF',
 #             'use_metadata': self.use_metadata,
 #             'torch_state_dict': self.state_dict(),
 #             'alpha': self.alpha,
-#             'q_hat_lower': self.q_hat_lower,
-#             'q_hat_upper': self.q_hat_upper,
+#             'delta_lower': self.delta_lower,
+#             'delta_upper': self.delta_upper,
 #             'sigma_model': self.sigma_model
 #         }
 #         torch.save(checkpoint, save_model_path)
@@ -757,8 +765,8 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
 #         """
 #         self.load_state_dict(checkpoint['torch_state_dict'])
 #         self.alpha = checkpoint['alpha'] if 'alpha' in checkpoint else None
-#         self.q_hat_lower = checkpoint['q_hat_lower'] if 'q_hat_lower' in checkpoint else None
-#         self.q_hat_upper = checkpoint['q_hat_upper'] if 'q_hat_upper' in checkpoint else None
+#         self.delta_lower = checkpoint['delta_lower'] if 'delta_lower' in checkpoint else None
+#         self.delta_upper = checkpoint['delta_upper'] if 'delta_upper' in checkpoint else None
 #         self.sigma_model = checkpoint['sigma_model'] if 'sigma_model' in checkpoint else None
 
 
@@ -822,13 +830,13 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
 #         q_level = math.ceil((1.0 - (self.alpha / 2.0)) * (n + 1.0)) / n
         
 #         # Calcula el umbral de no conformidad como el cuantil empírico de las puntuaciones de no conformidad
-#         self.q_hat_upper = torch.quantile(nonconformity_scores_upper, q_level, interpolation='higher')
-#         self.q_hat_lower = torch.quantile(nonconformity_scores_lower, q_level, interpolation='higher')
+#         self.delta_upper = torch.quantile(nonconformity_scores_upper, q_level, interpolation='higher')
+#         self.delta_lower = torch.quantile(nonconformity_scores_lower, q_level, interpolation='higher')
 
 
 #     def inference(self, dataloader):
         
-#         if self.q_hat_lower is None and self.q_hat_upper is None:
+#         if self.delta_lower is None and self.delta_upper is None:
 #             raise ValueError("Modelo no calibrado.")
         
 #         # Obtiene predicciones, valores verdaderos y características profundas del conjunto de calibración
@@ -840,8 +848,8 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
 #         sigma_hat = torch.from_numpy(sigma_hat)
         
 #         #
-#         upper_pred_values = point_pred_values + self.q_hat_upper * sigma_hat
-#         lower_pred_values = point_pred_values - self.q_hat_lower * sigma_hat
+#         upper_pred_values = point_pred_values + self.delta_upper * sigma_hat
+#         lower_pred_values = point_pred_values - self.delta_lower * sigma_hat
         
 #         #
 #         return point_pred_values, lower_pred_values, upper_pred_values, true_values
@@ -856,7 +864,7 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
 #         """
 #         super().__init__(use_metadata=use_metadata, meta_input_size=meta_input_size)
 #         self.alpha = 1-confidence
-#         self.q_hat = None 
+#         self.delta = None 
         
     
 #     def save_checkpoint(self, save_model_path):
@@ -864,11 +872,11 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
 #         Guarda el estado del modelo en un archivo checkpoint.
 #         """
 #         checkpoint = {
-#             'pred_model_type': 'ICP',
+#             'pred_method': 'ICP',
 #             'use_metadata': self.use_metadata,
 #             'torch_state_dict': self.state_dict(),
 #             'alpha': self.alpha,
-#             'q_hat': self.q_hat
+#             'delta': self.delta
 #         }
 #         torch.save(checkpoint, save_model_path)
     
@@ -879,7 +887,7 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
 #         """
 #         self.load_state_dict(checkpoint['torch_state_dict'])
 #         self.alpha = checkpoint['alpha'] if 'alpha' in checkpoint else None
-#         self.q_hat = checkpoint['q_hat'] if 'q_hat' in checkpoint else None
+#         self.delta = checkpoint['delta'] if 'delta' in checkpoint else None
 
 
 #     def evaluate(self, dataloader, metric_fn=None):
@@ -910,20 +918,20 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
 #         nonconformity_scores = torch.abs(calib_true_values-calib_pred_values)
         
 #         # Calcula el umbral de no conformidad como el cuantil empírico de las puntuaciones de no conformidad
-#         self.q_hat = torch.quantile(nonconformity_scores, q_level, interpolation='higher')
+#         self.delta = torch.quantile(nonconformity_scores, q_level, interpolation='higher')
     
     
 #     def inference(self, dataloader):
         
-#         if self.q_hat is None:
-#             raise ValueError("Modelo no calibrado. Parámetro 'q_hat' no determinado.")
+#         if self.delta is None:
+#             raise ValueError("Modelo no calibrado. Parámetro 'delta' no determinado.")
         
 #         # Obtiene predicciones puntuales y valores reales
 #         point_pred_values, true_values = self._inference(dataloader)
         
 #         # Calcula las predicciones interválicas conformales
-#         lower_pred_values = point_pred_values - self.q_hat
-#         upper_pred_values = point_pred_values + self.q_hat
+#         lower_pred_values = point_pred_values - self.delta
+#         upper_pred_values = point_pred_values + self.delta
         
 #         # Devuelve las predicciones puntuales, interválicas y valores reales
 #         return point_pred_values, lower_pred_values, upper_pred_values, true_values
@@ -932,7 +940,7 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
 
 # class ResNeXtRegressor_SCCP(ResNeXtRegressor):
     
-#     PRED_MODEL_TYPE = 'SCCP'
+#     PRED_METHOD = 'SCCP'
 
 #     def __init__(self, confidence=0.95):
 #         """
@@ -940,8 +948,8 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
 #         """
 #         super().__init__()
 #         self.alpha = 1-confidence
-#         self.q_hat_lower = None
-#         self.q_hat_upper = None
+#         self.delta_lower = None
+#         self.delta_upper = None
         
 #         # Classifier
 #         input_size = 2048 # características aplanadas 
@@ -958,11 +966,11 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
 #         Guarda el estado del modelo en un archivo checkpoint.
 #         """
 #         checkpoint = {
-#             'pred_model_type': 'SCCP',
+#             'pred_method': 'SCCP',
 #             'torch_state_dict': self.state_dict(),
 #             'alpha': self.alpha,
-#             'q_hat_lower': self.q_hat_lower,
-#             'q_hat_upper': self.q_hat_upper
+#             'delta_lower': self.delta_lower,
+#             'delta_upper': self.delta_upper
 #         }
 #         torch.save(checkpoint, save_model_path)
     
@@ -972,13 +980,13 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
 #         Carga el estado del modelo desde un checkpoint
 #         """
 #         self.load_state_dict(checkpoint['torch_state_dict'], strict=False)
-#         if (checkpoint['pred_model_type'] == self.PRED_MODEL_TYPE and
+#         if (checkpoint['pred_method'] == self.PRED_METHOD and
 #             checkpoint['alpha'] == self.alpha and
-#             'q_hat_lower' in checkpoint and
-#             'q_hat_upper' in checkpoint
+#             'delta_lower' in checkpoint and
+#             'delta_upper' in checkpoint
 #         ):
-#             self.q_hat_lower = checkpoint['q_hat_lower']
-#             self.q_hat_upper = checkpoint['q_hat_upper']
+#             self.delta_lower = checkpoint['delta_lower']
+#             self.delta_upper = checkpoint['delta_upper']
         
         
 #     def _inference_sigma(self, dataloader):
@@ -1142,13 +1150,13 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
 #         q_level = math.ceil((1.0 - (self.alpha / 2.0)) * (n + 1.0)) / n
         
 #         # Calcula el umbral de no conformidad como el cuantil empírico de las puntuaciones de no conformidad
-#         self.q_hat_upper = torch.quantile(nonconformity_scores_upper, q_level, interpolation='higher')
-#         self.q_hat_lower = torch.quantile(nonconformity_scores_lower, q_level, interpolation='higher')
+#         self.delta_upper = torch.quantile(nonconformity_scores_upper, q_level, interpolation='higher')
+#         self.delta_lower = torch.quantile(nonconformity_scores_lower, q_level, interpolation='higher')
 
 
 #     def inference(self, dataloader):
         
-#         if self.q_hat_lower is None and self.q_hat_upper is None:
+#         if self.delta_lower is None and self.delta_upper is None:
 #             raise ValueError("Modelo no calibrado.")
         
 #         #
@@ -1158,8 +1166,8 @@ class ResNeXtRegressor_CQR(ResNeXtRegressor_QR):
 #         sigma_hat, _ = self._inference_sigma(dataloader)
         
 #         #
-#         upper_pred_values = point_pred_values + self.q_hat_upper * sigma_hat
-#         lower_pred_values = point_pred_values - self.q_hat_lower * sigma_hat
+#         upper_pred_values = point_pred_values + self.delta_upper * sigma_hat
+#         lower_pred_values = point_pred_values - self.delta_lower * sigma_hat
         
 #         #
 #         return point_pred_values, lower_pred_values, upper_pred_values, true_values

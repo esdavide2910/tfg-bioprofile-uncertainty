@@ -461,7 +461,14 @@ def plot_interval_predictions(
              color='steelblue', linestyle='--', marker='o', markersize=4)
     plt.fill_between(x, y_lower, y_upper, 
                      color='lightcoral', alpha=0.5, label='Intervalo de confianza')
-
+    
+    # Identificar valores fuera del intervalo
+    outside_mask = (y_true < y_lower) | (y_true > y_upper)
+    
+    # Graficar los puntos fuera del intervalo en rojo
+    plt.scatter(x[outside_mask], y_true[outside_mask], 
+                color='red', marker='x', s=50, label='Fuera del intervalo')
+    
     plt.xlabel('Instancia (ordenada por valor verdadero)')
     plt.ylabel('Valor')
     plt.title('Predicción con intervalos de confianza')

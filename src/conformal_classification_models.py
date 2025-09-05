@@ -324,18 +324,55 @@ class ResNeXtClassifier(nn.Module):
         return outputs, true_labels
     
     
-    def inference(self, dataloader):
+    # def inference(self, dataloader):
         
-        # Obtiene las probabilidades predichas para cada clase y la etiqueta verdadera para cada instancia
+    #     # Obtiene las probabilidades predichas para cada clase y la etiqueta verdadera para cada instancia
+    #     pred_scores, true_labels = self._inference(dataloader, return_probs=True)
+
+    #     # Determina la clase predicha (la de mayor probabilidad) para cada instancia
+    #     _, pred_classes = torch.max(pred_scores, dim=1)
+        
+    #     # Convierte las clases predichas a one-hot encoding
+    #     pred_sets = nn.functional.one_hot(pred_classes, num_classes=self.num_classes)
+        
+    #     return pred_classes, pred_sets, true_labels
+    
+    
+    def inference(self, dataloader, tau: float = None):
+        # Obtiene las probabilidades predichas para cada clase y la etiqueta verdadera
         pred_scores, true_labels = self._inference(dataloader, return_probs=True)
 
-        # Determina la clase predicha (la de mayor probabilidad) para cada instancia
+        # Clase más probable (para compatibilidad con salida previa)
         _, pred_classes = torch.max(pred_scores, dim=1)
-        
-        # Convierte las clases predichas a one-hot encoding
-        pred_sets = nn.functional.one_hot(pred_classes, num_classes=self.num_classes)
-        
+
+        if tau is None:
+            # Caso original: one-hot clásico
+            pred_sets = nn.functional.one_hot(pred_classes, num_classes=self.num_classes)
+
+        else:
+            # Normalizamos por si acaso (aseguramos que son distribuciones)
+            probs = torch.softmax(pred_scores, dim=1)
+
+            # Ordenamos las probabilidades de mayor a menor
+            sorted_probs, sorted_idx = torch.sort(probs, dim=1, descending=True)
+            
+            # Cálculo acumulado por fila
+            cumsum_probs = torch.cumsum(sorted_probs, dim=1)
+
+            # Marcamos qué posiciones cumplen con tau
+            mask = cumsum_probs <= tau
+
+            # Siempre incluir el primer índice que supera el tau
+            # (equivalente al "break" del loop)
+            first_over_tau = torch.argmax((cumsum_probs >= tau).int(), dim=1)
+            mask[torch.arange(mask.size(0)), first_over_tau] = True
+
+            # Creamos la matriz one-hot para los conjuntos predichos
+            pred_sets = torch.zeros_like(probs, dtype=torch.int)
+            pred_sets.scatter_(1, sorted_idx, mask.int())
+
         return pred_classes, pred_sets, true_labels
+    
     
     
     # def evaluate(self, dataloader, metric_fn=None):
@@ -624,7 +661,7 @@ class ResNeXtClassifier_APS(ResNeXtClassifier):
         
         # Recolecta los scores y suma acumulada en la posición del índice verdadero
         true_score = sorted_scores[torch.arange(n), true_class_rank]
-        true_cumscore = cum_sorted_scores[torch.arange(n), true_class_rank]
+        true_cum_score = cum_sorted_scores[torch.arange(n), true_class_rank]
         
         #
         if random:
@@ -632,26 +669,19 @@ class ResNeXtClassifier_APS(ResNeXtClassifier):
             U = torch.rand(n)
             
             # Calcula V
-            V = (true_cumscore - (1-self.alpha)) / true_score
+            V = (true_cum_score - (1-self.alpha)) / true_score
             
-            # Calcula nonconformity_scores con indexado condicional
-            # Si U > V → usar cumulative_scores en true_class_rank
-            # Si U <= V → usar cumulative_scores en true_class_rank - 1
-            
-            # Evita valores negativos en el índice
-            adjusted_rank = torch.clamp(true_class_rank - 1, min=0)
-            
-            # Selección de valores según condición
+            # Calcula nonconformity_scores 
             nonconformity_scores = torch.where(
-                U <= V,
-                cum_sorted_scores[torch.arange(n), adjusted_rank],
-                true_cumscore
+                (U>V) & (true_class_rank>=1),
+                true_cum_score - true_score,
+                true_cum_score
             )
         
         else:
             
             #
-            nonconformity_scores = true_cumscore
+            nonconformity_scores = true_cum_score
         
         # Calcula el nivel de cuantificación ajustado basado en el tamaño del conjunto de calibración y alpha
         q_level = math.ceil((1.0 - self.alpha) * (n + 1.0)) / n
@@ -690,24 +720,6 @@ class ResNeXtClassifier_APS(ResNeXtClassifier):
             matches.int().sum(dim=1)-1,
             torch.ones(n, dtype=torch.uint8)
         )
-        
-        if random:
-            # Genera un vector de valores aleatorios entre 0 y 1, uno por instancia 
-            U = torch.rand(n)
-            
-            #
-            last_score = sorted_scores[torch.arange(n), last_class_ranks]
-            last_cum_scores = cum_sorted_scores[torch.arange(n), last_class_ranks]
-            
-            #
-            V = (last_cum_scores - self.q_hat) / last_score
-            
-            #
-            last_class_ranks = torch.where(
-                (U <= V) & (last_class_ranks>=1),
-                last_class_ranks-1,
-                last_class_ranks
-            )
         
         #
         idx = torch.arange(num_classes)
@@ -821,6 +833,7 @@ class ResNeXtClassifier_RAPS(ResNeXtClassifier):
         true_cum_score = cum_sorted_scores[torch.arange(n), true_class_rank]
         
         # Obtiene la suma acumulada de las penalizaciones en la posición del índice verdadero
+        true_penalty = penalties[0, true_class_rank]
         true_cum_penalty = cumulative_penalties[0, true_class_rank]
         
         if random:
@@ -828,11 +841,14 @@ class ResNeXtClassifier_RAPS(ResNeXtClassifier):
             # Genera un vector de valores aleatorios entre 0 y 1, uno por instancia 
             U = torch.rand(n)
             
-            # Calcula los nonconformity scores ajustando con ruido aleatorio (si la clase verdadera no está al principio)
+            #
+            V = (true_cum_score-true_cum_penalty-(1-alpha))/(true_score-true_penalty)
+            
+            # Calcula los nonconformity scores 
             nonconformity_scores = torch.where(
-                true_class_rank >= 1,
-                true_cum_score + true_cum_penalty - U * true_score,
-                true_score 
+                (U > V) & (true_class_rank>=1),
+                true_cum_score + true_cum_penalty - true_score,
+                true_cum_score + true_cum_penalty
             )
         
         else:
@@ -879,29 +895,6 @@ class ResNeXtClassifier_RAPS(ResNeXtClassifier):
             matches.int().sum(dim=1)-1,
             torch.ones(n, dtype=torch.uint8)
         )
-        
-        #
-        if random:
-            # Genera un vector de valores aleatorios entre 0 y 1, uno por instancia 
-            U = torch.rand(n)
-            
-            #
-            last_score = sorted_scores[torch.arange(n), last_class_ranks]
-            last_cum_scores = cum_sorted_scores[torch.arange(n), last_class_ranks]
-            
-            #
-            last_penalty = penalties[0, last_class_ranks]
-            last_cum_penalty = cumulative_penalties[0, last_class_ranks]
-            
-            #
-            V = (last_cum_scores + last_cum_penalty - q_hat) / (last_score + last_penalty)
-            
-            #
-            last_class_ranks = torch.where(
-                (U <= V) & (last_class_ranks>=1),
-                last_class_ranks-1,
-                last_class_ranks
-            )
 
         #
         idx = torch.arange(num_classes)
@@ -922,7 +915,7 @@ class ResNeXtClassifier_RAPS(ResNeXtClassifier):
         # Obtiene las clases predichas y verdaderas para el conjunto de calibración
         pred_scores, true_labels  = self._inference(calib_loader, return_probs=True)
         
-        #
+        # 
         self.q_hat = self._calibrate_RAPS(pred_scores, true_labels, self.lambda_reg, self.k_reg, self.alpha, random)
     
     

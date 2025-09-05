@@ -1,0 +1,1954 @@
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  1
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.755 | Validation Loss:   1.860 | Time: 4m 15s
+Epoch  2 | Train Loss:   1.717 | Validation Loss:   1.955 | Time: 2m 44s
+Epoch  3 | Train Loss:   1.709 | Validation Loss:   1.887 | Time: 2m 44s
+Epoch  4 | Train Loss:   1.712 | Validation Loss:   1.943 | Time: 2m 42s
+Epoch  5 | Train Loss:   1.689 | Validation Loss:   2.014 | Time: 2m 41s
+✅ Entrenamiento de la cabecera completado
+
+Accuracy: 27.42 %
+Cobertura empírica: 27.42 %
+Tamaño medio de conjunto: 1.00
+Número de etiquetas: 1, Instancias: 2152, Cobertura: 27.42%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  LAC
+Nivel de confianza:  0.95
+Iteración:  1
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.752 | Validation Loss:   1.969 | Time: 2m 12s
+Epoch  2 | Train Loss:   1.623 | Validation Loss:   2.046 | Time: 2m 10s
+Epoch  3 | Train Loss:   1.656 | Validation Loss:   1.927 | Time: 2m 10s
+Epoch  4 | Train Loss:   1.695 | Validation Loss:   1.911 | Time: 2m 10s
+Epoch  5 | Train Loss:   1.631 | Validation Loss:   2.177 | Time: 2m 10s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 25.88 %
+Cobertura empírica: 94.89 %
+Tamaño medio de conjunto: 5.85
+Número de etiquetas: 2, Instancias: 3, Cobertura: 100.00%
+Número de etiquetas: 3, Instancias: 159, Cobertura: 95.60%
+Número de etiquetas: 4, Instancias: 199, Cobertura: 92.96%
+Número de etiquetas: 5, Instancias: 297, Cobertura: 94.61%
+Número de etiquetas: 6, Instancias: 816, Cobertura: 94.36%
+Número de etiquetas: 7, Instancias: 562, Cobertura: 96.09%
+Número de etiquetas: 8, Instancias: 87, Cobertura: 94.25%
+Número de etiquetas: 9, Instancias: 14, Cobertura: 100.00%
+Número de etiquetas: 10, Instancias: 7, Cobertura: 100.00%
+Número de etiquetas: 11, Instancias: 2, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 4, Cobertura: 100.00%
+Número de etiquetas: 13, Instancias: 2, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  MCM
+Nivel de confianza:  0.95
+Iteración:  1
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 25.88 %
+Cobertura empírica: 95.96 %
+Tamaño medio de conjunto: 7.58
+Número de etiquetas: 4, Instancias: 41, Cobertura: 95.12%
+Número de etiquetas: 5, Instancias: 62, Cobertura: 96.77%
+Número de etiquetas: 6, Instancias: 398, Cobertura: 94.72%
+Número de etiquetas: 7, Instancias: 552, Cobertura: 93.84%
+Número de etiquetas: 8, Instancias: 628, Cobertura: 97.77%
+Número de etiquetas: 9, Instancias: 256, Cobertura: 96.88%
+Número de etiquetas: 10, Instancias: 149, Cobertura: 96.64%
+Número de etiquetas: 11, Instancias: 45, Cobertura: 97.78%
+Número de etiquetas: 12, Instancias: 7, Cobertura: 100.00%
+Número de etiquetas: 13, Instancias: 14, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  APS
+Nivel de confianza:  0.95
+Iteración:  1
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 25.88 %
+Cobertura empírica: 94.66 %
+Tamaño medio de conjunto: 6.08
+Número de etiquetas: 1, Instancias: 2, Cobertura: 50.00%
+Número de etiquetas: 2, Instancias: 65, Cobertura: 90.77%
+Número de etiquetas: 3, Instancias: 149, Cobertura: 93.29%
+Número de etiquetas: 4, Instancias: 166, Cobertura: 91.57%
+Número de etiquetas: 5, Instancias: 189, Cobertura: 95.24%
+Número de etiquetas: 6, Instancias: 734, Cobertura: 94.28%
+Número de etiquetas: 7, Instancias: 493, Cobertura: 94.93%
+Número de etiquetas: 8, Instancias: 229, Cobertura: 97.38%
+Número de etiquetas: 9, Instancias: 67, Cobertura: 98.51%
+Número de etiquetas: 10, Instancias: 34, Cobertura: 97.06%
+Número de etiquetas: 11, Instancias: 21, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 3, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  RAPS
+Nivel de confianza:  0.95
+Iteración:  1
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  7
+lambda:  0.19334699972955174
+✅ Calibración completada
+
+Accuracy: 25.88 %
+Cobertura empírica: 95.12 %
+Tamaño medio de conjunto: 6.03
+Número de etiquetas: 2, Instancias: 46, Cobertura: 93.48%
+Número de etiquetas: 3, Instancias: 124, Cobertura: 97.58%
+Número de etiquetas: 4, Instancias: 165, Cobertura: 92.73%
+Número de etiquetas: 5, Instancias: 149, Cobertura: 96.64%
+Número de etiquetas: 6, Instancias: 572, Cobertura: 94.41%
+Número de etiquetas: 7, Instancias: 1096, Cobertura: 95.44%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  SAPS
+Nivel de confianza:  0.95
+Iteración:  1
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+lambda:  0.12307502814202222
+✅ Calibración completada
+
+Accuracy: 25.88 %
+Cobertura empírica: 95.26 %
+Tamaño medio de conjunto: 6.29
+Número de etiquetas: 2, Instancias: 1, Cobertura: 100.00%
+Número de etiquetas: 3, Instancias: 10, Cobertura: 90.00%
+Número de etiquetas: 4, Instancias: 26, Cobertura: 100.00%
+Número de etiquetas: 5, Instancias: 266, Cobertura: 94.74%
+Número de etiquetas: 6, Instancias: 944, Cobertura: 94.49%
+Número de etiquetas: 7, Instancias: 836, Cobertura: 96.17%
+Número de etiquetas: 8, Instancias: 69, Cobertura: 95.65%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  2
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.692 | Validation Loss:   1.987 | Time: 2m 42s
+Epoch  2 | Train Loss:   1.662 | Validation Loss:   1.993 | Time: 2m 45s
+Epoch  3 | Train Loss:   1.643 | Validation Loss:   1.904 | Time: 2m 43s
+Epoch  4 | Train Loss:   1.646 | Validation Loss:   1.918 | Time: 2m 43s
+Epoch  5 | Train Loss:   1.646 | Validation Loss:   2.104 | Time: 2m 42s
+✅ Entrenamiento de la cabecera completado
+
+Accuracy: 27.42 %
+Cobertura empírica: 27.42 %
+Tamaño medio de conjunto: 1.00
+Número de etiquetas: 1, Instancias: 2152, Cobertura: 27.42%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  LAC
+Nivel de confianza:  0.95
+Iteración:  2
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.752 | Validation Loss:   2.014 | Time: 2m 10s
+Epoch  2 | Train Loss:   1.637 | Validation Loss:   2.099 | Time: 2m 11s
+Epoch  3 | Train Loss:   1.642 | Validation Loss:   1.957 | Time: 2m 10s
+Epoch  4 | Train Loss:   1.684 | Validation Loss:   1.960 | Time: 2m 10s
+Epoch  5 | Train Loss:   1.638 | Validation Loss:   2.131 | Time: 2m 9s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 28.72 %
+Cobertura empírica: 94.98 %
+Tamaño medio de conjunto: 6.00
+Número de etiquetas: 1, Instancias: 1, Cobertura: 0.00%
+Número de etiquetas: 2, Instancias: 82, Cobertura: 91.46%
+Número de etiquetas: 3, Instancias: 136, Cobertura: 89.71%
+Número de etiquetas: 4, Instancias: 181, Cobertura: 95.03%
+Número de etiquetas: 5, Instancias: 308, Cobertura: 93.18%
+Número de etiquetas: 6, Instancias: 561, Cobertura: 95.01%
+Número de etiquetas: 7, Instancias: 525, Cobertura: 95.62%
+Número de etiquetas: 8, Instancias: 266, Cobertura: 98.50%
+Número de etiquetas: 9, Instancias: 55, Cobertura: 100.00%
+Número de etiquetas: 10, Instancias: 12, Cobertura: 91.67%
+Número de etiquetas: 11, Instancias: 9, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 13, Cobertura: 100.00%
+Número de etiquetas: 13, Instancias: 3, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  MCM
+Nivel de confianza:  0.95
+Iteración:  2
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 28.72 %
+Cobertura empírica: 95.21 %
+Tamaño medio de conjunto: 7.63
+Número de etiquetas: 3, Instancias: 19, Cobertura: 89.47%
+Número de etiquetas: 4, Instancias: 114, Cobertura: 92.11%
+Número de etiquetas: 5, Instancias: 180, Cobertura: 91.11%
+Número de etiquetas: 6, Instancias: 284, Cobertura: 90.85%
+Número de etiquetas: 7, Instancias: 380, Cobertura: 94.21%
+Número de etiquetas: 8, Instancias: 463, Cobertura: 95.90%
+Número de etiquetas: 9, Instancias: 334, Cobertura: 98.50%
+Número de etiquetas: 10, Instancias: 269, Cobertura: 98.88%
+Número de etiquetas: 11, Instancias: 70, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 34, Cobertura: 97.06%
+Número de etiquetas: 13, Instancias: 5, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  APS
+Nivel de confianza:  0.95
+Iteración:  2
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 28.72 %
+Cobertura empírica: 94.01 %
+Tamaño medio de conjunto: 6.18
+Número de etiquetas: 1, Instancias: 33, Cobertura: 66.67%
+Número de etiquetas: 2, Instancias: 114, Cobertura: 83.33%
+Número de etiquetas: 3, Instancias: 133, Cobertura: 88.72%
+Número de etiquetas: 4, Instancias: 146, Cobertura: 94.52%
+Número de etiquetas: 5, Instancias: 255, Cobertura: 92.16%
+Número de etiquetas: 6, Instancias: 439, Cobertura: 92.94%
+Número de etiquetas: 7, Instancias: 492, Cobertura: 97.15%
+Número de etiquetas: 8, Instancias: 316, Cobertura: 97.47%
+Número de etiquetas: 9, Instancias: 120, Cobertura: 98.33%
+Número de etiquetas: 10, Instancias: 62, Cobertura: 100.00%
+Número de etiquetas: 11, Instancias: 36, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 6, Cobertura: 83.33%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  RAPS
+Nivel de confianza:  0.95
+Iteración:  2
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  7
+lambda:  0.019498956718103953
+✅ Calibración completada
+
+Accuracy: 28.72 %
+Cobertura empírica: 94.10 %
+Tamaño medio de conjunto: 5.96
+Número de etiquetas: 1, Instancias: 23, Cobertura: 69.57%
+Número de etiquetas: 2, Instancias: 101, Cobertura: 83.17%
+Número de etiquetas: 3, Instancias: 121, Cobertura: 89.26%
+Número de etiquetas: 4, Instancias: 144, Cobertura: 93.75%
+Número de etiquetas: 5, Instancias: 212, Cobertura: 93.87%
+Número de etiquetas: 6, Instancias: 384, Cobertura: 93.49%
+Número de etiquetas: 7, Instancias: 1076, Cobertura: 96.38%
+Número de etiquetas: 8, Instancias: 66, Cobertura: 96.97%
+Número de etiquetas: 9, Instancias: 21, Cobertura: 95.24%
+Número de etiquetas: 10, Instancias: 4, Cobertura: 75.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  SAPS
+Nivel de confianza:  0.95
+Iteración:  2
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+lambda:  0.10527352674872047
+✅ Calibración completada
+
+Accuracy: 28.72 %
+Cobertura empírica: 95.35 %
+Tamaño medio de conjunto: 6.31
+Número de etiquetas: 1, Instancias: 18, Cobertura: 72.22%
+Número de etiquetas: 2, Instancias: 51, Cobertura: 92.16%
+Número de etiquetas: 3, Instancias: 85, Cobertura: 91.76%
+Número de etiquetas: 4, Instancias: 92, Cobertura: 95.65%
+Número de etiquetas: 5, Instancias: 140, Cobertura: 96.43%
+Número de etiquetas: 6, Instancias: 543, Cobertura: 94.29%
+Número de etiquetas: 7, Instancias: 916, Cobertura: 96.18%
+Número de etiquetas: 8, Instancias: 302, Cobertura: 97.35%
+Número de etiquetas: 9, Instancias: 5, Cobertura: 80.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  3
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.701 | Validation Loss:   1.933 | Time: 2m 43s
+Epoch  2 | Train Loss:   1.664 | Validation Loss:   2.000 | Time: 2m 43s
+Epoch  3 | Train Loss:   1.648 | Validation Loss:   1.883 | Time: 2m 42s
+Epoch  4 | Train Loss:   1.639 | Validation Loss:   1.922 | Time: 2m 43s
+Epoch  5 | Train Loss:   1.608 | Validation Loss:   2.022 | Time: 2m 43s
+✅ Entrenamiento de la cabecera completado
+
+Accuracy: 28.72 %
+Cobertura empírica: 28.72 %
+Tamaño medio de conjunto: 1.00
+Número de etiquetas: 1, Instancias: 2152, Cobertura: 28.72%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  LAC
+Nivel de confianza:  0.95
+Iteración:  3
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.770 | Validation Loss:   1.897 | Time: 2m 12s
+Epoch  2 | Train Loss:   1.633 | Validation Loss:   1.984 | Time: 2m 11s
+Epoch  3 | Train Loss:   1.623 | Validation Loss:   1.920 | Time: 2m 11s
+Epoch  4 | Train Loss:   1.699 | Validation Loss:   1.942 | Time: 2m 11s
+Epoch  5 | Train Loss:   1.628 | Validation Loss:   2.072 | Time: 2m 12s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 26.63 %
+Cobertura empírica: 95.40 %
+Tamaño medio de conjunto: 6.12
+Número de etiquetas: 2, Instancias: 11, Cobertura: 90.91%
+Número de etiquetas: 3, Instancias: 165, Cobertura: 93.94%
+Número de etiquetas: 4, Instancias: 253, Cobertura: 94.07%
+Número de etiquetas: 5, Instancias: 290, Cobertura: 94.83%
+Número de etiquetas: 6, Instancias: 332, Cobertura: 94.58%
+Número de etiquetas: 7, Instancias: 713, Cobertura: 95.09%
+Número de etiquetas: 8, Instancias: 322, Cobertura: 98.45%
+Número de etiquetas: 9, Instancias: 46, Cobertura: 100.00%
+Número de etiquetas: 10, Instancias: 8, Cobertura: 100.00%
+Número de etiquetas: 11, Instancias: 8, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 4, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  MCM
+Nivel de confianza:  0.95
+Iteración:  3
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 26.63 %
+Cobertura empírica: 95.35 %
+Tamaño medio de conjunto: 7.73
+Número de etiquetas: 3, Instancias: 23, Cobertura: 91.30%
+Número de etiquetas: 4, Instancias: 134, Cobertura: 93.28%
+Número de etiquetas: 5, Instancias: 104, Cobertura: 89.42%
+Número de etiquetas: 6, Instancias: 297, Cobertura: 93.60%
+Número de etiquetas: 7, Instancias: 425, Cobertura: 92.71%
+Número de etiquetas: 8, Instancias: 362, Cobertura: 95.58%
+Número de etiquetas: 9, Instancias: 365, Cobertura: 98.08%
+Número de etiquetas: 10, Instancias: 327, Cobertura: 98.47%
+Número de etiquetas: 11, Instancias: 94, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 13, Cobertura: 100.00%
+Número de etiquetas: 13, Instancias: 8, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  APS
+Nivel de confianza:  0.95
+Iteración:  3
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 26.63 %
+Cobertura empírica: 94.24 %
+Tamaño medio de conjunto: 6.07
+Número de etiquetas: 1, Instancias: 6, Cobertura: 50.00%
+Número de etiquetas: 2, Instancias: 142, Cobertura: 87.32%
+Número de etiquetas: 3, Instancias: 194, Cobertura: 90.21%
+Número de etiquetas: 4, Instancias: 164, Cobertura: 92.68%
+Número de etiquetas: 5, Instancias: 107, Cobertura: 94.39%
+Número de etiquetas: 6, Instancias: 532, Cobertura: 93.23%
+Número de etiquetas: 7, Instancias: 459, Cobertura: 95.42%
+Número de etiquetas: 8, Instancias: 388, Cobertura: 98.45%
+Número de etiquetas: 9, Instancias: 117, Cobertura: 97.44%
+Número de etiquetas: 10, Instancias: 33, Cobertura: 100.00%
+Número de etiquetas: 11, Instancias: 10, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  RAPS
+Nivel de confianza:  0.95
+Iteración:  3
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  7
+lambda:  0.01857834818915142
+✅ Calibración completada
+
+Accuracy: 26.63 %
+Cobertura empírica: 94.28 %
+Tamaño medio de conjunto: 5.99
+Número de etiquetas: 1, Instancias: 3, Cobertura: 33.33%
+Número de etiquetas: 2, Instancias: 112, Cobertura: 91.07%
+Número de etiquetas: 3, Instancias: 177, Cobertura: 89.27%
+Número de etiquetas: 4, Instancias: 147, Cobertura: 93.20%
+Número de etiquetas: 5, Instancias: 85, Cobertura: 94.12%
+Número de etiquetas: 6, Instancias: 390, Cobertura: 95.64%
+Número de etiquetas: 7, Instancias: 1130, Cobertura: 94.96%
+Número de etiquetas: 8, Instancias: 97, Cobertura: 97.94%
+Número de etiquetas: 9, Instancias: 9, Cobertura: 88.89%
+Número de etiquetas: 10, Instancias: 2, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  SAPS
+Nivel de confianza:  0.95
+Iteración:  3
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+lambda:  0.12307502814202222
+✅ Calibración completada
+
+Accuracy: 26.63 %
+Cobertura empírica: 95.31 %
+Tamaño medio de conjunto: 6.37
+Número de etiquetas: 2, Instancias: 5, Cobertura: 100.00%
+Número de etiquetas: 3, Instancias: 23, Cobertura: 95.65%
+Número de etiquetas: 4, Instancias: 38, Cobertura: 92.11%
+Número de etiquetas: 5, Instancias: 153, Cobertura: 96.08%
+Número de etiquetas: 6, Instancias: 882, Cobertura: 95.69%
+Número de etiquetas: 7, Instancias: 983, Cobertura: 94.81%
+Número de etiquetas: 8, Instancias: 68, Cobertura: 97.06%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  4
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.703 | Validation Loss:   1.992 | Time: 2m 42s
+Epoch  2 | Train Loss:   1.661 | Validation Loss:   1.972 | Time: 2m 44s
+Epoch  3 | Train Loss:   1.658 | Validation Loss:   1.938 | Time: 2m 43s
+Epoch  4 | Train Loss:   1.647 | Validation Loss:   1.987 | Time: 2m 43s
+Epoch  5 | Train Loss:   1.632 | Validation Loss:   2.072 | Time: 2m 44s
+✅ Entrenamiento de la cabecera completado
+
+Accuracy: 24.72 %
+Cobertura empírica: 24.72 %
+Tamaño medio de conjunto: 1.00
+Número de etiquetas: 1, Instancias: 2152, Cobertura: 24.72%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  LAC
+Nivel de confianza:  0.95
+Iteración:  4
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.748 | Validation Loss:   1.920 | Time: 2m 10s
+Epoch  2 | Train Loss:   1.632 | Validation Loss:   2.009 | Time: 2m 10s
+Epoch  3 | Train Loss:   1.647 | Validation Loss:   1.914 | Time: 2m 10s
+Epoch  4 | Train Loss:   1.685 | Validation Loss:   1.987 | Time: 2m 11s
+Epoch  5 | Train Loss:   1.633 | Validation Loss:   2.135 | Time: 2m 10s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 27.09 %
+Cobertura empírica: 95.03 %
+Tamaño medio de conjunto: 5.99
+Número de etiquetas: 1, Instancias: 1, Cobertura: 0.00%
+Número de etiquetas: 2, Instancias: 80, Cobertura: 91.25%
+Número de etiquetas: 3, Instancias: 130, Cobertura: 93.08%
+Número de etiquetas: 4, Instancias: 189, Cobertura: 94.71%
+Número de etiquetas: 5, Instancias: 269, Cobertura: 93.68%
+Número de etiquetas: 6, Instancias: 548, Cobertura: 95.80%
+Número de etiquetas: 7, Instancias: 614, Cobertura: 94.63%
+Número de etiquetas: 8, Instancias: 264, Cobertura: 97.35%
+Número de etiquetas: 9, Instancias: 47, Cobertura: 100.00%
+Número de etiquetas: 10, Instancias: 5, Cobertura: 100.00%
+Número de etiquetas: 11, Instancias: 1, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 3, Cobertura: 100.00%
+Número de etiquetas: 13, Instancias: 1, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  MCM
+Nivel de confianza:  0.95
+Iteración:  4
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 27.09 %
+Cobertura empírica: 95.91 %
+Tamaño medio de conjunto: 7.73
+Número de etiquetas: 3, Instancias: 19, Cobertura: 94.74%
+Número de etiquetas: 4, Instancias: 98, Cobertura: 90.82%
+Número de etiquetas: 5, Instancias: 96, Cobertura: 94.79%
+Número de etiquetas: 6, Instancias: 394, Cobertura: 91.62%
+Número de etiquetas: 7, Instancias: 304, Cobertura: 94.41%
+Número de etiquetas: 8, Instancias: 466, Cobertura: 97.85%
+Número de etiquetas: 9, Instancias: 365, Cobertura: 98.36%
+Número de etiquetas: 10, Instancias: 331, Cobertura: 97.89%
+Número de etiquetas: 11, Instancias: 55, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 19, Cobertura: 100.00%
+Número de etiquetas: 13, Instancias: 5, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  APS
+Nivel de confianza:  0.95
+Iteración:  4
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 27.09 %
+Cobertura empírica: 94.75 %
+Tamaño medio de conjunto: 6.28
+Número de etiquetas: 1, Instancias: 25, Cobertura: 76.00%
+Número de etiquetas: 2, Instancias: 119, Cobertura: 87.39%
+Número de etiquetas: 3, Instancias: 128, Cobertura: 89.06%
+Número de etiquetas: 4, Instancias: 121, Cobertura: 92.56%
+Número de etiquetas: 5, Instancias: 200, Cobertura: 96.50%
+Número de etiquetas: 6, Instancias: 412, Cobertura: 94.17%
+Número de etiquetas: 7, Instancias: 571, Cobertura: 95.80%
+Número de etiquetas: 8, Instancias: 366, Cobertura: 97.81%
+Número de etiquetas: 9, Instancias: 136, Cobertura: 95.59%
+Número de etiquetas: 10, Instancias: 49, Cobertura: 100.00%
+Número de etiquetas: 11, Instancias: 22, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 3, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  RAPS
+Nivel de confianza:  0.95
+Iteración:  4
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  7
+lambda:  0.013995753733491361
+✅ Calibración completada
+
+Accuracy: 27.09 %
+Cobertura empírica: 94.14 %
+Tamaño medio de conjunto: 6.02
+Número de etiquetas: 1, Instancias: 22, Cobertura: 72.73%
+Número de etiquetas: 2, Instancias: 111, Cobertura: 86.49%
+Número de etiquetas: 3, Instancias: 122, Cobertura: 90.16%
+Número de etiquetas: 4, Instancias: 108, Cobertura: 95.37%
+Número de etiquetas: 5, Instancias: 177, Cobertura: 94.92%
+Número de etiquetas: 6, Instancias: 362, Cobertura: 94.75%
+Número de etiquetas: 7, Instancias: 1159, Cobertura: 95.25%
+Número de etiquetas: 8, Instancias: 82, Cobertura: 96.34%
+Número de etiquetas: 9, Instancias: 8, Cobertura: 87.50%
+Número de etiquetas: 10, Instancias: 1, Cobertura: 0.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  SAPS
+Nivel de confianza:  0.95
+Iteración:  4
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+lambda:  0.12303925439543015
+✅ Calibración completada
+
+Accuracy: 27.09 %
+Cobertura empírica: 95.26 %
+Tamaño medio de conjunto: 6.33
+Número de etiquetas: 2, Instancias: 42, Cobertura: 88.10%
+Número de etiquetas: 3, Instancias: 84, Cobertura: 94.05%
+Número de etiquetas: 4, Instancias: 85, Cobertura: 95.29%
+Número de etiquetas: 5, Instancias: 198, Cobertura: 92.42%
+Número de etiquetas: 6, Instancias: 528, Cobertura: 94.70%
+Número de etiquetas: 7, Instancias: 936, Cobertura: 96.15%
+Número de etiquetas: 8, Instancias: 279, Cobertura: 96.77%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  5
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.688 | Validation Loss:   2.033 | Time: 2m 44s
+Epoch  2 | Train Loss:   1.654 | Validation Loss:   2.036 | Time: 2m 43s
+Epoch  3 | Train Loss:   1.638 | Validation Loss:   1.851 | Time: 2m 42s
+Epoch  4 | Train Loss:   1.639 | Validation Loss:   1.978 | Time: 2m 43s
+Epoch  5 | Train Loss:   1.632 | Validation Loss:   2.073 | Time: 2m 42s
+✅ Entrenamiento de la cabecera completado
+
+Accuracy: 30.76 %
+Cobertura empírica: 30.76 %
+Tamaño medio de conjunto: 1.00
+Número de etiquetas: 1, Instancias: 2152, Cobertura: 30.76%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  LAC
+Nivel de confianza:  0.95
+Iteración:  5
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.747 | Validation Loss:   1.915 | Time: 2m 11s
+Epoch  2 | Train Loss:   1.616 | Validation Loss:   2.022 | Time: 2m 10s
+Epoch  3 | Train Loss:   1.622 | Validation Loss:   1.956 | Time: 2m 10s
+Epoch  4 | Train Loss:   1.703 | Validation Loss:   1.963 | Time: 2m 10s
+Epoch  5 | Train Loss:   1.613 | Validation Loss:   2.161 | Time: 2m 10s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 27.32 %
+Cobertura empírica: 94.84 %
+Tamaño medio de conjunto: 5.93
+Número de etiquetas: 2, Instancias: 9, Cobertura: 100.00%
+Número de etiquetas: 3, Instancias: 139, Cobertura: 97.84%
+Número de etiquetas: 4, Instancias: 331, Cobertura: 92.45%
+Número de etiquetas: 5, Instancias: 350, Cobertura: 95.43%
+Número de etiquetas: 6, Instancias: 350, Cobertura: 94.00%
+Número de etiquetas: 7, Instancias: 689, Cobertura: 93.90%
+Número de etiquetas: 8, Instancias: 244, Cobertura: 98.77%
+Número de etiquetas: 9, Instancias: 36, Cobertura: 97.22%
+Número de etiquetas: 10, Instancias: 1, Cobertura: 100.00%
+Número de etiquetas: 11, Instancias: 1, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 1, Cobertura: 100.00%
+Número de etiquetas: 13, Instancias: 1, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  MCM
+Nivel de confianza:  0.95
+Iteración:  5
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 27.32 %
+Cobertura empírica: 95.35 %
+Tamaño medio de conjunto: 7.48
+Número de etiquetas: 3, Instancias: 7, Cobertura: 85.71%
+Número de etiquetas: 4, Instancias: 76, Cobertura: 92.11%
+Número de etiquetas: 5, Instancias: 165, Cobertura: 93.94%
+Número de etiquetas: 6, Instancias: 380, Cobertura: 92.37%
+Número de etiquetas: 7, Instancias: 361, Cobertura: 94.46%
+Número de etiquetas: 8, Instancias: 503, Cobertura: 95.43%
+Número de etiquetas: 9, Instancias: 518, Cobertura: 98.65%
+Número de etiquetas: 10, Instancias: 109, Cobertura: 96.33%
+Número de etiquetas: 11, Instancias: 26, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 7, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  APS
+Nivel de confianza:  0.95
+Iteración:  5
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 27.32 %
+Cobertura empírica: 94.24 %
+Tamaño medio de conjunto: 6.10
+Número de etiquetas: 1, Instancias: 3, Cobertura: 66.67%
+Número de etiquetas: 2, Instancias: 59, Cobertura: 91.53%
+Número de etiquetas: 3, Instancias: 237, Cobertura: 91.98%
+Número de etiquetas: 4, Instancias: 179, Cobertura: 88.83%
+Número de etiquetas: 5, Instancias: 163, Cobertura: 95.09%
+Número de etiquetas: 6, Instancias: 476, Cobertura: 93.28%
+Número de etiquetas: 7, Instancias: 575, Cobertura: 94.78%
+Número de etiquetas: 8, Instancias: 301, Cobertura: 97.67%
+Número de etiquetas: 9, Instancias: 122, Cobertura: 99.18%
+Número de etiquetas: 10, Instancias: 31, Cobertura: 96.77%
+Número de etiquetas: 11, Instancias: 5, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 1, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  RAPS
+Nivel de confianza:  0.95
+Iteración:  5
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  7
+lambda:  0.07146340810715456
+✅ Calibración completada
+
+Accuracy: 27.32 %
+Cobertura empírica: 94.24 %
+Tamaño medio de conjunto: 5.90
+Número de etiquetas: 1, Instancias: 3, Cobertura: 66.67%
+Número de etiquetas: 2, Instancias: 46, Cobertura: 89.13%
+Número de etiquetas: 3, Instancias: 216, Cobertura: 92.59%
+Número de etiquetas: 4, Instancias: 175, Cobertura: 92.00%
+Número de etiquetas: 5, Instancias: 154, Cobertura: 96.10%
+Número de etiquetas: 6, Instancias: 423, Cobertura: 94.33%
+Número de etiquetas: 7, Instancias: 1131, Cobertura: 94.96%
+Número de etiquetas: 8, Instancias: 4, Cobertura: 75.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  SAPS
+Nivel de confianza:  0.95
+Iteración:  5
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+lambda:  0.07287781218861904
+✅ Calibración completada
+
+Accuracy: 27.32 %
+Cobertura empírica: 95.54 %
+Tamaño medio de conjunto: 6.29
+Número de etiquetas: 1, Instancias: 17, Cobertura: 70.59%
+Número de etiquetas: 2, Instancias: 19, Cobertura: 89.47%
+Número de etiquetas: 3, Instancias: 33, Cobertura: 93.94%
+Número de etiquetas: 4, Instancias: 43, Cobertura: 95.35%
+Número de etiquetas: 5, Instancias: 264, Cobertura: 96.21%
+Número de etiquetas: 6, Instancias: 826, Cobertura: 94.92%
+Número de etiquetas: 7, Instancias: 696, Cobertura: 95.83%
+Número de etiquetas: 8, Instancias: 223, Cobertura: 98.21%
+Número de etiquetas: 9, Instancias: 28, Cobertura: 100.00%
+Número de etiquetas: 10, Instancias: 3, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  6
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.692 | Validation Loss:   2.031 | Time: 2m 44s
+Epoch  2 | Train Loss:   1.656 | Validation Loss:   1.980 | Time: 2m 44s
+Epoch  3 | Train Loss:   1.626 | Validation Loss:   1.910 | Time: 2m 44s
+Epoch  4 | Train Loss:   1.652 | Validation Loss:   2.005 | Time: 2m 43s
+Epoch  5 | Train Loss:   1.646 | Validation Loss:   2.126 | Time: 2m 43s
+✅ Entrenamiento de la cabecera completado
+
+Accuracy: 29.18 %
+Cobertura empírica: 29.18 %
+Tamaño medio de conjunto: 1.00
+Número de etiquetas: 1, Instancias: 2152, Cobertura: 29.18%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  LAC
+Nivel de confianza:  0.95
+Iteración:  6
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.750 | Validation Loss:   1.935 | Time: 2m 11s
+Epoch  2 | Train Loss:   1.607 | Validation Loss:   1.992 | Time: 2m 13s
+Epoch  3 | Train Loss:   1.627 | Validation Loss:   1.856 | Time: 2m 12s
+Epoch  4 | Train Loss:   1.667 | Validation Loss:   1.985 | Time: 2m 10s
+Epoch  5 | Train Loss:   1.642 | Validation Loss:   2.177 | Time: 2m 10s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 27.70 %
+Cobertura empírica: 94.24 %
+Tamaño medio de conjunto: 5.74
+Número de etiquetas: 2, Instancias: 46, Cobertura: 93.48%
+Número de etiquetas: 3, Instancias: 131, Cobertura: 96.18%
+Número de etiquetas: 4, Instancias: 216, Cobertura: 93.98%
+Número de etiquetas: 5, Instancias: 436, Cobertura: 91.51%
+Número de etiquetas: 6, Instancias: 616, Cobertura: 95.62%
+Número de etiquetas: 7, Instancias: 570, Cobertura: 94.21%
+Número de etiquetas: 8, Instancias: 111, Cobertura: 96.40%
+Número de etiquetas: 9, Instancias: 15, Cobertura: 93.33%
+Número de etiquetas: 10, Instancias: 7, Cobertura: 85.71%
+Número de etiquetas: 11, Instancias: 3, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 1, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  MCM
+Nivel de confianza:  0.95
+Iteración:  6
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 27.70 %
+Cobertura empírica: 95.07 %
+Tamaño medio de conjunto: 7.68
+Número de etiquetas: 4, Instancias: 44, Cobertura: 90.91%
+Número de etiquetas: 5, Instancias: 162, Cobertura: 96.91%
+Número de etiquetas: 6, Instancias: 384, Cobertura: 90.89%
+Número de etiquetas: 7, Instancias: 458, Cobertura: 92.79%
+Número de etiquetas: 8, Instancias: 392, Cobertura: 96.43%
+Número de etiquetas: 9, Instancias: 351, Cobertura: 97.15%
+Número de etiquetas: 10, Instancias: 258, Cobertura: 98.84%
+Número de etiquetas: 11, Instancias: 75, Cobertura: 97.33%
+Número de etiquetas: 12, Instancias: 27, Cobertura: 100.00%
+Número de etiquetas: 13, Instancias: 1, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  APS
+Nivel de confianza:  0.95
+Iteración:  6
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 27.70 %
+Cobertura empírica: 94.52 %
+Tamaño medio de conjunto: 5.97
+Número de etiquetas: 1, Instancias: 4, Cobertura: 75.00%
+Número de etiquetas: 2, Instancias: 86, Cobertura: 91.86%
+Número de etiquetas: 3, Instancias: 170, Cobertura: 93.53%
+Número de etiquetas: 4, Instancias: 183, Cobertura: 91.26%
+Número de etiquetas: 5, Instancias: 262, Cobertura: 91.98%
+Número de etiquetas: 6, Instancias: 581, Cobertura: 93.98%
+Número de etiquetas: 7, Instancias: 493, Cobertura: 95.74%
+Número de etiquetas: 8, Instancias: 242, Cobertura: 98.35%
+Número de etiquetas: 9, Instancias: 77, Cobertura: 98.70%
+Número de etiquetas: 10, Instancias: 41, Cobertura: 97.56%
+Número de etiquetas: 11, Instancias: 13, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  RAPS
+Nivel de confianza:  0.95
+Iteración:  6
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  7
+lambda:  0.13206621542823424
+✅ Calibración completada
+
+Accuracy: 27.70 %
+Cobertura empírica: 94.89 %
+Tamaño medio de conjunto: 5.99
+Número de etiquetas: 1, Instancias: 3, Cobertura: 66.67%
+Número de etiquetas: 2, Instancias: 48, Cobertura: 91.67%
+Número de etiquetas: 3, Instancias: 148, Cobertura: 95.27%
+Número de etiquetas: 4, Instancias: 173, Cobertura: 93.06%
+Número de etiquetas: 5, Instancias: 196, Cobertura: 93.88%
+Número de etiquetas: 6, Instancias: 410, Cobertura: 94.63%
+Número de etiquetas: 7, Instancias: 1173, Cobertura: 95.57%
+Número de etiquetas: 8, Instancias: 1, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  SAPS
+Nivel de confianza:  0.95
+Iteración:  6
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+lambda:  0.0831650241363514
+✅ Calibración completada
+
+Accuracy: 27.70 %
+Cobertura empírica: 94.52 %
+Tamaño medio de conjunto: 6.12
+Número de etiquetas: 1, Instancias: 56, Cobertura: 73.21%
+Número de etiquetas: 2, Instancias: 32, Cobertura: 96.88%
+Número de etiquetas: 3, Instancias: 65, Cobertura: 95.38%
+Número de etiquetas: 4, Instancias: 73, Cobertura: 91.78%
+Número de etiquetas: 5, Instancias: 265, Cobertura: 92.45%
+Número de etiquetas: 6, Instancias: 644, Cobertura: 93.79%
+Número de etiquetas: 7, Instancias: 775, Cobertura: 97.03%
+Número de etiquetas: 8, Instancias: 237, Cobertura: 95.78%
+Número de etiquetas: 9, Instancias: 4, Cobertura: 100.00%
+Número de etiquetas: 13, Instancias: 1, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  7
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.690 | Validation Loss:   2.036 | Time: 2m 44s
+Epoch  2 | Train Loss:   1.662 | Validation Loss:   1.961 | Time: 2m 44s
+Epoch  3 | Train Loss:   1.641 | Validation Loss:   1.920 | Time: 2m 43s
+Epoch  4 | Train Loss:   1.646 | Validation Loss:   1.982 | Time: 2m 44s
+Epoch  5 | Train Loss:   1.638 | Validation Loss:   2.061 | Time: 2m 43s
+✅ Entrenamiento de la cabecera completado
+
+Accuracy: 26.16 %
+Cobertura empírica: 26.16 %
+Tamaño medio de conjunto: 1.00
+Número de etiquetas: 1, Instancias: 2152, Cobertura: 26.16%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  LAC
+Nivel de confianza:  0.95
+Iteración:  7
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.751 | Validation Loss:   1.967 | Time: 2m 10s
+Epoch  2 | Train Loss:   1.622 | Validation Loss:   1.920 | Time: 2m 10s
+Epoch  3 | Train Loss:   1.621 | Validation Loss:   1.883 | Time: 2m 10s
+Epoch  4 | Train Loss:   1.658 | Validation Loss:   1.969 | Time: 2m 9s
+Epoch  5 | Train Loss:   1.603 | Validation Loss:   2.042 | Time: 2m 10s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 28.30 %
+Cobertura empírica: 94.14 %
+Tamaño medio de conjunto: 5.75
+Número de etiquetas: 2, Instancias: 85, Cobertura: 91.76%
+Número de etiquetas: 3, Instancias: 97, Cobertura: 94.85%
+Número de etiquetas: 4, Instancias: 241, Cobertura: 92.53%
+Número de etiquetas: 5, Instancias: 499, Cobertura: 91.18%
+Número de etiquetas: 6, Instancias: 449, Cobertura: 94.43%
+Número de etiquetas: 7, Instancias: 565, Cobertura: 96.46%
+Número de etiquetas: 8, Instancias: 162, Cobertura: 96.30%
+Número de etiquetas: 9, Instancias: 37, Cobertura: 97.30%
+Número de etiquetas: 10, Instancias: 7, Cobertura: 100.00%
+Número de etiquetas: 11, Instancias: 5, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 5, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  MCM
+Nivel de confianza:  0.95
+Iteración:  7
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 28.30 %
+Cobertura empírica: 94.80 %
+Tamaño medio de conjunto: 7.26
+Número de etiquetas: 3, Instancias: 17, Cobertura: 94.12%
+Número de etiquetas: 4, Instancias: 129, Cobertura: 93.02%
+Número de etiquetas: 5, Instancias: 181, Cobertura: 89.50%
+Número de etiquetas: 6, Instancias: 496, Cobertura: 92.54%
+Número de etiquetas: 7, Instancias: 257, Cobertura: 94.55%
+Número de etiquetas: 8, Instancias: 522, Cobertura: 96.17%
+Número de etiquetas: 9, Instancias: 366, Cobertura: 97.54%
+Número de etiquetas: 10, Instancias: 126, Cobertura: 98.41%
+Número de etiquetas: 11, Instancias: 44, Cobertura: 97.73%
+Número de etiquetas: 12, Instancias: 12, Cobertura: 100.00%
+Número de etiquetas: 13, Instancias: 2, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  APS
+Nivel de confianza:  0.95
+Iteración:  7
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 28.30 %
+Cobertura empírica: 93.54 %
+Tamaño medio de conjunto: 5.81
+Número de etiquetas: 1, Instancias: 31, Cobertura: 64.52%
+Número de etiquetas: 2, Instancias: 79, Cobertura: 87.34%
+Número de etiquetas: 3, Instancias: 185, Cobertura: 92.97%
+Número de etiquetas: 4, Instancias: 203, Cobertura: 91.63%
+Número de etiquetas: 5, Instancias: 333, Cobertura: 91.29%
+Número de etiquetas: 6, Instancias: 493, Cobertura: 94.32%
+Número de etiquetas: 7, Instancias: 483, Cobertura: 94.82%
+Número de etiquetas: 8, Instancias: 224, Cobertura: 98.21%
+Número de etiquetas: 9, Instancias: 81, Cobertura: 97.53%
+Número de etiquetas: 10, Instancias: 25, Cobertura: 100.00%
+Número de etiquetas: 11, Instancias: 15, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  RAPS
+Nivel de confianza:  0.95
+Iteración:  7
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  7
+lambda:  0.02410279334444791
+✅ Calibración completada
+
+Accuracy: 28.30 %
+Cobertura empírica: 93.68 %
+Tamaño medio de conjunto: 5.73
+Número de etiquetas: 1, Instancias: 24, Cobertura: 70.83%
+Número de etiquetas: 2, Instancias: 71, Cobertura: 87.32%
+Número de etiquetas: 3, Instancias: 166, Cobertura: 93.37%
+Número de etiquetas: 4, Instancias: 211, Cobertura: 91.94%
+Número de etiquetas: 5, Instancias: 261, Cobertura: 92.72%
+Número de etiquetas: 6, Instancias: 479, Cobertura: 94.15%
+Número de etiquetas: 7, Instancias: 893, Cobertura: 95.30%
+Número de etiquetas: 8, Instancias: 38, Cobertura: 94.74%
+Número de etiquetas: 9, Instancias: 9, Cobertura: 88.89%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  SAPS
+Nivel de confianza:  0.95
+Iteración:  7
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+lambda:  0.12986260161881474
+✅ Calibración completada
+
+Accuracy: 28.30 %
+Cobertura empírica: 94.66 %
+Tamaño medio de conjunto: 6.05
+Número de etiquetas: 2, Instancias: 6, Cobertura: 100.00%
+Número de etiquetas: 3, Instancias: 21, Cobertura: 95.24%
+Número de etiquetas: 4, Instancias: 151, Cobertura: 86.75%
+Número de etiquetas: 5, Instancias: 446, Cobertura: 92.83%
+Número de etiquetas: 6, Instancias: 673, Cobertura: 96.29%
+Número de etiquetas: 7, Instancias: 770, Cobertura: 95.32%
+Número de etiquetas: 8, Instancias: 85, Cobertura: 98.82%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  8
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.699 | Validation Loss:   2.020 | Time: 2m 42s
+Epoch  2 | Train Loss:   1.639 | Validation Loss:   1.980 | Time: 2m 44s
+Epoch  3 | Train Loss:   1.639 | Validation Loss:   1.924 | Time: 2m 42s
+Epoch  4 | Train Loss:   1.655 | Validation Loss:   1.971 | Time: 2m 43s
+Epoch  5 | Train Loss:   1.611 | Validation Loss:   2.022 | Time: 2m 43s
+✅ Entrenamiento de la cabecera completado
+
+Accuracy: 27.14 %
+Cobertura empírica: 27.14 %
+Tamaño medio de conjunto: 1.00
+Número de etiquetas: 1, Instancias: 2152, Cobertura: 27.14%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  LAC
+Nivel de confianza:  0.95
+Iteración:  8
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.746 | Validation Loss:   1.932 | Time: 2m 10s
+Epoch  2 | Train Loss:   1.612 | Validation Loss:   2.005 | Time: 2m 10s
+Epoch  3 | Train Loss:   1.610 | Validation Loss:   1.923 | Time: 2m 11s
+Epoch  4 | Train Loss:   1.689 | Validation Loss:   1.926 | Time: 2m 10s
+Epoch  5 | Train Loss:   1.616 | Validation Loss:   2.033 | Time: 2m 10s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 27.37 %
+Cobertura empírica: 94.28 %
+Tamaño medio de conjunto: 5.82
+Número de etiquetas: 2, Instancias: 106, Cobertura: 90.57%
+Número de etiquetas: 3, Instancias: 99, Cobertura: 93.94%
+Número de etiquetas: 4, Instancias: 258, Cobertura: 93.80%
+Número de etiquetas: 5, Instancias: 400, Cobertura: 90.25%
+Número de etiquetas: 6, Instancias: 448, Cobertura: 93.75%
+Número de etiquetas: 7, Instancias: 506, Cobertura: 97.04%
+Número de etiquetas: 8, Instancias: 276, Cobertura: 97.46%
+Número de etiquetas: 9, Instancias: 46, Cobertura: 97.83%
+Número de etiquetas: 10, Instancias: 7, Cobertura: 85.71%
+Número de etiquetas: 11, Instancias: 4, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 1, Cobertura: 100.00%
+Número de etiquetas: 13, Instancias: 1, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  MCM
+Nivel de confianza:  0.95
+Iteración:  8
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 27.37 %
+Cobertura empírica: 94.84 %
+Tamaño medio de conjunto: 7.46
+Número de etiquetas: 3, Instancias: 11, Cobertura: 90.91%
+Número de etiquetas: 4, Instancias: 129, Cobertura: 91.47%
+Número de etiquetas: 5, Instancias: 202, Cobertura: 92.57%
+Número de etiquetas: 6, Instancias: 394, Cobertura: 90.36%
+Número de etiquetas: 7, Instancias: 351, Cobertura: 92.59%
+Número de etiquetas: 8, Instancias: 347, Cobertura: 96.54%
+Número de etiquetas: 9, Instancias: 441, Cobertura: 98.41%
+Número de etiquetas: 10, Instancias: 144, Cobertura: 100.00%
+Número de etiquetas: 11, Instancias: 105, Cobertura: 99.05%
+Número de etiquetas: 12, Instancias: 25, Cobertura: 100.00%
+Número de etiquetas: 13, Instancias: 3, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  APS
+Nivel de confianza:  0.95
+Iteración:  8
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 27.37 %
+Cobertura empírica: 93.31 %
+Tamaño medio de conjunto: 5.94
+Número de etiquetas: 1, Instancias: 57, Cobertura: 71.93%
+Número de etiquetas: 2, Instancias: 88, Cobertura: 82.95%
+Número de etiquetas: 3, Instancias: 189, Cobertura: 92.06%
+Número de etiquetas: 4, Instancias: 152, Cobertura: 90.13%
+Número de etiquetas: 5, Instancias: 297, Cobertura: 89.56%
+Número de etiquetas: 6, Instancias: 443, Cobertura: 93.23%
+Número de etiquetas: 7, Instancias: 451, Cobertura: 96.45%
+Número de etiquetas: 8, Instancias: 278, Cobertura: 98.92%
+Número de etiquetas: 9, Instancias: 132, Cobertura: 98.48%
+Número de etiquetas: 10, Instancias: 44, Cobertura: 100.00%
+Número de etiquetas: 11, Instancias: 20, Cobertura: 95.00%
+Número de etiquetas: 12, Instancias: 1, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  RAPS
+Nivel de confianza:  0.95
+Iteración:  8
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  7
+lambda:  0.020151232129581437
+✅ Calibración completada
+
+Accuracy: 27.37 %
+Cobertura empírica: 93.40 %
+Tamaño medio de conjunto: 5.74
+Número de etiquetas: 1, Instancias: 50, Cobertura: 70.00%
+Número de etiquetas: 2, Instancias: 86, Cobertura: 83.72%
+Número de etiquetas: 3, Instancias: 171, Cobertura: 91.81%
+Número de etiquetas: 4, Instancias: 153, Cobertura: 92.81%
+Número de etiquetas: 5, Instancias: 243, Cobertura: 90.12%
+Número de etiquetas: 6, Instancias: 441, Cobertura: 93.42%
+Número de etiquetas: 7, Instancias: 928, Cobertura: 96.77%
+Número de etiquetas: 8, Instancias: 76, Cobertura: 94.74%
+Número de etiquetas: 9, Instancias: 4, Cobertura: 75.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  SAPS
+Nivel de confianza:  0.95
+Iteración:  8
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+lambda:  0.25547892616832907
+✅ Calibración completada
+
+Accuracy: 27.37 %
+Cobertura empírica: 95.21 %
+Tamaño medio de conjunto: 6.23
+Número de etiquetas: 4, Instancias: 14, Cobertura: 100.00%
+Número de etiquetas: 5, Instancias: 204, Cobertura: 93.63%
+Número de etiquetas: 6, Instancias: 1205, Cobertura: 95.44%
+Número de etiquetas: 7, Instancias: 729, Cobertura: 95.20%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  9
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.697 | Validation Loss:   1.974 | Time: 2m 43s
+Epoch  2 | Train Loss:   1.639 | Validation Loss:   1.975 | Time: 2m 44s
+Epoch  3 | Train Loss:   1.645 | Validation Loss:   1.867 | Time: 2m 42s
+Epoch  4 | Train Loss:   1.642 | Validation Loss:   1.947 | Time: 2m 44s
+Epoch  5 | Train Loss:   1.637 | Validation Loss:   2.055 | Time: 2m 42s
+✅ Entrenamiento de la cabecera completado
+
+Accuracy: 29.23 %
+Cobertura empírica: 29.23 %
+Tamaño medio de conjunto: 1.00
+Número de etiquetas: 1, Instancias: 2152, Cobertura: 29.23%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  LAC
+Nivel de confianza:  0.95
+Iteración:  9
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.755 | Validation Loss:   1.971 | Time: 2m 11s
+Epoch  2 | Train Loss:   1.647 | Validation Loss:   2.028 | Time: 2m 12s
+Epoch  3 | Train Loss:   1.613 | Validation Loss:   1.914 | Time: 2m 10s
+Epoch  4 | Train Loss:   1.700 | Validation Loss:   1.924 | Time: 2m 11s
+Epoch  5 | Train Loss:   1.607 | Validation Loss:   2.138 | Time: 2m 10s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 27.88 %
+Cobertura empírica: 94.75 %
+Tamaño medio de conjunto: 5.96
+Número de etiquetas: 1, Instancias: 1, Cobertura: 100.00%
+Número de etiquetas: 2, Instancias: 38, Cobertura: 89.47%
+Número de etiquetas: 3, Instancias: 140, Cobertura: 93.57%
+Número de etiquetas: 4, Instancias: 227, Cobertura: 93.83%
+Número de etiquetas: 5, Instancias: 366, Cobertura: 92.62%
+Número de etiquetas: 6, Instancias: 506, Cobertura: 95.26%
+Número de etiquetas: 7, Instancias: 546, Cobertura: 94.87%
+Número de etiquetas: 8, Instancias: 259, Cobertura: 98.07%
+Número de etiquetas: 9, Instancias: 48, Cobertura: 95.83%
+Número de etiquetas: 10, Instancias: 14, Cobertura: 100.00%
+Número de etiquetas: 11, Instancias: 4, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 2, Cobertura: 100.00%
+Número de etiquetas: 13, Instancias: 1, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  MCM
+Nivel de confianza:  0.95
+Iteración:  9
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 27.88 %
+Cobertura empírica: 95.68 %
+Tamaño medio de conjunto: 7.88
+Número de etiquetas: 4, Instancias: 65, Cobertura: 90.77%
+Número de etiquetas: 5, Instancias: 136, Cobertura: 91.91%
+Número de etiquetas: 6, Instancias: 273, Cobertura: 93.41%
+Número de etiquetas: 7, Instancias: 505, Cobertura: 95.05%
+Número de etiquetas: 8, Instancias: 429, Cobertura: 95.80%
+Número de etiquetas: 9, Instancias: 260, Cobertura: 98.85%
+Número de etiquetas: 10, Instancias: 327, Cobertura: 97.25%
+Número de etiquetas: 11, Instancias: 95, Cobertura: 97.89%
+Número de etiquetas: 12, Instancias: 51, Cobertura: 98.04%
+Número de etiquetas: 13, Instancias: 11, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  APS
+Nivel de confianza:  0.95
+Iteración:  9
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 27.88 %
+Cobertura empírica: 94.75 %
+Tamaño medio de conjunto: 6.30
+Número de etiquetas: 1, Instancias: 10, Cobertura: 70.00%
+Número de etiquetas: 2, Instancias: 95, Cobertura: 89.47%
+Número de etiquetas: 3, Instancias: 141, Cobertura: 90.07%
+Número de etiquetas: 4, Instancias: 165, Cobertura: 90.30%
+Número de etiquetas: 5, Instancias: 261, Cobertura: 93.10%
+Número de etiquetas: 6, Instancias: 405, Cobertura: 97.04%
+Número de etiquetas: 7, Instancias: 475, Cobertura: 93.89%
+Número de etiquetas: 8, Instancias: 345, Cobertura: 98.26%
+Número de etiquetas: 9, Instancias: 136, Cobertura: 98.53%
+Número de etiquetas: 10, Instancias: 82, Cobertura: 96.34%
+Número de etiquetas: 11, Instancias: 34, Cobertura: 100.00%
+Número de etiquetas: 12, Instancias: 3, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  RAPS
+Nivel de confianza:  0.95
+Iteración:  9
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  7
+lambda:  0.020334266142686665
+✅ Calibración completada
+
+Accuracy: 27.88 %
+Cobertura empírica: 94.89 %
+Tamaño medio de conjunto: 6.03
+Número de etiquetas: 1, Instancias: 10, Cobertura: 70.00%
+Número de etiquetas: 2, Instancias: 67, Cobertura: 89.55%
+Número de etiquetas: 3, Instancias: 135, Cobertura: 90.37%
+Número de etiquetas: 4, Instancias: 144, Cobertura: 90.28%
+Número de etiquetas: 5, Instancias: 216, Cobertura: 97.22%
+Número de etiquetas: 6, Instancias: 383, Cobertura: 97.13%
+Número de etiquetas: 7, Instancias: 1108, Cobertura: 95.58%
+Número de etiquetas: 8, Instancias: 83, Cobertura: 91.57%
+Número de etiquetas: 9, Instancias: 6, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  SAPS
+Nivel de confianza:  0.95
+Iteración:  9
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+lambda:  0.14108311781819638
+✅ Calibración completada
+
+Accuracy: 27.88 %
+Cobertura empírica: 95.91 %
+Tamaño medio de conjunto: 6.45
+Número de etiquetas: 3, Instancias: 15, Cobertura: 100.00%
+Número de etiquetas: 4, Instancias: 37, Cobertura: 89.19%
+Número de etiquetas: 5, Instancias: 213, Cobertura: 96.71%
+Número de etiquetas: 6, Instancias: 705, Cobertura: 96.88%
+Número de etiquetas: 7, Instancias: 1068, Cobertura: 95.69%
+Número de etiquetas: 8, Instancias: 114, Cobertura: 92.11%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  10
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.685 | Validation Loss:   2.005 | Time: 2m 43s
+Epoch  2 | Train Loss:   1.665 | Validation Loss:   1.966 | Time: 2m 44s
+Epoch  3 | Train Loss:   1.637 | Validation Loss:   1.962 | Time: 2m 42s
+Epoch  4 | Train Loss:   1.633 | Validation Loss:   1.939 | Time: 2m 42s
+Epoch  5 | Train Loss:   1.622 | Validation Loss:   2.142 | Time: 2m 43s
+✅ Entrenamiento de la cabecera completado
+
+Accuracy: 29.51 %
+Cobertura empírica: 29.51 %
+Tamaño medio de conjunto: 1.00
+Número de etiquetas: 1, Instancias: 2152, Cobertura: 29.51%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  LAC
+Nivel de confianza:  0.95
+Iteración:  10
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:   1.744 | Validation Loss:   1.918 | Time: 2m 10s
+Epoch  2 | Train Loss:   1.614 | Validation Loss:   1.988 | Time: 2m 10s
+Epoch  3 | Train Loss:   1.620 | Validation Loss:   1.896 | Time: 2m 11s
+Epoch  4 | Train Loss:   1.685 | Validation Loss:   1.951 | Time: 2m 11s
+Epoch  5 | Train Loss:   1.594 | Validation Loss:   2.173 | Time: 2m 10s
+✅ Entrenamiento de la cabecera completado
+
+✅ Calibración completada
+
+Accuracy: 26.53 %
+Cobertura empírica: 95.86 %
+Tamaño medio de conjunto: 6.16
+Número de etiquetas: 2, Instancias: 28, Cobertura: 92.86%
+Número de etiquetas: 3, Instancias: 119, Cobertura: 94.96%
+Número de etiquetas: 4, Instancias: 278, Cobertura: 93.53%
+Número de etiquetas: 5, Instancias: 305, Cobertura: 94.10%
+Número de etiquetas: 6, Instancias: 484, Cobertura: 95.87%
+Número de etiquetas: 7, Instancias: 409, Cobertura: 96.09%
+Número de etiquetas: 8, Instancias: 394, Cobertura: 98.22%
+Número de etiquetas: 9, Instancias: 94, Cobertura: 98.94%
+Número de etiquetas: 10, Instancias: 21, Cobertura: 100.00%
+Número de etiquetas: 11, Instancias: 14, Cobertura: 92.86%
+Número de etiquetas: 12, Instancias: 6, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  MCM
+Nivel de confianza:  0.95
+Iteración:  10
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 26.53 %
+Cobertura empírica: 96.00 %
+Tamaño medio de conjunto: 7.70
+Número de etiquetas: 3, Instancias: 4, Cobertura: 100.00%
+Número de etiquetas: 4, Instancias: 87, Cobertura: 95.40%
+Número de etiquetas: 5, Instancias: 138, Cobertura: 94.20%
+Número de etiquetas: 6, Instancias: 363, Cobertura: 92.01%
+Número de etiquetas: 7, Instancias: 381, Cobertura: 95.54%
+Número de etiquetas: 8, Instancias: 468, Cobertura: 96.15%
+Número de etiquetas: 9, Instancias: 357, Cobertura: 98.32%
+Número de etiquetas: 10, Instancias: 232, Cobertura: 98.71%
+Número de etiquetas: 11, Instancias: 78, Cobertura: 98.72%
+Número de etiquetas: 12, Instancias: 34, Cobertura: 100.00%
+Número de etiquetas: 13, Instancias: 10, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  APS
+Nivel de confianza:  0.95
+Iteración:  10
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+✅ Calibración completada
+
+Accuracy: 26.53 %
+Cobertura empírica: 94.89 %
+Tamaño medio de conjunto: 6.14
+Número de etiquetas: 1, Instancias: 7, Cobertura: 57.14%
+Número de etiquetas: 2, Instancias: 80, Cobertura: 92.50%
+Número de etiquetas: 3, Instancias: 227, Cobertura: 92.07%
+Número de etiquetas: 4, Instancias: 209, Cobertura: 89.47%
+Número de etiquetas: 5, Instancias: 236, Cobertura: 93.22%
+Número de etiquetas: 6, Instancias: 373, Cobertura: 95.71%
+Número de etiquetas: 7, Instancias: 437, Cobertura: 95.65%
+Número de etiquetas: 8, Instancias: 321, Cobertura: 97.51%
+Número de etiquetas: 9, Instancias: 165, Cobertura: 99.39%
+Número de etiquetas: 10, Instancias: 72, Cobertura: 100.00%
+Número de etiquetas: 11, Instancias: 24, Cobertura: 95.83%
+Número de etiquetas: 12, Instancias: 1, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  RAPS
+Nivel de confianza:  0.95
+Iteración:  10
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+k_reg:  7
+lambda:  0.17089113906870468
+✅ Calibración completada
+
+Accuracy: 26.53 %
+Cobertura empírica: 95.77 %
+Tamaño medio de conjunto: 6.08
+Número de etiquetas: 1, Instancias: 1, Cobertura: 100.00%
+Número de etiquetas: 2, Instancias: 36, Cobertura: 94.44%
+Número de etiquetas: 3, Instancias: 156, Cobertura: 93.59%
+Número de etiquetas: 4, Instancias: 194, Cobertura: 93.30%
+Número de etiquetas: 5, Instancias: 178, Cobertura: 93.82%
+Número de etiquetas: 6, Instancias: 224, Cobertura: 98.21%
+Número de etiquetas: 7, Instancias: 1362, Cobertura: 96.33%
+Número de etiquetas: 8, Instancias: 1, Cobertura: 0.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  SAPS
+Nivel de confianza:  0.95
+Iteración:  10
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+lambda:  0.11442596252628609
+✅ Calibración completada
+
+Accuracy: 26.53 %
+Cobertura empírica: 95.96 %
+Tamaño medio de conjunto: 6.37
+Número de etiquetas: 1, Instancias: 1, Cobertura: 0.00%
+Número de etiquetas: 2, Instancias: 13, Cobertura: 100.00%
+Número de etiquetas: 3, Instancias: 26, Cobertura: 96.15%
+Número de etiquetas: 4, Instancias: 76, Cobertura: 96.05%
+Número de etiquetas: 5, Instancias: 249, Cobertura: 92.37%
+Número de etiquetas: 6, Instancias: 685, Cobertura: 96.50%
+Número de etiquetas: 7, Instancias: 881, Cobertura: 96.59%
+Número de etiquetas: 8, Instancias: 220, Cobertura: 95.91%
+Número de etiquetas: 9, Instancias: 1, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  1
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Traceback (most recent call last):
+  File "/mnt/homeGPU/dgonzalez/tfg-bioprofile-uncertainty/src/III_AC_maxillofacial.py", line 667, in <module>
+    test_pred_labels, test_pred_sets, test_true_labels = model.inference(test_loader, confidence)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/homeGPU/dgonzalez/tfg-bioprofile-uncertainty/src/conformal_classification_models.py", line 367, in inference
+    first_over_tau = torch.argmax(cumsum_probs >= tau, dim=1)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: "argmax_cpu" not implemented for 'Bool'
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  2
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Traceback (most recent call last):
+  File "/mnt/homeGPU/dgonzalez/tfg-bioprofile-uncertainty/src/III_AC_maxillofacial.py", line 667, in <module>
+    test_pred_labels, test_pred_sets, test_true_labels = model.inference(test_loader, confidence)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/homeGPU/dgonzalez/tfg-bioprofile-uncertainty/src/conformal_classification_models.py", line 367, in inference
+    first_over_tau = torch.argmax(cumsum_probs >= tau, dim=1)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: "argmax_cpu" not implemented for 'Bool'
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  3
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Traceback (most recent call last):
+  File "/mnt/homeGPU/dgonzalez/tfg-bioprofile-uncertainty/src/III_AC_maxillofacial.py", line 667, in <module>
+    test_pred_labels, test_pred_sets, test_true_labels = model.inference(test_loader, confidence)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/homeGPU/dgonzalez/tfg-bioprofile-uncertainty/src/conformal_classification_models.py", line 367, in inference
+    first_over_tau = torch.argmax(cumsum_probs >= tau, dim=1)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: "argmax_cpu" not implemented for 'Bool'
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  4
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Traceback (most recent call last):
+  File "/mnt/homeGPU/dgonzalez/tfg-bioprofile-uncertainty/src/III_AC_maxillofacial.py", line 667, in <module>
+    test_pred_labels, test_pred_sets, test_true_labels = model.inference(test_loader, confidence)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/homeGPU/dgonzalez/tfg-bioprofile-uncertainty/src/conformal_classification_models.py", line 367, in inference
+    first_over_tau = torch.argmax(cumsum_probs >= tau, dim=1)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: "argmax_cpu" not implemented for 'Bool'
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  5
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Traceback (most recent call last):
+  File "/mnt/homeGPU/dgonzalez/tfg-bioprofile-uncertainty/src/III_AC_maxillofacial.py", line 667, in <module>
+    test_pred_labels, test_pred_sets, test_true_labels = model.inference(test_loader, confidence)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/homeGPU/dgonzalez/tfg-bioprofile-uncertainty/src/conformal_classification_models.py", line 367, in inference
+    first_over_tau = torch.argmax(cumsum_probs >= tau, dim=1)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: "argmax_cpu" not implemented for 'Bool'
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  6
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Traceback (most recent call last):
+  File "/mnt/homeGPU/dgonzalez/tfg-bioprofile-uncertainty/src/III_AC_maxillofacial.py", line 667, in <module>
+    test_pred_labels, test_pred_sets, test_true_labels = model.inference(test_loader, confidence)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/homeGPU/dgonzalez/tfg-bioprofile-uncertainty/src/conformal_classification_models.py", line 367, in inference
+    first_over_tau = torch.argmax(cumsum_probs >= tau, dim=1)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: "argmax_cpu" not implemented for 'Bool'
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  7
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Traceback (most recent call last):
+  File "/mnt/homeGPU/dgonzalez/tfg-bioprofile-uncertainty/src/III_AC_maxillofacial.py", line 667, in <module>
+    test_pred_labels, test_pred_sets, test_true_labels = model.inference(test_loader, confidence)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/homeGPU/dgonzalez/tfg-bioprofile-uncertainty/src/conformal_classification_models.py", line 367, in inference
+    first_over_tau = torch.argmax(cumsum_probs >= tau, dim=1)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: "argmax_cpu" not implemented for 'Bool'
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  8
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Traceback (most recent call last):
+  File "/mnt/homeGPU/dgonzalez/tfg-bioprofile-uncertainty/src/III_AC_maxillofacial.py", line 667, in <module>
+    test_pred_labels, test_pred_sets, test_true_labels = model.inference(test_loader, confidence)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/homeGPU/dgonzalez/tfg-bioprofile-uncertainty/src/conformal_classification_models.py", line 367, in inference
+    first_over_tau = torch.argmax(cumsum_probs >= tau, dim=1)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: "argmax_cpu" not implemented for 'Bool'
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  9
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Traceback (most recent call last):
+  File "/mnt/homeGPU/dgonzalez/tfg-bioprofile-uncertainty/src/III_AC_maxillofacial.py", line 667, in <module>
+    test_pred_labels, test_pred_sets, test_true_labels = model.inference(test_loader, confidence)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/homeGPU/dgonzalez/tfg-bioprofile-uncertainty/src/conformal_classification_models.py", line 367, in inference
+    first_over_tau = torch.argmax(cumsum_probs >= tau, dim=1)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: "argmax_cpu" not implemented for 'Bool'
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  10
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Traceback (most recent call last):
+  File "/mnt/homeGPU/dgonzalez/tfg-bioprofile-uncertainty/src/III_AC_maxillofacial.py", line 667, in <module>
+    test_pred_labels, test_pred_sets, test_true_labels = model.inference(test_loader, confidence)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/homeGPU/dgonzalez/tfg-bioprofile-uncertainty/src/conformal_classification_models.py", line 367, in inference
+    first_over_tau = torch.argmax(cumsum_probs >= tau, dim=1)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: "argmax_cpu" not implemented for 'Bool'
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  1
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Accuracy: 27.42 %
+Cobertura empírica: 100.00 %
+Tamaño medio de conjunto: 13.00
+Número de etiquetas: 13, Instancias: 2152, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  2
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Accuracy: 27.42 %
+Cobertura empírica: 100.00 %
+Tamaño medio de conjunto: 13.00
+Número de etiquetas: 13, Instancias: 2152, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  3
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Accuracy: 28.72 %
+Cobertura empírica: 100.00 %
+Tamaño medio de conjunto: 13.00
+Número de etiquetas: 13, Instancias: 2152, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  4
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Accuracy: 24.72 %
+Cobertura empírica: 100.00 %
+Tamaño medio de conjunto: 13.00
+Número de etiquetas: 13, Instancias: 2152, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  5
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Accuracy: 30.76 %
+Cobertura empírica: 100.00 %
+Tamaño medio de conjunto: 13.00
+Número de etiquetas: 13, Instancias: 2152, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  6
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Accuracy: 29.18 %
+Cobertura empírica: 100.00 %
+Tamaño medio de conjunto: 13.00
+Número de etiquetas: 13, Instancias: 2152, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  7
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Accuracy: 26.16 %
+Cobertura empírica: 100.00 %
+Tamaño medio de conjunto: 13.00
+Número de etiquetas: 13, Instancias: 2152, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  8
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Accuracy: 27.14 %
+Cobertura empírica: 100.00 %
+Tamaño medio de conjunto: 13.00
+Número de etiquetas: 13, Instancias: 2152, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  9
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Accuracy: 29.23 %
+Cobertura empírica: 100.00 %
+Tamaño medio de conjunto: 13.00
+Número de etiquetas: 13, Instancias: 2152, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  base
+Nivel de confianza:  0.95
+Iteración:  10
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Accuracy: 29.51 %
+Cobertura empírica: 100.00 %
+Tamaño medio de conjunto: 13.00
+Número de etiquetas: 13, Instancias: 2152, Cobertura: 100.00%
+✅ Testeo de la red completado
+
+-----------------------------------------------
+
+Método:  RAPS
+Nivel de confianza:  0.95
+Iteración:  1
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
