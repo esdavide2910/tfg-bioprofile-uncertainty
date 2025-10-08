@@ -672,12 +672,13 @@ if args.test:
             "pred_method": [pred_method] * n,
             "confidence": np.array([confidence] * n, dtype=np.float32),
             "iteration": [args.test_iteration] * n,
-            "pred_class": np.array(test_pred_classes, dtype=np.uint8),
-            "pred_set_under_18": np.array(test_pred_sets[:, 0], dtype=np.uint8),
-            "pred_set_over_18":  np.array(test_pred_sets[:, 1], dtype=np.uint8),
-            "true_class": np.array(test_true_classes, dtype=np.uint8),
-            "age": testset.ages,
-            "sex": testset.sexes
+            
+            "age": np.array(testset.ages, dtype=np.float32),
+            "sex": np.array(testset.sexes, dtype=str),
+            
+            "pred_majority": np.array(test_pred_classes, dtype=np.uint8),
+            "pred_set_under18": np.array(test_pred_sets[:, 0], dtype=np.uint8),
+            "pred_set_over18": np.array(test_pred_sets[:, 1], dtype=np.uint8),
         })
 
         # Si el archivo ya existe, cargarlo y filtrar duplicados
@@ -686,12 +687,11 @@ if args.test:
                 "pred_method": str,
                 "confidence": np.float32,
                 "iteration": np.int64,
-                "pred_class": np.uint8,
-                "pred_set_under_18": np.uint8,
-                "pred_set_over_18": np.uint8,
-                "true_class": np.uint8,
                 "age": np.float32,
-                "sex": str
+                "sex": str,
+                "pred_majority": np.uint8,
+                "pred_set_under18": np.uint8,
+                "pred_set_over18": np.uint8
             })
 
             # Filtrar todas las filas que NO tienen el mismo conjunto clave
