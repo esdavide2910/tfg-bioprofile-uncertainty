@@ -165,15 +165,15 @@ Este Trabajo de Fin de Grado tiene un doble objetivo:
 
     \item Defender la cuantificación de incertidumbre como herramienta esencial en \acrshort{ML}, ofrecer un panorama de métodos destacados, analizando superficialmente sus ventajas y limitaciones, y centrarnos en la predicción conformal y sus técnicas más populares.
 
-    \item Aplicar la predicción conformal a un contexto práctico como es el problema de estimación del \acrshort{PB}, centrándose en la estimación de edad y de sexo a partir de datos biológicos e imágenes médicas. De esta forma, podremos incorporar la incertidumbre propia del problema a resolver y del modelo entrenado para él, para, en aquellos casos más confusos, devolver conjuntos de predicciones con más de una etiqueta predicha (p.ej., \{masculino, femenino\}) en problemas de clasificación, o intervalos de predicción más amplios (p.ej., edad$\in$[16,20]) en problemas de regresión, en ambos casos para un nivel de confianza determinado.
+    \item Aplicar la predicción conformal a un contexto práctico como es el problema de estimación del \acrshort{PB}, centrándose en la estimación de edad a partir de datos biológicos e imágenes médicas. De esta forma, podremos incorporar la incertidumbre propia del problema a resolver y del modelo entrenado para él, para, en aquellos casos más confusos, devolver conjuntos de predicciones con más de una etiqueta predicha (p.ej., \{masculino, femenino\}) en problemas de clasificación, o intervalos de predicción más amplios (p.ej., edad$\in$[16,20]) en problemas de regresión, en ambos casos para un nivel de confianza determinado.
     
     Podemos dividir este objetivo a su vez en los siguientes:
 
     \begin{itemize}
 
-        \item Estudiar de forma exhaustiva la bibliografía sobre predicción conformal y algunas de sus técnicas, así como de la estimación de sexo y edad.
+        \item Estudiar de forma exhaustiva la bibliografía sobre predicción conformal y algunas de sus técnicas, así como de la estimación de edad.
 
-        \item Implementar, entrenar y validar modelos de regresión ---en problemas de estimación de edad--- y clasificación ---tanto en problema de estimación de sexo como edad legal--- a los que aplicar la inferencia conformal, y comparar aproximaciones heurísticas de cuantificación de incertidumbre con los métodos conformales.
+        \item Implementar, entrenar y validar modelos de regresión y clasificación a los que aplicar la inferencia conformal, y comparar aproximaciones heurísticas de cuantificación de incertidumbre con los métodos conformales.
 
         \item Realizar una primera aproximación a un marco interpretable y con garantías estadísticas para la estimación del perfil biológico (véase un ejemplo práctico en la Figura \ref{fig:example_intervalic_estimation}), donde la incertidumbre cuantificada pueda integrarse en informes periciales bajo estándares jurídicos.
 

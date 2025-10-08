@@ -617,9 +617,9 @@ Para el entrenamiento de la nueva cabecera, se han congelado todas las capas de 
 
 Tras esto, se ha entrenado la red completa. Para ello, se han descongelado todas las capas y se ha aplicado una estrategia de optimización basada en \textbf{\textit{learning rates} discriminativos} combinada con la política de ajuste de \textit{learning rate \textbf{OneCycle}} \cite{smith2018}.
 En concreto, se han definido diferentes tasas de aprendizaje para cada grupo de capas del modelo, asignadas según su profundidad. Los bloques convolucionales iniciales ---más generales y preentrenados--- reciben \textit{learning rates} más bajos, mientras que las capas más profundas ---específicas de la tarea y recientemente añadidas--- se entrenan con tasas más altas. Esta asignación se ha realizado mediante una progresión exponencial, que varía desde 1.5e-4 en los bloques más profundos hasta 1.5e-2 en los más superficiales. Este enfoque busca preservar el conocimiento útil de las capas inferiores y permitir una adaptación más rápida en las superiores.
-La política OneCycle se ha aplicado individualmente a cada grupo de capas, haciendo que cada uno siga un ciclo de una sola fase: el \textit{learning rate} comienza en un valor inicial bajo, aumenta progresivamente durante las primeras épocas (\textit{warm-up}), y desciende de forma suave hasta un valor final aún menor%
+La política \textit{OneCycle} se ha aplicado individualmente a cada grupo de capas, haciendo que cada uno siga un ciclo de una sola fase: el \textit{learning rate} comienza en un valor inicial bajo, aumenta progresivamente durante las primeras épocas (\textit{warm-up}), y desciende de forma suave hasta un valor final aún menor%
 \footnote{
-    Se han mantenido los parámetros por defecto del método OneCycle en PyTorch. Con esta configuración, cada grupo de capas comienza con una tasa de aprendizaje equivalente al 4\% del valor máximo asignado. Durante aproximadamente el 30\% inicial de las épocas, esta tasa crece de forma progresiva, y posteriormente decrece hasta alcanzar el 0.01\% del learning rate máximo.
+    Se han mantenido los parámetros por defecto del método \textit{OneCycle} en PyTorch. Con esta configuración, cada grupo de capas comienza con una tasa de aprendizaje equivalente al 4\% del valor máximo asignado. Durante aproximadamente el 30\% inicial de las épocas, esta tasa crece de forma progresiva, y posteriormente decrece hasta alcanzar el 0.01\% del learning rate máximo.
 }. 
 Esta estrategia permite acelerar la convergencia en las fases iniciales del entrenamiento y afinar los pesos En las etapas finales, mejorando tanto la estabilidad como el rendimiento del modelo.
 Esta combinación entre \textit{learning rates} discriminativos y la política de un solo ciclo permite acelerar la convergencia en las primeras etapas del entrenamiento, al tiempo que se mejora la capacidad de generalización mediante un afinado progresivo de los pesos en las fases finales.
@@ -1207,6 +1207,7 @@ principalmente debido a una mayor especificidad, ya que la sensibilidad se manti
 
 \FloatBarrier
 
+% ------------------------------------------------------------------------------------------------------------
 
 \subsubsection{Análisis de métricas para la estimación de mayoría de edad en conjunto de predicción}
 
@@ -1302,73 +1303,153 @@ La Tabla \ref{tab:AMM_EC_MPSS_comparative} presenta las métricas sobre los conj
 
 \FloatBarrier
 
-\subsubsection{Análisis de la cobertura en base a la mayoría de edad real}
+% ------------------------------------------------------------------------------------------------------------
 
-Ahora analizaremos la cobertura en cada clase mediante las matrices de confusión obtenidas por cada método. 
-En la Tabla \ref{fig:conf2matrix} se recogen las matrices de confusión conformales ---normalizadas por el número de instancias total de cada etiqueta real--- de los diferentes métodos. 
+% \subsubsection{Análisis de la cobertura en base a la mayoría de edad real}
 
-La cobertura empírica de una clase se define como la proporción de instancias en las que la etiqueta verdadera está presente dentro del conjunto de predicción generado. Para calcularla, se suman las proporciones de instancias cuyo conjunto de predicción incluye la etiqueta real, considerando únicamente aquellas instancias pertenecientes a la clase en cuestión. Por ejemplo, la cobertura empírica para la clase `menor de 18' corresponde a la suma de las proporciones de instancias que contienen la etiqueta `menor de 18' en su conjunto de predicción, siendo su etiqueta real `menor de 18'.
+% Ahora analizaremos la cobertura en cada clase mediante las matrices de confusión obtenidas por cada método. 
+% En la Tabla \ref{fig:conf2matrix} se recogen las matrices de confusión conformales ---normalizadas por el número de instancias total de cada etiqueta real--- de los diferentes métodos. 
 
-Respecto al método `base', cabe señalar que la cobertura para cada clase coincide con las métricas clásicas de sensitividad y especificidad, ya que el conjunto de predicción contiene siempre una única etiqueta y no se emplea ningún ajuste adicional para calibrar la confianza.
+% La cobertura empírica de una clase se define como la proporción de instancias en las que la etiqueta verdadera está presente dentro del conjunto de predicción generado. Para calcularla, se suman las proporciones de instancias cuyo conjunto de predicción incluye la etiqueta real, considerando únicamente aquellas instancias pertenecientes a la clase en cuestión. Por ejemplo, la cobertura empírica para la clase `menor de 18' corresponde a la suma de las proporciones de instancias que contienen la etiqueta `menor de 18' en su conjunto de predicción, siendo su etiqueta real `menor de 18'.
 
-Resulta llamativo que el método \acrshort{LAC} muestre infracobertura en las instancias de menores de 18 años y sobrecobertura en aquellas de 18 años o más, mientras que en el caso del método MCM ocurre lo contrario, lo que querría indicar que \acrshort{LAC} es más fiable para estimaciones en población adulta, mientras que MCM ofrecería mejores resultados en población menor de edad. 
+% Respecto al método `base', cabe señalar que la cobertura para cada clase coincide con las métricas clásicas de sensitividad y especificidad, ya que el conjunto de predicción contiene siempre una única etiqueta y no se emplea ningún ajuste adicional para calibrar la confianza.
+
+% Resulta llamativo que el método \acrshort{LAC} muestre infracobertura en las instancias de menores de 18 años y sobrecobertura en aquellas de 18 años o más, mientras que en el caso del método MCM ocurre lo contrario, lo que querría indicar que \acrshort{LAC} es más fiable para estimaciones en población adulta, mientras que MCM ofrecería mejores resultados en población menor de edad. 
 
 
-\begin{table}[htbp]
+% \begin{table}[htbp]
+%     \centering
+
+%     % Tabla 1
+%     \begin{subfigure}[b]{\textwidth}
+%         \centering
+%         \begin{tabular}{cc|ccc|l|c|}
+%         \cline{3-7}
+%         &  & \multicolumn{3}{c|}{Conjunto predicho} &  & \multirow{2}{*}{Cobertura} \\ \cline{3-5}
+%         &  & \multicolumn{1}{c|}{\{$<$18\}} & \multicolumn{1}{c|}{\{$\geq$18\}} & \{$<$18,$\geq$18\} &  &  \\ \cline{1-5} \cline{7-7} 
+%         \multicolumn{1}{|c|}{\multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}Etiqueta \\ real\end{tabular}}} & $<$18 & \multicolumn{1}{c|}{84.43} & \multicolumn{1}{c|}{15.17} & -- &  & \textbf{84.43} \\ \cline{2-5} \cline{7-7} 
+%         \multicolumn{1}{|c|}{} & $\geq$18 & \multicolumn{1}{c|}{10.53} & \multicolumn{1}{c|}{89.47} & -- &  & \textbf{89.47} \\ \hline
+%         \end{tabular}
+%         \caption{base}
+%     \end{subfigure}
+
+%     \vspace{1em} % Espacio vertical entre tablas
+
+%     % Tabla 2
+%     \begin{subfigure}[b]{\textwidth}
+%         \centering
+%         \begin{tabular}{cc|ccc|l|c|}
+%         \cline{3-7}
+%         &  & \multicolumn{3}{c|}{Conjunto predicho} &  & \multirow{2}{*}{Cobertura} \\ \cline{3-5}
+%         &  & \multicolumn{1}{c|}{\{$<$18\}} & \multicolumn{1}{c|}{\{$\geq$18\}} & \{$<$18,$\geq$18\} &  &  \\ \cline{1-5} \cline{7-7} 
+%         \multicolumn{1}{|c|}{\multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}Etiqueta \\ real\end{tabular}}} & $<$18 & \multicolumn{1}{c|}{68.28} & \multicolumn{1}{c|}{6.58} & 25.15  &  & \textbf{93.43} \\ \cline{2-5} \cline{7-7} 
+%         \multicolumn{1}{|c|}{} & $\geq$18 & \multicolumn{1}{c|}{4.63} & \multicolumn{1}{c|}{78.99} & 16.37 &  & \textbf{95.36} \\ \hline
+%         \end{tabular}
+%         \caption{LAC}
+%     \end{subfigure}
+
+%     \vspace{1em}
+
+%     % Tabla 3
+%     \begin{subfigure}[b]{\textwidth}
+%         \centering
+%         \begin{tabular}{cc|ccc|l|c|}
+%         \cline{3-7}
+%         &  & \multicolumn{3}{c|}{Conjunto predicho} &  & \multirow{2}{*}{Cobertura} \\ \cline{3-5}
+%         &  & \multicolumn{1}{c|}{\{$<$18\}} & \multicolumn{1}{c|}{\{$\geq$18\}} & \{$<$18,$\geq$18\} &  &  \\ \cline{1-5} \cline{7-7} 
+%         \multicolumn{1}{|c|}{\multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}Etiqueta \\ real\end{tabular}}} & $<$18 & \multicolumn{1}{c|}{76.86} & \multicolumn{1}{c|}{3.77} & 19.37  &  & \textbf{96.23} \\ \cline{2-5} \cline{7-7} 
+%         \multicolumn{1}{|c|}{} & $\geq$18 & \multicolumn{1}{c|}{7.18} & \multicolumn{1}{c|}{72.00} & 20.82  &  & \textbf{92.82} \\ \hline
+%         \end{tabular}
+%         \caption{MCM}
+%     \end{subfigure}
+
+%     \caption[
+%         Problema de estimación de mayoría de edad: 
+%         Matrices de confusión conformal correspondientes a los métodos `base', LAC y MCM.
+%     ]{
+%         Matrices de confusión conformal correspondientes a los métodos `base', LAC y MCM. 
+%         En cada celda, el valor indica la proporción de instancias que se obtiene un determinado conjunto de predicción dada una determinada etiqueta verdadera. Se recomienda leer horizontalmente, dado que estos valores están normalizados en esta dimensión. Todos los valores están expresados en porcentaje.
+%     }
+%     \label{fig:conf2matrix}
+% \end{table}
+
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=0.9\textwidth]{capitulos/cap_05/imagenes/AMM-heatmap_EC_by_PSS.png}
+%     \caption[
+%         Problema de estimación de la mayoría de edad: 
+%         Mapa de calor de la cobertura empírica en base al tamaño del conjunto por cada método de predicción a lo largo de 10 ejecuciones.
+%     ]{
+%         Mapa de calor de la cobertura empírica en base al tamaño del conjunto por cada método de predicción a lo largo de 10 ejecuciones.
+%         Se especifica entre paréntesis el número de instancias con el número de etiquetas en el conjunto de predicción.
+%         La escala de colores está centrada en la cobertura nominal ($0.95$): los valores por debajo de este umbral se representan en tonos rojos, los superiores en tonos azules, y el blanco indica una cobertura empírica equivalente a la nominal.
+%     }
+%     \label{fig:AMM-heatmap_EC_by_PSS}
+% \end{figure}
+
+% ------------------------------------------------------------------------------------------------------------
+
+\subsubsection{Análisis de la cobertura en base al tamaño del conjunto}
+
+La Figura \ref{fig:AMM-heatmap_EC_by_PSS} muestra un mapa de calor de la cobertura empírica en base al tamaño del conjunto para los tres métodos planteados. Se observa que el método `base', al no presentar conjuntos de más de un elemento, presenta infracobertura, tal y como hemos podido analizar previamente.En cuanto a los métodos conformales, estos alcanzan, como es de esperar, una cobertura del 100\% en los conjuntos indeterminados. No obstante, el análisis resulta más interesante en los conjuntos de una sola etiqueta, donde se obtienen coberturas superiores al 93\% en ambos métodos conformales, siendo ligeramente mayor en LAC, que alcanza un 93.4\%. 
+
+\begin{figure}[h]
     \centering
-
-    % Tabla 1
-    \begin{subfigure}[b]{\textwidth}
-        \centering
-        \begin{tabular}{cc|ccc|l|c|}
-        \cline{3-7}
-        &  & \multicolumn{3}{c|}{Conjunto predicho} &  & \multirow{2}{*}{Cobertura} \\ \cline{3-5}
-        &  & \multicolumn{1}{c|}{\{$<$18\}} & \multicolumn{1}{c|}{\{$\geq$18\}} & \{$<$18,$\geq$18\} &  &  \\ \cline{1-5} \cline{7-7} 
-        \multicolumn{1}{|c|}{\multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}Etiqueta \\ real\end{tabular}}} & $<$18 & \multicolumn{1}{c|}{84.43} & \multicolumn{1}{c|}{15.17} & -- &  & \textbf{84.43} \\ \cline{2-5} \cline{7-7} 
-        \multicolumn{1}{|c|}{} & $\geq$18 & \multicolumn{1}{c|}{10.53} & \multicolumn{1}{c|}{89.47} & -- &  & \textbf{89.47} \\ \hline
-        \end{tabular}
-        \caption{base}
-    \end{subfigure}
-
-    \vspace{1em} % Espacio vertical entre tablas
-
-    % Tabla 2
-    \begin{subfigure}[b]{\textwidth}
-        \centering
-        \begin{tabular}{cc|ccc|l|c|}
-        \cline{3-7}
-        &  & \multicolumn{3}{c|}{Conjunto predicho} &  & \multirow{2}{*}{Cobertura} \\ \cline{3-5}
-        &  & \multicolumn{1}{c|}{\{$<$18\}} & \multicolumn{1}{c|}{\{$\geq$18\}} & \{$<$18,$\geq$18\} &  &  \\ \cline{1-5} \cline{7-7} 
-        \multicolumn{1}{|c|}{\multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}Etiqueta \\ real\end{tabular}}} & $<$18 & \multicolumn{1}{c|}{68.28} & \multicolumn{1}{c|}{6.58} & 25.15  &  & \textbf{93.43} \\ \cline{2-5} \cline{7-7} 
-        \multicolumn{1}{|c|}{} & $\geq$18 & \multicolumn{1}{c|}{4.63} & \multicolumn{1}{c|}{78.99} & 16.37 &  & \textbf{95.36} \\ \hline
-        \end{tabular}
-        \caption{LAC}
-    \end{subfigure}
-
-    \vspace{1em}
-
-    % Tabla 3
-    \begin{subfigure}[b]{\textwidth}
-        \centering
-        \begin{tabular}{cc|ccc|l|c|}
-        \cline{3-7}
-        &  & \multicolumn{3}{c|}{Conjunto predicho} &  & \multirow{2}{*}{Cobertura} \\ \cline{3-5}
-        &  & \multicolumn{1}{c|}{\{$<$18\}} & \multicolumn{1}{c|}{\{$\geq$18\}} & \{$<$18,$\geq$18\} &  &  \\ \cline{1-5} \cline{7-7} 
-        \multicolumn{1}{|c|}{\multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}Etiqueta \\ real\end{tabular}}} & $<$18 & \multicolumn{1}{c|}{76.86} & \multicolumn{1}{c|}{3.77} & 19.37  &  & \textbf{96.23} \\ \cline{2-5} \cline{7-7} 
-        \multicolumn{1}{|c|}{} & $\geq$18 & \multicolumn{1}{c|}{7.18} & \multicolumn{1}{c|}{72.00} & 20.82  &  & \textbf{92.82} \\ \hline
-        \end{tabular}
-        \caption{MCM}
-    \end{subfigure}
-
+    \includegraphics[width=0.9\textwidth]{capitulos/cap_05/imagenes/AMM-heatmap_EC_by_PSS.png}
     \caption[
-        Problema de estimación de mayoría de edad: 
-        Matrices de confusión conformal correspondientes a los métodos `base', LAC y MCM.
+        Problema de estimación de la mayoría de edad: 
+        Mapa de calor de la cobertura empírica en base al tamaño del conjunto por cada método de predicción a lo largo de 10 ejecuciones.
     ]{
-        Matrices de confusión conformal correspondientes a los métodos `base', LAC y MCM. 
-        En cada celda, el valor indica la proporción de instancias que se obtiene un determinado conjunto de predicción dada una determinada etiqueta verdadera. Se recomienda leer horizontalmente, dado que estos valores están normalizados en esta dimensión. Todos los valores están expresados en porcentaje.
+        Mapa de calor de la cobertura empírica en base al tamaño del conjunto por cada método de predicción a lo largo de 10 ejecuciones.
+        Se especifica entre paréntesis el número de instancias con el número de etiquetas en el conjunto de predicción.
+        La escala de colores está centrada en la cobertura nominal ($0.95$): los valores por debajo de este umbral se representan en tonos rojos, los superiores en tonos azules, y el blanco indica una cobertura empírica equivalente a la nominal.
     }
-    \label{fig:conf2matrix}
-\end{table}
+    \label{fig:AMM-heatmap_EC_by_PSS}
+\end{figure}
+
+\FloatBarrier
+
+% ------------------------------------------------------------------------------------------------------------
+
+\subsubsection{Análisis de la cobertura en base al sexo y edad cronológica}
+
+Por último, al igual que hicimos en el anterior problema, analizamos la cobertura en base al sexo y a la edad cronológica. Para ello, nos apoyaremos en las Figuras \ref{fig:AMM-linechart_EC_by_age_and_sex} y \ref{fig:AMM-linechart_MPSS_by_age_and_sex}, donde se muestra la evolución de la cobertura empírica y el tamaño medio del conjunto de predicción en función de la edad cronológica y el sexo de los individuos.
+
+En este caso, se aprecia una tendencia clara y consistente en todos los métodos: la cobertura es elevada tanto en las edades más jóvenes como en las más avanzadas, pero disminuye progresivamente conforme se aproxima la edad cronológica a los 18 años. Este comportamiento resulta coherente, dado que el problema consiste en la estimación de la mayoría de edad, y es precisamente en torno a ese umbral donde se concentra la mayor incertidumbre. En este intervalo, las características morfológicas de individuos menores y mayores de edad tienden a solaparse, lo que dificulta la clasificación y reduce la confianza del modelo en sus predicciones. 
+
+Los peores valores de cobertura se reigistran en los individuos de 17 y 18 años, donde el método `base' presenta una infracobertura en torno al 60-65\%. Los métodos conformales aumentan el ratio de conjuntos indeterminados (de tamaño 2) a medida que aumenta la incertidumbre del modelo, es decir, en aquellos rangos de edad o sexo donde la distinción entre clases resulta más ambigua. De esta forma, aunque sigue existiendo cierta infracobertura, esta es notablemente menor, alcanzando valores superiores al 80\% para ambos sexos en las peores edades, lo que demuestra una mejor calibración y mayor capacidad de los métodos conformales para manejar la incertidumbre en la clasificación. 
+
+Esta infracobertura observada en las edades próximas a la mayoría de edad, incluso al aplicar métodos conformales, se ve compensada por las sobrecoberturas registradas en las edades más triviales. Esto plantea la cuestión de si una calibración focalizada en un conjunto de individuos pertenecientes a la franja etaria más conflictiva ---aproximadamente entre los 15 y 20 años--- podría mejorar la cobertura en esa zona crítica, aunque a costa de un incremento adicional en el tamaño medio de los conjuntos de predicción.
+
+Por último, en relación con el sexo, se observa una cobertura ligeramente inferior en los individuos de sexo femenino en comparación con los masculinos, en consonancia con lo observado en el problema de estimación de edad. Este comportamiento podría deberse a que, como se mencionó anteriormente, la maduración dental suele producirse de forma más temprana en las mujeres, lo que genera una mayor variabilidad y, por tanto, una mayor incertidumbre en la clasificación.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AMM-linechart_EC_by_age_and_sex.png}
+    \caption[
+        Problema de estimación de mayoría de edad:
+        Diagrama de líneas de la cobertura empírica en base al sexo y la edad cronológica por cada método de predicción a lo largo de 10 ejecuciones.
+    ]{
+        Diagrama de líneas de la cobertura empírica en base al sexo y la edad cronológica por cada método de predicción a lo largo de 10 ejecuciones.
+    }
+    \label{fig:AMM-linechart_EC_by_age_and_sex}
+\end{figure}
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{capitulos/cap_05/imagenes/AMM-linechart_MPSS_by_age_and_sex.png}
+    \caption[
+        Problema de estimación de mayoría de edad:
+        Diagrama de líneas del tamaño medio de conjunto de predicción en base al sexo y la edad cronológica por cada método de predicción a lo largo de 10 ejecuciones.
+    ]{
+        Diagrama de líneas del tamaño medio de conjunto de predicción en base al sexo y la edad cronológica por cada método de predicción a lo largo de 10 ejecuciones.
+    }
+    \label{fig:AMM-linechart_MPSS_by_age_and_sex}
+\end{figure}
+
+
+\FloatBarrier
 
 % ------------------------------------------------------------------------------------------------------------
 

@@ -1,8 +1,6 @@
 \documentclass[a4paper,11pt,openany]{book}
 \setlength{\parskip}{0.5em plus 0.2em minus 0.1em}
-% \usepackage[a4paper, top=2.7cm, bottom=4.7cm, inner=4.6cm, outer=3.1cm]{geometry}
 \usepackage[a4paper, top=2.3cm, bottom=3cm, inner=3.7cm, outer=2.6cm]{geometry}
-%\documentclass[a4paper,twoside,11pt,titlepage]{book}
 \usepackage{listings}
 \usepackage{enumitem}
 \usepackage[utf8x]{inputenc}
@@ -19,7 +17,6 @@
 \addto\shorthandsspanish{\let\esperiod\es@period@code}
 \makeatother
 
-
 %\usepackage[chapter]{algorithm}
 \RequirePackage{verbatim}
 %\RequirePackage[Glenn]{fncychap}
@@ -27,8 +24,6 @@
 \usepackage{graphicx}
 \usepackage{afterpage}
 \usepackage{longtable}
-
-
 
 % 
 \usepackage[style=ieee, citestyle=numeric-comp, backend=biber, backref=true, maxnames=99]{biblatex}
@@ -304,9 +299,8 @@
    \printbibliography
    
    \appendix
-   % \input{apendices/A_Problema4_SC.tex}
-   %\input{apendices/B_Comparación_AE_AC.tex}
-   \input{apendices/C_Intervalos_razonables.tex}
+   \input{apendices/A_Intervalos_razonables.tex}
+   \input{apendices/B_Problema4_SE.tex}
 
    \chapter*{}
    \thispagestyle{empty}

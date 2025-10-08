@@ -69,7 +69,7 @@ En consecuencia, \textbf{del mismo modo que las predicciones puntuales exigen un
 
 % Objetivos planteados y en qué grado se han logrado
 
-En relación con los objetivos planteados en la introducción, todos han sido cumplidos de manera satisfactoria. Se ha realizado un análisis detallado de las distintas técnicas de predicción conformal y del estado del arte en la cuantificación de la incertidumbre aplicada a problemas de estimación de edad. Asimismo, se implementaron con éxito diversas variantes de predicción conformal inductiva, tanto para tareas de regresión como de clasificación, aplicándolas a un caso de estimación del perfil biológico. Para garantizar una comparación justa, dichas técnicas se contrastaron con aproximaciones heurísticas de predicción interválica y basada en conjuntos. Los resultados obtenidos han permitido evidenciar tanto el potencial como las limitaciones de estos métodos en el contexto específico de la estimación de edad a partir de radiografías maxilofaciales. No obstante, aún queda por explorar un análisis más amplio con otros conjuntos de datos, preferiblemente más equilibrados y con mayor diversidad en los rangos de edad, así como la integración con técnicas de explicabilidad que favorezcan una inteligencia artificial más confiable y segura. 
+En relación con los objetivos planteados en la introducción, todos han sido cumplidos de manera satisfactoria. Se ha realizado un análisis detallado de las distintas técnicas de predicción conformal y del estado del arte en la cuantificación de la incertidumbre aplicada a problemas de estimación de edad. Asimismo, se implementaron con éxito diversas variantes de predicción conformal inductiva (disponibles en el repositorio \href{https://github.com/esdavide2910/tfg-bioprofile-uncertainty}{esdavide2910/tfg-bioprofile-uncertainty}), tanto para tareas de regresión como de clasificación, aplicándolas a un caso de estimación del perfil biológico. Para garantizar una comparación justa, dichas técnicas se contrastaron con aproximaciones heurísticas de predicción interválica y basada en conjuntos. Los resultados obtenidos han permitido evidenciar tanto el potencial como las limitaciones de estos métodos en el contexto específico de la estimación de edad a partir de radiografías maxilofaciales.  
 
 % Evidencia de competencias logradas
 
@@ -84,15 +84,14 @@ Por último, destaco la competencia desarrollada en la gestión de un proyecto i
 
 \section{Trabajos futuros}
 
+
+Aún queda por explorar un \textbf{análisis de estas herramientas con otros conjuntos de datos}, preferiblemente más equilibrados y con mayor diversidad en los rangos de edad, para un análisis más rico.
+
 Una de las virtudes más destacables de la predicción conformal es su inherente flexibilidad, que permite mejorar sus capacidades mediante su integración sinérgica con otros marcos metodológicos. Esta versatilidad abre la vía para el desarrollo de sistemas de \textit{Machine Learning} más robustos y confiables. En concreto, su potencial se puede ampliar en varias direcciones:
 
 \begin{itemize}
 
     \item \textbf{Integración con otros paradigmas de cuantificación de la incertidumbre}: La predicción conformal puede combinarse con métodos como \textit{Monte Carlo Dropout} (como en \cite{bethell2024}) o la regresión cuantílica con modelos \textit{ensembles} para generar intervalos conformales que no solo garantizan una cobertura marginal, sino que también se benefician de una estimación de incertidumbre más afinada. 
-
-    \item \textbf{Aprovechamiento de información experta del dominio}: El marco conformal es agnóstico al modelo, pero no al problema. Puede ser adaptado para incorporar conocimiento experto y restricciones propias del ámbito de aplicación (p.ej., correlaciones biológicas conocidas en la estimación de la edad). 
-    Se podría añadir, por tanto, un postprocesado para refinar los conjuntos de predicciones conformales,
-    asegurando que no solo sean estadísticamente válidos, sino también biológica y contextualmente plausibles.
     
     \item \textbf{Combinación con técnicas de detección de datos fuera de distribución (\textit{Out-of-Distribution}, OOD) y explicabilidad (\textit{Explainable Artificial Intelligence}, XAI)}: La unión de estas áreas es fundamental para construir sistemas confiables. 
     La detección de OOD es relevante dado que la suposición más importante realizada por la predicción conformal es que los datos son intercambiables y, por tanto, pertenecientes a una misma distribución subyacente. Cuando esta premisa fundamental se viola, las garantías de cobertura estadística dejan de ser válidas. Este mecanismo actuaría como un sistema de alerta temprana, identificando ejemplos para los cuales las predicciones, y sus intervalos de incertidumbre asociados, deben ser tratados con precaución.
@@ -101,20 +100,4 @@ Una de las virtudes más destacables de la predicción conformal es su inherente
 
 \end{itemize}
 
-    
-
-    
-
-    
-
-% Problemas que siguen existiendo:
-% - Variabilidad poblacional
-% - Restos incompletos o fragmentados
-% -   
-
-% (Conformal Risk Control, 2025)
-% ecently there have been many extensions of the conformal algorithm, mainly targeting
-% deviations from exchangeability [9–12] and improved conditional coverage [3, 13–16]. Most relevant to us is
-% recent work on risk control in high probability [17–19] and its applications [20–26, inter alia].
-
-% Explicabilidad de la Conformal Prediction
+Por último, el \textbf{aprovechamiento de la información experta del dominio para mejorar el análisis de la cobertura} representa una dirección fundamental. De esta forma, al potencial técnico de la herramienta le acompañe una interpretación significativa y rigurosa, permitiendo a los antropólogos forenses realizar un análisis mucho más rico y preciso, analizando tendencias y certidumbres por subpoblaciones, y trasladando así los resultados abstractos del modelo a conclusiones prácticas y accionables en contextos forenses reales.
