@@ -116,7 +116,9 @@ Para el problema de estimación de edad se han propuesto los siguientes cuatro m
 
 \begin{itemize}
 
-    \item \textbf{Método `base'}: Se trata de un modelo de regresión puntual sin técnicas de \acrshort{CP}. La predicción interválica se construirá con la predicción puntual $\pm$ 2 veces el error absoluto medio obtenido en el conjunto de validación, que es una aproximación heurística común para construir intervalos de predicción que no asumen una distribución de errores específica. Este método sirve como \textit{baseline} para comparar la mejora que aportan técnicas más sofisticadas.
+    \item \textbf{Método `base'}: Se trata de un modelo de regresión puntual sin técnicas de \acrshort{CP}. La predicción interválica se construirá con la predicción puntual $\pm$ 2 veces la desviación típica obtenido en el conjunto de validación, que es una aproximación heurística común para construir intervalos de predicción que asumen normalidad en los errores.
+    Bajo esta suposición, el intervalo debería cubrir aproximadamente el 95\% de los casos, aunque en la práctica esta cobertura puede verse afectada si los residuos no siguen una distribución normal o presentan heterocedasticidad.
+    Este método sirve como \textit{baseline} para comparar la mejora que aportan técnicas más sofisticadas.
 
     \item \textbf{Método `ICP'}: Implementa el método \textit{Inductive Conformal Prdiction} para la \acrshort{CP}. 
     
@@ -764,28 +766,39 @@ Para identificar qué pares de modelos presentaban diferencias significativas, s
 
 \subsubsection{Análisis de métricas para la estimación interválica de edad}
 
-A continuación, la Tabla \ref{tab:AE_EC_MPIW_comparative} presenta las métricas sobre las predicciones interválicas de los métodos. A primera vista, se observan diferencias marcadas entre los métodos conformales (ICP y CQR) y no conformales (`base' y QR)  en las métricas de cobertura empírica y amplitud del intervalo. En particular, los métodos no conformales  muestran coberturas notablemente inferiores al nivel deseado (alrededor del 88-89\% frente al 95\% nominal), lo que indica una infracobertura sistemática. Esto ocurre porque ni la heurística del método `base' ni las regiones generadas por la regresión cuantílica en QR cuentan con garantías teóricas de cobertura estadística.
-En contraste, los métodos conformales sí logran coberturas próximas al valor nominal, tal como se espera dada su fundamentación estadística. Esta mayor cobertura, sin embargo, tiene un coste en cuanto a la amplitud del intervalo, que es mayor en estos métodos. Esta relación de compromiso o \textit{trade-off} entre cobertura y amplitud de los intervalos ---típico en la predicción interválica--- se visualiza claramente en la Figura \ref{fig:AE_scatterplot_EC-MPIW}, donde se observa una correlación entre la cobertura empírica y el tamaño del intervalo de predicción.
+A continuación, la Tabla \ref{tab:AE_EC_MPIW_comparative} presenta las métricas sobre las predicciones interválicas de los métodos. 
+
+\begin{itemize}
+    
+    \item El método `QR' es es que muestra menor cobertura, con apenas un 88.8\% de media, muy por debajo del valor nominal. Esto se da porque las regiones generadas por la regresión cuantílica son las más estrechas de entre los métodos.
+    
+    \item El resto de métodos sí alcanzan coberturas más próximas al 95\%, tal como cabía esperar dada su fundamentación estadística (aunque, recordemos, ello implica asumir normalidad en los residuos para que el método `base' logre cubrir el 95\%). Las diferencias de cobertura entre métodos se explican principalmente por la amplitud de los intervalos; se constata la relación de compromiso o \textit{trade-off} entre la cobertura y amplitud de los intervalos: a mayor amplitud del intervalo, mayor cobertura, y viceversa. Esta relación se visualiza claramente en la Figura \ref{fig:AE_scatterplot_EC-MPIW}, donde se podría trazar una curva de tendencia ascendente que refleja dicha correlación positiva entre ambas métricas.
+    
+    Dicho esto, los métodos conformales (ICP y CQR) logran aproximarse mejor a la cobertura nominal: ICP sobrecubriendo en un 0.18\% de media, y CQR infracubriendo en un 0.11\% de media, frente a la infracobertura del 0.65\% de media en el método `base'. De hecho, el Análisis Estadístico \ref{stat:MPIW_AE} revela diferencias significativas en cobertura entre `base' y los dos métodos conformales (si bien no entre ICP y CQR). Esta menor cobertura del método `base' se explica por sus suposiciones más restrictivas, ya que asume normalidad en los residuos, lo que solo garantiza una cobertura del 95\% bajo dicha hipótesis. En cambio, los métodos conformales no requieren este supuesto de normalidad y ajustan empíricamente la distribución de los errores, logrando así una calibración más precisa de la incertidumbre e intervalos predictivos más fiables.
+    
+\end{itemize}
+
 
 \renewcommand{\arraystretch}{1.4}
 \begin{table}[h]
     \small
     \centering
-    \begin{tabular}{cc@{\hskip 3pt}ccccc@{\hskip 3pt}cccc}
+    \begin{tabular}{cccccccccccl}
     \toprule
-    \multirow{2}{*}{\textbf{Ejecución}} &  & \multicolumn{4}{c}{\textbf{Cobertura Empírica (\%)}} &  & \multicolumn{4}{c}{\textbf{\begin{tabular}[c]{@{}c@{}}Amplitud Media \\[-0.8ex] del Intervalo\end{tabular}}} \\ \cline{3-6} \cline{8-11} 
-    &  & \textbf{base} & \textbf{ICP} & \textbf{QR} & \textbf{CQR} &  & \textbf{base} & \textbf{ICP} & \textbf{QR} & \textbf{CQR} \\ \cline{1-1} \cline{3-6} \cline{8-11} 
-    Ejecución 1  &  & 87.41 & 94.47 & 89.03 & 95.31 &  & 4.53 & 6.17 & 4.71 & 6.23 \\
-    Ejecución 2  &  & 87.96 & 94.84 & 89.27 & 94.80 &  & 4.57 & 6.27 & 4.67 & 6.11 \\
-    Ejecución 3  &  & 87.73 & 95.03 & 88.38 & 95.45 &  & 4.60 & 6.34 & 4.65 & 6.02 \\
-    Ejecución 4  &  & 88.06 & 94.19 & 89.50 & 94.61 &  & 4.58 & 6.04 & 4.63 & 5.90 \\
-    Ejecución 5  &  & 87.87 & 95.03 & 89.13 & 94.93 &  & 4.63 & 6.28 & 4.59 & 5.92 \\
-    Ejecución 6  &  & 88.57 & 94.80 & 89.41 & 94.33 &  & 4.68 & 6.14 & 4.63 & 5.94 \\
-    Ejecución 7  &  & 88.24 & 95.21 & 88.80 & 95.26 &  & 4.61 & 6.33 & 4.63 & 6.00 \\
-    Ejecución 8  &  & 87.55 & 94.70 & 88.01 & 95.12 &  & 4.64 & 6.12 & 4.67 & 6.08 \\
-    Ejecución 9  &  & 87.87 & 95.03 & 88.38 & 94.93 &  & 4.66 & 6.25 & 4.62 & 6.06 \\
-    Ejecución 10 &  & 88.57 & 95.12 & 89.27 & 94.56 &  & 4.64 & 6.20 & 4.64 & 5.96 \\ \cline{1-1} \cline{3-6} \cline{8-11} 
-    Media &  & 87.98 & \textbf{94.84} & 88.92 & \textbf{94.93} &  & 4.61 & \textbf{6.21} & 4.64 & \textbf{6.02} \\
+    &  & \multicolumn{4}{c}{\textbf{Cobertura Empírica (\%)}} &  & \multicolumn{4}{c}{\textbf{\begin{tabular}[c]{@{}c@{}}Amplitud Media \\ del Intervalo\end{tabular}}} &  \\ \cline{3-6} \cline{8-11}
+    \multirow{-2}{*}{\textbf{Ejecución}} &  & \textbf{base} & \textbf{ICP} & \textbf{QR} & \textbf{CQR} &  & \textbf{   base} & \textbf{ICP} & \textbf{QR} & \textbf{CQR} &  \\ \cline{1-1} \cline{3-6} \cline{8-11}
+    Ejecución 1 &  & 93.77 & 94.54 & 88.10 & 94.89 & \multicolumn{1}{r}{{\color[HTML]{CCCCCC} }} & 5.79 & 6.40 & 4.62 & 6.04 &  \\
+    Ejecución 2 &  & 94.10 & 95.40 & 89.54 & 95.49 &  & 5.81 & 6.29 & 4.67 & 6.22 &  \\
+    Ejecución 3 &  & 94.38 & 95.59 & 88.94 & 94.70 & \multicolumn{1}{r}{{\color[HTML]{CCCCCC} }} & 5.87 & 6.30 & 4.67 & 5.75 & \multicolumn{1}{r}{{\color[HTML]{CCCCCC} }} \\
+    Ejecución 4 &  & 94.52 & 94.56 & 89.22 & 95.03 &  & 5.84 & 6.20 & 4.67 & 6.16 &  \\
+    Ejecución 5 &  & 94.80 & 95.35 & 87.78 & 94.47 &  & 5.95 & 6.27 & 4.59 & 6.04 & \multicolumn{1}{r}{{\color[HTML]{CCCCCC} }} \\
+    Ejecución 6 &  & 94.28 & 95.03 & 87.73 & 94.66 &  & 5.92 & 6.15 & 4.62 & 5.88 &  \\
+    Ejecución 7 &  & 94.66 & 94.66 & 88.15 & 94.89 &  & 5.94 & 6.24 & 4.60 & 5.98 & \multicolumn{1}{r}{{\color[HTML]{CCCCCC} }} \\
+    Ejecución 8 &  & 94.52 & 94.47 & 89.64 & 94.42 &  & 5.88 & 6.18 & 4.68 & 5.85 &  \\
+    Ejecución 9 &  & 94.42 & 95.49 & 89.27 & 95.21 &  & 5.89 & 6.42 & 4.67 & 6.09 & \multicolumn{1}{r}{{\color[HTML]{CCCCCC} }} \\
+    Ejecución 10 &  & 94.10 & 95.68 & 89.59 & 95.12 &  & 5.94 & 6.33 & 4.65 & 5.99 &  \\ \cline{1-1} \cline{3-6} \cline{8-11}
+    Media &  & \textbf{94.35} & \textbf{95.18} & 88.80 & \textbf{94.89} &  & \textbf{5.88} & \textbf{6.28} & 4.64 & \textbf{6.00} & \multicolumn{1}{r}{{\color[HTML]{CCCCCC} }} \\ 
+
     \bottomrule
     \end{tabular}
     \caption[
@@ -794,7 +807,7 @@ En contraste, los métodos conformales sí logran coberturas próximas al valor 
     ]{   
         Cobertura empírica y amplitud media del intervalo de predicción obtenidos por cada método de predicción a lo largo de distintas ejecuciones. 
         Se presentan los valores para cada ejecución individual, así como la media final de cada métrica. 
-        Se marcan en negrita las métricas de aquellos métodos que logran una cobertura cercana o superior al 95\%.
+        Se marcan en negrita las métricas de aquellos métodos que logran una cobertura próxima o superior al 95\%.
     }
     \label{tab:AE_EC_MPIW_comparative}
 \end{table}
@@ -812,13 +825,10 @@ En contraste, los métodos conformales sí logran coberturas próximas al valor 
     \label{fig:AE_scatterplot_EC-MPIW}
 \end{figure}
 
-\FloatBarrier
-
-Aunque la cobertura empírica sea comparable entre ICP y CQR, este último método logra reducir de manera estadísticamente significativa la amplitud del intervalo de predicción frente a ICP (véase el Análisis Estadístico \ref{stat:MPIW_AE}). 
 
 \begin{StatisticsRef}[stat:MPIW_AE]{Cobertura empírica y Amplitud Media del Intervalo de predicción en el problema de estimación de edad}
 %
-En cuanto a cobertura empírica, se cumple tanto normalidad en la distribución (Shapiro-Wilk, $p>0.2$) y homocedasticidad (Levene, $p>0.5$), por lo que se puede aplicar el test ANOVA, que revela diferencias globales significativas entre métodos: $F(3,36)=877.92$, $p<0.0001$. Para identificar qué pares de métodos presentaban diferencias significativas, se aplicó la prueba \textit{post-hoc} de comparaciones múltiples Tukey HSD (véase la Tabla \ref{tab:AE_tukey_EC}).
+En cuanto a cobertura empírica, se cumple normalidad en la distribución (Shapiro-Wilk, $p>0.3$), pero se descarta homocedasticidad (Levene, $p<0.05$), por lo que se puede aplicar el test Welch ANOVA, que revela diferencias globales significativas entre métodos: $F(3,36)=178.81$, $p<0.0001$. Para identificar qué pares de métodos presentaban diferencias significativas, se aplicó la prueba \textit{post-hoc} de Games-Howell (véase la Tabla \ref{tab:AE_games-howell_EC}).
 %
 \renewcommand{\arraystretch}{1.2}
 \begin{table}[H]
@@ -826,26 +836,26 @@ En cuanto a cobertura empírica, se cumple tanto normalidad en la distribución 
     \centering
     \begin{tabular}{llllll}
     \toprule
-    \textbf{Modelo 1} & \textbf{Modelo 2} & \textbf{Dif. media} & \textbf{Valor $p$} & \textbf{IC 95\%} & \textbf{Signif.} \\ \hline
-    CQR & ICP & -0.0009 & 0.9596 & [-0.0057, 0.0039] & No \\
-    CQR & QR & -0.0601 & \textless 0.0001 & [-0.0649, -0.0553] & \textbf{Sí} \\
-    CQR & base & -0.0695 & \textless 0.0001 & [-0.0743, -0.0647] & \textbf{Sí} \\
-    ICP & QR & -0.0592 & \textless 0.0001 & [-0.064, -0.0544] & \textbf{Sí} \\
-    ICP & base & -0.0686 & \textless 0.0001 & [-0.0734, -0.0638] & \textbf{Sí} \\
-    QR & base & -0.0093 & \textless 0.0001 & [-0.0141, -0.0045] & \textbf{Sí} \\
+    \textbf{Modelo 1} & \textbf{Modelo 2} & \textbf{Dif. media} & \textbf{Valor $p$} & \textbf{Signif.} \\ \hline
+    base & ICP & -0.0082 & 0.0012 & \textbf{Sí} \\
+    base & QR & 0.0556 & \textless 0.0001 & \textbf{Sí} \\
+    base & CQR & -0.0053 & 0.0076 & \textbf{Sí} \\
+    ICP & QR & 0.0638 & \textless 0.0001 & \textbf{Sí} \\
+    ICP & CQR & 0.0029 & 0.4 & No \\
+    QR & CQR & -0.0609 & \textless 0.0001 & \textbf{Sí} \\
     \bottomrule
     \end{tabular}
     \caption[
         Problema de estimación de edad: 
-        Resultados de la prueba \textit{post-hoc} de Tukey HSD para cobertura empírica entre pares de métodos.
+        Resultados de la prueba \textit{post-hoc} de Games-Howell para cobertura empírica entre pares de métodos.
     ]{
-        Resultados de la prueba \textit{post-hoc} de Tukey HSD para cobertura empírica entre pares de métodos.
+        Resultados de la prueba \textit{post-hoc} de Games-Howell para cobertura empírica entre pares de métodos. 
         Se muestran la diferencia media entre grupos, el valor $p$ ajustado, el intervalo de confianza al 95\% y si la diferencia es estadísticamente significativa ($\alpha = 0.05$).
     }
-    \label{tab:AE_tukey_EC}
+    \label{tab:AE_games-howell_EC}
 \end{table}
 %
-Respecto a las amplitudes medias de los intervalos de predicción, se evaluaron las diferencias de los métodos utilizando un test Welch ANOVA, dado que los residuos de los datos seguían una distribución normal (Shapiro-Wilk, $p>0.8$), pero no cumplían con la homocedasticidad (Levene, $p<0.01$). El Welch ANOVA reveló diferencias globales significativas entre los métodos: $F(3, 18.62) = 1240.15$, $p < 0.001$. Tras esto, se aplicó la prueba \textit{post-hoc} de Games-Howell para comparar las marcas por pares de métodos (véase la Tabla \ref{tab:AE_games-howell_width}).
+Respecto a las amplitudes medias de los intervalos de predicción, se evaluaron las diferencias de los métodos utilizando un test Welch ANOVA, dado que los residuos de los datos seguían una distribución normal (Shapiro-Wilk, $p>0.4$), pero no cumplían con la homocedasticidad (Levene, $p<0.05$). El Welch ANOVA reveló diferencias globales significativas entre los métodos: $F(3, 18.27) = 1829.13$, $p < 0.0001$. Tras esto, se aplicó la prueba \textit{post-hoc} de Games-Howell para comparar las marcas por pares de métodos (véase la Tabla \ref{tab:AE_games-howell_width}).
 %
 \renewcommand{\arraystretch}{1.2}
 \begin{table}[H]
@@ -853,14 +863,14 @@ Respecto a las amplitudes medias de los intervalos de predicción, se evaluaron 
     \centering
     \begin{tabular}{llllll}
     \toprule
-    \textbf{Modelo 1} & \textbf{Modelo 2} & \textbf{Dif. media} & \textbf{Valor $p$} & \textbf{IC 95\%} & \textbf{Signif.} \\ 
+    \textbf{Modelo 1} & \textbf{Modelo 2} & \textbf{Dif. media} & \textbf{Valor $p$} & \textbf{Signif.} \\ 
     \hline
-    base & ICP & -1.6012 & \textless 0.0001 & [-1.6739, -1.5286] & \textbf{Sí} \\
-    base & QR & -0.0310 &  0.323 & [-0.0680, 0.0061] & No \\
-    base & CQR & -1.4090 & \textless 0.0001 & [-1.4850, -1.3328] & \textbf{Sí} \\
-    ICP & QR & 1.5703 & \textless 0.0001 & [1.4993, 1.6412] & \textbf{Sí} \\
-    ICP & CQR & 0.1923 &  0.002 & [0.0993, 0.2854] & \textbf{Sí} \\
-    QR & CQR & -1.3780 & \textless 0.0001 & [-1.4524, -1.3035] & \textbf{Sí} \\
+    base & ICP & -0.39718 & \textless 0.0001 & \textbf{Sí} \\
+    base & QR & 1.2399 & \textless 0.0001 & \textbf{Sí} \\
+    base & CQR & -0.1161 & 0.0523 & No \\
+    ICP & QR & 1.6372 & \textless 0.0001 & \textbf{Sí} \\
+    ICP & CQR & 0.2811 &  0.0002 & \textbf{Sí} \\
+    QR & CQR & -1.3561 & \textless 0.0001 & \textbf{Sí} \\
     \bottomrule
     \end{tabular}
     \caption[
@@ -876,7 +886,7 @@ Respecto a las amplitudes medias de los intervalos de predicción, se evaluaron 
 \end{StatisticsRef}
 
 
-De hecho, en la Tabla \ref{tab:AE_MIS_comparative} apreciamos cómo CQR logra significativamente menores valores de \textit{interval score} que ICP, indicando que CQR tiene un mejor equilibrio entre cobertura y tamaño del intervalo. En consecuencia, CQR se perfila como una opción \textit{a priori} más ventajosa, con garantías de cobertura para el nominal requerido e intervalos de predicción ajustados. 
+En la Tabla \ref{tab:AE_MIS_comparative} apreciamos cómo los métodos `base' y CQR logran significativamente menores valores de \textit{interval score} que ICP, indicando que tienen un mejor equilibrio entre cobertura y tamaño del intervalo. En consecuencia, estos métodos se perfilan como los que logran mejor equilibrio cobertura/amplitud del intervalo, si bien CQR logra aproximarse más a la cobertura requeridad, perfilándose como la opción \textit{a priori} más ventajosa, con garantías de cobertura para el nominal requerido e intervalos de predicción ajustados. 
 
 \renewcommand{\arraystretch}{1.4}
 \begin{table}[htbp]
@@ -886,17 +896,17 @@ De hecho, en la Tabla \ref{tab:AE_MIS_comparative} apreciamos cómo CQR logra si
     \toprule
     \multirow{2}{*}{\textbf{Ejecución}} &  & \multicolumn{4}{c}{\textbf{Mean Interval Score}} \\ \cline{3-6} 
     &  & \textbf{base} & \textbf{ICP} & \textbf{QR} & \textbf{CQR} \\ \cline{1-1} \cline{3-6} 
-    Ejecución  1 &  & 9.16 & 8.17 & 8.48 & 8.02 \\
-    Ejecución  2 &  & 8.93 & 8.21 & 8.72 & 8.04 \\
-    Ejecución  3 &  & 8.90 & 8.24 & 8.86 & 7.85 \\
-    Ejecución  4 &  & 8.69 & 8.00 & 8.59 & 7.98 \\
-    Ejecución  5 &  & 8.88 & 8.27 & 8.82 & 7.89 \\
-    Ejecución  6 &  & 8.93 & 8.19 & 8.46 & 8.01 \\
-    Ejecución  7 &  & 8.81 & 8.19 & 8.96 & 7.85 \\
-    Ejecución  8 &  & 8.88 & 8.03 & 8.80 & 7.91 \\
-    Ejecución  9 &  & 8.89 & 7.99 & 8.96 & 7.92 \\
-    Ejecución 10 &  & 8.62 & 8.07 & 8.56 & 8.20 \\ \cline{1-1} \cline{3-6} 
-    Media        &  & 8.85 & 8.14 & 8.72 & \textbf{7.97} \\ 
+    Ejecución  1 &  & 8.14 & 8.23 & 8.69 & 7.95 \\
+    Ejecución  2 &  & 7.99 & 8.11 & 8.30 & 7.94 \\
+    Ejecución  3 &  & 7.90 & 8.24 & 8.57 & 8.02 \\
+    Ejecución  4 &  & 7.98 & 8.26 & 8.86 & 8.01 \\
+    Ejecución  5 &  & 7.96 & 8.14 & 9.04 & 8.28 \\
+    Ejecución  6 &  & 8.15 & 8.21 & 9.01 & 7.91 \\
+    Ejecución  7 &  & 8.02 & 8.25 & 9.00 & 7.96 \\
+    Ejecución  8 &  & 8.01 & 8.14 & 8.61 & 8.15 \\
+    Ejecución  9 &  & 8.01 & 7.16 & 8.54 & 7.83 \\
+    Ejecución 10 &  & 8.14 & 8.00 & 8.51 & 7.97 \\ \cline{1-1} \cline{3-6} 
+    Media        &  & \textbf{8.02} & 8.17 & 8.71 & \textbf{8.01} \\ 
     \bottomrule
     \end{tabular}
     \caption[
@@ -964,7 +974,7 @@ En ella se ofrece información detallada sobre la cobertura empírica alcanzada 
     
     \item Como era de esperar, los métodos adaptativos (QR y CQR) presentan una mayor diversidad en la amplitud de sus intervalos, dado que generan límites adaptativos y específicos para cada instancia, a diferencia del resto de métodos, con intervalos de predicción de tamaño constante.
     
-    \item CQR es el único método adaptativo que aproxima a la cobertura nominal. Este logra sobrecobertura tanto en los intervalos más estrechos como en los más amplios, a costa de una infracobertura en los intervalos de amplitud intermedia, concretamente entre 5.5 y 6.5 años, donde se concentra más de la mitad de instancias. Su peor marca es de un 93.14\%, para instancias con intervalo de predicción de 6 a 6.5 años de longitud, 2 puntos porcentuales por debajo del nominal. 
+    \item CQR es el único método adaptativo que aproxima a la cobertura nominal. Este logra sobrecobertura tanto en los intervalos más estrechos como en los más amplios, a costa de una infracobertura en los intervalos de amplitud intermedia, concretamente entre 5.5 y 6.5 años, donde se concentra más de la mitad de instancias. Su peor marca es de un 93.25\%, para instancias con intervalo de predicción de 6 a 6.5 años de longitud, 2 puntos porcentuales por debajo del nominal. 
 
 \end{itemize}
 
@@ -1049,7 +1059,7 @@ Las Figuras \ref{fig:AE_EC_by_true_age} y \ref{fig:AE_MPIW_by_true_age} muestran
 \end{figure}
 
 
-En general, todos los métodos tienden a perder cobertura conforme aumenta la edad cronológica de los individuos, independientemente del sexo. Esta disminución se vuelve especialmente marcada a partir de los 22 años, afectando incluso al método \acrshort{CQR}, que hasta entonces presentaba la cobertura más robusta. En particular, \acrshort{CQR} mantiene valores cercanos al 95\% en edades tempranas, pero a partir de los 22 en hombres y de los 23 en mujeres comienza a descender, alcanzando aproximadamente un 91.5\% y un 82\% de cobertura a los 25 años, en sexo masculino y femenino respectivamente Este descenso ocurre a pesar de que el tamaño de los intervalos de predicción aumenta de forma sostenida con la edad, lo que indica que, aunque el modelo expresa mayor incertidumbre, no consigue cubrir adecuadamente el valor real. Este patrón refleja que \textbf{la estimación de la edad biológica se vuelve más incierta conforme avanza la edad cronológica}, posiblemente atribuible a:
+En general, todos los métodos tienden a perder cobertura conforme aumenta la edad cronológica de los individuos, independientemente del sexo. Esta disminución se vuelve especialmente marcada a partir de los 22 años, afectando incluso al método \acrshort{CQR}, que hasta entonces presentaba la cobertura más robusta. En particular, \acrshort{CQR} mantiene valores cercanos al 95\% en edades tempranas, pero a partir de los 22 años en varones y de los 23 en hembras comienza a descender, alcanzando aproximadamente un 91.5\% y un 82\% de cobertura a los 25 años, en sexo masculino y femenino respectivamente. Este descenso ocurre a pesar de que el tamaño de los intervalos de predicción aumenta de forma sostenida con la edad, lo que indica que, aunque el modelo expresa mayor incertidumbre, no consigue cubrir adecuadamente el valor real. Este patrón refleja que \textbf{la estimación de la edad biológica se vuelve más incierta conforme avanza la edad cronológica}, posiblemente atribuible a:
 
 \begin{itemize}
 
@@ -1059,7 +1069,9 @@ En general, todos los métodos tienden a perder cobertura conforme aumenta la ed
 
 \end{itemize}
 
-Además, como hemos descrito antes, el \textbf{fenómeno es más acusado en el sexo femenino que en el masculino}, a pesar de que había ---ligeramente--- más ejemplos del sexo femenino que del masculino para los 21 y 22 años. Esto podría deberse a que el sexo femenino suele completar antes la maduración dental que los hombres \cite{scheuer2004}, lo que puede hacer que las diferencias interindividuales en mujeres pueden deberse más a factores ambientales.
+Además, como hemos descrito antes, el \textbf{fenómeno es más acusado en el sexo femenino que en el masculino}, a pesar de que había ---ligeramente--- más ejemplos del sexo femenino que del masculino para los 21 y 22 años. Esto podría deberse a que el sexo femenino suele completar antes la maduración dental que los varones \cite{scheuer2004}, lo que puede hacer que las diferencias interindividuales en hembras pueden deberse más a factores ambientales.
+
+Cabe destacar que este análisis de la cobertura en función de la edad cronológica y el sexo pone de manifiesto una incertidumbre heterogenea a lo largo de las distintas subpoblaciones, lo que sugiere la presencia de heterocedasticidad en los errores de predicción. Este comportamiento contradice el supuesto de homocedasticidad asumido en el método `base', que ---junto con el método CQR--- era el que presentaba el mejor \textit{interval score}.
 
 % \renewcommand{\arraystretch}{1.4}
 % \begin{table}[h]
@@ -1134,6 +1146,8 @@ Además, como hemos descrito antes, el \textbf{fenómeno es más acusado en el s
 El método \textbf{\acrshort{CQR}} se posiciona como el claro ganador en todos los apartados analizados. Este resultado era previsible, ya que se trata del único método conformal y adaptativo considerado en el estudio.
 
 \textbf{Destaca por presentar la menor amplitud media de los intervalos, manteniendo al mismo tiempo una cobertura muy próxima a la nominal}. Además, al ser el único método conformal adaptativo de la lista, ofrece una ventaja estructural frente a los demás. Sus \textbf{tasas de cobertura empírica son consistentes para diferentes amplitudes de intervalo, y sobresale especialmente en los casos con pocas instancias de edades cronológicas avanzadas}, donde logra adaptarse a la mayor incertidumbre ampliando de forma adecuada el intervalo de predicción.
+
+
 
 % ------------------------------------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------------------------------------
@@ -1417,11 +1431,11 @@ Por último, al igual que hicimos en el anterior problema, analizamos la cobertu
 
 En este caso, se aprecia una tendencia clara y consistente en todos los métodos: la cobertura es elevada tanto en las edades más jóvenes como en las más avanzadas, pero disminuye progresivamente conforme se aproxima la edad cronológica a los 18 años. Este comportamiento resulta coherente, dado que el problema consiste en la estimación de la mayoría de edad, y es precisamente en torno a ese umbral donde se concentra la mayor incertidumbre. En este intervalo, las características morfológicas de individuos menores y mayores de edad tienden a solaparse, lo que dificulta la clasificación y reduce la confianza del modelo en sus predicciones. 
 
-Los peores valores de cobertura se reigistran en los individuos de 17 y 18 años, donde el método `base' presenta una infracobertura en torno al 60-65\%. Los métodos conformales aumentan el ratio de conjuntos indeterminados (de tamaño 2) a medida que aumenta la incertidumbre del modelo, es decir, en aquellos rangos de edad o sexo donde la distinción entre clases resulta más ambigua. De esta forma, aunque sigue existiendo cierta infracobertura, esta es notablemente menor, alcanzando valores superiores al 80\% para ambos sexos en las peores edades, lo que demuestra una mejor calibración y mayor capacidad de los métodos conformales para manejar la incertidumbre en la clasificación. 
+Los peores valores de cobertura se reigistran en los individuos de 17 y 18 años, donde el método `base' presenta una infracobertura en torno al 60-65\%. Los métodos conformales aumentan el ratio de conjuntos indeterminados (de tamaño 2) a medida que aumenta la incertidumbre del modelo, es decir, en aquellos rangos de edad o sexo donde la distinción entre clases resulta más ambigua. De esta forma, aunque sigue existiendo cierta infracobertura, esta es notablemente menor, alcanzando valores superiores al 80\% para ambos sexos en las peores edades, lo que demuestra una mejor calibración y mayor capacidad de los métodos conformales para manejar la incertidumbre en la clasificación. El coste de esto es prácticamente un 50\% de las instancias de estas edades cronológicas indeterminadas, de lo que podemos deducir que la mayoría de los individuos correctamente clasificadas son aquellos casos extremos, es decir, a sujetos cuya morfología maxilofacial presenta rasgos claramente asociados a la minoría o mayoría de edad, mientras que los casos cercanos al umbral de los 18 años tienden a generar mayor ambigüedad y, por tanto, conjuntos indeterminados.
 
 Esta infracobertura observada en las edades próximas a la mayoría de edad, incluso al aplicar métodos conformales, se ve compensada por las sobrecoberturas registradas en las edades más triviales. Esto plantea la cuestión de si una calibración focalizada en un conjunto de individuos pertenecientes a la franja etaria más conflictiva ---aproximadamente entre los 15 y 20 años--- podría mejorar la cobertura en esa zona crítica, aunque a costa de un incremento adicional en el tamaño medio de los conjuntos de predicción.
 
-Por último, en relación con el sexo, se observa una cobertura ligeramente inferior en los individuos de sexo femenino en comparación con los masculinos, en consonancia con lo observado en el problema de estimación de edad. Este comportamiento podría deberse a que, como se mencionó anteriormente, la maduración dental suele producirse de forma más temprana en las mujeres, lo que genera una mayor variabilidad y, por tanto, una mayor incertidumbre en la clasificación.
+Por último, en relación con el sexo, se observa una cobertura ligeramente inferior en los individuos de sexo femenino en comparación con los masculinos, en consonancia con lo observado en el problema de estimación de edad. Este comportamiento podría deberse a que, como se mencionó anteriormente, la maduración dental suele producirse de forma más temprana en las hembras, lo que genera una mayor variabilidad y, por tanto, una mayor incertidumbre en la clasificación.
 
 \begin{figure}[h]
     \centering
