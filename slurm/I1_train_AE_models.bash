@@ -22,7 +22,7 @@ conda activate /mnt/homeGPU/dgonzalez/conda_envs/envs/pytorch_env
 
 # Ejecución de los scripts Python
 
-for iteration in {2..10}; do
+for iteration in {3..3}; do
 
     # python src/I_AE_maxillofacial.py --pred_method base \
     #     --train --test \

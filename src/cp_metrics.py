@@ -195,9 +195,6 @@ def mean_set_score(
     true_labels: torch.Tensor,
     alpha: float
 ) -> float:
-    """
-    Calcula ...
-    """
     # Obtener índice de fila y clase verdadera
     row_indices = torch.arange(true_labels.shape[0])
     # Verifica si la etiqueta verdadera está presente en el conjunto predicho

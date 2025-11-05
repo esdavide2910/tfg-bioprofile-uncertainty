@@ -2850,3 +2850,60 @@ Métricas de las predicciones interválicas:
 - Tamaño medio del intervalo: 10.346
 ✅ Testeo de la red completado
 
+-----------------------------------------------
+
+Método:  CQR
+Nivel de confianza:  0.95
+Iteración:  3
+✅ Datasets de imágenes cargados
+
+✅ Modelo cargado
+
+Epoch  1 | Train Loss:  5.164 | Validation Loss:  1.810 | Time: 5m 11s
+Epoch  2 | Train Loss:  1.981 | Validation Loss:  1.997 | Time: 2m 22s
+Epoch  3 | Train Loss:  1.906 | Validation Loss:  1.808 | Time: 2m 20s
+✅ Entrenamiento de la cabecera completado
+
+Epoch  1 | Train Loss:  1.647 | Validation Loss:  1.318 | Time: 2m 33s
+Epoch  2 | Train Loss:  1.437 | Validation Loss:  1.205 | Time: 2m 32s
+Epoch  3 | Train Loss:  1.363 | Validation Loss:  1.168 | Time: 2m 33s
+Epoch  4 | Train Loss:  1.288 | Validation Loss:  1.058 | Time: 2m 34s
+Epoch  5 | Train Loss:  1.270 | Validation Loss:  1.220 | Time: 2m 33s
+Epoch  6 | Train Loss:  1.250 | Validation Loss:  1.519 | Time: 2m 32s
+Epoch  7 | Train Loss:  1.242 | Validation Loss:  1.282 | Time: 2m 34s
+Epoch  8 | Train Loss:  1.291 | Validation Loss:  1.160 | Time: 2m 39s
+Epoch  9 | Train Loss:  1.239 | Validation Loss:  1.018 | Time: 2m 38s
+Epoch 10 | Train Loss:  1.223 | Validation Loss:  1.120 | Time: 2m 30s
+Epoch 11 | Train Loss:  1.228 | Validation Loss:  1.064 | Time: 2m 37s
+Epoch 12 | Train Loss:  1.187 | Validation Loss:  0.988 | Time: 2m 39s
+Epoch 13 | Train Loss:  1.171 | Validation Loss:  1.067 | Time: 2m 39s
+Epoch 14 | Train Loss:  1.122 | Validation Loss:  1.075 | Time: 2m 30s
+Epoch 15 | Train Loss:  1.133 | Validation Loss:  0.964 | Time: 2m 39s
+Epoch 16 | Train Loss:  1.080 | Validation Loss:  1.059 | Time: 2m 32s
+Epoch 17 | Train Loss:  1.054 | Validation Loss:  0.935 | Time: 2m 31s
+Epoch 18 | Train Loss:  1.011 | Validation Loss:  0.943 | Time: 2m 28s
+Epoch 19 | Train Loss:  0.988 | Validation Loss:  0.890 | Time: 2m 29s
+Epoch 20 | Train Loss:  0.946 | Validation Loss:  0.924 | Time: 2m 26s
+Epoch 21 | Train Loss:  0.924 | Validation Loss:  0.950 | Time: 2m 28s
+Epoch 22 | Train Loss:  0.880 | Validation Loss:  0.896 | Time: 2m 27s
+Epoch 23 | Train Loss:  0.839 | Validation Loss:  0.881 | Time: 2m 28s
+Epoch 24 | Train Loss:  0.804 | Validation Loss:  0.867 | Time: 2m 28s
+Epoch 25 | Train Loss:  0.780 | Validation Loss:  0.872 | Time: 2m 28s
+Epoch 26 | Train Loss:  0.751 | Validation Loss:  0.855 | Time: 2m 29s
+Epoch 27 | Train Loss:  0.739 | Validation Loss:  0.863 | Time: 2m 31s
+Epoch 28 | Train Loss:  0.694 | Validation Loss:  0.896 | Time: 2m 29s
+Epoch 29 | Train Loss:  0.698 | Validation Loss:  0.882 | Time: 2m 29s
+Epoch 30 | Train Loss:  0.689 | Validation Loss:  0.859 | Time: 2m 28s
+Restaurando los parámetros de la época 26
+✅ Entrenamiento de la red completa completado
+
+✅ Calibración completada
+
+Métricas de las predicciones puntuales:
+- Error Absoluto Medio (MAE) en test: 1.187
+- Error Cuadrático Medio (MSE) en test: 2.451
+Métricas de las predicciones interválicas:
+- Cobertura empírica: 94.703 %
+- Tamaño medio del intervalo: 5.856
+✅ Testeo de la red completado
+

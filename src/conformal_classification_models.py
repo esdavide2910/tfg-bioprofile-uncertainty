@@ -324,20 +324,6 @@ class ResNeXtClassifier(nn.Module):
         return outputs, true_labels
     
     
-    # def inference(self, dataloader):
-        
-    #     # Obtiene las probabilidades predichas para cada clase y la etiqueta verdadera para cada instancia
-    #     pred_scores, true_labels = self._inference(dataloader, return_probs=True)
-
-    #     # Determina la clase predicha (la de mayor probabilidad) para cada instancia
-    #     _, pred_classes = torch.max(pred_scores, dim=1)
-        
-    #     # Convierte las clases predichas a one-hot encoding
-    #     pred_sets = nn.functional.one_hot(pred_classes, num_classes=self.num_classes)
-        
-    #     return pred_classes, pred_sets, true_labels
-    
-    
     def inference(self, dataloader, tau: float = None):
         # Obtiene las probabilidades predichas para cada clase y la etiqueta verdadera
         pred_scores, true_labels = self._inference(dataloader, return_probs=True)
@@ -372,23 +358,6 @@ class ResNeXtClassifier(nn.Module):
             pred_sets.scatter_(1, sorted_idx, mask.int())
 
         return pred_classes, pred_sets, true_labels
-    
-    
-    
-    # def evaluate(self, dataloader, metric_fn=None):
-    #     """Evalúa el modelo en un conjunto de datos"""
-        
-    #     # Determina la función de métrica
-    #     metric_fn = metric_fn if metric_fn is not None else self.loss_function 
-        
-    #     # Obtiene las probabilidades predichas para cada clase y la clase verdadera para cada instancia
-    #     pred_scores, true_classes = self._inference(dataloader, return_probs=True)
-        
-    #     # Determina la clase  predicha como la clase  con mayor puntuación
-    #     _, pred_classes = torch.max(pred_scores, dim=1) 
-        
-    #     # Calcula el valor de la métrica y lo devuelve
-    #     return metric_fn(pred_classes, true_classes)
     
     
     def evaluate(self, dataloader):
