@@ -111,7 +111,7 @@ class ResNeXtClassifier(nn.Module):
         # Define la función de pérdida
         self.loss_function = nn.BCEWithLogitsLoss() if num_classes==2 else nn.CrossEntropyLoss()
         
-        # Define la temperatura ... 
+        # Define la temperatura de inicio para la calibración
         self.temperature = nn.Parameter(torch.ones(1) * 1.5) 
     
     
@@ -229,7 +229,7 @@ class ResNeXtClassifier(nn.Module):
     def train_epoch(self, dataloader, optimizer, scheduler=None, loss_fn=None):
         """Entrena el modelo por una época completa"""
         
-        # Determinamos la función de pérdida
+        # Determinala función de pérdida
         loss_fn = loss_fn if loss_fn is not None else self.loss_function 
         
         # Pone la red en modo entrenamiento 
@@ -320,7 +320,7 @@ class ResNeXtClassifier(nn.Module):
         outputs = torch.cat(all_outputs)
         true_labels = torch.cat(all_true_labels) if has_true_labels else None
         
-        # Devuelve ... 
+        # Devuelve las clases predichas y las etiquetas (clases verdaderas)
         return outputs, true_labels
     
     
@@ -332,20 +332,19 @@ class ResNeXtClassifier(nn.Module):
         _, pred_classes = torch.max(pred_scores, dim=1)
 
         if tau is None:
-            # Caso original: one-hot clásico
             pred_sets = nn.functional.one_hot(pred_classes, num_classes=self.num_classes)
 
         else:
-            # Normalizamos por si acaso (aseguramos que son distribuciones)
+            # Normaliza por si acaso (aseguramos que son distribuciones)
             probs = torch.softmax(pred_scores, dim=1)
 
-            # Ordenamos las probabilidades de mayor a menor
+            # Ordena las probabilidades de mayor a menor
             sorted_probs, sorted_idx = torch.sort(probs, dim=1, descending=True)
             
             # Cálculo acumulado por fila
             cumsum_probs = torch.cumsum(sorted_probs, dim=1)
 
-            # Marcamos qué posiciones cumplen con tau
+            # Marca qué posiciones cumplen con tau
             mask = cumsum_probs <= tau
 
             # Siempre incluir el primer índice que supera el tau
@@ -353,7 +352,7 @@ class ResNeXtClassifier(nn.Module):
             first_over_tau = torch.argmax((cumsum_probs >= tau).int(), dim=1)
             mask[torch.arange(mask.size(0)), first_over_tau] = True
 
-            # Creamos la matriz one-hot para los conjuntos predichos
+            # Crea la matriz one-hot para los conjuntos predichos
             pred_sets = torch.zeros_like(probs, dtype=torch.int)
             pred_sets.scatter_(1, sorted_idx, mask.int())
 
@@ -363,7 +362,7 @@ class ResNeXtClassifier(nn.Module):
     def evaluate(self, dataloader):
         """Evalúa el modelo en un conjunto de datos"""
         
-        # Determinamos la función de pérdida
+        # Determina la función de pérdida
         loss_fn = self.loss_function 
         
         # Obtiene las probabilidades predichas para cada clase y la clase verdadera para cada instancia
@@ -620,8 +619,9 @@ class ResNeXtClassifier_APS(ResNeXtClassifier):
         # Obtiene el número de instancias del conjunto
         n = len(true_labels)
         
-        # Ordena el ranking de scores con los índices permutados de clases y calcula la suma acumulada
+        # Ordena los scores de cada instancia de mayor a menor y guarda los índices de ordenamiento
         sorted_scores, sorted_class_perm_index = torch.sort(pred_scores, dim=1, descending=True)
+        # Calcula la suma acumulada de los scores ordenados
         cum_sorted_scores = torch.cumsum(sorted_scores, dim=1)
         
         # Obtiene el índice de la etiqueta verdadera en en el ranking de cada instancia
@@ -640,7 +640,7 @@ class ResNeXtClassifier_APS(ResNeXtClassifier):
             # Calcula V
             V = (true_cum_score - (1-self.alpha)) / true_score
             
-            # Calcula nonconformity_scores 
+            # Calcula Nonconformity scores 
             nonconformity_scores = torch.where(
                 (U>V) & (true_class_rank>=1),
                 true_cum_score - true_score,
@@ -649,7 +649,7 @@ class ResNeXtClassifier_APS(ResNeXtClassifier):
         
         else:
             
-            #
+            # Nonconformity scores sin aleatoriedad
             nonconformity_scores = true_cum_score
         
         # Calcula el nivel de cuantificación ajustado basado en el tamaño del conjunto de calibración y alpha
@@ -677,8 +677,9 @@ class ResNeXtClassifier_APS(ResNeXtClassifier):
         # Determina la clase predicha como la clase con mayor puntuación
         _, pred_labels = torch.max(pred_scores, dim=1) 
         
-        # Ordena los scores de mayor a menor y calcula la suma acumulada
+        # Ordena los scores de cada instancia de mayor a menor y guarda los índices de ordenamiento
         sorted_scores, sorted_class_perm_index = torch.sort(pred_scores, dim=1, descending=True)
+        # Calcula la suma acumulada de los scores ordenados
         cum_sorted_scores = torch.cumsum(sorted_scores, dim=1)
         
         # Obtiene el índice (0-indexed) de la última clase en el ranking que no supera el umbral de no conformidad
@@ -810,10 +811,12 @@ class ResNeXtClassifier_RAPS(ResNeXtClassifier):
             # Genera un vector de valores aleatorios entre 0 y 1, uno por instancia 
             U = torch.rand(n)
             
-            #
+            # Calcula la probabilidad con la que se aplicará el ajuste aleatorio # (relación entre exceso de score acumuldo y score ajustado)
             V = (true_cum_score-true_cum_penalty-(1-alpha))/(true_score-true_penalty)
             
-            # Calcula los nonconformity scores 
+            # Calcula los nonconformity scores como: 
+            # - Si U > V y la clase correcta no es la primera, se reduce aleatoriamente 
+            # - En otro caso, se utiliza el valor directo
             nonconformity_scores = torch.where(
                 (U > V) & (true_class_rank>=1),
                 true_cum_score + true_cum_penalty - true_score,
@@ -822,7 +825,7 @@ class ResNeXtClassifier_RAPS(ResNeXtClassifier):
         
         else:
             
-            # Nonconformity scores sin aleatoriedad
+            # Nonconformity scores sin aleatoriedad como la suma acumulada + penalización
             nonconformity_scores = true_cum_score + true_cum_penalty
         
         
@@ -847,8 +850,9 @@ class ResNeXtClassifier_RAPS(ResNeXtClassifier):
         # Obtiene el número de instancias del conjunto y el número de clases
         n, num_classes = pred_scores.shape
         
-        # Ordena los scores de mayor a menor y calcula la suma acumulada
+        # Ordena los scores de cada instancia de mayor a menor y guarda los índices de ordenamiento
         sorted_scores, sorted_class_perm_index = torch.sort(pred_scores, dim=1, descending=True)
+        # Calcula la suma acumulada de los scores ordenados
         cum_sorted_scores = torch.cumsum(sorted_scores, dim=1)
         
         # Crea un vector de penalización acumulada para cada posición 
@@ -856,20 +860,27 @@ class ResNeXtClassifier_RAPS(ResNeXtClassifier):
         penalties[0, k_reg:] += lmbda
         cumulative_penalties = torch.cumsum(penalties, dim=1)
         
-        #
+        # Determina para cada instancia hasta qué posición del ranking 
+        # la suma acumulada de scores + penalizaciones es menor o igual que el umbral q_hat
         matches = (cum_sorted_scores + cumulative_penalties) <= q_hat
+        
+        # Determina si existe al menos una clase que cumpla la condición anterior
         has_match = matches.any(dim=1)
+        
+        # Para cada instancia, devuelve: 
+        # - el último índice que cumple la condición si existe alguno 
+        # - si no existe, asigna el primer elemento (conjunto mínimo no vacío)
         last_class_ranks = torch.where(
             has_match,
             matches.int().sum(dim=1)-1,
             torch.ones(n, dtype=torch.uint8)
         )
 
-        #
+        # Crea una máscara indicando qué posiciones del ranking están incluidas en el conjunto predicho
         idx = torch.arange(num_classes)
         inclusion_mask = idx <= last_class_ranks.unsqueeze(1)
         
-        # 
+        # Inicializa la matriz de predicciones y coloca en 1 aquellas clases incluidas por instancia
         pred_sets = torch.zeros_like(pred_scores, dtype=torch.uint8)
         pred_sets.scatter_(1, sorted_class_perm_index, inclusion_mask.to(torch.uint8))
         
@@ -911,7 +922,7 @@ class ResNeXtClassifier_RAPS(ResNeXtClassifier):
     
     def _get_kstar(self, pred_scores, true_labels):
         """
-        Calcula el valor óptimo de k_reg (k*), que ...
+        Calcula el valor óptimo de k_reg (k*), que es el tamaño mínimo fijo de clases con mayor score que logra la cobertura deseada en el dataset especificado.
         """
         # Obtiene el número de instancias del conjunto
         n = len(true_labels)
@@ -1071,7 +1082,7 @@ class ResNeXtClassifier_SAPS(ResNeXtClassifier):
         # Obtiene el número de instancias del conjunto y el número de clases
         n, num_classes = pred_scores.shape
         
-        # Ordena los scores de mayor a menor ...
+        # Ordena los scores de cada instancia de mayor a menor y guarda los índices de ordenamiento
         sorted_scores, sorted_class_perm_index = torch.sort(pred_scores, dim=1, descending=True)
         
         # Obtiene el máximo score de predicción para cada instancia
